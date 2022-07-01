@@ -1,116 +1,66 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
-import React from 'react';
+import React, {useState} from 'react';
 import {
+  Button,
   SafeAreaView,
-  ScrollView,
   StatusBar,
-  StyleSheet,
-  Text,
+  TextInput,
   useColorScheme,
+  Vibration,
   View,
 } from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-const Section: React.FC<{
-  children: React.ReactNode;
-  title: string;
-}> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+import BackgroundTimer from 'react-native-background-timer';
+import {Notifications} from 'react-native-notifications';
+import Sound from 'react-native-sound';
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const dark = useColorScheme() === 'dark';
+  const alarm = new Sound('argon.mp3', Sound.MAIN_BUNDLE, error => {
+    if (error) throw new Error(error);
+  });
+  const [timer, setTimer] = useState('0');
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  Notifications.registerRemoteNotifications();
+  Notifications.events().registerNotificationOpened(
+    (notification, completion) => {
+      console.log('Notification opened:', notification);
+      alarm.stop();
+      Vibration.cancel();
+      completion();
+    },
+  );
+
+  const press = () => {
+    BackgroundTimer.setTimeout(() => {
+      alarm.play(_onEnd => Vibration.cancel());
+      Vibration.vibrate([0, 400, 600], /*repeat=*/ true);
+      Notifications.postLocalNotification({
+        title: 'title',
+        body: 'body',
+        badge: 1,
+        identifier: 'identifier',
+        payload: {},
+        sound: 'sound',
+        thread: 'thread',
+        type: 'type',
+      });
+    }, Number(timer));
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView style={{flex: 1}}>
+      <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
+      <View
+        style={{
+          margin: 10,
+          alignItems: 'center',
+        }}>
+        <TextInput placeholder="Timer" value={timer} onChangeText={setTimer} />
+      </View>
+      <View style={{margin: 30, marginTop: 'auto'}}>
+        <Button title="Run timer" onPress={press} />
+      </View>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
