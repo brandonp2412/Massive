@@ -1,65 +1,61 @@
-import React, {useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
-  Button,
-  SafeAreaView,
-  StatusBar,
-  TextInput,
-  useColorScheme,
-  Vibration,
-  View,
-} from 'react-native';
-import BackgroundTimer from 'react-native-background-timer';
-import {Notifications} from 'react-native-notifications';
-import Sound from 'react-native-sound';
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+} from '@react-navigation/native';
+import React, {useEffect} from 'react';
+import {StatusBar, useColorScheme} from 'react-native';
+import {setupSchema} from './db';
+import Exercises from './Exercises';
+import Home from './Home';
+import Settings from './Settings';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
+const Tab = createBottomTabNavigator<RootStackParamList>();
+export type RootStackParamList = {
+  Home: {};
+  Exercises: {};
+  Settings: {};
+  Alarm: {};
+};
+
+setupSchema();
 
 const App = () => {
   const dark = useColorScheme() === 'dark';
-  const alarm = new Sound('argon.mp3', Sound.MAIN_BUNDLE, error => {
-    if (error) throw new Error(error);
-  });
-  const [timer, setTimer] = useState('0');
 
-  Notifications.registerRemoteNotifications();
-  Notifications.events().registerNotificationOpened(
-    (notification, completion) => {
-      console.log('Notification opened:', notification);
-      alarm.stop();
-      Vibration.cancel();
-      completion();
-    },
-  );
-
-  const press = () => {
-    BackgroundTimer.setTimeout(() => {
-      alarm.play(_onEnd => Vibration.cancel());
-      Vibration.vibrate([0, 400, 600], /*repeat=*/ true);
-      Notifications.postLocalNotification({
-        title: 'title',
-        body: 'body',
-        badge: 1,
-        identifier: 'identifier',
-        payload: {},
-        sound: 'sound',
-        thread: 'thread',
-        type: 'type',
-      });
-    }, Number(timer));
-  };
+  useEffect(() => {
+    AsyncStorage.getItem('minutes').then(async minutes => {
+      if (!minutes) await AsyncStorage.setItem('minutes', '3');
+    });
+  }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <NavigationContainer theme={dark ? DarkTheme : DefaultTheme}>
       <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
-      <View
-        style={{
-          margin: 10,
-          alignItems: 'center',
-        }}>
-        <TextInput placeholder="Timer" value={timer} onChangeText={setTimer} />
-      </View>
-      <View style={{margin: 30, marginTop: 'auto'}}>
-        <Button title="Run timer" onPress={press} />
-      </View>
-    </SafeAreaView>
+      <Tab.Navigator
+        screenOptions={({route}) => ({
+          tabBarIcon: ({focused, color, size}) => {
+            let icon = '';
+
+            if (route.name === 'Home') icon = focused ? 'home' : 'home-outline';
+            else if (route.name === 'Settings')
+              icon = focused ? 'settings' : 'settings-outline';
+            else if (route.name === 'Exercises')
+              icon = focused ? 'barbell' : 'barbell-outline';
+            // You can return any component that you like here!
+            return <Ionicons name={icon} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+        })}>
+        <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Exercises" component={Exercises} />
+        <Tab.Screen name="Settings" component={Settings} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 };
 
