@@ -3,19 +3,17 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
 import {
   FlatList,
+  NativeModules,
   SafeAreaView,
   StyleSheet,
   TextInput,
   Vibration,
   View,
 } from 'react-native';
-import BackgroundTimer from 'react-native-background-timer';
 import {Button, List} from 'react-native-paper';
-import PushNotification from 'react-native-push-notification';
 import Sound from 'react-native-sound';
 import Alarm from './Alarm';
 import {RootStackParamList} from './App';
-import {ALARM} from './channels';
 import {getDb} from './db';
 import EditSet from './EditSet';
 
@@ -84,20 +82,8 @@ export default function Home({
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
     const when = new Date();
     when.setTime(when.getTime() + milliseconds);
+    NativeModules.AlarmModule.timer(milliseconds);
     await AsyncStorage.setItem('nextAlarm', when.toISOString());
-    const timeoutId = BackgroundTimer.setTimeout(() => {
-      alarm.play(_onEnd => Vibration.cancel());
-      Vibration.vibrate([0, 400, 600], /*repeat=*/ true);
-      PushNotification.localNotification({
-        message: 'Timer up',
-        channelId: ALARM,
-        vibrate: true,
-      });
-    }, Number(milliseconds));
-    BackgroundTimer.clearTimeout(
-      Number(await AsyncStorage.getItem('timeoutId')),
-    );
-    await AsyncStorage.setItem('timeoutId', timeoutId.toString());
   };
 
   const close = () => {

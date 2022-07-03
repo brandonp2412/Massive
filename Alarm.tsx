@@ -15,14 +15,14 @@ export default function Alarm({onClose}: {onClose: () => void}) {
       if (ms <= 0) return;
       let secondsLeft = ms / 1000;
       console.log({secondsLeft});
-      setSeconds(secondsLeft % 60);
+      setSeconds(Math.floor(secondsLeft % 60));
       setMinutes(Math.floor(secondsLeft / 60));
 
       intervalId = setInterval(() => {
         console.log({seconds, secondsLeft});
         secondsLeft--;
         if (secondsLeft <= 0) return clearInterval(intervalId);
-        setSeconds(Math.ceil(secondsLeft % 60));
+        setSeconds(Math.floor(secondsLeft % 60));
         setMinutes(Math.floor(secondsLeft / 60));
       }, 1000);
     });
