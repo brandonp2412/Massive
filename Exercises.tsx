@@ -10,11 +10,9 @@ export default function Exercises({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Exercises'>) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
 
   const refresh = async () => {
-    setRefreshing(true);
     const db = await getDb();
     const [result] = await db.executeSql(
       `SELECT name, reps, unit, MAX(weight) AS weight 
@@ -23,7 +21,6 @@ export default function Exercises({
       GROUP BY name;`,
       [`%${search}%`],
     );
-    setRefreshing(false);
     if (!result) return setExercises([]);
     setExercises(result.rows.raw());
   };
@@ -44,12 +41,7 @@ export default function Exercises({
   return (
     <View style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
-      <FlatList
-        onRefresh={refresh}
-        refreshing={refreshing}
-        renderItem={renderItem}
-        data={exercises}
-      />
+      <FlatList renderItem={renderItem} data={exercises} />
     </View>
   );
 }

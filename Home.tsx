@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {List, Searchbar, TextInput} from 'react-native-paper';
+import {List, Searchbar} from 'react-native-paper';
 import Alarm from './Alarm';
 import {getDb} from './db';
 import EditSet from './EditSet';
@@ -20,18 +20,15 @@ export default function Home() {
   const [sets, setSets] = useState<Set[]>();
   const [id, setId] = useState<number>();
   const [offset, setOffset] = useState(0);
-  const [refreshing, setRefreshing] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [search, setSearch] = useState('');
 
   const refresh = async () => {
-    setRefreshing(true);
     const db = await getDb();
     const [result] = await db.executeSql(
       `SELECT * from sets WHERE name LIKE ? ORDER BY created DESC LIMIT ? OFFSET ?`,
       [`%${search}%`, limit, 0],
     );
-    setRefreshing(false);
     if (!result) return setSets([]);
     setSets(result.rows.raw());
     setOffset(0);
@@ -68,13 +65,11 @@ export default function Home() {
 
   const next = async () => {
     const newOffset = offset + limit;
-    setRefreshing(true);
     const db = await getDb();
     const [result] = await db.executeSql(
       `SELECT * from sets WHERE name LIKE ? LIMIT ? OFFSET ?`,
       [`%${search}%`, limit, newOffset],
     );
-    setRefreshing(false);
     if (!result) return;
     if (!sets) return;
     setSets([...sets, ...result.rows.raw()]);
@@ -89,8 +84,6 @@ export default function Home() {
         data={sets}
         renderItem={renderItem}
         keyExtractor={set => set.id.toString()}
-        onRefresh={refresh}
-        refreshing={refreshing}
         onScrollEndDrag={next}
       />
       <View style={styles.bottom}>
