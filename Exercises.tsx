@@ -1,7 +1,7 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {List, TextInput} from 'react-native-paper';
+import {List, Searchbar, TextInput} from 'react-native-paper';
 import {RootStackParamList} from './App';
 import {getDb} from './db';
 import Exercise from './exercise';
@@ -43,7 +43,7 @@ export default function Exercises({
 
   return (
     <View style={styles.container}>
-      <TextInput label="Search" value={search} onChangeText={setSearch} />
+      <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
         onRefresh={refresh}
         refreshing={refreshing}

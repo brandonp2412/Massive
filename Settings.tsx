@@ -40,6 +40,7 @@ export default function Settings({
         keyboardType="numeric"
         placeholder="3"
         onChangeText={setMinutes}
+        style={styles.text}
       />
       <TextInput
         label="Rest seconds"
@@ -47,10 +48,11 @@ export default function Settings({
         keyboardType="numeric"
         placeholder="30"
         onChangeText={setSeconds}
+        style={styles.text}
       />
-      <Text style={{marginTop: 10, marginBottom: 10}}>Alarm enabled?</Text>
+      <Text style={styles.text}>Alarm enabled?</Text>
       <Switch
-        style={{alignSelf: 'flex-start'}}
+        style={[styles.text, {alignSelf: 'flex-start'}]}
         value={alarmEnabled}
         onValueChange={setAlarmEnabled}
       />
@@ -64,5 +66,8 @@ export default function Settings({
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+  },
+  text: {
+    marginBottom: 10,
   },
 });

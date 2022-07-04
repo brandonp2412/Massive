@@ -1,16 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   FlatList,
   NativeModules,
   SafeAreaView,
   StyleSheet,
-  Vibration,
   View,
 } from 'react-native';
-import {List, TextInput} from 'react-native-paper';
-import Sound from 'react-native-sound';
+import {List, Searchbar, TextInput} from 'react-native-paper';
 import Alarm from './Alarm';
 import {getDb} from './db';
 import EditSet from './EditSet';
@@ -26,7 +23,6 @@ export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [search, setSearch] = useState('');
-  const navigation = useNavigation();
 
   const refresh = async () => {
     setRefreshing(true);
@@ -41,20 +37,9 @@ export default function Home() {
     setOffset(0);
   };
 
-  const alarm = new Sound('argon.mp3', Sound.MAIN_BUNDLE, error => {
-    if (error) throw new Error(error);
-  });
-
-  const focus = async () => {
-    alarm.stop();
-    Vibration.cancel();
-  };
-
   useEffect(() => {
     refresh();
   }, [search]);
-
-  useEffect(() => navigation.addListener('focus', focus), [navigation]);
 
   const renderItem = ({item}: {item: Set}) => (
     <List.Item
@@ -98,7 +83,7 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TextInput label="Search" value={search} onChangeText={setSearch} />
+      <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
         style={{height: '100%'}}
         data={sets}
