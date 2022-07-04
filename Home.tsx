@@ -1,42 +1,38 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   FlatList,
   NativeModules,
   SafeAreaView,
   StyleSheet,
-  TextInput,
   Vibration,
   View,
 } from 'react-native';
-import {Button, List} from 'react-native-paper';
+import {List, TextInput} from 'react-native-paper';
 import Sound from 'react-native-sound';
 import Alarm from './Alarm';
-import {RootStackParamList} from './App';
 import {getDb} from './db';
 import EditSet from './EditSet';
 
-import Set from './Set';
+import Set from './set';
 
 const limit = 20;
 
-export default function Home({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Home'>) {
+export default function Home() {
   const [sets, setSets] = useState<Set[]>();
   const [id, setId] = useState<number>();
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const [showTimer, setShowTimer] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [search, setSearch] = useState('');
+  const navigation = useNavigation();
 
   const refresh = async () => {
     setRefreshing(true);
     const db = await getDb();
     const [result] = await db.executeSql(
-      `SELECT * from sets WHERE name LIKE ? LIMIT ? OFFSET ?`,
+      `SELECT * from sets WHERE name LIKE ? ORDER BY created DESC LIMIT ? OFFSET ?`,
       [`%${search}%`, limit, 0],
     );
     setRefreshing(false);
@@ -75,7 +71,6 @@ export default function Home({
   const save = async () => {
     refresh();
     const enabled = await AsyncStorage.getItem('alarmEnabled');
-    console.log({enabled});
     if (enabled !== 'true') return;
     const minutes = await AsyncStorage.getItem('minutes');
     const seconds = await AsyncStorage.getItem('seconds');
@@ -84,12 +79,6 @@ export default function Home({
     when.setTime(when.getTime() + milliseconds);
     NativeModules.AlarmModule.timer(milliseconds);
     await AsyncStorage.setItem('nextAlarm', when.toISOString());
-  };
-
-  const close = () => {
-    alarm.stop();
-    Vibration.cancel();
-    setShowTimer(false);
   };
 
   const next = async () => {
@@ -109,7 +98,7 @@ export default function Home({
 
   return (
     <SafeAreaView style={styles.container}>
-      <TextInput placeholder="Search" value={search} onChangeText={setSearch} />
+      <TextInput label="Search" value={search} onChangeText={setSearch} />
       <FlatList
         style={{height: '100%'}}
         data={sets}
@@ -120,28 +109,15 @@ export default function Home({
         onScrollEndDrag={next}
       />
       <View style={styles.bottom}>
-        <View style={styles.button}></View>
-        <View style={styles.button}>
-          <Button icon="time" onPress={() => setShowTimer(true)}>
-            Time left
-          </Button>
-        </View>
-        <View style={styles.button}>
-          <Button icon="stop" onPress={close}>
-            Stop
-          </Button>
-        </View>
-        <View style={styles.button}>
-          <EditSet
-            id={id}
-            setId={setId}
-            show={showEdit}
-            setShow={setShowEdit}
-            onSave={save}
-          />
-        </View>
+        <Alarm />
+        <EditSet
+          id={id}
+          setId={setId}
+          show={showEdit}
+          setShow={setShowEdit}
+          onSave={save}
+        />
       </View>
-      {showTimer && <Alarm onClose={close} />}
     </SafeAreaView>
   );
 }
@@ -150,25 +126,12 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
   },
-  button: {
-    marginRight: 10,
-  },
   container: {
     flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
+    padding: 10,
   },
   bottom: {
     alignSelf: 'center',
-    marginBottom: 10,
     flexDirection: 'row',
-  },
-  set: {
-    marginBottom: 10,
-    fontSize: 18,
-    shadowColor: 'red',
-    shadowRadius: 10,
-    shadowOffset: {width: 2, height: 40},
-    shadowOpacity: 8,
   },
 });

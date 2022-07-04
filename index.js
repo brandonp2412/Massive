@@ -21,10 +21,6 @@ export default function Main() {
 AppRegistry.registerComponent(appName, () => Main);
 
 PushNotification.configure({
-  onRegister: function (token) {
-    console.log('TOKEN:', token);
-  },
-
   onNotification: function (notification) {
     console.log('NOTIFICATION:', notification);
   },

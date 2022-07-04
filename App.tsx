@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {
   DarkTheme,
   DefaultTheme,
@@ -11,14 +11,12 @@ import {setupSchema} from './db';
 import Exercises from './Exercises';
 import Home from './Home';
 import Settings from './Settings';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const Tab = createBottomTabNavigator<RootStackParamList>();
+const Tab = createMaterialTopTabNavigator<RootStackParamList>();
 export type RootStackParamList = {
   Home: {};
-  Exercises: {};
   Settings: {};
-  Alarm: {};
+  Exercises: {};
 };
 
 setupSchema();
@@ -35,22 +33,7 @@ const App = () => {
   return (
     <NavigationContainer theme={dark ? DarkTheme : DefaultTheme}>
       <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
-      <Tab.Navigator
-        screenOptions={({route}) => ({
-          tabBarIcon: ({focused, color, size}) => {
-            let icon = '';
-
-            if (route.name === 'Home') icon = focused ? 'home' : 'home-outline';
-            else if (route.name === 'Settings')
-              icon = focused ? 'settings' : 'settings-outline';
-            else if (route.name === 'Exercises')
-              icon = focused ? 'barbell' : 'barbell-outline';
-            // You can return any component that you like here!
-            return <Ionicons name={icon} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: 'tomato',
-          tabBarInactiveTintColor: 'gray',
-        })}>
+      <Tab.Navigator>
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Exercises" component={Exercises} />
         <Tab.Screen name="Settings" component={Settings} />

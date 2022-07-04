@@ -1,86 +1,59 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useEffect, useState} from 'react';
-import {Button, Modal, StyleSheet, Text, View} from 'react-native';
-import BackgroundTimer from 'react-native-background-timer';
+import {StyleSheet, Text} from 'react-native';
+import {Button, Modal, Portal} from 'react-native-paper';
 
-export default function Alarm({onClose}: {onClose: () => void}) {
+export default function Alarm() {
+  const [show, setShow] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
   let intervalId: number;
 
   useEffect(() => {
-    AsyncStorage.getItem('nextAlarm').then(async next => {
+    intervalId = setInterval(async () => {
+      const next = await AsyncStorage.getItem('nextAlarm');
       if (!next) return;
       const ms = new Date(next).getTime() - new Date().getTime();
       if (ms <= 0) return;
       let secondsLeft = ms / 1000;
-      console.log({secondsLeft});
+      secondsLeft--;
+      if (secondsLeft <= 0) return clearInterval(intervalId);
       setSeconds(Math.floor(secondsLeft % 60));
       setMinutes(Math.floor(secondsLeft / 60));
-
-      intervalId = setInterval(() => {
-        console.log({seconds, secondsLeft});
-        secondsLeft--;
-        if (secondsLeft <= 0) return clearInterval(intervalId);
-        setSeconds(Math.floor(secondsLeft % 60));
-        setMinutes(Math.floor(secondsLeft / 60));
-      }, 1000);
-    });
+    }, 1000);
     return () => clearInterval(intervalId);
   }, []);
 
-  const stop = () => {
-    BackgroundTimer.clearInterval(intervalId);
-    onClose();
-  };
-
   return (
-    <Modal
-      animationType="none"
-      transparent={true}
-      visible
-      onRequestClose={onClose}>
-      <View style={styles.modal}>
-        <Text style={styles.title}>Rest</Text>
-        <Text style={styles.timer}>
-          {minutes}:{seconds}
-        </Text>
-        <View style={{flexDirection: 'row'}}>
-          <View style={styles.button}>
-            <Button title="Close" color="#014B44" onPress={onClose} />
-          </View>
-          <View style={styles.button}>
-            <Button title="Stop" onPress={stop} />
-          </View>
-        </View>
-      </View>
-    </Modal>
+    <>
+      <Portal>
+        <Modal
+          visible={show}
+          style={styles.center}
+          onDismiss={() => setShow(false)}>
+          <Text style={[styles.center, styles.title]}>Resting</Text>
+          <Text style={styles.center}>
+            {minutes}:{seconds}
+          </Text>
+          <Button mode="contained" onPress={() => setShow(false)}>
+            Close
+          </Button>
+        </Modal>
+      </Portal>
+      <Button icon="time" onPress={() => setShow(true)}>
+        Time left
+      </Button>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  timer: {
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 20,
+  center: {
+    alignItems: 'center',
+    alignSelf: 'center',
     marginBottom: 10,
   },
-  modal: {
-    margin: 20,
-    backgroundColor: '#20232a',
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    alignItems: 'center',
-  },
-  button: {
-    marginRight: 10,
+  title: {
+    fontSize: 18,
   },
 });

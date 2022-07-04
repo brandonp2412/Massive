@@ -1,8 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Modal, StyleSheet, Text, TextInput, View} from 'react-native';
-import {Button} from 'react-native-paper';
+import {StyleSheet, Text, View} from 'react-native';
+import {Button, Modal, Portal, TextInput} from 'react-native-paper';
 import {getDb} from './db';
-import Set from './Set';
+import Set from './set';
 
 export default function EditSet({
   id,
@@ -21,9 +21,9 @@ export default function EditSet({
   const [reps, setReps] = useState('');
   const [weight, setWeight] = useState('');
   const [unit, setUnit] = useState('');
-  const weightRef = useRef<TextInput>(null);
-  const repsRef = useRef<TextInput>(null);
-  const unitRef = useRef<TextInput>(null);
+  const weightRef = useRef<any>(null);
+  const repsRef = useRef<any>(null);
+  const unitRef = useRef<any>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -66,39 +66,42 @@ export default function EditSet({
   };
 
   return (
-    <View>
-      <Modal
-        animationType="none"
-        transparent={true}
-        visible={show}
-        onRequestClose={() => setShow(false)}>
-        <View style={styles.modal}>
+    <>
+      <Portal>
+        <Modal
+          visible={show}
+          contentContainerStyle={styles.modal}
+          onDismiss={() => setShow(false)}>
           <Text style={styles.title}>Add a set</Text>
           <TextInput
+            style={styles.text}
             autoFocus
-            placeholder="Name *"
+            label="Name *"
             value={name}
             onChangeText={setName}
-            onSubmitEditing={() => weightRef.current?.focus()}
-          />
-          <TextInput
-            placeholder="Weight *"
-            keyboardType="numeric"
-            value={weight}
-            onChangeText={setWeight}
             onSubmitEditing={() => repsRef.current?.focus()}
-            ref={weightRef}
           />
           <TextInput
-            placeholder="Reps *"
+            style={styles.text}
+            label="Reps *"
             keyboardType="numeric"
             value={reps}
             onChangeText={setReps}
             ref={repsRef}
-            onSubmitEditing={() => unitRef.current?.focus()}
+            onSubmitEditing={() => weightRef.current?.focus()}
           />
           <TextInput
-            placeholder="Unit (kg)"
+            style={styles.text}
+            label="Weight *"
+            keyboardType="numeric"
+            value={weight}
+            onChangeText={setWeight}
+            onSubmitEditing={save}
+            ref={weightRef}
+          />
+          <TextInput
+            style={styles.text}
+            label="Unit (kg)"
             value={unit}
             onChangeText={setUnit}
             ref={unitRef}
@@ -115,9 +118,11 @@ export default function EditSet({
               Delete
             </Button>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </Portal>
+
       <Button
+        icon="add"
         mode="contained"
         onPress={() => {
           setId(undefined);
@@ -125,28 +130,24 @@ export default function EditSet({
         }}>
         Add
       </Button>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  modal: {
+    height: '100%',
+    backgroundColor: 'black',
+    padding: 20,
+  },
+  text: {
+    marginBottom: 10,
+  },
   bottom: {
     flexDirection: 'row',
   },
   title: {
     fontSize: 20,
-  },
-  modal: {
-    margin: 20,
-    backgroundColor: '#20232a',
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    marginBottom: 10,
   },
 });

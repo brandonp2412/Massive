@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Switch, Text, TextInput, View} from 'react-native';
-import {Button} from 'react-native-paper';
+import {StyleSheet, Text, View} from 'react-native';
+import {Button, Switch, TextInput} from 'react-native-paper';
 import {RootStackParamList} from './App';
 import {getDb} from './db';
 
@@ -34,27 +34,27 @@ export default function Settings({
 
   return (
     <View style={styles.container}>
-      <Text>Rest minutes</Text>
       <TextInput
+        label="Rest minutes"
         value={minutes}
         keyboardType="numeric"
         placeholder="3"
         onChangeText={setMinutes}
       />
-      <Text>Rest seconds</Text>
       <TextInput
+        label="Rest seconds"
         value={seconds}
         keyboardType="numeric"
         placeholder="30"
         onChangeText={setSeconds}
       />
-      <Text>Alarm enabled?</Text>
+      <Text style={{marginTop: 10, marginBottom: 10}}>Alarm enabled?</Text>
       <Switch
         style={{alignSelf: 'flex-start'}}
         value={alarmEnabled}
         onValueChange={setAlarmEnabled}
       />
-      <Button icon="trash" onPress={clear}>
+      <Button style={{alignSelf: 'flex-start'}} icon="trash" onPress={clear}>
         Clear sets
       </Button>
     </View>
@@ -63,7 +63,6 @@ export default function Settings({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 10,
   },
 });
