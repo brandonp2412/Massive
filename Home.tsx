@@ -13,6 +13,7 @@ import {getDb} from './db';
 import EditSet from './EditSet';
 
 import Set from './set';
+import SetItem from './SetItem';
 
 const limit = 20;
 
@@ -39,14 +40,12 @@ export default function Home() {
   }, [search]);
 
   const renderItem = ({item}: {item: Set}) => (
-    <List.Item
-      onPress={() => {
-        setId(item.id);
-        setShowEdit(true);
-      }}
+    <SetItem
+      item={item}
       key={item.id}
-      title={item.name}
-      description={`${item.reps} x ${item.weight}${item.unit}`}
+      setShowEdit={setShowEdit}
+      setId={setId}
+      onRemove={refresh}
     />
   );
 
@@ -70,8 +69,9 @@ export default function Home() {
       `SELECT * from sets WHERE name LIKE ? LIMIT ? OFFSET ?`,
       [`%${search}%`, limit, newOffset],
     );
-    if (!result) return;
+    if (result.rows.length === 0) return;
     if (!sets) return;
+    if (sets.filter(set => set.id === result.rows.item(0).id)) return;
     setSets([...sets, ...result.rows.raw()]);
     setOffset(newOffset);
   };
