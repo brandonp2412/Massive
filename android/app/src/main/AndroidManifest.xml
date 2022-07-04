@@ -28,6 +28,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:exported="true" android:process=":remote" android:name=".AlarmActivity" />
         <receiver android:exported="true" android:process=":remote" android:name=".MyBroadcastReceiver" />
+        <service android:name=".AlarmService" android:exported="true" />
     </application>
 </manifest>

@@ -62,4 +62,12 @@ public class AlarmModule extends ReactContextBaseJavaModule {
         AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(System.currentTimeMillis() + milliseconds, pendingIntent);
         alarmManager.setAlarmClock(info, pendingIntent);
     }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public void stop() {
+       Log.d("AlarmModule", "Request to stop timer.");
+        Intent intent = new Intent(getReactApplicationContext(), MyBroadcastReceiver.class);
+        intent.setAction("stop");
+        getReactApplicationContext().startActivity(intent);
+    }
 }
