@@ -7,22 +7,27 @@ export default function Alarm() {
   const [show, setShow] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
-  let intervalId: number;
 
   useEffect(() => {
-    intervalId = setInterval(async () => {
+    if (!show) return;
+    let intervalId: number;
+    (async () => {
       const next = await AsyncStorage.getItem('nextAlarm');
       if (!next) return;
       const ms = new Date(next).getTime() - new Date().getTime();
       if (ms <= 0) return;
       let secondsLeft = ms / 1000;
-      secondsLeft--;
-      if (secondsLeft <= 0) return clearInterval(intervalId);
       setSeconds(Math.floor(secondsLeft % 60));
       setMinutes(Math.floor(secondsLeft / 60));
-    }, 1000);
+      intervalId = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) return clearInterval(intervalId);
+        setSeconds(Math.floor(secondsLeft % 60));
+        setMinutes(Math.floor(secondsLeft / 60));
+      }, 1000);
+    })();
     return () => clearInterval(intervalId);
-  }, []);
+  }, [show]);
 
   return (
     <>
