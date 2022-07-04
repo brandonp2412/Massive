@@ -94,6 +94,7 @@ export default function Home() {
           show={showEdit}
           setShow={setShowEdit}
           onSave={save}
+          onRemove={refresh}
         />
       </View>
     </SafeAreaView>

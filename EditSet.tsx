@@ -10,12 +10,14 @@ export default function EditSet({
   show,
   setShow,
   setId,
+  onRemove,
 }: {
   id?: number;
   setId: (id?: number) => void;
   onSave: () => void;
   show: boolean;
   setShow: (visible: boolean) => void;
+  onRemove: () => void;
 }) {
   const [name, setName] = useState('');
   const [reps, setReps] = useState('');
@@ -62,7 +64,7 @@ export default function EditSet({
     const db = await getDb();
     await db.executeSql(`DELETE FROM sets WHERE id = ?`, [id]);
     setShow(false);
-    onSave();
+    onRemove();
   };
 
   return (

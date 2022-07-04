@@ -49,7 +49,7 @@ public class AlarmModule extends ReactContextBaseJavaModule {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    @ReactMethod(isBlockingSynchronousMethod = true)
+    @ReactMethod()
     public void timer(int milliseconds) {
         Log.d("AlarmModule", "Queue alarm for " + milliseconds + " delay");
         Intent intent = new Intent(getReactApplicationContext(), MyBroadcastReceiver.class);
