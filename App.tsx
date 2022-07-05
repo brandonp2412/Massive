@@ -6,7 +6,7 @@ import {
   NavigationContainer,
 } from '@react-navigation/native';
 import React, {useEffect} from 'react';
-import {StatusBar, useColorScheme} from 'react-native';
+import {NativeModules, StatusBar, useColorScheme} from 'react-native';
 import {setupSchema} from './db';
 import Exercises from './Exercises';
 import Home from './Home';
@@ -28,6 +28,7 @@ const App = () => {
     AsyncStorage.getItem('minutes').then(async minutes => {
       if (!minutes) await AsyncStorage.setItem('minutes', '3');
     });
+    console.log(NativeModules.ExportModule.sets());
   }, []);
 
   return (

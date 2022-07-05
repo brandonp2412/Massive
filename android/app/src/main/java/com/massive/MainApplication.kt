@@ -18,7 +18,7 @@ class MainApplication : Application(), ReactApplication {
         override fun getPackages(): List<ReactPackage> {
             val packages: MutableList<ReactPackage> = PackageList(this).packages
             packages.add(SQLitePluginPackage())
-            packages.add(AlarmPackage())
+            packages.add(MassivePackage())
             return packages
         }
 

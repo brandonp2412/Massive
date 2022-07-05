@@ -7,7 +7,7 @@ import com.facebook.react.uimanager.ViewManager
 import com.massive.AlarmModule
 import java.util.ArrayList
 
-class AlarmPackage : ReactPackage {
+class MassivePackage : ReactPackage {
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
         return emptyList()
     }
@@ -17,6 +17,7 @@ class AlarmPackage : ReactPackage {
     ): List<NativeModule> {
         val modules: MutableList<NativeModule> = ArrayList()
         modules.add(AlarmModule(reactContext))
+        modules.add(ExportModule(reactContext))
         return modules
     }
 }
