@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {NativeModules, StyleSheet, Text, View} from 'react-native';
 import {Button, Switch, TextInput} from 'react-native-paper';
 import {RootStackParamList} from './App';
 import {getDb} from './db';
@@ -32,6 +32,10 @@ export default function Settings({
     await db.executeSql(`DELETE FROM sets`);
   };
 
+  const exportSets = () => {
+    NativeModules.ExportModule.sets();
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -56,6 +60,12 @@ export default function Settings({
         value={alarmEnabled}
         onValueChange={setAlarmEnabled}
       />
+      <Button
+        style={{alignSelf: 'flex-start'}}
+        icon="arrow-down"
+        onPress={exportSets}>
+        Download
+      </Button>
       <Button
         style={{alignSelf: 'flex-start', marginTop: 'auto'}}
         icon="trash"
