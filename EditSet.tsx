@@ -9,11 +9,9 @@ export default function EditSet({
   onSave,
   show,
   setShow,
-  setId,
   onRemove,
 }: {
   id?: number;
-  setId: (id?: number) => void;
   onSave: () => void;
   show: boolean;
   setShow: (visible: boolean) => void;
@@ -23,6 +21,7 @@ export default function EditSet({
   const [reps, setReps] = useState('');
   const [weight, setWeight] = useState('');
   const [unit, setUnit] = useState('');
+  const [created, setCreated] = useState(new Date());
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
   const unitRef = useRef<any>(null);
@@ -39,6 +38,7 @@ export default function EditSet({
       setReps(set.reps.toString());
       setWeight(set.weight.toString());
       setUnit(set.unit);
+      setCreated(new Date(set.created));
     });
   }, [id]);
 
@@ -68,77 +68,74 @@ export default function EditSet({
   };
 
   return (
-    <>
-      <Portal>
-        <Modal
-          visible={show}
-          contentContainerStyle={styles.modal}
-          onDismiss={() => setShow(false)}>
-          <Text style={styles.title}>Add a set</Text>
-          <TextInput
-            style={styles.text}
-            autoFocus
-            label="Name *"
-            value={name}
-            onChangeText={setName}
-            onSubmitEditing={() => repsRef.current?.focus()}
-          />
-          <TextInput
-            style={styles.text}
-            label="Reps *"
-            keyboardType="numeric"
-            value={reps}
-            onChangeText={setReps}
-            ref={repsRef}
-            onSubmitEditing={() => weightRef.current?.focus()}
-          />
-          <TextInput
-            style={styles.text}
-            label="Weight *"
-            keyboardType="numeric"
-            value={weight}
-            onChangeText={setWeight}
-            onSubmitEditing={save}
-            ref={weightRef}
-          />
-          <TextInput
-            style={styles.text}
-            label="Unit (kg)"
-            value={unit}
-            onChangeText={setUnit}
-            ref={unitRef}
-            onSubmitEditing={save}
-          />
-          <View style={styles.bottom}>
-            <Button mode="contained" icon="save" onPress={save}>
-              Save
-            </Button>
-            <Button icon="close" onPress={() => setShow(false)}>
-              Cancel
-            </Button>
-            <Button icon="trash" onPress={remove} disabled={!id}>
-              Delete
-            </Button>
-          </View>
-        </Modal>
-      </Portal>
-
-      <Button
-        icon="add"
-        mode="contained"
-        onPress={() => {
-          setId(undefined);
-          setShow(true);
-        }}>
-        Add
-      </Button>
-    </>
+    <Portal>
+      <Modal
+        visible={show}
+        contentContainerStyle={styles.modal}
+        onDismiss={() => setShow(false)}>
+        <Text style={styles.title}>Add a set</Text>
+        <TextInput
+          style={styles.text}
+          autoFocus
+          label="Name *"
+          value={name}
+          onChangeText={setName}
+          onSubmitEditing={() => repsRef.current?.focus()}
+        />
+        <TextInput
+          style={styles.text}
+          label="Reps *"
+          keyboardType="numeric"
+          value={reps}
+          onChangeText={setReps}
+          ref={repsRef}
+          onSubmitEditing={() => weightRef.current?.focus()}
+        />
+        <TextInput
+          style={styles.text}
+          label="Weight *"
+          keyboardType="numeric"
+          value={weight}
+          onChangeText={setWeight}
+          onSubmitEditing={save}
+          ref={weightRef}
+        />
+        <TextInput
+          style={styles.text}
+          label="Unit (kg)"
+          value={unit}
+          onChangeText={setUnit}
+          ref={unitRef}
+          onSubmitEditing={save}
+        />
+        <TextInput
+          style={styles.text}
+          label="Created"
+          disabled
+          value={created.toLocaleString()}
+        />
+        <View style={styles.bottom}>
+          <Button mode="contained" icon="save" onPress={save}>
+            Save
+          </Button>
+          <Button icon="close" onPress={() => setShow(false)}>
+            Cancel
+          </Button>
+          <Button
+            style={{alignSelf: 'flex-end'}}
+            icon="trash"
+            onPress={remove}
+            disabled={!id}>
+            Delete
+          </Button>
+        </View>
+      </Modal>
+    </Portal>
   );
 }
 
 const styles = StyleSheet.create({
   modal: {
-    height: '100%',
     backgroundColor: 'black',
     padding: 20,
   },

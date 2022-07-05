@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {List, Searchbar} from 'react-native-paper';
+import {AnimatedFAB, Button, Searchbar} from 'react-native-paper';
 import Alarm from './Alarm';
 import {getDb} from './db';
 import EditSet from './EditSet';
@@ -90,13 +90,23 @@ export default function Home() {
         <Alarm />
         <EditSet
           id={id}
-          setId={setId}
           show={showEdit}
           setShow={setShowEdit}
           onSave={save}
           onRemove={refresh}
         />
       </View>
+
+      <AnimatedFAB
+        extended={false}
+        label="Add"
+        icon="add"
+        style={{position: 'absolute', right: 20, bottom: 20}}
+        onPress={() => {
+          setId(undefined);
+          setShowEdit(true);
+        }}
+      />
     </SafeAreaView>
   );
 }

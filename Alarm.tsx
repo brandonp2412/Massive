@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {NativeModules, StyleSheet, Text, View} from 'react-native';
 import {Button, Modal, Portal} from 'react-native-paper';
 
 export default function Alarm() {
@@ -8,15 +8,16 @@ export default function Alarm() {
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
 
+  let intervalId: number;
+
   useEffect(() => {
     if (!show) return;
-    let intervalId: number;
     (async () => {
       const next = await AsyncStorage.getItem('nextAlarm');
       if (!next) return;
-      const ms = new Date(next).getTime() - new Date().getTime();
-      if (ms <= 0) return;
-      let secondsLeft = ms / 1000;
+      const milliseconds = new Date(next).getTime() - new Date().getTime();
+      if (milliseconds <= 0) return;
+      let secondsLeft = milliseconds / 1000;
       setSeconds(Math.floor(secondsLeft % 60));
       setMinutes(Math.floor(secondsLeft / 60));
       intervalId = setInterval(() => {
@@ -29,6 +30,14 @@ export default function Alarm() {
     return () => clearInterval(intervalId);
   }, [show]);
 
+  const stop = async () => {
+    NativeModules.AlarmModule.stop();
+    clearInterval(intervalId);
+    setSeconds(0);
+    setMinutes(0);
+    await AsyncStorage.setItem('nextAlarm', '');
+  };
+
   return (
     <>
       <Portal>
@@ -40,9 +49,14 @@ export default function Alarm() {
           <Text style={styles.center}>
             {minutes}:{seconds}
           </Text>
-          <Button mode="contained" onPress={() => setShow(false)}>
-            Close
-          </Button>
+          <View style={{flexDirection: 'row'}}>
+            <Button icon="close" onPress={() => setShow(false)}>
+              Close
+            </Button>
+            <Button mode="contained" icon="stop" onPress={stop}>
+              Stop
+            </Button>
+          </View>
         </Modal>
       </Portal>
       <Button icon="time" onPress={() => setShow(true)}>
