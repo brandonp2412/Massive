@@ -29,7 +29,8 @@
             </intent-filter>
         </activity>
         <activity android:exported="true" android:process=":remote" android:name=".AlarmActivity" />
-        <receiver android:exported="true" android:process=":remote" android:name=".MyBroadcastReceiver" />
+        <service android:name=".StopTimer" android:exported="true" android:process=":remote" />
         <service android:name=".AlarmService" android:exported="true" />
+        <service android:name=".TimerService" android:exported="true" />
     </application>
 </manifest>

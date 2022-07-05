@@ -56,8 +56,11 @@ export default function Settings({
         value={alarmEnabled}
         onValueChange={setAlarmEnabled}
       />
-      <Button style={{alignSelf: 'flex-start'}} icon="trash" onPress={clear}>
-        Clear sets
+      <Button
+        style={{alignSelf: 'flex-start', marginTop: 'auto'}}
+        icon="trash"
+        onPress={clear}>
+        Delete all data
       </Button>
     </View>
   );
@@ -66,6 +69,7 @@ export default function Settings({
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    flex: 1,
   },
   text: {
     marginBottom: 10,

@@ -7,8 +7,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {AnimatedFAB, Button, Searchbar} from 'react-native-paper';
-import Alarm from './Alarm';
+import {AnimatedFAB, Searchbar} from 'react-native-paper';
 import {getDb} from './db';
 import EditSet from './EditSet';
 
@@ -56,10 +55,7 @@ export default function Home() {
     const minutes = await AsyncStorage.getItem('minutes');
     const seconds = await AsyncStorage.getItem('seconds');
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
-    const when = new Date();
-    when.setTime(when.getTime() + milliseconds);
     NativeModules.AlarmModule.timer(milliseconds);
-    await AsyncStorage.setItem('nextAlarm', when.toISOString());
   };
 
   const next = async () => {
@@ -87,7 +83,6 @@ export default function Home() {
         onScrollEndDrag={next}
       />
       <View style={styles.bottom}>
-        <Alarm />
         <EditSet
           id={id}
           show={showEdit}
