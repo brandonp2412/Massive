@@ -43,6 +43,7 @@ export default function Exercises({
     <View style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
+        style={{height: '90%'}}
         refreshing={refreshing}
         onRefresh={async () => {
           setRefresing(true);
