@@ -31,7 +31,6 @@ export default function EditPlan({
       if (!namesResult.rows.length) return;
       setNames(namesResult.rows.raw().map(({name}) => name));
       if (!id) return;
-      console.log('Getting plans...');
       const [result] = await db.executeSql(`SELECT * FROM plans WHERE id = ?`, [
         id,
       ]);
@@ -87,7 +86,7 @@ export default function EditPlan({
     <Portal>
       <Dialog visible={show} onDismiss={() => setShow(false)}>
         <Dialog.Title>{id ? `Edit "${days}"` : 'Add a plan'}</Dialog.Title>
-        <Dialog.Content>
+        <Dialog.Content style={{alignItems: 'flex-end'}}>
           {days.split(',').map((day, index) => (
             <DayMenu
               index={index}
@@ -98,6 +97,9 @@ export default function EditPlan({
               key={index}
             />
           ))}
+          <Button icon="add" onPress={() => setDays(days + ',Monday')}>
+            Add day
+          </Button>
           {workouts.split(',').map((workout, index) => (
             <WorkoutMenu
               index={index}
@@ -109,13 +111,16 @@ export default function EditPlan({
               key={index}
             />
           ))}
+          <Button icon="add" onPress={() => setWorkouts(workouts + ',')}>
+            Add workout
+          </Button>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button mode="contained" icon="save" onPress={save}>
-            Save
-          </Button>
           <Button icon="close" onPress={() => setShow(false)}>
             Cancel
+          </Button>
+          <Button mode="contained" icon="save" onPress={save}>
+            Save
           </Button>
         </Dialog.Actions>
       </Dialog>

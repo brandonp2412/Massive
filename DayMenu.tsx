@@ -54,8 +54,6 @@ export default function DayMenu({
           title={day}
         />
       ))}
-      <Menu.Item icon="add" title="Add" onPress={add} />
-      <Divider />
       {index > 0 && (
         <Menu.Item icon="trash" title="Delete" onPress={onDelete} />
       )}

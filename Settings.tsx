@@ -73,7 +73,7 @@ export default function Settings({
         onChangeText={setSeconds}
         style={styles.text}
       />
-      <Text style={styles.text}>Alarm enabled?</Text>
+      <Text style={styles.text}>Rest timers</Text>
       <Switch
         style={[styles.text, {alignSelf: 'flex-start'}]}
         value={alarmEnabled}

@@ -46,7 +46,6 @@ export default function DayMenu({
           title={name}
         />
       ))}
-      <Menu.Item icon="add" title="Add" onPress={add} />
       {index > 0 && (
         <Menu.Item icon="trash" title="Delete" onPress={onDelete} />
       )}
