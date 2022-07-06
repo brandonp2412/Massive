@@ -86,15 +86,13 @@ export default function Home() {
         refreshing={refreshing}
         onRefresh={refresh}
       />
-      <View style={styles.bottom}>
-        <EditSet
-          clearId={() => setId(undefined)}
-          id={id}
-          show={showEdit}
-          setShow={setShowEdit}
-          onSave={save}
-        />
-      </View>
+      <EditSet
+        clearId={() => setId(undefined)}
+        id={id}
+        show={showEdit}
+        setShow={setShowEdit}
+        onSave={save}
+      />
 
       <AnimatedFAB
         extended={false}

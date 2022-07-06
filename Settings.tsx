@@ -5,6 +5,7 @@ import {NativeModules, StyleSheet, Text, View} from 'react-native';
 import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
 import {RootStackParamList} from './App';
 import {getDb} from './db';
+import BatteryDialog from './BatteryDialog';
 
 export default function Settings({
   navigation,
@@ -13,6 +14,7 @@ export default function Settings({
   const [seconds, setSeconds] = useState<string>('');
   const [alarmEnabled, setAlarmEnabled] = useState<boolean>(true);
   const [snackbar, setSnackbar] = useState('');
+  const [showBattery, setShowBattery] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -43,6 +45,16 @@ export default function Settings({
     NativeModules.ImportModule.sets();
   };
 
+  const changeAlarmEnabled = (enabled: boolean) => {
+    if (!enabled) return setAlarmEnabled(enabled);
+    NativeModules.AlarmModule.ignoringBatteryOptimizations(
+      (ignoring: boolean) => {
+        if (ignoring) return setAlarmEnabled(true);
+        setShowBattery(true);
+      },
+    );
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -65,7 +77,7 @@ export default function Settings({
       <Switch
         style={[styles.text, {alignSelf: 'flex-start'}]}
         value={alarmEnabled}
-        onValueChange={setAlarmEnabled}
+        onValueChange={changeAlarmEnabled}
       />
       <Button
         style={{alignSelf: 'flex-start'}}
@@ -85,6 +97,8 @@ export default function Settings({
         onPress={clear}>
         Delete all data
       </Button>
+
+      <BatteryDialog show={showBattery} setShow={setShowBattery} />
 
       <Snackbar
         visible={!!snackbar}

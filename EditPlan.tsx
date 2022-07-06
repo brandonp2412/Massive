@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Button, Modal, Portal, TextInput} from 'react-native-paper';
+import {Button, Dialog, Modal, Portal, TextInput} from 'react-native-paper';
 import DayMenu from './DayMenu';
 import WorkoutMenu from './WorkoutMenu';
 import {getDb} from './db';
@@ -85,12 +85,9 @@ export default function EditPlan({
 
   return (
     <Portal>
-      <Modal
-        visible={show}
-        contentContainerStyle={styles.modal}
-        onDismiss={() => setShow(false)}>
-        <Text style={styles.title}>{id ? `Edit "${days}"` : 'Add a plan'}</Text>
-        <View style={{alignItems: 'flex-start'}}>
+      <Dialog visible={show} onDismiss={() => setShow(false)}>
+        <Dialog.Title>{id ? `Edit "${days}"` : 'Add a plan'}</Dialog.Title>
+        <Dialog.Content>
           {days.split(',').map((day, index) => (
             <DayMenu
               index={index}
@@ -112,39 +109,16 @@ export default function EditPlan({
               key={index}
             />
           ))}
-        </View>
-        <View style={styles.bottom}>
+        </Dialog.Content>
+        <Dialog.Actions>
           <Button mode="contained" icon="save" onPress={save}>
             Save
           </Button>
           <Button icon="close" onPress={() => setShow(false)}>
             Cancel
           </Button>
-          {id && (
-            <Button icon="copy" onPress={clearId}>
-              Duplicate
-            </Button>
-          )}
-        </View>
-      </Modal>
+        </Dialog.Actions>
+      </Dialog>
     </Portal>
   );
 }
-
-const styles = StyleSheet.create({
-  modal: {
-    backgroundColor: 'black',
-    padding: 20,
-  },
-  text: {
-    marginBottom: 10,
-  },
-  bottom: {
-    flexDirection: 'row',
-    marginTop: 10,
-  },
-  title: {
-    fontSize: 20,
-    marginBottom: 10,
-  },
-});

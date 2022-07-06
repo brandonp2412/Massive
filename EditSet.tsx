@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Button, Modal, Portal, TextInput} from 'react-native-paper';
+import {Button, Dialog, Modal, Portal, TextInput} from 'react-native-paper';
 import {getDb} from './db';
 import Set from './set';
 import {format} from 'date-fns';
@@ -62,74 +62,61 @@ export default function EditSet({
 
   return (
     <Portal>
-      <Modal
-        visible={show}
-        contentContainerStyle={styles.modal}
-        onDismiss={() => setShow(false)}>
-        <Text style={styles.title}>{id ? `Edit "${name}"` : 'Add a set'}</Text>
-        <TextInput
-          style={styles.text}
-          autoFocus
-          label="Name *"
-          value={name}
-          onChangeText={setName}
-          onSubmitEditing={() => repsRef.current?.focus()}
-        />
-        <TextInput
-          style={styles.text}
-          label="Reps *"
-          keyboardType="numeric"
-          value={reps}
-          onChangeText={setReps}
-          ref={repsRef}
-          onSubmitEditing={() => weightRef.current?.focus()}
-        />
-        <TextInput
-          style={styles.text}
-          label="Weight *"
-          keyboardType="numeric"
-          value={weight}
-          onChangeText={setWeight}
-          onSubmitEditing={save}
-          ref={weightRef}
-        />
-        <TextInput
-          style={styles.text}
-          label="Unit (kg)"
-          value={unit}
-          onChangeText={setUnit}
-          ref={unitRef}
-          onSubmitEditing={save}
-        />
-        <Text style={styles.text}>{format(created, 'PPPP p')}</Text>
-        <View style={styles.bottom}>
-          <Button mode="contained" icon="save" onPress={save}>
-            Save
-          </Button>
+      <Dialog visible={show} onDismiss={() => setShow(false)}>
+        <Dialog.Title>{id ? `Edit "${name}"` : 'Add a set'}</Dialog.Title>
+        <Dialog.Content>
+          <TextInput
+            style={styles.text}
+            autoFocus
+            label="Name *"
+            value={name}
+            onChangeText={setName}
+            onSubmitEditing={() => repsRef.current?.focus()}
+          />
+          <TextInput
+            style={styles.text}
+            label="Reps *"
+            keyboardType="numeric"
+            value={reps}
+            onChangeText={setReps}
+            ref={repsRef}
+            onSubmitEditing={() => weightRef.current?.focus()}
+          />
+          <TextInput
+            style={styles.text}
+            label="Weight *"
+            keyboardType="numeric"
+            value={weight}
+            onChangeText={setWeight}
+            onSubmitEditing={save}
+            ref={weightRef}
+          />
+          <TextInput
+            style={styles.text}
+            label="Unit (kg)"
+            value={unit}
+            onChangeText={setUnit}
+            ref={unitRef}
+            onSubmitEditing={save}
+          />
+          <Text style={styles.text}>{format(created, 'PPPP p')}</Text>
+        </Dialog.Content>
+        <Dialog.Actions>
           <Button icon="close" onPress={() => setShow(false)}>
             Cancel
           </Button>
-          {id && (
-            <Button icon="copy" onPress={clearId}>
-              Duplicate
-            </Button>
-          )}
-        </View>
-      </Modal>
+          <Button mode="contained" icon="save" onPress={save}>
+            Save
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
     </Portal>
   );
 }
 
 const styles = StyleSheet.create({
-  modal: {
-    backgroundColor: 'black',
-    padding: 20,
-  },
   text: {
     marginBottom: 10,
-  },
-  bottom: {
-    flexDirection: 'row',
   },
   title: {
     fontSize: 20,
