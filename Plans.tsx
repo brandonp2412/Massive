@@ -14,8 +14,8 @@ export default function Plans() {
   const [showEdit, setShowEdit] = useState(false);
 
   const refresh = async () => {
-    const [result] = await getPlans({search});
-    setPlans(result.rows.raw());
+    const [plansResult] = await getPlans({search});
+    setPlans(plansResult.rows.raw());
   };
 
   useEffect(() => {

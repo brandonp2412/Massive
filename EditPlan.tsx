@@ -1,11 +1,10 @@
-import {setDay} from 'date-fns';
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Button, Modal, Portal, TextInput} from 'react-native-paper';
 import DayMenu from './DayMenu';
+import WorkoutMenu from './WorkoutMenu';
 import {getDb} from './db';
 import {Plan} from './plan';
-import Set from './set';
 
 export default function EditPlan({
   id,
@@ -22,10 +21,17 @@ export default function EditPlan({
 }) {
   const [days, setDays] = useState('');
   const [workouts, setWorkouts] = useState('');
+  const [names, setNames] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!id) return;
     getDb().then(async db => {
+      const [namesResult] = await db.executeSql(
+        'SELECT DISTINCT name FROM sets',
+      );
+      if (!namesResult.rows.length) return;
+      setNames(namesResult.rows.raw().map(({name}) => name));
+      if (!id) return;
+      console.log('Getting plans...');
       const [result] = await db.executeSql(`SELECT * FROM plans WHERE id = ?`, [
         id,
       ]);
@@ -59,6 +65,18 @@ export default function EditPlan({
     setDays(newDays.join(','));
   };
 
+  const selectWorkout = (workout: string, index: number) => {
+    const newWorkouts = workouts.split(',');
+    newWorkouts[index] = workout;
+    setWorkouts(newWorkouts.join(','));
+  };
+
+  const removeWorkout = (index: number) => {
+    const newWorkouts = workouts.split(',');
+    delete newWorkouts[index];
+    setWorkouts(newWorkouts.filter(day => day).join(','));
+  };
+
   const removeDay = (index: number) => {
     const newDays = days.split(',');
     delete newDays[index];
@@ -83,13 +101,18 @@ export default function EditPlan({
               key={index}
             />
           ))}
+          {workouts.split(',').map((workout, index) => (
+            <WorkoutMenu
+              index={index}
+              selected={workout}
+              onAdd={() => setWorkouts(workouts + ',')}
+              onSelect={option => selectWorkout(option, index)}
+              onDelete={() => removeWorkout(index)}
+              names={names}
+              key={index}
+            />
+          ))}
         </View>
-        <TextInput
-          style={styles.text}
-          label="Workouts *"
-          value={workouts}
-          onChangeText={setWorkouts}
-        />
         <View style={styles.bottom}>
           <Button mode="contained" icon="save" onPress={save}>
             Save
@@ -118,6 +141,7 @@ const styles = StyleSheet.create({
   },
   bottom: {
     flexDirection: 'row',
+    marginTop: 10,
   },
   title: {
     fontSize: 20,

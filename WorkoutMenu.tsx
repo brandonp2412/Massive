@@ -2,28 +2,20 @@ import {useState} from 'react';
 import React from 'react';
 import {Button, Divider, Menu} from 'react-native-paper';
 
-const days = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-
 export default function DayMenu({
   onSelect,
   onDelete,
   onAdd,
   selected,
   index,
+  names,
 }: {
   onSelect: (option: string) => void;
   onDelete: () => void;
   onAdd: () => void;
   selected: string;
   index: number;
+  names: string[];
 }) {
   const [show, setShow] = useState(false);
 
@@ -42,20 +34,19 @@ export default function DayMenu({
       visible={show}
       onDismiss={() => setShow(false)}
       anchor={
-        <Button icon="today" onPress={() => setShow(true)}>
-          {selected || 'Pick a day'}
+        <Button icon="barbell" onPress={() => setShow(true)}>
+          {selected || 'Pick a workout'}
         </Button>
       }>
-      {days.map(day => (
+      {names.map(name => (
         <Menu.Item
-          key={day}
-          icon={selected === day ? 'checkmark-circle' : 'ellipse'}
-          onPress={() => select(day)}
-          title={day}
+          key={name}
+          icon={selected === name ? 'checkmark-circle' : 'ellipse'}
+          onPress={() => select(name)}
+          title={name}
         />
       ))}
       <Menu.Item icon="add" title="Add" onPress={add} />
-      <Divider />
       {index > 0 && (
         <Menu.Item icon="trash" title="Delete" onPress={onDelete} />
       )}
