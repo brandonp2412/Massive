@@ -10,6 +10,7 @@ import {StatusBar, useColorScheme} from 'react-native';
 import {setupSchema} from './db';
 import Exercises from './Exercises';
 import Home from './Home';
+import Plans from './Plans';
 import Settings from './Settings';
 
 const Tab = createMaterialTopTabNavigator<RootStackParamList>();
@@ -17,6 +18,7 @@ export type RootStackParamList = {
   Home: {};
   Settings: {};
   Exercises: {};
+  Plans: {};
 };
 
 setupSchema();
@@ -35,6 +37,7 @@ const App = () => {
       <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
       <Tab.Navigator>
         <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Plans" component={Plans} />
         <Tab.Screen name="Exercises" component={Exercises} />
         <Tab.Screen name="Settings" component={Settings} />
       </Tab.Navigator>
