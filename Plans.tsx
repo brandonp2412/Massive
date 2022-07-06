@@ -20,7 +20,7 @@ export default function Plans() {
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [search]);
 
   const renderItem = ({item}: {item: Plan}) => (
     <PlanItem
