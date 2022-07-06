@@ -3,31 +3,32 @@ import {StyleSheet, Text, View} from 'react-native';
 import {Button, Modal, Portal, TextInput} from 'react-native-paper';
 import {getDb} from './db';
 import Set from './set';
+import {format} from 'date-fns';
 
 export default function EditSet({
   id,
   onSave,
   show,
   setShow,
-  onRemove,
+  clearId,
 }: {
   id?: number;
+  clearId: () => void;
   onSave: () => void;
   show: boolean;
   setShow: (visible: boolean) => void;
-  onRemove: () => void;
 }) {
   const [name, setName] = useState('');
   const [reps, setReps] = useState('');
   const [weight, setWeight] = useState('');
   const [unit, setUnit] = useState('');
-  const [created, setCreated] = useState(new Date());
+  const [created, setCreated] = useState(new Date(new Date().toUTCString()));
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
   const unitRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) return setCreated(new Date(new Date().toUTCString()));
     getDb().then(async db => {
       const [result] = await db.executeSql(`SELECT * FROM sets WHERE id = ?`, [
         id,
@@ -59,21 +60,13 @@ export default function EditSet({
     onSave();
   };
 
-  const remove = async () => {
-    if (!id) return;
-    const db = await getDb();
-    await db.executeSql(`DELETE FROM sets WHERE id = ?`, [id]);
-    setShow(false);
-    onRemove();
-  };
-
   return (
     <Portal>
       <Modal
         visible={show}
         contentContainerStyle={styles.modal}
         onDismiss={() => setShow(false)}>
-        <Text style={styles.title}>Add a set</Text>
+        <Text style={styles.title}>{id ? `Edit "${name}"` : 'Add a set'}</Text>
         <TextInput
           style={styles.text}
           autoFocus
@@ -108,12 +101,7 @@ export default function EditSet({
           ref={unitRef}
           onSubmitEditing={save}
         />
-        <TextInput
-          style={styles.text}
-          label="Created"
-          disabled
-          value={created.toLocaleString()}
-        />
+        <Text style={styles.text}>{format(created, 'PPPP p')}</Text>
         <View style={styles.bottom}>
           <Button mode="contained" icon="save" onPress={save}>
             Save
@@ -121,13 +109,11 @@ export default function EditSet({
           <Button icon="close" onPress={() => setShow(false)}>
             Cancel
           </Button>
-          <Button
-            style={{alignSelf: 'flex-end'}}
-            icon="trash"
-            onPress={remove}
-            disabled={!id}>
-            Delete
-          </Button>
+          {id && (
+            <Button icon="copy" onPress={clearId}>
+              Duplicate
+            </Button>
+          )}
         </View>
       </Modal>
     </Portal>

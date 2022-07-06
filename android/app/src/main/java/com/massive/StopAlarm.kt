@@ -13,7 +13,7 @@ import androidx.annotation.RequiresApi
 import com.massive.AlarmService
 import com.massive.MainActivity
 
-class AlarmActivity : Activity() {
+class StopAlarm : Activity() {
     @RequiresApi(Build.VERSION_CODES.O_MR1)
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("AlarmActivity", "Call to AlarmActivity")

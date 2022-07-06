@@ -2,21 +2,13 @@ package com.massive
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.DocumentsContract
 import android.provider.OpenableColumns
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import java.io.*
 
 
@@ -24,10 +16,8 @@ class ExportActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("ExportActivity", "Started ExportActivity.")
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
-            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             type = "text/csv"
             putExtra(Intent.EXTRA_TITLE, "sets.csv")
         }
@@ -61,7 +51,6 @@ class ExportActivity : Activity() {
                 }
             }
         }
-
     }
 
     @Throws(IOException::class)
@@ -111,13 +100,6 @@ class ExportActivity : Activity() {
 
 
     companion object {
-        private const val CHANNEL_ID = "Exports"
-        private const val NOTIFICATION_ID = 2
-
-        // Request code for selecting a PDF document.
-        const val PICK_PDF_FILE = 2
-
-        // Request code for creating a PDF document.
         const val CREATE_FILE = 1
     }
 }

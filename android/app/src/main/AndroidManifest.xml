@@ -30,10 +30,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:exported="true" android:process=":remote" android:name=".AlarmActivity" />
+        <activity android:exported="true" android:process=":remote" android:name=".StopAlarm" />
         <activity android:exported="true" android:process=":remote" android:name=".ExportActivity" />
+        <activity android:exported="true" android:process=":remote" android:name=".ImportActivity" />
         <service android:name=".StopTimer" android:exported="true" android:process=":remote" />
         <service android:name=".AlarmService" android:exported="true" />
         <service android:name=".TimerService" android:exported="true" />
+        <receiver android:name=".TimerBroadcast" android:exported="true" android:process=":remote"/>
     </application>
 </manifest>

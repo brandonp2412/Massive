@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   FlatList,
@@ -8,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import {AnimatedFAB, Searchbar} from 'react-native-paper';
-import {getDb} from './db';
+import {getSets} from './db';
 import EditSet from './EditSet';
 
 import Set from './set';
@@ -22,12 +23,13 @@ export default function Home() {
   const [offset, setOffset] = useState(0);
   const [showEdit, setShowEdit] = useState(false);
   const [search, setSearch] = useState('');
+  const [refreshing, setRefresing] = useState(false);
+  const navigation = useNavigation();
 
   const refresh = async () => {
-    const db = await getDb();
-    const [result] = await db.executeSql(
-      `SELECT * from sets WHERE name LIKE ? ORDER BY created DESC LIMIT ? OFFSET ?`,
-      [`%${search}%`, limit, 0],
+    setRefresing(true);
+    const [result] = await getSets({search, limit, offset: 0}).finally(() =>
+      setRefresing(false),
     );
     if (!result) return setSets([]);
     setSets(result.rows.raw());
@@ -37,6 +39,8 @@ export default function Home() {
   useEffect(() => {
     refresh();
   }, [search]);
+
+  useEffect(() => navigation.addListener('focus', refresh), [navigation]);
 
   const renderItem = ({item}: {item: Set}) => (
     <SetItem
@@ -59,15 +63,13 @@ export default function Home() {
   };
 
   const next = async () => {
+    setRefresing(true);
     const newOffset = offset + limit;
-    const db = await getDb();
-    const [result] = await db.executeSql(
-      `SELECT * from sets WHERE name LIKE ? LIMIT ? OFFSET ?`,
-      [`%${search}%`, limit, newOffset],
+    const [result] = await getSets({search, limit, offset: newOffset}).finally(
+      () => setRefresing(false),
     );
     if (result.rows.length === 0) return;
     if (!sets) return;
-    if (sets.filter(set => set.id === result.rows.item(0).id)) return;
     setSets([...sets, ...result.rows.raw()]);
     setOffset(newOffset);
   };
@@ -76,19 +78,21 @@ export default function Home() {
     <SafeAreaView style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
-        style={{height: '100%'}}
+        style={{height: '90%'}}
         data={sets}
         renderItem={renderItem}
         keyExtractor={set => set.id.toString()}
-        onScrollEndDrag={next}
+        onEndReached={next}
+        refreshing={refreshing}
+        onRefresh={refresh}
       />
       <View style={styles.bottom}>
         <EditSet
+          clearId={() => setId(undefined)}
           id={id}
           show={showEdit}
           setShow={setShowEdit}
           onSave={save}
-          onRemove={refresh}
         />
       </View>
 

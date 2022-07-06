@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import java.io.File
+import java.io.FileReader
 import java.io.FileWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -40,7 +41,7 @@ class ExportModule internal constructor(context: ReactApplicationContext?) :
         val file = File(dir, "sets-$formatted.csv")
         file.createNewFile()
         val writer = FileWriter(file)
-        writer.write("id,name,reps,weight,created,unit\n")
+        writer.appendLine("id,name,reps,weight,created,unit")
         val db = MassiveHelper(reactApplicationContext).readableDatabase
         db.use {
             with(it.query("sets", null, null, null, null, null, null)) {
@@ -51,7 +52,7 @@ class ExportModule internal constructor(context: ReactApplicationContext?) :
                     val weight = getInt(getColumnIndex("weight"))
                     val created = getString(getColumnIndex("created"))
                     val unit = getString(getColumnIndex("unit"))
-                    writer.appendLine("$id,$name,$reps,$weight,$created,$unit\n")
+                    writer.appendLine("$id,$name,$reps,$weight,$created,$unit")
                 }
             }
         }

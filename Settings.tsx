@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
 import {NativeModules, StyleSheet, Text, View} from 'react-native';
-import {Button, Switch, TextInput} from 'react-native-paper';
+import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
 import {RootStackParamList} from './App';
 import {getDb} from './db';
 
@@ -12,6 +12,7 @@ export default function Settings({
   const [minutes, setMinutes] = useState<string>('');
   const [seconds, setSeconds] = useState<string>('');
   const [alarmEnabled, setAlarmEnabled] = useState<boolean>(true);
+  const [snackbar, setSnackbar] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -28,12 +29,18 @@ export default function Settings({
   }, [minutes, seconds, alarmEnabled]);
 
   const clear = async () => {
+    setSnackbar('Deleting all data...');
+    setTimeout(() => setSnackbar(''), 5000);
     const db = await getDb();
     await db.executeSql(`DELETE FROM sets`);
   };
 
   const exportSets = () => {
     NativeModules.ExportModule.sets();
+  };
+
+  const importSets = () => {
+    NativeModules.ImportModule.sets();
   };
 
   return (
@@ -64,7 +71,13 @@ export default function Settings({
         style={{alignSelf: 'flex-start'}}
         icon="arrow-down"
         onPress={exportSets}>
-        Download
+        Export
+      </Button>
+      <Button
+        style={{alignSelf: 'flex-start'}}
+        icon="arrow-up"
+        onPress={importSets}>
+        Import
       </Button>
       <Button
         style={{alignSelf: 'flex-start', marginTop: 'auto'}}
@@ -72,6 +85,13 @@ export default function Settings({
         onPress={clear}>
         Delete all data
       </Button>
+
+      <Snackbar
+        visible={!!snackbar}
+        onDismiss={() => setSnackbar('')}
+        action={{label: 'Close', onPress: () => setSnackbar('')}}>
+        {snackbar}
+      </Snackbar>
     </View>
   );
 }

@@ -17,6 +17,10 @@ class AlarmService : Service(), OnPreparedListener {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        if (intent.action == "stop") {
+            onDestroy()
+            return START_STICKY
+        }
         mediaPlayer = MediaPlayer.create(applicationContext, R.raw.argon)
         mediaPlayer?.start()
         mediaPlayer?.setOnCompletionListener { vibrator?.cancel() }

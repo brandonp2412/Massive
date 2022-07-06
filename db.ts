@@ -15,3 +15,20 @@ const schema = `
 `;
 
 export const setupSchema = () => getDb().then(db => db.executeSql(schema));
+
+const select = `
+  SELECT * from sets 
+  WHERE name LIKE ? 
+  ORDER BY created DESC 
+  LIMIT ? OFFSET ?
+`;
+
+export const getSets = ({
+  search,
+  limit,
+  offset,
+}: {
+  search: string;
+  limit: number;
+  offset: number;
+}) => getDb().then(db => db.executeSql(select, [`%${search}%`, limit, offset]));

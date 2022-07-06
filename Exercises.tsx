@@ -11,6 +11,7 @@ export default function Exercises({
 }: NativeStackScreenProps<RootStackParamList, 'Exercises'>) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [search, setSearch] = useState('');
+  const [refreshing, setRefresing] = useState(false);
 
   const refresh = async () => {
     const db = await getDb();
@@ -41,7 +42,16 @@ export default function Exercises({
   return (
     <View style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
-      <FlatList renderItem={renderItem} data={exercises} />
+      <FlatList
+        refreshing={refreshing}
+        onRefresh={async () => {
+          setRefresing(true);
+          await refresh();
+          setRefresing(false);
+        }}
+        renderItem={renderItem}
+        data={exercises}
+      />
     </View>
   );
 }
