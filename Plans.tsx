@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {AnimatedFAB, Searchbar} from 'react-native-paper';
+import {AnimatedFAB, List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import EditPlan from './EditPlan';
 import {Plan} from './plan';
@@ -52,6 +52,12 @@ export default function Plans() {
           setRefresing(true);
           refresh().finally(() => setRefresing(false));
         }}
+        ListEmptyComponent={
+          <List.Item
+            title="No plans yet"
+            description="A plan is a list of workouts for certain days."
+          />
+        }
       />
 
       <EditPlan
