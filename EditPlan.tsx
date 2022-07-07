@@ -101,6 +101,12 @@ export default function EditPlan({
           </View>
           <View>
             <Text style={styles.title}>Workouts</Text>
+            {names.length === 0 && (
+              <Text style={{maxWidth: '80%'}}>
+                No sets found. Try going to the home page and adding some
+                workouts first.
+              </Text>
+            )}
             {names.map(name => (
               <View key={name} style={[styles.row, {alignItems: 'center'}]}>
                 <Switch
