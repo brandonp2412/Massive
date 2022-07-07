@@ -38,7 +38,12 @@ export default function Exercises() {
     <View style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
-        style={{height: '90%'}}
+        ListEmptyComponent={
+          <List.Item
+            title="No exercises yet"
+            description="Once sets have been added, Exercises list your personal bests."
+          />
+        }
         refreshing={refreshing}
         onRefresh={async () => {
           setRefresing(true);
@@ -55,5 +60,6 @@ export default function Exercises() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    flexGrow: 1,
   },
 });
