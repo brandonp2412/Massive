@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  View,
 } from 'react-native';
 import {AnimatedFAB, List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
@@ -94,7 +95,7 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
         data={sets}
@@ -116,13 +117,13 @@ export default function Home() {
         extended={false}
         label="Add"
         icon="add"
-        style={{position: 'absolute', right: 20, bottom: 20}}
+        style={{position: 'absolute', right: 20, bottom: 70}}
         onPress={() => {
           setEdit(undefined);
           setShow(true);
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
