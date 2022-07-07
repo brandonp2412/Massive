@@ -41,7 +41,7 @@ export default function EditPlan({
 
   useEffect(() => {
     refresh();
-  }, [plan]);
+  }, [plan, show]);
 
   const save = async () => {
     if (!days || !workouts) return;
