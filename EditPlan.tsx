@@ -86,7 +86,7 @@ export default function EditPlan({
     <Portal>
       <Dialog visible={show} onDismiss={() => setShow(false)}>
         <Dialog.Title>{id ? `Edit "${days}"` : 'Add a plan'}</Dialog.Title>
-        <Dialog.Content style={{alignItems: 'flex-end'}}>
+        <Dialog.Content>
           {days.split(',').map((day, index) => (
             <DayMenu
               index={index}

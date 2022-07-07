@@ -72,6 +72,7 @@ export default function EditSet({
             value={name}
             onChangeText={setName}
             onSubmitEditing={() => repsRef.current?.focus()}
+            autoCorrect={false}
           />
           <TextInput
             style={styles.text}

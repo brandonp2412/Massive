@@ -1,13 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {
-  FlatList,
-  NativeModules,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {FlatList, NativeModules, SafeAreaView, StyleSheet} from 'react-native';
 import {AnimatedFAB, Searchbar} from 'react-native-paper';
 import {getSets} from './db';
 import EditSet from './EditSet';
@@ -24,23 +18,26 @@ export default function Home() {
   const [showEdit, setShowEdit] = useState(false);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);
-  const navigation = useNavigation();
 
   const refresh = async () => {
-    setRefresing(true);
-    const [result] = await getSets({search, limit, offset: 0}).finally(() =>
-      setRefresing(false),
-    );
+    const [result] = await getSets({search, limit, offset: 0});
     if (!result) return setSets([]);
     setSets(result.rows.raw());
     setOffset(0);
+  };
+
+  const refreshLoader = async () => {
+    setRefresing(true);
+    refresh().finally(() => setRefresing(false));
   };
 
   useEffect(() => {
     refresh();
   }, [search]);
 
-  useEffect(() => navigation.addListener('focus', refresh), [navigation]);
+  useFocusEffect(() => {
+    refresh();
+  });
 
   const renderItem = ({item}: {item: Set}) => (
     <SetItem
@@ -78,13 +75,12 @@ export default function Home() {
     <SafeAreaView style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
-        style={{height: '90%'}}
         data={sets}
         renderItem={renderItem}
         keyExtractor={set => set.id.toString()}
         onEndReached={next}
         refreshing={refreshing}
-        onRefresh={refresh}
+        onRefresh={refreshLoader}
       />
       <EditSet
         clearId={() => setId(undefined)}
@@ -113,6 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   container: {
+    flexGrow: 1,
     flex: 1,
     padding: 10,
   },

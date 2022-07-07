@@ -37,6 +37,14 @@ export const getPlans = ({search}: {search: string}) =>
     db.executeSql(selectPlans, [`%${search}%`, `%${search}%`]),
   );
 
+const selectProgress = `
+  SELECT count(*) as count from sets
+  WHERE created LIKE ? 
+    AND name = ?
+`;
+export const getProgress = ({created, name}: {created: string; name: string}) =>
+  getDb().then(db => db.executeSql(selectProgress, [`%${created}%`, name]));
+
 const selectSets = `
   SELECT * from sets 
   WHERE name LIKE ? 

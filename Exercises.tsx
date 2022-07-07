@@ -1,3 +1,4 @@
+import {useFocusEffect} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
@@ -6,9 +7,7 @@ import {RootStackParamList} from './App';
 import {getDb} from './db';
 import Exercise from './exercise';
 
-export default function Exercises({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Exercises'>) {
+export default function Exercises() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);
@@ -26,7 +25,10 @@ export default function Exercises({
     setExercises(result.rows.raw());
   };
 
-  useEffect(() => navigation.addListener('focus', refresh), [navigation]);
+  useFocusEffect(() => {
+    refresh();
+  });
+
   useEffect(() => {
     refresh();
   }, [search]);

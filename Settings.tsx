@@ -1,28 +1,29 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {NativeModules, StyleSheet, Text, View} from 'react-native';
 import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
-import {RootStackParamList} from './App';
-import {getDb} from './db';
 import BatteryDialog from './BatteryDialog';
+import {getDb} from './db';
 
-export default function Settings({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Settings'>) {
+export default function Settings() {
   const [minutes, setMinutes] = useState<string>('');
   const [seconds, setSeconds] = useState<string>('');
   const [alarmEnabled, setAlarmEnabled] = useState<boolean>(true);
   const [snackbar, setSnackbar] = useState('');
   const [showBattery, setShowBattery] = useState(false);
+  const [ignoring, setIgnoring] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      setMinutes((await AsyncStorage.getItem('minutes')) || '3');
-      setSeconds((await AsyncStorage.getItem('seconds')) || '');
-      setAlarmEnabled((await AsyncStorage.getItem('alarmEnabled')) === 'true');
-    })();
-  }, [navigation]);
+  const refresh = async () => {
+    setMinutes((await AsyncStorage.getItem('minutes')) || '3');
+    setSeconds((await AsyncStorage.getItem('seconds')) || '');
+    setAlarmEnabled((await AsyncStorage.getItem('alarmEnabled')) === 'true');
+    NativeModules.AlarmModule.ignoringBatteryOptimizations(setIgnoring);
+  };
+
+  useFocusEffect(() => {
+    refresh();
+  });
 
   useEffect(() => {
     if (minutes) AsyncStorage.setItem('minutes', minutes);
@@ -46,13 +47,8 @@ export default function Settings({
   };
 
   const changeAlarmEnabled = (enabled: boolean) => {
-    if (!enabled) return setAlarmEnabled(enabled);
-    NativeModules.AlarmModule.ignoringBatteryOptimizations(
-      (ignoring: boolean) => {
-        if (ignoring) return setAlarmEnabled(true);
-        setShowBattery(true);
-      },
-    );
+    setAlarmEnabled(enabled);
+    if (enabled && !ignoring) setShowBattery(true);
   };
 
   return (
