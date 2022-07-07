@@ -19,7 +19,7 @@ First follow the [React Native Environment Setup](https://reactnative.dev/docs/e
 
 ```sh
 cd android
-./gradlew bundleRelease
+./gradlew assembleRelease
 ```
 
 The apk file can be found at `./app/build/outputs/apk/release/app-release.apk`
