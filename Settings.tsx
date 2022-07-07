@@ -8,7 +8,7 @@ import BatteryDialog from './BatteryDialog';
 export default function Settings() {
   const [minutes, setMinutes] = useState<string>('');
   const [seconds, setSeconds] = useState<string>('');
-  const [alarmEnabled, setAlarmEnabled] = useState<boolean>(true);
+  const [alarmEnabled, setAlarmEnabled] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState('');
   const [showBattery, setShowBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
