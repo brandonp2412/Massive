@@ -1,19 +1,17 @@
 import {useFocusEffect} from '@react-navigation/native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {List, Searchbar, TextInput} from 'react-native-paper';
-import {RootStackParamList} from './App';
-import {getDb} from './db';
+import {List, Searchbar} from 'react-native-paper';
+import {DatabaseContext} from './App';
 import Exercise from './exercise';
 
 export default function Exercises() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);
+  const db = useContext(DatabaseContext);
 
   const refresh = async () => {
-    const db = await getDb();
     const [result] = await db.executeSql(
       `SELECT name, reps, unit, MAX(weight) AS weight 
       FROM sets

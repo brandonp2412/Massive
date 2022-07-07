@@ -1,22 +1,20 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {Button, Dialog, Modal, Portal, TextInput} from 'react-native-paper';
-import {getDb} from './db';
-import Set from './set';
 import {format} from 'date-fns';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {StyleSheet, Text} from 'react-native';
+import {Button, Dialog, Portal, TextInput} from 'react-native-paper';
+import {DatabaseContext} from './App';
+import Set from './set';
 
 export default function EditSet({
-  id,
   onSave,
   show,
   setShow,
-  clearId,
+  set,
 }: {
-  id?: number;
-  clearId: () => void;
   onSave: () => void;
   show: boolean;
   setShow: (visible: boolean) => void;
+  set?: Set;
 }) {
   const [name, setName] = useState('');
   const [reps, setReps] = useState('');
@@ -26,27 +24,24 @@ export default function EditSet({
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
   const unitRef = useRef<any>(null);
+  const db = useContext(DatabaseContext);
+
+  const refresh = async () => {
+    if (!set) return setCreated(new Date(new Date().toUTCString()));
+    setName(set.name);
+    setReps(set.reps.toString());
+    setWeight(set.weight.toString());
+    setUnit(set.unit);
+    setCreated(new Date(set.created));
+  };
 
   useEffect(() => {
-    if (!id) return setCreated(new Date(new Date().toUTCString()));
-    getDb().then(async db => {
-      const [result] = await db.executeSql(`SELECT * FROM sets WHERE id = ?`, [
-        id,
-      ]);
-      if (!result.rows.item(0)) throw new Error("Can't find specified Set.");
-      const set: Set = result.rows.item(0);
-      setName(set.name);
-      setReps(set.reps.toString());
-      setWeight(set.weight.toString());
-      setUnit(set.unit);
-      setCreated(new Date(set.created));
-    });
-  }, [id]);
+    refresh();
+  }, [set]);
 
   const save = async () => {
     if (!name || !reps || !weight) return;
-    const db = await getDb();
-    if (!id)
+    if (!set)
       await db.executeSql(
         `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
         [name, reps, weight, new Date().toISOString(), unit || 'kg'],
@@ -54,7 +49,7 @@ export default function EditSet({
     else
       await db.executeSql(
         `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
-        [name, reps, weight, unit, id],
+        [name, reps, weight, unit, set.id],
       );
     setShow(false);
     onSave();
@@ -63,7 +58,7 @@ export default function EditSet({
   return (
     <Portal>
       <Dialog visible={show} onDismiss={() => setShow(false)}>
-        <Dialog.Title>{id ? `Edit "${name}"` : 'Add a set'}</Dialog.Title>
+        <Dialog.Title>{set?.id ? `Edit "${name}"` : 'Add a set'}</Dialog.Title>
         <Dialog.Content>
           <TextInput
             style={styles.text}

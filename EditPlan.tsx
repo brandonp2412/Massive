@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {Button, Dialog, Modal, Portal, TextInput} from 'react-native-paper';
+import React, {useContext, useEffect, useState} from 'react';
+import {Button, Dialog, Portal} from 'react-native-paper';
+import {DatabaseContext} from './App';
 import DayMenu from './DayMenu';
-import WorkoutMenu from './WorkoutMenu';
-import {getDb} from './db';
 import {Plan} from './plan';
+import WorkoutMenu from './WorkoutMenu';
 
 export default function EditPlan({
   id,
@@ -22,28 +21,28 @@ export default function EditPlan({
   const [days, setDays] = useState('');
   const [workouts, setWorkouts] = useState('');
   const [names, setNames] = useState<string[]>([]);
+  const db = useContext(DatabaseContext);
+
+  const refresh = async () => {
+    const [namesResult] = await db.executeSql('SELECT DISTINCT name FROM sets');
+    if (!namesResult.rows.length) return;
+    setNames(namesResult.rows.raw().map(({name}) => name));
+    if (!id) return;
+    const [result] = await db.executeSql(`SELECT * FROM plans WHERE id = ?`, [
+      id,
+    ]);
+    if (!result.rows.item(0)) throw new Error("Can't find specified Set.");
+    const set: Plan = result.rows.item(0);
+    setDays(set.days);
+    setWorkouts(set.workouts);
+  };
 
   useEffect(() => {
-    getDb().then(async db => {
-      const [namesResult] = await db.executeSql(
-        'SELECT DISTINCT name FROM sets',
-      );
-      if (!namesResult.rows.length) return;
-      setNames(namesResult.rows.raw().map(({name}) => name));
-      if (!id) return;
-      const [result] = await db.executeSql(`SELECT * FROM plans WHERE id = ?`, [
-        id,
-      ]);
-      if (!result.rows.item(0)) throw new Error("Can't find specified Set.");
-      const set: Plan = result.rows.item(0);
-      setDays(set.days);
-      setWorkouts(set.workouts);
-    });
+    refresh();
   }, [id]);
 
   const save = async () => {
     if (!days || !workouts) return;
-    const db = await getDb();
     if (!id)
       await db.executeSql(`INSERT INTO plans(days, workouts) VALUES (?, ?)`, [
         days,

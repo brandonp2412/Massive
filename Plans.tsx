@@ -1,9 +1,9 @@
 import {useFocusEffect} from '@react-navigation/native';
 import {format} from 'date-fns';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {AnimatedFAB, ProgressBar, Searchbar} from 'react-native-paper';
-import {getPlans, getProgress} from './db';
+import {DatabaseContext} from './App';
 import EditPlan from './EditPlan';
 import {Plan} from './plan';
 import PlanItem from './PlanItem';
@@ -18,6 +18,22 @@ export default function Plans() {
   const [progresses, setProgresses] = useState<Progress[]>([]);
   const today = `%${format(new Date(new Date().toUTCString()), 'EEEE')}%`;
   const now = `${format(new Date(new Date().toUTCString()), 'yyyy-MM-dd')}%`;
+  const db = useContext(DatabaseContext);
+
+  const selectPlans = `
+    SELECT * from plans
+    WHERE days LIKE ? OR workouts LIKE ?
+`;
+  const getPlans = ({search}: {search: string}) =>
+    db.executeSql(selectPlans, [`%${search}%`, `%${search}%`]);
+
+  const selectProgress = `
+    SELECT COUNT(*) as count from sets
+    WHERE created LIKE ? 
+      AND name = ?
+`;
+  const getProgress = ({created, name}: {created: string; name: string}) =>
+    db.executeSql(selectProgress, [`%${created}%`, name]);
 
   const refresh = async () => {
     const [plansResult] = await getPlans({search});

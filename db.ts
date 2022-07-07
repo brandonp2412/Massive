@@ -3,7 +3,7 @@ import {enablePromise, openDatabase} from 'react-native-sqlite-storage';
 enablePromise(true);
 export const getDb = () => openDatabase({name: 'massive.db'});
 
-const createSets = `
+export const createSets = `
   CREATE TABLE IF NOT EXISTS sets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -14,28 +14,13 @@ const createSets = `
   );
 `;
 
-const createPlans = `
+export const createPlans = `
   CREATE TABLE IF NOT EXISTS plans (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     days TEXT NOT NULL,
     workouts TEXT NOT NULL
   );
 `;
-
-export const setupSchema = () =>
-  getDb().then(db => {
-    db.executeSql(createSets);
-    db.executeSql(createPlans);
-  });
-
-const selectPlans = `
-  SELECT * from plans
-  WHERE days LIKE ? OR workouts LIKE ?
-`;
-export const getPlans = ({search}: {search: string}) =>
-  getDb().then(db =>
-    db.executeSql(selectPlans, [`%${search}%`, `%${search}%`]),
-  );
 
 const selectProgress = `
   SELECT count(*) as count from sets
@@ -44,21 +29,3 @@ const selectProgress = `
 `;
 export const getProgress = ({created, name}: {created: string; name: string}) =>
   getDb().then(db => db.executeSql(selectProgress, [`%${created}%`, name]));
-
-const selectSets = `
-  SELECT * from sets 
-  WHERE name LIKE ? 
-  ORDER BY created DESC 
-  LIMIT ? OFFSET ?
-`;
-
-export const getSets = ({
-  search,
-  limit,
-  offset,
-}: {
-  search: string;
-  limit: number;
-  offset: number;
-}) =>
-  getDb().then(db => db.executeSql(selectSets, [`%${search}%`, limit, offset]));

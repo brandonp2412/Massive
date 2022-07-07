@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, NativeModules, SafeAreaView, StyleSheet} from 'react-native';
 import {AnimatedFAB, Searchbar} from 'react-native-paper';
-import {getSets} from './db';
+import {DatabaseContext} from './App';
 import EditSet from './EditSet';
 
 import Set from './set';
@@ -13,11 +13,28 @@ const limit = 20;
 
 export default function Home() {
   const [sets, setSets] = useState<Set[]>();
-  const [id, setId] = useState<number>();
   const [offset, setOffset] = useState(0);
-  const [showEdit, setShowEdit] = useState(false);
+  const [edit, setEdit] = useState<Set>();
+  const [show, setShow] = useState(false);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);
+  const db = useContext(DatabaseContext);
+
+  const selectSets = `
+    SELECT * from sets 
+    WHERE name LIKE ? 
+    ORDER BY created DESC 
+    LIMIT ? OFFSET ?
+  `;
+  const getSets = ({
+    search,
+    limit,
+    offset,
+  }: {
+    search: string;
+    limit: number;
+    offset: number;
+  }) => db.executeSql(selectSets, [`%${search}%`, limit, offset]);
 
   const refresh = async () => {
     const [result] = await getSets({search, limit, offset: 0});
@@ -43,8 +60,8 @@ export default function Home() {
     <SetItem
       item={item}
       key={item.id}
-      setShowEdit={setShowEdit}
-      setId={setId}
+      setShowEdit={setShow}
+      setSet={setEdit}
       onRemove={refresh}
     />
   );
@@ -82,13 +99,7 @@ export default function Home() {
         refreshing={refreshing}
         onRefresh={refreshLoader}
       />
-      <EditSet
-        clearId={() => setId(undefined)}
-        id={id}
-        show={showEdit}
-        setShow={setShowEdit}
-        onSave={save}
-      />
+      <EditSet set={edit} show={show} setShow={setShow} onSave={save} />
 
       <AnimatedFAB
         extended={false}
@@ -96,8 +107,8 @@ export default function Home() {
         icon="add"
         style={{position: 'absolute', right: 20, bottom: 20}}
         onPress={() => {
-          setId(undefined);
-          setShowEdit(true);
+          setEdit(undefined);
+          setShow(true);
         }}
       />
     </SafeAreaView>

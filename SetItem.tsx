@@ -1,23 +1,23 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {IconButton, List, Menu} from 'react-native-paper';
-import {getDb} from './db';
+import {DatabaseContext} from './App';
 import Set from './set';
 
 export default function SetItem({
   item,
-  setId,
+  setSet,
   setShowEdit,
   onRemove,
 }: {
   item: Set;
-  setId: (id: number) => void;
+  setSet: (set: Set) => void;
   setShowEdit: (show: boolean) => void;
   onRemove: () => void;
 }) {
   const [show, setShow] = useState(false);
+  const db = useContext(DatabaseContext);
 
   const remove = async () => {
-    const db = await getDb();
     await db.executeSql(`DELETE FROM sets WHERE id = ?`, [item.id]);
     setShow(false);
     onRemove();
@@ -27,7 +27,7 @@ export default function SetItem({
     <>
       <List.Item
         onPress={() => {
-          setId(item.id);
+          setSet(item);
           setShowEdit(true);
         }}
         title={item.name}

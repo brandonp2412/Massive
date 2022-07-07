@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
+import React, {useContext, useEffect, useState} from 'react';
 import {NativeModules, StyleSheet, Text, View} from 'react-native';
 import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
+import {DatabaseContext} from './App';
 import BatteryDialog from './BatteryDialog';
-import {getDb} from './db';
 
 export default function Settings() {
   const [minutes, setMinutes] = useState<string>('');
@@ -13,6 +13,7 @@ export default function Settings() {
   const [snackbar, setSnackbar] = useState('');
   const [showBattery, setShowBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
+  const db = useContext(DatabaseContext);
 
   const refresh = async () => {
     setMinutes((await AsyncStorage.getItem('minutes')) || '3');
@@ -34,7 +35,6 @@ export default function Settings() {
   const clear = async () => {
     setSnackbar('Deleting all data...');
     setTimeout(() => setSnackbar(''), 5000);
-    const db = await getDb();
     await db.executeSql(`DELETE FROM sets`);
   };
 
