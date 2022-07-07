@@ -21,7 +21,6 @@
     "react": "18.0.0",
     "react-devtools": "^4.24.7",
     "react-native": "0.69.1",
-    "react-native-document-picker": "^8.1.1",
     "react-native-gesture-handler": "^2.5.0",
     "react-native-pager-view": "^5.4.24",
     "react-native-paper": "^4.12.2",

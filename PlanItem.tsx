@@ -30,8 +30,8 @@ export default function PlanItem({
           setPlan(item);
           setShowEdit(true);
         }}
-        title={item.days}
-        description={item.workouts}
+        title={item.days.replace(/,/g, ', ')}
+        description={item.workouts.replace(/,/g, ', ')}
         onLongPress={() => setShow(true)}
         right={() => (
           <Menu
