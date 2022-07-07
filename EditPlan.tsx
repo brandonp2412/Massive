@@ -81,7 +81,7 @@ export default function EditPlan({
     <Portal>
       <Dialog visible={show} onDismiss={() => setShow(false)}>
         <Dialog.Title>
-          {plan ? `Edit "${days.join(', ')}"` : 'Add a plan'}
+          {plan ? `Edit "${days.slice(0, 2).join(', ')}"` : 'Add a plan'}
         </Dialog.Title>
         <Dialog.Content style={[styles.row, {justifyContent: 'space-between'}]}>
           <View>
