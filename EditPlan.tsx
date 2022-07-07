@@ -32,7 +32,7 @@ export default function EditPlan({
 
   const refresh = async () => {
     const [namesResult] = await db.executeSql('SELECT DISTINCT name FROM sets');
-    if (!namesResult.rows.length) return;
+    if (!namesResult.rows.length) return setNames([]);
     setNames(namesResult.rows.raw().map(({name}) => name));
     if (!plan) return;
     setDays(plan.days.split(','));
