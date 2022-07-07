@@ -1,7 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, NativeModules, SafeAreaView, StyleSheet} from 'react-native';
-import {AnimatedFAB, Searchbar} from 'react-native-paper';
+import {
+  FlatList,
+  NativeModules,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+} from 'react-native';
+import {AnimatedFAB, List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import EditSet from './EditSet';
 
@@ -91,8 +97,13 @@ export default function Home() {
     <SafeAreaView style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
-        style={{height: 100}}
         data={sets}
+        ListEmptyComponent={
+          <List.Item
+            title="No sets yet"
+            description="A set is a group of repetitions (or reps). For example, you might do a set of 8 reps on the Bench Press."
+          />
+        }
         renderItem={renderItem}
         keyExtractor={set => set.id!.toString()}
         onEndReached={next}
