@@ -5,12 +5,12 @@ import {Plan} from './plan';
 
 export default function PlanItem({
   item,
-  setId,
+  setPlan,
   setShowEdit,
   onRemove,
 }: {
   item: Plan;
-  setId: (id: number) => void;
+  setPlan: (plan: Plan) => void;
   setShowEdit: (show: boolean) => void;
   onRemove: () => void;
 }) {
@@ -27,7 +27,7 @@ export default function PlanItem({
     <>
       <List.Item
         onPress={() => {
-          setId(item.id);
+          setPlan(item);
           setShowEdit(true);
         }}
         title={item.days}

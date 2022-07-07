@@ -1,4 +1,3 @@
-import {useFocusEffect} from '@react-navigation/native';
 import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
@@ -22,10 +21,6 @@ export default function Exercises() {
     if (!result) return setExercises([]);
     setExercises(result.rows.raw());
   };
-
-  useFocusEffect(() => {
-    refresh();
-  });
 
   useEffect(() => {
     refresh();

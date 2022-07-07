@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useFocusEffect} from '@react-navigation/native';
 import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, NativeModules, SafeAreaView, StyleSheet} from 'react-native';
 import {AnimatedFAB, Searchbar} from 'react-native-paper';
@@ -18,6 +17,7 @@ export default function Home() {
   const [show, setShow] = useState(false);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);
+  const [end, setEnd] = useState(false);
   const db = useContext(DatabaseContext);
 
   const selectSets = `
@@ -41,6 +41,7 @@ export default function Home() {
     if (!result) return setSets([]);
     setSets(result.rows.raw());
     setOffset(0);
+    setEnd(false);
   };
 
   const refreshLoader = async () => {
@@ -51,10 +52,6 @@ export default function Home() {
   useEffect(() => {
     refresh();
   }, [search]);
-
-  useFocusEffect(() => {
-    refresh();
-  });
 
   const renderItem = ({item}: {item: Set}) => (
     <SetItem
@@ -77,14 +74,16 @@ export default function Home() {
   };
 
   const next = async () => {
+    if (end) return;
     setRefresing(true);
     const newOffset = offset + limit;
     const [result] = await getSets({search, limit, offset: newOffset}).finally(
       () => setRefresing(false),
     );
-    if (result.rows.length === 0) return;
+    if (result.rows.length === 0) return setEnd(true);
     if (!sets) return;
     setSets([...sets, ...result.rows.raw()]);
+    if (result.rows.length < limit) return setEnd(true);
     setOffset(newOffset);
   };
 
@@ -92,9 +91,10 @@ export default function Home() {
     <SafeAreaView style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
+        style={{height: 100}}
         data={sets}
         renderItem={renderItem}
-        keyExtractor={set => set.id.toString()}
+        keyExtractor={set => set.id!.toString()}
         onEndReached={next}
         refreshing={refreshing}
         onRefresh={refreshLoader}
@@ -121,11 +121,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    flex: 1,
     padding: 10,
-  },
-  bottom: {
-    alignSelf: 'center',
-    flexDirection: 'row',
   },
 });

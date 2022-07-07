@@ -41,7 +41,7 @@ export default function EditSet({
 
   const save = async () => {
     if (!name || !reps || !weight) return;
-    if (!set)
+    if (!set?.id)
       await db.executeSql(
         `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
         [name, reps, weight, new Date().toISOString(), unit || 'kg'],

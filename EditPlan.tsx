@@ -6,17 +6,15 @@ import {Plan} from './plan';
 import WorkoutMenu from './WorkoutMenu';
 
 export default function EditPlan({
-  id,
+  plan,
   onSave,
   show,
   setShow,
-  clearId,
 }: {
-  id?: number;
-  clearId: () => void;
   onSave: () => void;
   show: boolean;
   setShow: (visible: boolean) => void;
+  plan?: Plan;
 }) {
   const [days, setDays] = useState('');
   const [workouts, setWorkouts] = useState('');
@@ -27,23 +25,18 @@ export default function EditPlan({
     const [namesResult] = await db.executeSql('SELECT DISTINCT name FROM sets');
     if (!namesResult.rows.length) return;
     setNames(namesResult.rows.raw().map(({name}) => name));
-    if (!id) return;
-    const [result] = await db.executeSql(`SELECT * FROM plans WHERE id = ?`, [
-      id,
-    ]);
-    if (!result.rows.item(0)) throw new Error("Can't find specified Set.");
-    const set: Plan = result.rows.item(0);
-    setDays(set.days);
-    setWorkouts(set.workouts);
+    if (!plan) return;
+    setDays(plan.days);
+    setWorkouts(plan.workouts);
   };
 
   useEffect(() => {
     refresh();
-  }, [id]);
+  }, [plan]);
 
   const save = async () => {
     if (!days || !workouts) return;
-    if (!id)
+    if (!plan)
       await db.executeSql(`INSERT INTO plans(days, workouts) VALUES (?, ?)`, [
         days,
         workouts,
@@ -51,7 +44,7 @@ export default function EditPlan({
     else
       await db.executeSql(
         `UPDATE plans SET days = ?, workouts = ? WHERE id = ?`,
-        [days, workouts, id],
+        [days, workouts, plan.id],
       );
     setShow(false);
     onSave();
@@ -84,7 +77,7 @@ export default function EditPlan({
   return (
     <Portal>
       <Dialog visible={show} onDismiss={() => setShow(false)}>
-        <Dialog.Title>{id ? `Edit "${days}"` : 'Add a plan'}</Dialog.Title>
+        <Dialog.Title>{plan ? `Edit "${days}"` : 'Add a plan'}</Dialog.Title>
         <Dialog.Content>
           {days.split(',').map((day, index) => (
             <DayMenu

@@ -1,23 +1,17 @@
-import {useFocusEffect} from '@react-navigation/native';
-import {format} from 'date-fns';
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
-import {AnimatedFAB, ProgressBar, Searchbar} from 'react-native-paper';
+import {FlatList, StyleSheet, View} from 'react-native';
+import {AnimatedFAB, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import EditPlan from './EditPlan';
 import {Plan} from './plan';
 import PlanItem from './PlanItem';
-import Progress from './progress';
 
 export default function Plans() {
   const [search, setSearch] = useState('');
   const [plans, setPlans] = useState<Plan[]>([]);
   const [refreshing, setRefresing] = useState(false);
-  const [id, setId] = useState<number>();
+  const [plan, setPlan] = useState<Plan>();
   const [showEdit, setShowEdit] = useState(false);
-  const [progresses, setProgresses] = useState<Progress[]>([]);
-  const today = `%${format(new Date(new Date().toUTCString()), 'EEEE')}%`;
-  const now = `${format(new Date(new Date().toUTCString()), 'yyyy-MM-dd')}%`;
   const db = useContext(DatabaseContext);
 
   const selectPlans = `
@@ -27,34 +21,10 @@ export default function Plans() {
   const getPlans = ({search}: {search: string}) =>
     db.executeSql(selectPlans, [`%${search}%`, `%${search}%`]);
 
-  const selectProgress = `
-    SELECT COUNT(*) as count from sets
-    WHERE created LIKE ? 
-      AND name = ?
-`;
-  const getProgress = ({created, name}: {created: string; name: string}) =>
-    db.executeSql(selectProgress, [`%${created}%`, name]);
-
   const refresh = async () => {
     const [plansResult] = await getPlans({search});
     setPlans(plansResult.rows.raw());
-    const [todaysResult] = await getPlans({search: today});
-    if (todaysResult.rows.length === 0) return;
-    const workouts: string[] = todaysResult.rows.item(0).workouts.split(',');
-    const newProgress: Progress[] = [];
-    for (const workout of workouts) {
-      const [workoutResult] = await getProgress({
-        created: now,
-        name: workout,
-      });
-      newProgress.push({name: workout, sets: workoutResult.rows.item(0).count});
-    }
-    setProgresses(newProgress);
   };
-
-  useFocusEffect(() => {
-    refresh();
-  });
 
   useEffect(() => {
     refresh();
@@ -65,7 +35,7 @@ export default function Plans() {
       item={item}
       key={item.id}
       setShowEdit={setShowEdit}
-      setId={setId}
+      setPlan={setPlan}
       onRemove={refresh}
     />
   );
@@ -73,13 +43,6 @@ export default function Plans() {
   return (
     <View style={styles.container}>
       <Searchbar value={search} onChangeText={setSearch} placeholder="Search" />
-      {progresses.map(progress => (
-        <React.Fragment key={progress.name}>
-          <Text style={styles.progress}>{progress.name}</Text>
-          <ProgressBar progress={progress.sets / 3} />
-        </React.Fragment>
-      ))}
-
       <FlatList
         data={plans}
         renderItem={renderItem}
@@ -92,11 +55,10 @@ export default function Plans() {
       />
 
       <EditPlan
-        clearId={() => setId(undefined)}
         onSave={refresh}
         setShow={setShowEdit}
         show={showEdit}
-        id={id}
+        plan={plan}
       />
 
       <AnimatedFAB
@@ -105,7 +67,7 @@ export default function Plans() {
         icon="add"
         style={{position: 'absolute', right: 20, bottom: 20}}
         onPress={() => {
-          setId(undefined);
+          setPlan(undefined);
           setShowEdit(true);
         }}
       />

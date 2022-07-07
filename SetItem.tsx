@@ -14,13 +14,20 @@ export default function SetItem({
   setShowEdit: (show: boolean) => void;
   onRemove: () => void;
 }) {
-  const [show, setShow] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const db = useContext(DatabaseContext);
 
   const remove = async () => {
     await db.executeSql(`DELETE FROM sets WHERE id = ?`, [item.id]);
-    setShow(false);
+    setShowMenu(false);
     onRemove();
+  };
+
+  const copy = () => {
+    const {id, ...set} = {...item};
+    setSet(set);
+    setShowEdit(true);
+    setShowMenu(false);
   };
 
   return (
@@ -32,18 +39,19 @@ export default function SetItem({
         }}
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit}`}
-        onLongPress={() => setShow(true)}
+        onLongPress={() => setShowMenu(true)}
         right={() => (
           <Menu
             anchor={
               <IconButton
                 icon="ellipsis-vertical"
-                onPress={() => setShow(true)}
+                onPress={() => setShowMenu(true)}
               />
             }
-            visible={show}
-            onDismiss={() => setShow(false)}>
+            visible={showMenu}
+            onDismiss={() => setShowMenu(false)}>
             <Menu.Item icon="trash" onPress={remove} title="Delete" />
+            <Menu.Item icon="copy" onPress={copy} title="Copy" />
           </Menu>
         )}
       />

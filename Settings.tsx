@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useFocusEffect} from '@react-navigation/native';
 import React, {useContext, useEffect, useState} from 'react';
 import {NativeModules, StyleSheet, Text, View} from 'react-native';
 import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
@@ -22,9 +21,9 @@ export default function Settings() {
     NativeModules.AlarmModule.ignoringBatteryOptimizations(setIgnoring);
   };
 
-  useFocusEffect(() => {
+  useEffect(() => {
     refresh();
-  });
+  }, []);
 
   useEffect(() => {
     if (minutes) AsyncStorage.setItem('minutes', minutes);

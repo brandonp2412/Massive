@@ -1,5 +1,5 @@
 export default interface Set {
-  id: number;
+  id?: number;
   name: string;
   reps: number;
   weight: number;
