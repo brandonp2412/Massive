@@ -1,5 +1,5 @@
 import {format} from 'date-fns';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {StyleSheet, Text} from 'react-native';
 import {Button, Dialog, Portal, TextInput} from 'react-native-paper';
 import {DatabaseContext} from './App';
@@ -14,42 +14,25 @@ export default function EditSet({
   set?: Set;
   setSet: (set?: Set) => void;
 }) {
-  const [newSet, setNewSet] = useState({
-    name: '',
-    reps: '',
-    weight: '',
-    unit: '',
-    created: new Date(),
-  });
   const db = useContext(DatabaseContext);
 
-  useEffect(() => {
-    if (set)
-      setNewSet({
-        ...set,
-        reps: set.reps.toString(),
-        weight: set.weight.toString(),
-        created: new Date(set.created),
-      });
-  }, [set]);
-
   const save = async () => {
-    if (!newSet.name || !newSet.reps || !newSet.weight) return;
+    if (!set?.name || !set?.reps || !set?.weight) return;
     if (!set?.id)
       await db.executeSql(
         `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
         [
-          newSet.name,
-          newSet.reps,
-          newSet.weight,
+          set.name,
+          set.reps,
+          set.weight,
           new Date().toISOString(),
-          newSet.unit || 'kg',
+          set.unit || 'kg',
         ],
       );
     else
       await db.executeSql(
         `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
-        [newSet.name, newSet.reps, newSet.weight, newSet.unit, set.id],
+        [set.name, set.reps, set.weight, set.unit, set.id],
       );
     setSet(undefined);
     onSave();
@@ -59,40 +42,42 @@ export default function EditSet({
     <Portal>
       <Dialog visible={!!set} onDismiss={() => setSet(undefined)}>
         <Dialog.Title>
-          {set?.id ? `Edit "${newSet.name}"` : 'Add a set'}
+          {set?.id ? `Edit "${set.name}"` : 'Add a set'}
         </Dialog.Title>
         <Dialog.Content>
           <TextInput
             style={styles.text}
             autoFocus
             label="Name *"
-            value={newSet.name}
-            onChangeText={name => setNewSet({...newSet, name})}
+            value={set?.name}
+            onChangeText={name => setSet({...set, name})}
             autoCorrect={false}
           />
           <TextInput
             style={styles.text}
             label="Reps *"
             keyboardType="numeric"
-            value={newSet.reps}
-            onChangeText={reps => setNewSet({...newSet, reps})}
+            value={set?.reps?.toString() || ''}
+            onChangeText={reps => setSet({...set, reps})}
           />
           <TextInput
             style={styles.text}
             label="Weight *"
             keyboardType="numeric"
-            value={newSet.weight}
-            onChangeText={weight => setNewSet({...newSet, weight})}
+            value={set?.weight?.toString() || ''}
+            onChangeText={weight => setSet({...set, weight})}
             onSubmitEditing={save}
           />
           <TextInput
             style={styles.text}
             label="Unit (kg)"
-            value={newSet.unit}
-            onChangeText={unit => setNewSet({...newSet, unit})}
+            value={set?.unit}
+            onChangeText={unit => setSet({...set, unit})}
             onSubmitEditing={save}
           />
-          <Text style={styles.text}>{format(newSet.created, 'PPPP p')}</Text>
+          <Text style={styles.text}>
+            {format(new Date(set?.created || 0), 'PPPP p')}
+          </Text>
         </Dialog.Content>
         <Dialog.Actions>
           <Button icon="close" onPress={() => setSet(undefined)}>

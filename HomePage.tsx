@@ -8,7 +8,7 @@ import MassiveFab from './MassiveFab';
 import Set from './set';
 import SetItem from './SetItem';
 
-const limit = 20;
+const limit = 10;
 
 export default function HomePage() {
   const [sets, setSets] = useState<Set[]>();
