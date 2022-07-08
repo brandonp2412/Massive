@@ -24,7 +24,6 @@ export default function EditSet({
   const db = useContext(DatabaseContext);
 
   useEffect(() => {
-    console.log('Setting created...');
     if (set)
       setNewSet({
         ...set,
