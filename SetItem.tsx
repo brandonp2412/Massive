@@ -24,7 +24,8 @@ export default function SetItem({
   };
 
   const copy = () => {
-    const {id, ...set} = {...item};
+    const set = {...item};
+    delete set.id;
     setSet(set);
     setShow(false);
   };
