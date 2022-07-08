@@ -19,7 +19,7 @@ export default function EditSet({
     reps: '',
     weight: '',
     unit: '',
-    created: new Date(new Date().toUTCString()),
+    created: new Date(),
   });
   const db = useContext(DatabaseContext);
 
@@ -42,7 +42,7 @@ export default function EditSet({
           newSet.name,
           newSet.reps,
           newSet.weight,
-          new Date().toISOString(),
+          new Date().toUTCString(),
           newSet.unit || 'kg',
         ],
       );
