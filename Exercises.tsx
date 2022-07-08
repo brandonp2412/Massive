@@ -12,7 +12,7 @@ export default function Exercises() {
 
   const refresh = async () => {
     const [result] = await db.executeSql(
-      `SELECT name, reps, unit, MAX(weight) AS weight 
+      `SELECT name, MAX(reps) as reps, unit, MAX(weight) AS weight 
       FROM sets
       WHERE name LIKE ?
       GROUP BY name;`,
