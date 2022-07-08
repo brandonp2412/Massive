@@ -15,17 +15,17 @@ import {
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import {createPlans, createSets, getDb} from './db';
-import Exercises from './Exercises';
-import Home from './Home';
-import Plans from './Plans';
-import Settings from './Settings';
+import BestPage from './BestPage';
+import HomePage from './HomePage';
+import PlanPage from './PlanPage';
+import SettingsPage from './SettingsPage';
 
 const Tab = createMaterialTopTabNavigator<RootStackParamList>();
 export type RootStackParamList = {
   Home: {};
   Settings: {};
-  Exercises: {};
-  Plans: {};
+  Best: {};
+  Plan: {};
 };
 
 export const DatabaseContext = React.createContext<SQLiteDatabase>({} as any);
@@ -64,10 +64,10 @@ const App = () => {
         {db && (
           <DatabaseContext.Provider value={db}>
             <Tab.Navigator>
-              <Tab.Screen name="Home" component={Home} />
-              <Tab.Screen name="Plans" component={Plans} />
-              <Tab.Screen name="Exercises" component={Exercises} />
-              <Tab.Screen name="Settings" component={Settings} />
+              <Tab.Screen name="Home" component={HomePage} />
+              <Tab.Screen name="Plan" component={PlanPage} />
+              <Tab.Screen name="Best" component={BestPage} />
+              <Tab.Screen name="Settings" component={SettingsPage} />
             </Tab.Navigator>
           </DatabaseContext.Provider>
         )}

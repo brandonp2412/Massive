@@ -5,7 +5,7 @@ import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import BatteryDialog from './BatteryDialog';
 
-export default function Settings() {
+export default function SettingsPage() {
   const [minutes, setMinutes] = useState<string>('');
   const [seconds, setSeconds] = useState<string>('');
   const [alarmEnabled, setAlarmEnabled] = useState<boolean>(false);

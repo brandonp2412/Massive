@@ -10,7 +10,7 @@ import SetItem from './SetItem';
 
 const limit = 20;
 
-export default function Home() {
+export default function HomePage() {
   const [sets, setSets] = useState<Set[]>();
   const [offset, setOffset] = useState(0);
   const [edit, setEdit] = useState<Set>();

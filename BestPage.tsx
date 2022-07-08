@@ -4,7 +4,7 @@ import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import Exercise from './exercise';
 
-export default function Exercises() {
+export default function BestPage() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);

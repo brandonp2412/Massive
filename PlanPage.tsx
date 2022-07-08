@@ -7,7 +7,7 @@ import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
 import PlanItem from './PlanItem';
 
-export default function Plans() {
+export default function PlanPage() {
   const [search, setSearch] = useState('');
   const [plans, setPlans] = useState<Plan[]>([]);
   const [refreshing, setRefresing] = useState(false);
