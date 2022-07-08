@@ -5,6 +5,8 @@ import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import BatteryDialog from './BatteryDialog';
 
+const {getItem, setItem} = AsyncStorage;
+
 export default function SettingsPage() {
   const [minutes, setMinutes] = useState<string>('');
   const [seconds, setSeconds] = useState<string>('');
@@ -15,21 +17,15 @@ export default function SettingsPage() {
   const db = useContext(DatabaseContext);
 
   const refresh = async () => {
-    setMinutes((await AsyncStorage.getItem('minutes')) || '3');
-    setSeconds((await AsyncStorage.getItem('seconds')) || '');
-    setAlarmEnabled((await AsyncStorage.getItem('alarmEnabled')) === 'true');
+    setMinutes((await getItem('minutes')) || '3');
+    setSeconds((await getItem('seconds')) || '');
+    setAlarmEnabled((await getItem('alarmEnabled')) === 'true');
     NativeModules.AlarmModule.ignoringBatteryOptimizations(setIgnoring);
   };
 
   useEffect(() => {
     refresh();
   }, []);
-
-  useEffect(() => {
-    if (minutes) AsyncStorage.setItem('minutes', minutes);
-    if (seconds) AsyncStorage.setItem('seconds', seconds);
-    AsyncStorage.setItem('alarmEnabled', alarmEnabled ? 'true' : 'false');
-  }, [minutes, seconds, alarmEnabled]);
 
   const clear = async () => {
     setSnackbar('Deleting all data...');
@@ -45,9 +41,10 @@ export default function SettingsPage() {
     NativeModules.ImportModule.sets();
   };
 
-  const changeAlarmEnabled = (enabled: boolean) => {
+  const changeAlarmEnabled = async (enabled: boolean) => {
     setAlarmEnabled(enabled);
     if (enabled && !ignoring) setShowBattery(true);
+    await setItem('alarmEnabled', enabled ? 'true' : 'false');
   };
 
   return (
@@ -57,7 +54,10 @@ export default function SettingsPage() {
         value={minutes}
         keyboardType="numeric"
         placeholder="3"
-        onChangeText={setMinutes}
+        onChangeText={async text => {
+          setMinutes(text);
+          await setItem('minutes', text);
+        }}
         style={styles.text}
       />
       <TextInput
@@ -65,7 +65,10 @@ export default function SettingsPage() {
         value={seconds}
         keyboardType="numeric"
         placeholder="30"
-        onChangeText={setSeconds}
+        onChangeText={async seconds => {
+          setSeconds(seconds);
+          await setItem('seconds', seconds);
+        }}
         style={styles.text}
       />
       <Text style={styles.text}>Rest timers</Text>
