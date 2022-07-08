@@ -10,16 +10,33 @@ export default function BestPage() {
   const [refreshing, setRefresing] = useState(false);
   const db = useContext(DatabaseContext);
 
+  const bestWeight = `
+    SELECT name, reps, unit, MAX(weight) AS weight 
+    FROM sets
+    WHERE name LIKE ?
+    GROUP BY name;
+  `;
+
+  const bestReps = `
+    SELECT name, MAX(reps) as reps, unit, weight 
+    FROM sets
+    WHERE name = ?
+      AND weight = ?
+    GROUP BY name;
+  `;
+
   const refresh = async () => {
-    const [result] = await db.executeSql(
-      `SELECT name, MAX(reps) as reps, unit, MAX(weight) AS weight 
-      FROM sets
-      WHERE name LIKE ?
-      GROUP BY name;`,
-      [`%${search}%`],
-    );
-    if (!result) return setExercises([]);
-    setExercises(result.rows.raw());
+    const [weight] = await db.executeSql(bestWeight, [`%${search}%`]);
+    if (!weight) return setExercises([]);
+    let newExercises: Exercise[] = [];
+    for (let i = 0; i < weight.rows.length; i++) {
+      const [reps] = await db.executeSql(bestReps, [
+        weight.rows.item(i).name,
+        weight.rows.item(i).weight,
+      ]);
+      newExercises = newExercises.concat(reps.rows.raw());
+    }
+    setExercises(newExercises);
   };
 
   useEffect(() => {
@@ -30,7 +47,7 @@ export default function BestPage() {
     <List.Item
       key={item.name}
       title={item.name}
-      description={`Best: ${item.reps} x ${item.weight}${item.unit}`}
+      description={`${item.reps} x ${item.weight}${item.unit}`}
     />
   );
 
