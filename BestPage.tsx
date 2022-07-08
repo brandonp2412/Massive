@@ -2,12 +2,14 @@ import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
-import Exercise from './exercise';
+import Best from './best';
+import ViewBest from './ViewBest';
 
 export default function BestPage() {
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [bests, setBests] = useState<Best[]>([]);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);
+  const [best, setBest] = useState<Best>();
   const db = useContext(DatabaseContext);
 
   const bestWeight = `
@@ -27,27 +29,28 @@ export default function BestPage() {
 
   const refresh = async () => {
     const [weight] = await db.executeSql(bestWeight, [`%${search}%`]);
-    if (!weight) return setExercises([]);
-    let newExercises: Exercise[] = [];
+    if (!weight) return setBests([]);
+    let newBest: Best[] = [];
     for (let i = 0; i < weight.rows.length; i++) {
       const [reps] = await db.executeSql(bestReps, [
         weight.rows.item(i).name,
         weight.rows.item(i).weight,
       ]);
-      newExercises = newExercises.concat(reps.rows.raw());
+      newBest = newBest.concat(reps.rows.raw());
     }
-    setExercises(newExercises);
+    setBests(newBest);
   };
 
   useEffect(() => {
     refresh();
   }, [search]);
 
-  const renderItem = ({item}: {item: Exercise}) => (
+  const renderItem = ({item}: {item: Best}) => (
     <List.Item
       key={item.name}
       title={item.name}
       description={`${item.reps} x ${item.weight}${item.unit}`}
+      onPress={() => setBest(item)}
     />
   );
 
@@ -68,8 +71,10 @@ export default function BestPage() {
           setRefresing(false);
         }}
         renderItem={renderItem}
-        data={exercises}
+        data={bests}
       />
+
+      <ViewBest setBest={setBest} best={best} />
     </View>
   );
 }

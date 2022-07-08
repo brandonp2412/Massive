@@ -1,4 +1,4 @@
-export default interface Exercise {
+export default interface Best {
   name: string;
   reps: number;
   weight: number;
