@@ -61,5 +61,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     flexGrow: 1,
+    paddingBottom: '10%',
   },
 });
