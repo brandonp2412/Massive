@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, NativeModules, StyleSheet, View} from 'react-native';
-import {AnimatedFAB, List, Searchbar} from 'react-native-paper';
+import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import EditSet from './EditSet';
+import MassiveFab from './MassiveFab';
 import Set from './set';
 import SetItem from './SetItem';
 
@@ -99,13 +100,7 @@ export default function Home() {
       />
       <EditSet set={edit} setSet={setEdit} onSave={save} />
 
-      <AnimatedFAB
-        extended={false}
-        label="Add"
-        icon="add"
-        style={{position: 'absolute', right: 10, bottom: 50}}
-        onPress={() => setEdit({} as Set)}
-      />
+      <MassiveFab onPress={() => setEdit({} as Set)} />
     </View>
   );
 }

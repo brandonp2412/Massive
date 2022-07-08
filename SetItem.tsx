@@ -13,25 +13,25 @@ export default function SetItem({
   setSet: (set: Set) => void;
   onRemove: () => void;
 }) {
-  const [showMenu, setShowMenu] = useState(false);
+  const [show, setShow] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const db = useContext(DatabaseContext);
 
   const remove = async () => {
     await db.executeSql(`DELETE FROM sets WHERE id = ?`, [item.id]);
-    setShowMenu(false);
+    setShow(false);
     onRemove();
   };
 
   const copy = () => {
     const {id, ...set} = {...item};
     setSet(set);
-    setShowMenu(false);
+    setShow(false);
   };
 
   const longPress = (e: GestureResponderEvent) => {
     setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY});
-    setShowMenu(true);
+    setShow(true);
   };
 
   return (
@@ -44,10 +44,7 @@ export default function SetItem({
         description={`${item.reps} x ${item.weight}${item.unit}`}
         onLongPress={longPress}
         right={() => (
-          <Menu
-            anchor={anchor}
-            visible={showMenu}
-            onDismiss={() => setShowMenu(false)}>
+          <Menu anchor={anchor} visible={show} onDismiss={() => setShow(false)}>
             <Menu.Item icon="trash" onPress={remove} title="Delete" />
             <Menu.Item icon="copy" onPress={copy} title="Copy" />
           </Menu>

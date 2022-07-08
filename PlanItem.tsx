@@ -1,20 +1,20 @@
 import React, {useContext, useState} from 'react';
-import {IconButton, List, Menu} from 'react-native-paper';
+import {GestureResponderEvent} from 'react-native';
+import {List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {Plan} from './plan';
 
 export default function PlanItem({
   item,
   setPlan,
-  setShowEdit,
   onRemove,
 }: {
   item: Plan;
   setPlan: (plan: Plan) => void;
-  setShowEdit: (show: boolean) => void;
   onRemove: () => void;
 }) {
   const [show, setShow] = useState(false);
+  const [anchor, setAnchor] = useState({x: 0, y: 0});
   const db = useContext(DatabaseContext);
 
   const remove = async () => {
@@ -23,26 +23,20 @@ export default function PlanItem({
     onRemove();
   };
 
+  const longPress = (e: GestureResponderEvent) => {
+    setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY});
+    setShow(true);
+  };
+
   return (
     <>
       <List.Item
-        onPress={() => {
-          setPlan(item);
-          setShowEdit(true);
-        }}
+        onPress={() => setPlan(item)}
         title={item.days.replace(/,/g, ', ')}
         description={item.workouts.replace(/,/g, ', ')}
-        onLongPress={() => setShow(true)}
+        onLongPress={longPress}
         right={() => (
-          <Menu
-            anchor={
-              <IconButton
-                icon="ellipsis-vertical"
-                onPress={() => setShow(true)}
-              />
-            }
-            visible={show}
-            onDismiss={() => setShow(false)}>
+          <Menu anchor={anchor} visible={show} onDismiss={() => setShow(false)}>
             <Menu.Item icon="trash" onPress={remove} title="Delete" />
           </Menu>
         )}

@@ -1,8 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {AnimatedFAB, List, Searchbar} from 'react-native-paper';
+import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import EditPlan from './EditPlan';
+import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
 import PlanItem from './PlanItem';
 
@@ -11,7 +12,6 @@ export default function Plans() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [refreshing, setRefresing] = useState(false);
   const [plan, setPlan] = useState<Plan>();
-  const [showEdit, setShowEdit] = useState(false);
   const db = useContext(DatabaseContext);
 
   const selectPlans = `
@@ -31,13 +31,7 @@ export default function Plans() {
   }, [search]);
 
   const renderItem = ({item}: {item: Plan}) => (
-    <PlanItem
-      item={item}
-      key={item.id}
-      setShowEdit={setShowEdit}
-      setPlan={setPlan}
-      onRemove={refresh}
-    />
+    <PlanItem item={item} key={item.id} setPlan={setPlan} onRemove={refresh} />
   );
 
   return (
@@ -61,21 +55,11 @@ export default function Plans() {
         }
       />
 
-      <EditPlan
-        onSave={refresh}
-        setShow={setShowEdit}
-        show={showEdit}
-        plan={plan}
-      />
+      <EditPlan setPlan={setPlan} onSave={refresh} plan={plan} />
 
-      <AnimatedFAB
-        extended={false}
-        label="Add"
-        icon="add"
-        style={{position: 'absolute', right: 20, bottom: 50}}
+      <MassiveFab
         onPress={() => {
-          setPlan(undefined);
-          setShowEdit(true);
+          setPlan({} as Plan);
         }}
       />
     </View>

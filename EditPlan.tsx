@@ -17,13 +17,11 @@ const DAYS = [
 export default function EditPlan({
   plan,
   onSave,
-  show,
-  setShow,
+  setPlan,
 }: {
   onSave: () => void;
-  show: boolean;
-  setShow: (visible: boolean) => void;
   plan?: Plan;
+  setPlan: (plan?: Plan) => void;
 }) {
   const [days, setDays] = useState<string[]>([]);
   const [workouts, setWorkouts] = useState<string[]>([]);
@@ -41,7 +39,7 @@ export default function EditPlan({
 
   useEffect(() => {
     refresh();
-  }, [plan, show]);
+  }, [plan]);
 
   const save = async () => {
     if (!days || !workouts) return;
@@ -57,7 +55,7 @@ export default function EditPlan({
         `UPDATE plans SET days = ?, workouts = ? WHERE id = ?`,
         [newDays, newWorkouts, plan.id],
       );
-    setShow(false);
+    setPlan(undefined);
     onSave();
   };
 
@@ -79,7 +77,7 @@ export default function EditPlan({
 
   return (
     <Portal>
-      <Dialog visible={show} onDismiss={() => setShow(false)}>
+      <Dialog visible={!!plan} onDismiss={() => setPlan(undefined)}>
         <Dialog.Title>
           {plan ? `Edit "${days.slice(0, 2).join(', ')}"` : 'Add a plan'}
         </Dialog.Title>
@@ -123,7 +121,7 @@ export default function EditPlan({
           </View>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button icon="close" onPress={() => setShow(false)}>
+          <Button icon="close" onPress={() => setPlan(undefined)}>
             Cancel
           </Button>
           <Button mode="contained" icon="save" onPress={save}>
