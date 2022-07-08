@@ -1,4 +1,5 @@
 import React, {useContext, useState} from 'react';
+import {GestureResponderEvent, Text, View} from 'react-native';
 import {IconButton, List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import Set from './set';
@@ -13,6 +14,7 @@ export default function SetItem({
   onRemove: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [anchor, setAnchor] = useState({x: 0, y: 0});
   const db = useContext(DatabaseContext);
 
   const remove = async () => {
@@ -27,6 +29,11 @@ export default function SetItem({
     setShowMenu(false);
   };
 
+  const longPress = (e: GestureResponderEvent) => {
+    setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY});
+    setShowMenu(true);
+  };
+
   return (
     <>
       <List.Item
@@ -35,15 +42,10 @@ export default function SetItem({
         }}
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit}`}
-        onLongPress={() => setShowMenu(true)}
+        onLongPress={longPress}
         right={() => (
           <Menu
-            anchor={
-              <IconButton
-                icon="ellipsis-vertical"
-                onPress={() => setShowMenu(true)}
-              />
-            }
+            anchor={anchor}
             visible={showMenu}
             onDismiss={() => setShowMenu(false)}>
             <Menu.Item icon="trash" onPress={remove} title="Delete" />
