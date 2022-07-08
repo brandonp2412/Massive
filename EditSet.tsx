@@ -1,5 +1,5 @@
 import {format} from 'date-fns';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {StyleSheet, Text} from 'react-native';
 import {Button, Dialog, Portal, TextInput} from 'react-native-paper';
 import {DatabaseContext} from './App';
@@ -7,98 +7,96 @@ import Set from './set';
 
 export default function EditSet({
   onSave,
-  show,
-  setShow,
   set,
+  setSet,
 }: {
   onSave: () => void;
-  show: boolean;
-  setShow: (visible: boolean) => void;
   set?: Set;
+  setSet: (set?: Set) => void;
 }) {
-  const [name, setName] = useState('');
-  const [reps, setReps] = useState('');
-  const [weight, setWeight] = useState('');
-  const [unit, setUnit] = useState('');
-  const [created, setCreated] = useState(new Date(new Date().toUTCString()));
-  const weightRef = useRef<any>(null);
-  const repsRef = useRef<any>(null);
-  const unitRef = useRef<any>(null);
+  const [newSet, setNewSet] = useState({
+    name: '',
+    reps: '',
+    weight: '',
+    unit: '',
+    created: new Date(new Date().toUTCString()),
+  });
   const db = useContext(DatabaseContext);
 
-  const refresh = async () => {
-    if (!set) return setCreated(new Date(new Date().toUTCString()));
-    setName(set.name);
-    setReps(set.reps.toString());
-    setWeight(set.weight.toString());
-    setUnit(set.unit);
-    setCreated(new Date(set.created));
-  };
-
   useEffect(() => {
-    refresh();
+    console.log('Setting created...');
+    if (set)
+      setNewSet({
+        ...set,
+        reps: set.reps.toString(),
+        weight: set.weight.toString(),
+        created: new Date(set.created),
+      });
   }, [set]);
 
   const save = async () => {
-    if (!name || !reps || !weight) return;
+    if (!newSet.name || !newSet.reps || !newSet.weight) return;
     if (!set?.id)
       await db.executeSql(
         `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
-        [name, reps, weight, new Date().toISOString(), unit || 'kg'],
+        [
+          newSet.name,
+          newSet.reps,
+          newSet.weight,
+          new Date().toISOString(),
+          newSet.unit || 'kg',
+        ],
       );
     else
       await db.executeSql(
         `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
-        [name, reps, weight, unit, set.id],
+        [newSet.name, newSet.reps, newSet.weight, newSet.unit, set.id],
       );
-    setShow(false);
+    setSet(undefined);
     onSave();
   };
 
   return (
     <Portal>
-      <Dialog visible={show} onDismiss={() => setShow(false)}>
-        <Dialog.Title>{set?.id ? `Edit "${name}"` : 'Add a set'}</Dialog.Title>
+      <Dialog visible={!!set} onDismiss={() => setSet(undefined)}>
+        <Dialog.Title>
+          {set?.id ? `Edit "${newSet.name}"` : 'Add a set'}
+        </Dialog.Title>
         <Dialog.Content>
           <TextInput
             style={styles.text}
             autoFocus
             label="Name *"
-            value={name}
-            onChangeText={setName}
-            onSubmitEditing={() => repsRef.current?.focus()}
+            value={newSet.name}
+            onChangeText={name => setNewSet({...newSet, name})}
             autoCorrect={false}
           />
           <TextInput
             style={styles.text}
             label="Reps *"
             keyboardType="numeric"
-            value={reps}
-            onChangeText={setReps}
-            ref={repsRef}
-            onSubmitEditing={() => weightRef.current?.focus()}
+            value={newSet.reps}
+            onChangeText={reps => setNewSet({...newSet, reps})}
           />
           <TextInput
             style={styles.text}
             label="Weight *"
             keyboardType="numeric"
-            value={weight}
-            onChangeText={setWeight}
+            value={newSet.weight}
+            onChangeText={weight => setNewSet({...newSet, weight})}
             onSubmitEditing={save}
-            ref={weightRef}
           />
           <TextInput
             style={styles.text}
             label="Unit (kg)"
-            value={unit}
-            onChangeText={setUnit}
-            ref={unitRef}
+            value={newSet.unit}
+            onChangeText={unit => setNewSet({...newSet, unit})}
             onSubmitEditing={save}
           />
-          <Text style={styles.text}>{format(created, 'PPPP p')}</Text>
+          <Text style={styles.text}>{format(newSet.created, 'PPPP p')}</Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button icon="close" onPress={() => setShow(false)}>
+          <Button icon="close" onPress={() => setSet(undefined)}>
             Cancel
           </Button>
           <Button mode="contained" icon="save" onPress={save}>

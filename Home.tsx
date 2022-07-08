@@ -1,17 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  FlatList,
-  NativeModules,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {FlatList, NativeModules, StyleSheet, View} from 'react-native';
 import {AnimatedFAB, List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import EditSet from './EditSet';
-
 import Set from './set';
 import SetItem from './SetItem';
 
@@ -21,7 +13,6 @@ export default function Home() {
   const [sets, setSets] = useState<Set[]>();
   const [offset, setOffset] = useState(0);
   const [edit, setEdit] = useState<Set>();
-  const [show, setShow] = useState(false);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);
   const [end, setEnd] = useState(false);
@@ -61,13 +52,7 @@ export default function Home() {
   }, [search]);
 
   const renderItem = ({item}: {item: Set}) => (
-    <SetItem
-      item={item}
-      key={item.id}
-      setShowEdit={setShow}
-      setSet={setEdit}
-      onRemove={refresh}
-    />
+    <SetItem item={item} key={item.id} setSet={setEdit} onRemove={refresh} />
   );
 
   const save = async () => {
@@ -111,17 +96,14 @@ export default function Home() {
         refreshing={refreshing}
         onRefresh={refreshLoader}
       />
-      <EditSet set={edit} show={show} setShow={setShow} onSave={save} />
+      <EditSet set={edit} setSet={setEdit} onSave={save} />
 
       <AnimatedFAB
         extended={false}
         label="Add"
         icon="add"
-        style={{position: 'absolute', right: 20, bottom: 70}}
-        onPress={() => {
-          setEdit(undefined);
-          setShow(true);
-        }}
+        style={{position: 'absolute', right: 60, bottom: 70}}
+        onPress={() => setEdit(undefined)}
       />
     </View>
   );
@@ -134,5 +116,6 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 10,
+    paddingBottom: '10%',
   },
 });

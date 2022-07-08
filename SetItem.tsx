@@ -6,12 +6,10 @@ import Set from './set';
 export default function SetItem({
   item,
   setSet,
-  setShowEdit,
   onRemove,
 }: {
   item: Set;
   setSet: (set: Set) => void;
-  setShowEdit: (show: boolean) => void;
   onRemove: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -26,7 +24,6 @@ export default function SetItem({
   const copy = () => {
     const {id, ...set} = {...item};
     setSet(set);
-    setShowEdit(true);
     setShowMenu(false);
   };
 
@@ -35,7 +32,6 @@ export default function SetItem({
       <List.Item
         onPress={() => {
           setSet(item);
-          setShowEdit(true);
         }}
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit}`}
