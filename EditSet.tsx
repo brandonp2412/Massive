@@ -42,7 +42,7 @@ export default function EditSet({
           newSet.name,
           newSet.reps,
           newSet.weight,
-          new Date().toUTCString(),
+          new Date().toISOString(),
           newSet.unit || 'kg',
         ],
       );
