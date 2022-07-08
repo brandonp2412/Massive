@@ -24,7 +24,7 @@ export default function EditSet({
   const db = useContext(DatabaseContext);
 
   useEffect(() => {
-    if (set)
+    if (set?.id)
       setNewSet({
         ...set,
         reps: set.reps.toString(),

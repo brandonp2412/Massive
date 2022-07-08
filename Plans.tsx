@@ -44,6 +44,7 @@ export default function Plans() {
     <View style={styles.container}>
       <Searchbar value={search} onChangeText={setSearch} placeholder="Search" />
       <FlatList
+        style={{height: '100%'}}
         data={plans}
         renderItem={renderItem}
         keyExtractor={set => set.id.toString()}
@@ -71,7 +72,7 @@ export default function Plans() {
         extended={false}
         label="Add"
         icon="add"
-        style={{position: 'absolute', right: 20, bottom: 20}}
+        style={{position: 'absolute', right: 20, bottom: 50}}
         onPress={() => {
           setPlan(undefined);
           setShowEdit(true);
@@ -85,6 +86,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 10,
+    paddingBottom: '10%',
   },
   progress: {
     marginTop: 10,

@@ -84,6 +84,7 @@ export default function Home() {
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
       <FlatList
         data={sets}
+        style={{height: '100%'}}
         ListEmptyComponent={
           <List.Item
             title="No sets yet"
@@ -102,8 +103,8 @@ export default function Home() {
         extended={false}
         label="Add"
         icon="add"
-        style={{position: 'absolute', right: 60, bottom: 70}}
-        onPress={() => setEdit(undefined)}
+        style={{position: 'absolute', right: 10, bottom: 50}}
+        onPress={() => setEdit({} as Set)}
       />
     </View>
   );
