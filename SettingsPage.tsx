@@ -17,7 +17,7 @@ export default function SettingsPage() {
   const db = useContext(DatabaseContext);
 
   const refresh = async () => {
-    setMinutes((await getItem('minutes')) || '3');
+    setMinutes((await getItem('minutes')) || '');
     setSeconds((await getItem('seconds')) || '');
     setAlarmEnabled((await getItem('alarmEnabled')) === 'true');
     NativeModules.AlarmModule.ignoringBatteryOptimizations(setIgnoring);
