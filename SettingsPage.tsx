@@ -41,10 +41,10 @@ export default function SettingsPage() {
     NativeModules.ImportModule.sets();
   };
 
-  const changeAlarmEnabled = async (enabled: boolean) => {
+  const changeAlarmEnabled = (enabled: boolean) => {
     setAlarmEnabled(enabled);
     if (enabled && !ignoring) setShowBattery(true);
-    await setItem('alarmEnabled', enabled ? 'true' : 'false');
+    setItem('alarmEnabled', enabled ? 'true' : 'false');
   };
 
   return (
@@ -54,9 +54,9 @@ export default function SettingsPage() {
         value={minutes}
         keyboardType="numeric"
         placeholder="3"
-        onChangeText={async text => {
+        onChangeText={text => {
           setMinutes(text);
-          await setItem('minutes', text);
+          setItem('minutes', text);
         }}
         style={styles.text}
       />
@@ -65,9 +65,9 @@ export default function SettingsPage() {
         value={seconds}
         keyboardType="numeric"
         placeholder="30"
-        onChangeText={async seconds => {
+        onChangeText={seconds => {
           setSeconds(seconds);
-          await setItem('seconds', seconds);
+          setItem('seconds', seconds);
         }}
         style={styles.text}
       />
