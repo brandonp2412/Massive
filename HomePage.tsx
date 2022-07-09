@@ -122,7 +122,7 @@ export default function HomePage() {
         ListEmptyComponent={
           <List.Item
             title="No sets yet"
-            description="A set is a group of repetitions (or reps). For example, you might do a set of 8 reps on the Bench Press."
+            description="A set is a group of repetitions. E.g. 8 reps of Squats."
           />
         }
         renderItem={renderItem}
