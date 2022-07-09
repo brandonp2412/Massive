@@ -75,7 +75,10 @@ export default function EditSet({
             onSubmitEditing={save}
           />
           <Text style={styles.text}>
-            {format(new Date(set?.created || 0), 'PPPP p')}
+            {format(
+              set?.created ? new Date(set.created) : new Date(),
+              'PPPP p',
+            )}
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
