@@ -6,37 +6,48 @@ import {DatabaseContext} from './App';
 import Set from './set';
 
 export default function EditSet({
-  onSave,
+  onUpdate,
+  onCreate,
   set,
   setSet,
 }: {
-  onSave: () => void;
+  onUpdate: () => void;
+  onCreate: () => void;
   set?: Set;
   setSet: (set?: Set) => void;
 }) {
   const db = useContext(DatabaseContext);
 
+  const update = async () => {
+    console.log(`${EditSet.name}.${update.name}`, {set});
+    await db.executeSql(
+      `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
+      [
+        set?.name,
+        set?.reps,
+        set?.weight,
+        new Date().toISOString(),
+        set?.unit || 'kg',
+      ],
+    );
+    onUpdate();
+  };
+
+  const create = async () => {
+    console.log(`${EditSet.name}.${create.name}`, {set});
+    await db.executeSql(
+      `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
+      [set?.name, set?.reps, set?.weight, set?.unit, set?.id],
+    );
+    onCreate();
+  };
+
   const save = async () => {
     if (!set?.name || set?.reps === undefined || set?.weight === undefined)
       return;
-    if (!set?.id)
-      await db.executeSql(
-        `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
-        [
-          set?.name,
-          set?.reps,
-          set?.weight,
-          new Date().toISOString(),
-          set?.unit || 'kg',
-        ],
-      );
-    else
-      await db.executeSql(
-        `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
-        [set.name, set.reps, set.weight, set.unit, set.id],
-      );
+    if (set?.id) await update();
+    else await create();
     setSet(undefined);
-    onSave();
   };
 
   return (
@@ -98,10 +109,6 @@ export default function EditSet({
 
 const styles = StyleSheet.create({
   text: {
-    marginBottom: 10,
-  },
-  title: {
-    fontSize: 20,
     marginBottom: 10,
   },
 });

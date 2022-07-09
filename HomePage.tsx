@@ -96,17 +96,13 @@ export default function HomePage() {
         refreshing={refreshing}
         onRefresh={refreshLoader}
       />
-      <EditSet set={edit} setSet={setEdit} onSave={save} />
-
+      <EditSet set={edit} setSet={setEdit} onCreate={save} onUpdate={refresh} />
       <MassiveFab onPress={() => setEdit({} as Set)} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  name: {
-    fontSize: 18,
-  },
   container: {
     flexGrow: 1,
     padding: 10,
