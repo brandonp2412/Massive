@@ -1,61 +1,26 @@
 import {format} from 'date-fns';
-import React, {useContext} from 'react';
+import React from 'react';
 import {StyleSheet, Text} from 'react-native';
 import {Button, Dialog, Portal, TextInput} from 'react-native-paper';
-import {DatabaseContext} from './App';
 import Set from './set';
 
 export default function EditSet({
-  onUpdate,
-  onCreate,
   set,
   setSet,
+  onSave,
+  title,
+  saveText,
 }: {
-  onUpdate: () => void;
-  onCreate: () => void;
+  onSave: () => void;
   set?: Set;
   setSet: (set?: Set) => void;
+  title: string;
+  saveText: string;
 }) {
-  const db = useContext(DatabaseContext);
-
-  const update = async () => {
-    console.log(`${EditSet.name}.${update.name}`, {set});
-    await db.executeSql(
-      `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
-      [
-        set?.name,
-        set?.reps,
-        set?.weight,
-        new Date().toISOString(),
-        set?.unit || 'kg',
-      ],
-    );
-    onUpdate();
-  };
-
-  const create = async () => {
-    console.log(`${EditSet.name}.${create.name}`, {set});
-    await db.executeSql(
-      `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
-      [set?.name, set?.reps, set?.weight, set?.unit, set?.id],
-    );
-    onCreate();
-  };
-
-  const save = async () => {
-    if (!set?.name || set?.reps === undefined || set?.weight === undefined)
-      return;
-    if (set?.id) await update();
-    else await create();
-    setSet(undefined);
-  };
-
   return (
     <Portal>
-      <Dialog visible={!!set} onDismiss={() => setSet(undefined)}>
-        <Dialog.Title>
-          {set?.id ? `Edit "${set.name}"` : 'Add a set'}
-        </Dialog.Title>
+      <Dialog visible={set ? true : false} onDismiss={() => setSet(undefined)}>
+        <Dialog.Title>{title}</Dialog.Title>
         <Dialog.Content>
           <TextInput
             style={styles.text}
@@ -78,14 +43,14 @@ export default function EditSet({
             keyboardType="numeric"
             value={set?.weight?.toString() || ''}
             onChangeText={weight => setSet({...set, weight})}
-            onSubmitEditing={save}
+            onSubmitEditing={onSave}
           />
           <TextInput
             style={styles.text}
             label="Unit (kg)"
             value={set?.unit}
             onChangeText={unit => setSet({...set, unit})}
-            onSubmitEditing={save}
+            onSubmitEditing={onSave}
           />
           <Text style={styles.text}>
             {format(
@@ -98,8 +63,8 @@ export default function EditSet({
           <Button icon="close" onPress={() => setSet(undefined)}>
             Cancel
           </Button>
-          <Button mode="contained" icon="save" onPress={save}>
-            Save
+          <Button mode="contained" icon="save" onPress={onSave}>
+            {saveText}
           </Button>
         </Dialog.Actions>
       </Dialog>

@@ -14,8 +14,9 @@ export default function HomePage() {
   const [sets, setSets] = useState<Set[]>();
   const [offset, setOffset] = useState(0);
   const [edit, setEdit] = useState<Set>();
+  const [newSet, setNewSet] = useState<Set>();
   const [search, setSearch] = useState('');
-  const [refreshing, setRefresing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [end, setEnd] = useState(false);
   const db = useContext(DatabaseContext);
 
@@ -35,10 +36,10 @@ export default function HomePage() {
     setEnd(false);
   }, [search, db, selectSets]);
 
-  const refreshLoader = async () => {
-    setRefresing(true);
-    refresh().finally(() => setRefresing(false));
-  };
+  const refreshLoader = useCallback(async () => {
+    setRefreshing(true);
+    refresh().finally(() => setRefreshing(false));
+  }, [setRefreshing, refresh]);
 
   useEffect(() => {
     refresh();
@@ -48,19 +49,45 @@ export default function HomePage() {
     <SetItem item={item} key={item.id} setSet={setEdit} onRemove={refresh} />
   );
 
-  const save = async () => {
-    refresh();
+  const update = useCallback(async () => {
+    await db.executeSql(
+      `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
+      [edit?.name, edit?.reps, edit?.weight, edit?.unit, edit?.id],
+    );
+    setEdit(undefined);
+    await refresh();
+  }, [edit, setEdit, refresh]);
+
+  const add = useCallback(async () => {
+    if (
+      newSet?.name === undefined ||
+      newSet?.reps === 0 ||
+      newSet?.weight === 0
+    )
+      return;
+    await db.executeSql(
+      `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
+      [
+        newSet?.name,
+        newSet?.reps,
+        newSet?.weight,
+        new Date().toISOString(),
+        newSet?.unit || 'kg',
+      ],
+    );
+    setNewSet(undefined);
+    await refresh();
     const enabled = await AsyncStorage.getItem('alarmEnabled');
     if (enabled !== 'true') return;
     const minutes = await AsyncStorage.getItem('minutes');
     const seconds = await AsyncStorage.getItem('seconds');
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
     NativeModules.AlarmModule.timer(milliseconds);
-  };
+  }, [newSet, setNewSet, refresh]);
 
   const next = useCallback(async () => {
     if (end) return;
-    setRefresing(true);
+    setRefreshing(true);
     const newOffset = offset + limit;
     console.log(`${HomePage.name}.next:`, {
       offset,
@@ -70,7 +97,7 @@ export default function HomePage() {
     });
     const [result] = await db
       .executeSql(selectSets, [`%${search}%`, limit, newOffset])
-      .finally(() => setRefresing(false));
+      .finally(() => setRefreshing(false));
     if (result.rows.length === 0) return setEnd(true);
     if (!sets) return;
     setSets([...sets, ...result.rows.raw()]);
@@ -96,8 +123,23 @@ export default function HomePage() {
         refreshing={refreshing}
         onRefresh={refreshLoader}
       />
-      <EditSet set={edit} setSet={setEdit} onCreate={save} onUpdate={refresh} />
-      <MassiveFab onPress={() => setEdit({} as Set)} />
+
+      <EditSet
+        set={edit}
+        setSet={setEdit}
+        title={`Edit ${edit?.name}`}
+        saveText="Edit"
+        onSave={update}
+      />
+
+      <EditSet
+        set={newSet}
+        setSet={setNewSet}
+        title="Add set"
+        saveText="Add"
+        onSave={add}
+      />
+      <MassiveFab onPress={() => setNewSet({} as Set)} />
     </View>
   );
 }
