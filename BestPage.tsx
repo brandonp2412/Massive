@@ -19,7 +19,6 @@ export default function BestPage() {
       WHERE name LIKE ?
       GROUP BY name;
     `;
-
     const bestReps = `
       SELECT name, MAX(reps) as reps, unit, weight 
       FROM sets
@@ -27,7 +26,6 @@ export default function BestPage() {
         AND weight = ?
       GROUP BY name;
     `;
-
     const [weight] = await db.executeSql(bestWeight, [`%${search}%`]);
     if (!weight) return setBests([]);
     let newBest: Best[] = [];

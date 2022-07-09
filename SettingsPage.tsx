@@ -72,7 +72,6 @@ export default function SettingsPage() {
       );
       return granted === PermissionsAndroid.RESULTS.GRANTED;
     };
-
     const granted = await permission();
     if (granted) {
       await FileSystem.writeFile(filePath, data);

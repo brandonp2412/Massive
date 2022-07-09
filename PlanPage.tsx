@@ -29,8 +29,16 @@ export default function PlanPage() {
     refresh();
   }, [search, refresh]);
 
-  const renderItem = ({item}: {item: Plan}) => (
-    <PlanItem item={item} key={item.id} setPlan={setPlan} onRemove={refresh} />
+  const renderItem = useCallback(
+    ({item}: {item: Plan}) => (
+      <PlanItem
+        item={item}
+        key={item.id}
+        setPlan={setPlan}
+        onRemove={refresh}
+      />
+    ),
+    [setPlan, refresh],
   );
 
   return (

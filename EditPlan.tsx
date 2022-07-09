@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, Dialog, Portal, Switch} from 'react-native-paper';
 import {DatabaseContext} from './App';
@@ -33,7 +33,7 @@ export default function EditPlan({
     refresh();
   }, [plan, db]);
 
-  const save = async () => {
+  const save = useCallback(async () => {
     if (!days || !workouts) return;
     const newWorkouts = workouts.filter(workout => workout).join(',');
     const newDays = days.filter(day => day).join(',');
@@ -49,23 +49,29 @@ export default function EditPlan({
       );
     setPlan(undefined);
     onSave();
-  };
+  }, [days, workouts, db]);
 
-  const toggleWorkout = (on: boolean, name: string) => {
-    if (on) {
-      setWorkouts([...workouts, name]);
-    } else {
-      setWorkouts(workouts.filter(workout => workout !== name));
-    }
-  };
+  const toggleWorkout = useCallback(
+    (on: boolean, name: string) => {
+      if (on) {
+        setWorkouts([...workouts, name]);
+      } else {
+        setWorkouts(workouts.filter(workout => workout !== name));
+      }
+    },
+    [setWorkouts],
+  );
 
-  const toggleDay = (on: boolean, day: string) => {
-    if (on) {
-      setDays([...days, day]);
-    } else {
-      setDays(days.filter(d => d !== day));
-    }
-  };
+  const toggleDay = useCallback(
+    (on: boolean, day: string) => {
+      if (on) {
+        setDays([...days, day]);
+      } else {
+        setDays(days.filter(d => d !== day));
+      }
+    },
+    [setDays],
+  );
 
   return (
     <Portal>

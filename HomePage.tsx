@@ -45,8 +45,11 @@ export default function HomePage() {
     refresh();
   }, [search, refresh]);
 
-  const renderItem = ({item}: {item: Set}) => (
-    <SetItem item={item} key={item.id} setSet={setEdit} onRemove={refresh} />
+  const renderItem = useCallback(
+    ({item}: {item: Set}) => (
+      <SetItem item={item} key={item.id} setSet={setEdit} onRemove={refresh} />
+    ),
+    [setEdit, refresh],
   );
 
   const update = useCallback(async () => {

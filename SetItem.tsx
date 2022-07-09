@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
@@ -17,23 +17,26 @@ export default function SetItem({
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const db = useContext(DatabaseContext);
 
-  const remove = async () => {
+  const remove = useCallback(async () => {
     await db.executeSql(`DELETE FROM sets WHERE id = ?`, [item.id]);
     setShow(false);
     onRemove();
-  };
+  }, [setShow, db]);
 
-  const copy = () => {
+  const copy = useCallback(() => {
     const set = {...item};
     delete set.id;
     setSet(set);
     setShow(false);
-  };
+  }, [setSet, setShow]);
 
-  const longPress = (e: GestureResponderEvent) => {
-    setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY});
-    setShow(true);
-  };
+  const longPress = useCallback(
+    (e: GestureResponderEvent) => {
+      setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY});
+      setShow(true);
+    },
+    [setShow, setAnchor],
+  );
 
   return (
     <>
