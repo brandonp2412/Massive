@@ -29,6 +29,7 @@ export default function HomePage() {
   const refresh = useCallback(async () => {
     const [result] = await db.executeSql(selectSets, [`%${search}%`, limit, 0]);
     if (!result) return setSets([]);
+    console.log(`${HomePage.name}.refresh:`, {search, limit});
     setSets(result.rows.raw());
     setOffset(0);
     setEnd(false);
@@ -61,6 +62,12 @@ export default function HomePage() {
     if (end) return;
     setRefresing(true);
     const newOffset = offset + limit;
+    console.log(`${HomePage.name}.${next.name}:`, {
+      offset,
+      limit,
+      newOffset,
+      search,
+    });
     const [result] = await db
       .executeSql(selectSets, [`%${search}%`, limit, newOffset])
       .finally(() => setRefresing(false));
@@ -69,7 +76,7 @@ export default function HomePage() {
     setSets([...sets, ...result.rows.raw()]);
     if (result.rows.length < limit) return setEnd(true);
     setOffset(newOffset);
-  }, [search, end]);
+  }, [search, end, offset]);
 
   return (
     <View style={styles.container}>
