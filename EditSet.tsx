@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet} from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {Button, Dialog, Portal, TextInput} from 'react-native-paper';
 import Set from './set';
@@ -29,52 +29,54 @@ export default function EditSet({
     <Portal>
       <Dialog visible={set ? true : false} onDismiss={() => setSet(undefined)}>
         <Dialog.Title>{title}</Dialog.Title>
-        <Dialog.Content>
-          <TextInput
-            style={styles.text}
-            autoFocus
-            label="Name *"
-            value={set?.name}
-            onChangeText={name => setSet({...set, name})}
-            autoCorrect={false}
-          />
-          <TextInput
-            style={styles.text}
-            label="Reps *"
-            keyboardType="numeric"
-            value={set?.reps?.toString() || ''}
-            onChangeText={reps => setSet({...set, reps})}
-          />
-          <TextInput
-            style={styles.text}
-            label="Weight *"
-            keyboardType="numeric"
-            value={set?.weight?.toString() || ''}
-            onChangeText={weight => setSet({...set, weight})}
-            onSubmitEditing={onSave}
-          />
-          <TextInput
-            style={styles.text}
-            label="Unit (kg)"
-            value={set?.unit}
-            onChangeText={unit => setSet({...set, unit})}
-            onSubmitEditing={onSave}
-          />
-          {set?.created && (
-            <>
-              <Button icon="calendar-outline" onPress={() => setShow(true)}>
-                {format(set.created)}
-              </Button>
-              <DateTimePickerModal
-                isVisible={show}
-                mode="datetime"
-                onConfirm={onConfirm}
-                onCancel={() => setShow(false)}
-                date={new Date(set.created)}
-              />
-            </>
-          )}
-        </Dialog.Content>
+        <Dialog.ScrollArea>
+          <ScrollView>
+            <TextInput
+              style={styles.text}
+              autoFocus
+              label="Name *"
+              value={set?.name}
+              onChangeText={name => setSet({...set, name})}
+              autoCorrect={false}
+            />
+            <TextInput
+              style={styles.text}
+              label="Reps *"
+              keyboardType="numeric"
+              value={set?.reps?.toString() || ''}
+              onChangeText={reps => setSet({...set, reps})}
+            />
+            <TextInput
+              style={styles.text}
+              label="Weight *"
+              keyboardType="numeric"
+              value={set?.weight?.toString() || ''}
+              onChangeText={weight => setSet({...set, weight})}
+              onSubmitEditing={onSave}
+            />
+            <TextInput
+              style={styles.text}
+              label="Unit (kg)"
+              value={set?.unit}
+              onChangeText={unit => setSet({...set, unit})}
+              onSubmitEditing={onSave}
+            />
+            {set?.created && (
+              <>
+                <Button icon="calendar-outline" onPress={() => setShow(true)}>
+                  {format(set.created)}
+                </Button>
+                <DateTimePickerModal
+                  isVisible={show}
+                  mode="datetime"
+                  onConfirm={onConfirm}
+                  onCancel={() => setShow(false)}
+                  date={new Date(set.created)}
+                />
+              </>
+            )}
+          </ScrollView>
+        </Dialog.ScrollArea>
         <Dialog.Actions>
           <Button icon="close" onPress={() => setSet(undefined)}>
             Cancel
