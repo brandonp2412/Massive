@@ -106,7 +106,7 @@ export default function SettingsPage() {
       if (enabled && !ignoring) setShowBattery(true);
       setItem('alarmEnabled', enabled ? 'true' : 'false');
     },
-    [alarmEnabled, setShowBattery],
+    [alarmEnabled, setShowBattery, ignoring],
   );
 
   return (
