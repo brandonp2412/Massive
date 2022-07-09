@@ -40,7 +40,7 @@ export default function EditPlan({
       setWorkouts(plan.workouts.split(','));
     };
     refresh();
-  }, [plan]);
+  }, [plan, db]);
 
   const save = async () => {
     if (!days || !workouts) return;

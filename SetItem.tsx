@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
-import {GestureResponderEvent, Text, View} from 'react-native';
-import {IconButton, List, Menu} from 'react-native-paper';
+import {GestureResponderEvent} from 'react-native';
+import {List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import Set from './set';
 

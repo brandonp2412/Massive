@@ -39,11 +39,11 @@ export default function BestPage() {
       newBest = newBest.concat(reps.rows.raw());
     }
     setBests(newBest);
-  }, [search]);
+  }, [search, db]);
 
   useEffect(() => {
     refresh();
-  }, [search]);
+  }, [search, refresh]);
 
   const renderItem = ({item}: {item: Best}) => (
     <List.Item

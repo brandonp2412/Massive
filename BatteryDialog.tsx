@@ -22,7 +22,9 @@ export default function BatteryDialog({
           <Text>
             Disable battery optimizations for Massive to use rest timers.
           </Text>
-          <Text>Settings > Battery > Unrestricted</Text>
+          <Text>
+            Settings {'>'} Battery {'>'} Unrestricted
+          </Text>
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={ok}>Open settings</Button>

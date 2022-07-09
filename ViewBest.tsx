@@ -1,10 +1,10 @@
+import * as shape from 'd3-shape';
 import React, {useContext, useEffect, useState} from 'react';
-import {useColorScheme, View} from 'react-native';
+import {View} from 'react-native';
 import {Button, Dialog, Portal} from 'react-native-paper';
+import {Grid, LineChart, YAxis} from 'react-native-svg-charts';
 import {DatabaseContext} from './App';
 import Best from './best';
-import {AreaChart, Grid, LineChart, YAxis} from 'react-native-svg-charts';
-import * as shape from 'd3-shape';
 
 export default function ViewBest({
   best,
@@ -14,10 +14,8 @@ export default function ViewBest({
   setBest: (best?: Best) => void;
 }) {
   const [data, setData] = useState<number[]>([]);
-  const [labels, setLabels] = useState<string[]>([]);
   const [unit, setUnit] = useState<string>();
   const db = useContext(DatabaseContext);
-  const dark = useColorScheme() === 'dark';
 
   useEffect(() => {
     const selectBest = `

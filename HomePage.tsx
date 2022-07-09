@@ -8,7 +8,7 @@ import MassiveFab from './MassiveFab';
 import Set from './set';
 import SetItem from './SetItem';
 
-const limit = 10;
+const limit = 15;
 
 export default function HomePage() {
   const [sets, setSets] = useState<Set[]>();
@@ -33,7 +33,7 @@ export default function HomePage() {
     setSets(result.rows.raw());
     setOffset(0);
     setEnd(false);
-  }, [search]);
+  }, [search, db, selectSets]);
 
   const refreshLoader = async () => {
     setRefresing(true);
@@ -42,7 +42,7 @@ export default function HomePage() {
 
   useEffect(() => {
     refresh();
-  }, [search]);
+  }, [search, refresh]);
 
   const renderItem = ({item}: {item: Set}) => (
     <SetItem item={item} key={item.id} setSet={setEdit} onRemove={refresh} />
@@ -62,7 +62,7 @@ export default function HomePage() {
     if (end) return;
     setRefresing(true);
     const newOffset = offset + limit;
-    console.log(`${HomePage.name}.${next.name}:`, {
+    console.log(`${HomePage.name}.next:`, {
       offset,
       limit,
       newOffset,
@@ -76,7 +76,7 @@ export default function HomePage() {
     setSets([...sets, ...result.rows.raw()]);
     if (result.rows.length < limit) return setEnd(true);
     setOffset(newOffset);
-  }, [search, end, offset]);
+  }, [search, end, offset, sets, db, selectSets]);
 
   return (
     <View style={styles.container}>

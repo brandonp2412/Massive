@@ -1,6 +1,5 @@
-import {useState} from 'react';
-import React from 'react';
-import {Button, Divider, Menu} from 'react-native-paper';
+import React, {useState} from 'react';
+import {Button, Menu} from 'react-native-paper';
 
 const days = [
   'Monday',
@@ -15,22 +14,15 @@ const days = [
 export default function DayMenu({
   onSelect,
   onDelete,
-  onAdd,
   selected,
   index,
 }: {
   onSelect: (option: string) => void;
   onDelete: () => void;
-  onAdd: () => void;
   selected: string;
   index: number;
 }) {
   const [show, setShow] = useState(false);
-
-  const add = () => {
-    onAdd();
-    setShow(false);
-  };
 
   const select = (day: string) => {
     onSelect(day);
