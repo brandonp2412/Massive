@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, Dialog, Portal, Switch} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {Plan} from './plan';
@@ -27,8 +27,8 @@ export default function EditPlan({
       if (!namesResult.rows.length) return setNames([]);
       setNames(namesResult.rows.raw().map(({name}) => name));
       if (!plan) return;
-      setDays(plan.days.split(','));
-      setWorkouts(plan.workouts.split(','));
+      if (plan.days) setDays(plan.days.split(','));
+      if (plan.workouts) setWorkouts(plan.workouts.split(','));
     };
     refresh();
   }, [plan, db]);
@@ -71,10 +71,12 @@ export default function EditPlan({
     <Portal>
       <Dialog visible={!!plan} onDismiss={() => setPlan(undefined)}>
         <Dialog.Title>
-          {plan ? `Edit "${days.slice(0, 2).join(', ')}"` : 'Add a plan'}
+          {plan?.days ? `Edit "${days.slice(0, 2).join(', ')}"` : 'Add a plan'}
         </Dialog.Title>
-        <Dialog.Content style={[styles.row, {justifyContent: 'space-between'}]}>
-          <View>
+        <Dialog.ScrollArea>
+          <ScrollView
+            style={{height: '80%'}}
+            contentContainerStyle={{paddingHorizontal: 24}}>
             <Text style={styles.title}>Days</Text>
             {DAYS.map(day => (
               <View key={day} style={[styles.row, {alignItems: 'center'}]}>
@@ -88,9 +90,7 @@ export default function EditPlan({
                 </Text>
               </View>
             ))}
-          </View>
-          <View>
-            <Text style={styles.title}>Workouts</Text>
+            <Text style={[styles.title, {marginTop: 10}]}>Workouts</Text>
             {names.length === 0 && (
               <Text style={{maxWidth: '80%'}}>
                 No sets found. Try going to the home page and adding some
@@ -110,8 +110,8 @@ export default function EditPlan({
                 </Text>
               </View>
             ))}
-          </View>
-        </Dialog.Content>
+          </ScrollView>
+        </Dialog.ScrollArea>
         <Dialog.Actions>
           <Button icon="close" onPress={() => setPlan(undefined)}>
             Cancel
@@ -129,9 +129,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     marginBottom: 10,
-    marginTop: -15,
   },
   row: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });
