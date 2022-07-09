@@ -64,7 +64,7 @@ export default function HomePage() {
     );
     setEdit(undefined);
     await refresh();
-  }, [edit, setEdit, refresh]);
+  }, [edit, setEdit, refresh, db]);
 
   const add = useCallback(async () => {
     if (
@@ -91,7 +91,7 @@ export default function HomePage() {
     const seconds = await AsyncStorage.getItem('seconds');
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
     NativeModules.AlarmModule.timer(milliseconds);
-  }, [newSet, setNewSet, refresh]);
+  }, [newSet, setNewSet, refresh, db]);
 
   const next = useCallback(async () => {
     if (end) return;
