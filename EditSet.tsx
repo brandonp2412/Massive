@@ -1,8 +1,9 @@
-import {format} from 'date-fns';
-import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet} from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {Button, Dialog, Portal, TextInput} from 'react-native-paper';
 import Set from './set';
+import {format} from './time';
 
 export default function EditSet({
   set,
@@ -17,6 +18,13 @@ export default function EditSet({
   title: string;
   saveText: string;
 }) {
+  const [show, setShow] = useState(false);
+
+  const onConfirm = (created: Date) => {
+    setSet({...set, created: created.toISOString()});
+    setShow(false);
+  };
+
   return (
     <Portal>
       <Dialog visible={set ? true : false} onDismiss={() => setSet(undefined)}>
@@ -52,12 +60,20 @@ export default function EditSet({
             onChangeText={unit => setSet({...set, unit})}
             onSubmitEditing={onSave}
           />
-          <Text style={styles.text}>
-            {format(
-              set?.created ? new Date(set.created) : new Date(),
-              'PPPP p',
-            )}
-          </Text>
+          {set?.created && (
+            <>
+              <Button icon="calendar-outline" onPress={() => setShow(true)}>
+                {format(set.created)}
+              </Button>
+              <DateTimePickerModal
+                isVisible={show}
+                mode="datetime"
+                onConfirm={onConfirm}
+                onCancel={() => setShow(false)}
+                date={new Date(set.created)}
+              />
+            </>
+          )}
         </Dialog.Content>
         <Dialog.Actions>
           <Button icon="close" onPress={() => setSet(undefined)}>

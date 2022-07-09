@@ -50,9 +50,17 @@ export default function HomePage() {
   );
 
   const update = useCallback(async () => {
+    console.log('HomePage.update', {edit});
     await db.executeSql(
-      `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
-      [edit?.name, edit?.reps, edit?.weight, edit?.unit, edit?.id],
+      `UPDATE sets SET name = ?, reps = ?, weight = ?, created = ?, unit = ? WHERE id = ?`,
+      [
+        edit?.name,
+        edit?.reps,
+        edit?.weight,
+        edit?.created,
+        edit?.unit,
+        edit?.id,
+      ],
     );
     setEdit(undefined);
     await refresh();
@@ -139,7 +147,9 @@ export default function HomePage() {
         saveText="Add"
         onSave={add}
       />
-      <MassiveFab onPress={() => setNewSet({} as Set)} />
+      <MassiveFab
+        onPress={() => setNewSet({created: new Date().toISOString()} as Set)}
+      />
     </View>
   );
 }

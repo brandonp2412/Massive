@@ -3,16 +3,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import {Button, Dialog, Portal, Switch} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {Plan} from './plan';
-
-const DAYS = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
+import {DAYS} from './time';
 
 export default function EditPlan({
   plan,
