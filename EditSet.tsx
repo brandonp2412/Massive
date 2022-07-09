@@ -17,16 +17,15 @@ export default function EditSet({
   const db = useContext(DatabaseContext);
 
   const save = async () => {
-    if (!set?.name || !set?.reps || !set?.weight) return;
     if (!set?.id)
       await db.executeSql(
         `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
         [
-          set.name,
-          set.reps,
-          set.weight,
+          set?.name,
+          set?.reps,
+          set?.weight,
           new Date().toISOString(),
-          set.unit || 'kg',
+          set?.unit || 'kg',
         ],
       );
     else
