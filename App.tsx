@@ -10,6 +10,7 @@ import {StatusBar, useColorScheme} from 'react-native';
 import {
   DarkTheme as DarkThemePaper,
   DefaultTheme as DefaultThemePaper,
+  IconButton,
   Provider,
 } from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
@@ -61,10 +62,48 @@ const App = () => {
         {db && (
           <DatabaseContext.Provider value={db}>
             <Tab.Navigator>
-              <Tab.Screen name="Home" component={HomePage} />
-              <Tab.Screen name="Plan" component={PlanPage} />
-              <Tab.Screen name="Best" component={BestPage} />
-              <Tab.Screen name="Settings" component={SettingsPage} />
+              <Tab.Screen
+                options={{
+                  tabBarLabel: ({focused}) => (
+                    <IconButton icon={focused ? 'home' : 'home-outline'} />
+                  ),
+                }}
+                name="Home"
+                component={HomePage}
+              />
+              <Tab.Screen
+                options={{
+                  tabBarLabel: ({focused}) => (
+                    <IconButton
+                      icon={focused ? 'calendar' : 'calendar-outline'}
+                    />
+                  ),
+                }}
+                name="Plan"
+                component={PlanPage}
+              />
+              <Tab.Screen
+                options={{
+                  tabBarLabel: ({focused}) => (
+                    <IconButton
+                      icon={focused ? 'bar-chart' : 'bar-chart-outline'}
+                    />
+                  ),
+                }}
+                name="Best"
+                component={BestPage}
+              />
+              <Tab.Screen
+                options={{
+                  tabBarLabel: ({focused}) => (
+                    <IconButton
+                      icon={focused ? 'settings' : 'settings-outline'}
+                    />
+                  ),
+                }}
+                name="Settings"
+                component={SettingsPage}
+              />
             </Tab.Navigator>
           </DatabaseContext.Provider>
         )}
