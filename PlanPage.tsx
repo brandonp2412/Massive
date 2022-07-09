@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
@@ -14,21 +14,20 @@ export default function PlanPage() {
   const [plan, setPlan] = useState<Plan>();
   const db = useContext(DatabaseContext);
 
-  const selectPlans = `
-    SELECT * from plans
-    WHERE days LIKE ? OR workouts LIKE ?
-`;
-  const getPlans = ({search}: {search: string}) =>
-    db.executeSql(selectPlans, [`%${search}%`, `%${search}%`]);
-
-  const refresh = async () => {
-    const [plansResult] = await getPlans({search});
+  const refresh = useCallback(async () => {
+    const selectPlans = `
+      SELECT * from plans
+      WHERE days LIKE ? OR workouts LIKE ?
+    `;
+    const getPlans = ({s}: {s: string}) =>
+      db.executeSql(selectPlans, [`%${s}%`, `%${s}%`]);
+    const [plansResult] = await getPlans({s: search});
     setPlans(plansResult.rows.raw());
-  };
+  }, [search, db]);
 
   useEffect(() => {
     refresh();
-  }, [search]);
+  }, [search, refresh]);
 
   const renderItem = ({item}: {item: Plan}) => (
     <PlanItem item={item} key={item.id} setPlan={setPlan} onRemove={refresh} />

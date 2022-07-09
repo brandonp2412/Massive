@@ -34,7 +34,7 @@ export default function ViewBest({
       setUnit(result.rows.item(0).unit);
     };
     refresh();
-  }, [best]);
+  }, [best, db]);
 
   const contentInset = {top: 20, bottom: 20};
 
@@ -65,7 +65,10 @@ export default function ViewBest({
           </View>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button icon="close" onPress={() => setBest(undefined)}>
+          <Button
+            mode="contained"
+            icon="close"
+            onPress={() => setBest(undefined)}>
             Close
           </Button>
         </Dialog.Actions>

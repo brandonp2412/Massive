@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, NativeModules, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
@@ -25,23 +25,14 @@ export default function HomePage() {
     ORDER BY created DESC 
     LIMIT ? OFFSET ?
   `;
-  const getSets = ({
-    search,
-    limit,
-    offset,
-  }: {
-    search: string;
-    limit: number;
-    offset: number;
-  }) => db.executeSql(selectSets, [`%${search}%`, limit, offset]);
 
-  const refresh = async () => {
-    const [result] = await getSets({search, limit, offset: 0});
+  const refresh = useCallback(async () => {
+    const [result] = await db.executeSql(selectSets, [`%${search}%`, limit, 0]);
     if (!result) return setSets([]);
     setSets(result.rows.raw());
     setOffset(0);
     setEnd(false);
-  };
+  }, [search]);
 
   const refreshLoader = async () => {
     setRefresing(true);
@@ -66,19 +57,19 @@ export default function HomePage() {
     NativeModules.AlarmModule.timer(milliseconds);
   };
 
-  const next = async () => {
+  const next = useCallback(async () => {
     if (end) return;
     setRefresing(true);
     const newOffset = offset + limit;
-    const [result] = await getSets({search, limit, offset: newOffset}).finally(
-      () => setRefresing(false),
-    );
+    const [result] = await db
+      .executeSql(selectSets, [`%${search}%`, limit, newOffset])
+      .finally(() => setRefresing(false));
     if (result.rows.length === 0) return setEnd(true);
     if (!sets) return;
     setSets([...sets, ...result.rows.raw()]);
     if (result.rows.length < limit) return setEnd(true);
     setOffset(newOffset);
-  };
+  }, [search, end]);
 
   return (
     <View style={styles.container}>

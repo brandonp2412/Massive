@@ -65,9 +65,9 @@ export default function SettingsPage() {
         value={seconds}
         keyboardType="numeric"
         placeholder="30"
-        onChangeText={seconds => {
-          setSeconds(seconds);
-          setItem('seconds', seconds);
+        onChangeText={s => {
+          setSeconds(s);
+          setItem('seconds', s);
         }}
         style={styles.text}
       />

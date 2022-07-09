@@ -28,16 +28,17 @@ export default function EditPlan({
   const [names, setNames] = useState<string[]>([]);
   const db = useContext(DatabaseContext);
 
-  const refresh = async () => {
-    const [namesResult] = await db.executeSql('SELECT DISTINCT name FROM sets');
-    if (!namesResult.rows.length) return setNames([]);
-    setNames(namesResult.rows.raw().map(({name}) => name));
-    if (!plan) return;
-    setDays(plan.days.split(','));
-    setWorkouts(plan.workouts.split(','));
-  };
-
   useEffect(() => {
+    const refresh = async () => {
+      const [namesResult] = await db.executeSql(
+        'SELECT DISTINCT name FROM sets',
+      );
+      if (!namesResult.rows.length) return setNames([]);
+      setNames(namesResult.rows.raw().map(({name}) => name));
+      if (!plan) return;
+      setDays(plan.days.split(','));
+      setWorkouts(plan.workouts.split(','));
+    };
     refresh();
   }, [plan]);
 

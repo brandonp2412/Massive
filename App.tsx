@@ -36,20 +36,19 @@ const App = () => {
   const [db, setDb] = useState<SQLiteDatabase | null>(null);
   const dark = useColorScheme() === 'dark';
 
-  const init = async () => {
-    const gotDb = await getDb();
-    await gotDb.executeSql(createPlans);
-    await gotDb.executeSql(createSets);
-    setDb(gotDb);
-    const minutes = await getItem('minutes');
-    if (minutes === null) await setItem('minutes', '3');
-    const seconds = await getItem('seconds');
-    if (seconds === null) await setItem('seconds', '30');
-    const alarmEnabled = await getItem('alarmEnabled');
-    if (alarmEnabled === null) await setItem('alarmEnabled', 'false');
-  };
-
   useEffect(() => {
+    const init = async () => {
+      const gotDb = await getDb();
+      await gotDb.executeSql(createPlans);
+      await gotDb.executeSql(createSets);
+      setDb(gotDb);
+      const minutes = await getItem('minutes');
+      if (minutes === null) await setItem('minutes', '3');
+      const seconds = await getItem('seconds');
+      if (seconds === null) await setItem('seconds', '30');
+      const alarmEnabled = await getItem('alarmEnabled');
+      if (alarmEnabled === null) await setItem('alarmEnabled', 'false');
+    };
     init();
   }, []);
 

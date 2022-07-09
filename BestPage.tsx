@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
@@ -12,22 +12,22 @@ export default function BestPage() {
   const [best, setBest] = useState<Best>();
   const db = useContext(DatabaseContext);
 
-  const bestWeight = `
-    SELECT name, reps, unit, MAX(weight) AS weight 
-    FROM sets
-    WHERE name LIKE ?
-    GROUP BY name;
-  `;
+  const refresh = useCallback(async () => {
+    const bestWeight = `
+      SELECT name, reps, unit, MAX(weight) AS weight 
+      FROM sets
+      WHERE name LIKE ?
+      GROUP BY name;
+    `;
 
-  const bestReps = `
-    SELECT name, MAX(reps) as reps, unit, weight 
-    FROM sets
-    WHERE name = ?
-      AND weight = ?
-    GROUP BY name;
-  `;
+    const bestReps = `
+      SELECT name, MAX(reps) as reps, unit, weight 
+      FROM sets
+      WHERE name = ?
+        AND weight = ?
+      GROUP BY name;
+    `;
 
-  const refresh = async () => {
     const [weight] = await db.executeSql(bestWeight, [`%${search}%`]);
     if (!weight) return setBests([]);
     let newBest: Best[] = [];
@@ -39,7 +39,7 @@ export default function BestPage() {
       newBest = newBest.concat(reps.rows.raw());
     }
     setBests(newBest);
-  };
+  }, [search]);
 
   useEffect(() => {
     refresh();
