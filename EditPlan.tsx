@@ -49,7 +49,7 @@ export default function EditPlan({
       );
     setPlan(undefined);
     onSave();
-  }, [days, workouts, db]);
+  }, [days, workouts, db, onSave, plan, setPlan]);
 
   const toggleWorkout = useCallback(
     (on: boolean, name: string) => {
@@ -59,7 +59,7 @@ export default function EditPlan({
         setWorkouts(workouts.filter(workout => workout !== name));
       }
     },
-    [setWorkouts],
+    [setWorkouts, workouts],
   );
 
   const toggleDay = useCallback(
@@ -70,7 +70,7 @@ export default function EditPlan({
         setDays(days.filter(d => d !== day));
       }
     },
-    [setDays],
+    [setDays, days],
   );
 
   return (

@@ -21,7 +21,7 @@ export default function PlanItem({
     await db.executeSql(`DELETE FROM plans WHERE id = ?`, [item.id]);
     setShow(false);
     onRemove();
-  }, [db, setShow]);
+  }, [db, setShow, item.id, onRemove]);
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {

@@ -21,14 +21,14 @@ export default function SetItem({
     await db.executeSql(`DELETE FROM sets WHERE id = ?`, [item.id]);
     setShow(false);
     onRemove();
-  }, [setShow, db]);
+  }, [setShow, db, onRemove, item.id]);
 
   const copy = useCallback(() => {
     const set = {...item};
     delete set.id;
     setSet(set);
     setShow(false);
-  }, [setSet, setShow]);
+  }, [setSet, setShow, item]);
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {
