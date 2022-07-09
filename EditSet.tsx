@@ -17,6 +17,8 @@ export default function EditSet({
   const db = useContext(DatabaseContext);
 
   const save = async () => {
+    if (!set?.name || set?.reps === undefined || set?.weight === undefined)
+      return;
     if (!set?.id)
       await db.executeSql(
         `INSERT INTO sets(name, reps, weight, created, unit) VALUES (?,?,?,?,?)`,
