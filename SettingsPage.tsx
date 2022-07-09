@@ -1,9 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {useContext, useEffect, useState} from 'react';
-import {NativeModules, StyleSheet, Text, View} from 'react-native';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
+import {
+  NativeModules,
+  PermissionsAndroid,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import {Dirs, FileSystem} from 'react-native-file-access';
 import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import BatteryDialog from './BatteryDialog';
+import Set from './set';
+import DocumentPicker from 'react-native-document-picker';
 
 const {getItem, setItem} = AsyncStorage;
 
@@ -14,38 +23,91 @@ export default function SettingsPage() {
   const [snackbar, setSnackbar] = useState('');
   const [showBattery, setShowBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(0);
   const db = useContext(DatabaseContext);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setMinutes((await getItem('minutes')) || '');
     setSeconds((await getItem('seconds')) || '');
     setAlarmEnabled((await getItem('alarmEnabled')) === 'true');
     NativeModules.AlarmModule.ignoringBatteryOptimizations(setIgnoring);
-  };
+  }, [setIgnoring]);
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
-  const clear = async () => {
-    setSnackbar('Deleting all data...');
-    setTimeout(() => setSnackbar(''), 5000);
+  const toast = useCallback(
+    (message: string) => {
+      setSnackbar(message);
+      clearTimeout(timeoutId);
+      setTimeoutId(setTimeout(() => setSnackbar(''), 3000));
+    },
+    [setSnackbar, timeoutId, setTimeoutId],
+  );
+
+  const clear = useCallback(async () => {
     await db.executeSql(`DELETE FROM sets`);
-  };
+    toast('All data has been deleted!');
+  }, [db, toast]);
 
-  const exportSets = () => {
-    NativeModules.ExportModule.sets();
-  };
+  const exportSets = useCallback(async () => {
+    const fileName = 'sets.csv';
+    const filePath = `${Dirs.DocumentDir}/${fileName}`;
+    const [result] = await db.executeSql('SELECT * FROM sets');
+    if (result.rows.length === 0) return;
+    const sets: Set[] = result.rows.raw();
+    const data = ['id,name,reps,weight,created,unit']
+      .concat(
+        sets.map(
+          set =>
+            `${set.id},${set.name},${set.reps},${set.weight},${set.created},${set.unit}`,
+        ),
+      )
+      .join('\n');
+    console.log('SettingsPage.exportSets', {length: sets.length});
+    const permission = async () => {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    };
 
-  const importSets = () => {
-    NativeModules.ImportModule.sets();
-  };
+    const granted = await permission();
+    if (granted) {
+      await FileSystem.writeFile(filePath, data);
+      if (!FileSystem.exists(filePath)) return;
+      await FileSystem.cpExternal(filePath, fileName, 'downloads');
+    }
+    toast('Exported data. Check your downloads folder.');
+  }, [db, toast]);
 
-  const changeAlarmEnabled = (enabled: boolean) => {
-    setAlarmEnabled(enabled);
-    if (enabled && !ignoring) setShowBattery(true);
-    setItem('alarmEnabled', enabled ? 'true' : 'false');
-  };
+  const importSets = useCallback(async () => {
+    const result = await DocumentPicker.pickSingle();
+    const file = await FileSystem.readFile(result.uri);
+    console.log(`${SettingsPage.name}.${importSets.name}:`, file.length);
+    const values = file
+      .split('\n')
+      .slice(1)
+      .map(set => {
+        const cells = set.split(',');
+        return `('${cells[1]}',${cells[2]},${cells[3]},'${cells[4]}','${cells[5]}')`;
+      })
+      .join(',');
+    await db.executeSql(
+      `INSERT INTO sets(name,reps,weight,created,unit) VALUES ${values}`,
+    );
+    toast('Data imported.');
+  }, [db, toast]);
+
+  const changeAlarmEnabled = useCallback(
+    (enabled: boolean) => {
+      setAlarmEnabled(enabled);
+      if (enabled && !ignoring) setShowBattery(true);
+      setItem('alarmEnabled', enabled ? 'true' : 'false');
+    },
+    [alarmEnabled, setShowBattery],
+  );
 
   return (
     <View style={styles.container}>

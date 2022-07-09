@@ -17,7 +17,6 @@ class MassivePackage : ReactPackage {
     ): List<NativeModule> {
         val modules: MutableList<NativeModule> = ArrayList()
         modules.add(AlarmModule(reactContext))
-        modules.add(ExportModule(reactContext))
         modules.add(ImportModule(reactContext))
         return modules
     }
