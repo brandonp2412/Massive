@@ -10,7 +10,7 @@ export default function MassiveFab(
       extended={false}
       label="Add"
       icon="add"
-      style={{position: 'absolute', right: 10, bottom: 50}}
+      style={{position: 'absolute', right: 10, bottom: 60}}
     />
   );
 }
