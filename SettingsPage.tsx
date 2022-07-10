@@ -18,6 +18,7 @@ const {getItem, setItem} = AsyncStorage;
 
 export default function SettingsPage() {
   const [minutes, setMinutes] = useState<string>('');
+  const [maxSets, setMaxSets] = useState<string>('3');
   const [seconds, setSeconds] = useState<string>('');
   const [alarmEnabled, setAlarmEnabled] = useState<boolean>(false);
   const [predictiveSets, setPredictiveSets] = useState<boolean>(false);
@@ -31,8 +32,10 @@ export default function SettingsPage() {
     setMinutes((await getItem('minutes')) || '');
     setSeconds((await getItem('seconds')) || '');
     setAlarmEnabled((await getItem('alarmEnabled')) === 'true');
+    setPredictiveSets((await getItem('predictiveSets')) === 'true');
+    setMaxSets((await getItem('maxSets')) || '');
     NativeModules.AlarmModule.ignoringBatteryOptimizations(setIgnoring);
-  }, [setIgnoring]);
+  }, []);
 
   useEffect(() => {
     refresh();
@@ -140,6 +143,17 @@ export default function SettingsPage() {
         onChangeText={s => {
           setSeconds(s);
           setItem('seconds', s);
+        }}
+        style={styles.text}
+      />
+
+      <TextInput
+        label="Max sets"
+        value={maxSets}
+        keyboardType="numeric"
+        onChangeText={value => {
+          setMaxSets(value);
+          setItem('maxSets', value);
         }}
         style={styles.text}
       />

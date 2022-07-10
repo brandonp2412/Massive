@@ -163,7 +163,9 @@ export default function HomePage() {
       set => set.name === todaysSets[0].name,
     ).length;
     console.log(`${HomePage.name}.onAdd: count =`, count);
-    if (count < 3) return setNewSet({...todaysSets[0], id: undefined, created});
+    const maxSets = await AsyncStorage.getItem('maxSets');
+    if (count < Number(maxSets))
+      return setNewSet({...todaysSets[0], id: undefined, created});
     const nextWorkout =
       todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
     if (!nextWorkout)

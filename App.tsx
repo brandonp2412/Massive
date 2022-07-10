@@ -51,6 +51,7 @@ const App = () => {
       if (alarmEnabled === null) await setItem('alarmEnabled', 'false');
       if (!(await getItem('predictiveSets')))
         await setItem('predictiveSets', 'true');
+      if (!(await getItem('maxSets'))) await setItem('maxSets', '3');
     };
     init();
   }, []);
