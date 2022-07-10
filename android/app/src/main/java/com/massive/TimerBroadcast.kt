@@ -38,7 +38,6 @@ class TimerBroadcast : BroadcastReceiver() {
             val finishPending =
                 PendingIntent.getActivity(context, 0, finishIntent, PendingIntent.FLAG_IMMUTABLE)
             builder.setContentText("Timer finished.")
-                .clearActions()
                 .setAutoCancel(true)
                 .setOngoing(false)
                 .setContentIntent(finishPending)
