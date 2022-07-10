@@ -11,23 +11,27 @@ export default function EditSet({
   onSave,
   title,
   saveText,
+  show,
+  setShow,
 }: {
   onSave: () => void;
   set?: Set;
   setSet: (set?: Set) => void;
   title: string;
   saveText: string;
+  show: boolean;
+  setShow: (show: boolean) => void;
 }) {
-  const [show, setShow] = useState(false);
+  const [showDate, setShowDate] = useState(false);
 
   const onConfirm = (created: Date) => {
     setSet({...set, created: created.toISOString()});
-    setShow(false);
+    setShowDate(false);
   };
 
   return (
     <Portal>
-      <Dialog visible={set ? true : false} onDismiss={() => setSet(undefined)}>
+      <Dialog visible={show} onDismiss={() => setShow(false)}>
         <Dialog.Title>{title}</Dialog.Title>
         <Dialog.ScrollArea>
           <ScrollView>
@@ -63,14 +67,16 @@ export default function EditSet({
             />
             {set?.created && (
               <>
-                <Button icon="calendar-outline" onPress={() => setShow(true)}>
+                <Button
+                  icon="calendar-outline"
+                  onPress={() => setShowDate(true)}>
                   {format(set.created)}
                 </Button>
                 <DateTimePickerModal
-                  isVisible={show}
+                  isVisible={showDate}
                   mode="datetime"
                   onConfirm={onConfirm}
-                  onCancel={() => setShow(false)}
+                  onCancel={() => setShowDate(false)}
                   date={new Date(set.created)}
                 />
               </>
@@ -78,7 +84,7 @@ export default function EditSet({
           </ScrollView>
         </Dialog.ScrollArea>
         <Dialog.Actions>
-          <Button icon="close" onPress={() => setSet(undefined)}>
+          <Button icon="close" onPress={() => setShow(false)}>
             Cancel
           </Button>
           <Button mode="contained" icon="save" onPress={onSave}>

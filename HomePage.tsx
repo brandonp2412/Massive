@@ -14,6 +14,8 @@ export default function HomePage() {
   const [sets, setSets] = useState<Set[]>();
   const [offset, setOffset] = useState(0);
   const [edit, setEdit] = useState<Set>();
+  const [showEdit, setShowEdit] = useState(false);
+  const [showNew, setShowNew] = useState(false);
   const [newSet, setNewSet] = useState<Set>();
   const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -53,6 +55,8 @@ export default function HomePage() {
         key={item.id}
         setEdit={setEdit}
         onRemove={refresh}
+        setShowEdit={setShowEdit}
+        setShowNew={setShowNew}
       />
     ),
     [setEdit, refresh, setNewSet],
@@ -71,9 +75,9 @@ export default function HomePage() {
         edit?.id,
       ],
     );
-    setEdit(undefined);
+    setShowEdit(false);
     await refresh();
-  }, [edit, setEdit, refresh, db]);
+  }, [edit, setShowEdit, refresh, db]);
 
   const add = useCallback(async () => {
     if (
@@ -92,7 +96,7 @@ export default function HomePage() {
         newSet?.unit || 'kg',
       ],
     );
-    setNewSet(undefined);
+    setShowNew(false);
     await refresh();
     const enabled = await AsyncStorage.getItem('alarmEnabled');
     if (enabled !== 'true') return;
@@ -100,7 +104,7 @@ export default function HomePage() {
     const seconds = await AsyncStorage.getItem('seconds');
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
     NativeModules.AlarmModule.timer(milliseconds);
-  }, [newSet, setNewSet, refresh, db]);
+  }, [newSet, setShowNew, refresh, db]);
 
   const next = useCallback(async () => {
     if (end) return;
@@ -147,6 +151,8 @@ export default function HomePage() {
         title={`Edit ${edit?.name}`}
         saveText="Edit"
         onSave={update}
+        show={showEdit}
+        setShow={setShowEdit}
       />
 
       <EditSet
@@ -155,9 +161,18 @@ export default function HomePage() {
         title="Add set"
         saveText="Add"
         onSave={add}
+        show={showNew}
+        setShow={setShowNew}
       />
       <MassiveFab
-        onPress={() => setNewSet({created: new Date().toISOString()} as Set)}
+        onPress={() => {
+          setNewSet(
+            newSet
+              ? {...newSet, created: new Date().toISOString()}
+              : {created: new Date().toISOString()},
+          );
+          setShowNew(true);
+        }}
       />
     </View>
   );
