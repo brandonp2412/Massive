@@ -1,6 +1,6 @@
 import {DrawerNavigationProp} from '@react-navigation/drawer';
 import {useNavigation} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
 import {DrawerParamList} from './App';
@@ -8,7 +8,7 @@ import EditSet from './EditSet';
 import Set from './set';
 import SetsPage from './SetsPage';
 
-const Stack = createNativeStackNavigator<StackParams>();
+const Stack = createStackNavigator<StackParams>();
 export type StackParams = {
   Sets: {};
   EditSet: {
@@ -20,7 +20,8 @@ export default function HomePage() {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
 
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator
+      screenOptions={{headerShown: false, animationEnabled: false}}>
       <Stack.Screen name="Sets" component={SetsPage} />
       <Stack.Screen
         name="EditSet"
