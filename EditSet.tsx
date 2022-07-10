@@ -115,7 +115,7 @@ export default function EditSet() {
   return (
     <ScrollView style={{padding: 10}}>
       <TextInput
-        style={styles.text}
+        style={styles.marginBottom}
         autoFocus
         label="Name *"
         value={name}
@@ -123,14 +123,14 @@ export default function EditSet() {
         autoCorrect={false}
       />
       <TextInput
-        style={styles.text}
+        style={styles.marginBottom}
         label="Reps *"
         keyboardType="numeric"
         value={reps}
         onChangeText={setReps}
       />
       <TextInput
-        style={styles.text}
+        style={styles.marginBottom}
         label="Weight *"
         keyboardType="numeric"
         value={weight}
@@ -138,14 +138,17 @@ export default function EditSet() {
         onSubmitEditing={save}
       />
       <TextInput
-        style={styles.text}
+        style={styles.marginBottom}
         label="Unit (kg)"
         value={unit}
         onChangeText={setUnit}
         onSubmitEditing={save}
       />
 
-      <Button icon="calendar-outline" onPress={() => setShowDate(true)}>
+      <Button
+        style={styles.marginBottom}
+        icon="calendar-outline"
+        onPress={() => setShowDate(true)}>
         {format(created)}
       </Button>
       <DateTimePickerModal
@@ -163,7 +166,7 @@ export default function EditSet() {
 }
 
 const styles = StyleSheet.create({
-  text: {
+  marginBottom: {
     marginBottom: 10,
   },
 });
