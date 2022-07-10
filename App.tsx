@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import {
   DarkTheme,
   DefaultTheme,
@@ -21,8 +21,8 @@ import HomePage from './HomePage';
 import PlanPage from './PlanPage';
 import SettingsPage from './SettingsPage';
 
-const Tab = createMaterialTopTabNavigator<RootStackParamList>();
-export type RootStackParamList = {
+const Drawer = createDrawerNavigator<DrawerParamList>();
+export type DrawerParamList = {
   Home: {};
   Settings: {};
   Best: {};
@@ -64,19 +64,20 @@ const App = () => {
         <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
         {db && (
           <DatabaseContext.Provider value={db}>
-            <Tab.Navigator>
-              <Tab.Screen
+            <Drawer.Navigator
+              screenOptions={{headerTintColor: dark ? 'white' : 'black'}}>
+              <Drawer.Screen
                 options={{
-                  tabBarLabel: ({focused}) => (
+                  drawerIcon: ({focused}) => (
                     <IconButton icon={focused ? 'home' : 'home-outline'} />
                   ),
                 }}
                 name="Home"
                 component={HomePage}
               />
-              <Tab.Screen
+              <Drawer.Screen
                 options={{
-                  tabBarLabel: ({focused}) => (
+                  drawerIcon: ({focused}) => (
                     <IconButton
                       icon={focused ? 'calendar' : 'calendar-outline'}
                     />
@@ -85,9 +86,9 @@ const App = () => {
                 name="Plan"
                 component={PlanPage}
               />
-              <Tab.Screen
+              <Drawer.Screen
                 options={{
-                  tabBarLabel: ({focused}) => (
+                  drawerIcon: ({focused}) => (
                     <IconButton
                       icon={focused ? 'bar-chart' : 'bar-chart-outline'}
                     />
@@ -96,9 +97,9 @@ const App = () => {
                 name="Best"
                 component={BestPage}
               />
-              <Tab.Screen
+              <Drawer.Screen
                 options={{
-                  tabBarLabel: ({focused}) => (
+                  drawerIcon: ({focused}) => (
                     <IconButton
                       icon={focused ? 'settings' : 'settings-outline'}
                     />
@@ -107,7 +108,7 @@ const App = () => {
                 name="Settings"
                 component={SettingsPage}
               />
-            </Tab.Navigator>
+            </Drawer.Navigator>
           </DatabaseContext.Provider>
         )}
       </NavigationContainer>

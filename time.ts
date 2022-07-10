@@ -23,8 +23,7 @@ export const MONTH = [
   'December',
 ];
 
-export function format(iso: string) {
-  const date = new Date(iso);
+export function format(date: Date) {
   const mm = MONTH[date.getMonth()];
   const dd = date.getDate().toString();
   const day = DAYS[date.getDay()];
