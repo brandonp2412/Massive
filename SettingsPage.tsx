@@ -39,10 +39,10 @@ export default function SettingsPage() {
   }, [refresh]);
 
   const toast = useCallback(
-    (message: string) => {
+    (message: string, timeout = 3000) => {
       setSnackbar(message);
       clearTimeout(timeoutId);
-      setTimeoutId(setTimeout(() => setSnackbar(''), 3000));
+      setTimeoutId(setTimeout(() => setSnackbar(''), timeout));
     },
     [setSnackbar, timeoutId, setTimeoutId],
   );
@@ -113,6 +113,7 @@ export default function SettingsPage() {
     (enabled: boolean) => {
       setPredictiveSets(enabled);
       setItem('predictiveSets', enabled ? 'true' : 'false');
+      toast('Predictive sets guess whats next based on todays plan.', 10000);
     },
     [setPredictiveSets],
   );
