@@ -6,7 +6,7 @@ import {IconButton} from 'react-native-paper';
 import {DrawerParamList} from './App';
 import EditSet from './EditSet';
 import Set from './set';
-import SetsPage from './SetsPage';
+import SetList from './SetList';
 
 const Stack = createStackNavigator<StackParams>();
 export type StackParams = {
@@ -22,7 +22,7 @@ export default function HomePage() {
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false, animationEnabled: false}}>
-      <Stack.Screen name="Sets" component={SetsPage} />
+      <Stack.Screen name="Sets" component={SetList} />
       <Stack.Screen
         name="EditSet"
         component={EditSet}

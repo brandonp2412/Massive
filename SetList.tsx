@@ -14,7 +14,7 @@ import SetItem from './SetItem';
 
 const limit = 15;
 
-export default function SetsPage() {
+export default function SetList() {
   const [sets, setSets] = useState<Set[]>();
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
@@ -33,7 +33,7 @@ export default function SetsPage() {
   const refresh = useCallback(async () => {
     const [result] = await db.executeSql(selectSets, [`%${search}%`, limit, 0]);
     if (!result) return setSets([]);
-    console.log(`${SetsPage.name}.refresh:`, {search, limit});
+    console.log(`${SetList.name}.refresh:`, {search, limit});
     setSets(result.rows.raw());
     setOffset(0);
     setEnd(false);
@@ -66,7 +66,7 @@ export default function SetsPage() {
     if (end) return;
     setRefreshing(true);
     const newOffset = offset + limit;
-    console.log(`${SetsPage.name}.next:`, {
+    console.log(`${SetList.name}.next:`, {
       offset,
       limit,
       newOffset,

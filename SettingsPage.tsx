@@ -13,6 +13,7 @@ import {DatabaseContext} from './App';
 import BatteryDialog from './BatteryDialog';
 import Set from './set';
 import DocumentPicker from 'react-native-document-picker';
+import ConfirmDialog from './ConfirmDialog';
 
 const {getItem, setItem} = AsyncStorage;
 
@@ -24,6 +25,7 @@ export default function SettingsPage() {
   const [predictiveSets, setPredictiveSets] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState('');
   const [showBattery, setShowBattery] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
   const [timeoutId, setTimeoutId] = useState(0);
   const db = useContext(DatabaseContext);
@@ -51,6 +53,7 @@ export default function SettingsPage() {
   );
 
   const clear = useCallback(async () => {
+    setShowDelete(false);
     await db.executeSql(`DELETE FROM sets`);
     toast('All data has been deleted!');
   }, [db, toast]);
@@ -165,6 +168,17 @@ export default function SettingsPage() {
         onValueChange={changeAlarmEnabled}
       />
 
+      <ConfirmDialog
+        title="Battery optimizations"
+        show={showBattery}
+        setShow={setShowBattery}
+        onOk={() => {
+          NativeModules.AlarmModule.openBatteryOptimizations();
+          setShowBattery(false);
+        }}>
+        Disable battery optimizations for Massive to use rest timers.
+      </ConfirmDialog>
+
       <Text style={styles.text}>Predictive sets</Text>
       <Switch
         style={[styles.text, {alignSelf: 'flex-start'}]}
@@ -187,13 +201,19 @@ export default function SettingsPage() {
       </Button>
 
       <Button
-        style={{alignSelf: 'flex-start', marginTop: 'auto'}}
+        style={{alignSelf: 'flex-start'}}
         icon="trash"
-        onPress={clear}>
+        onPress={() => setShowDelete(true)}>
         Delete all data
       </Button>
 
-      <BatteryDialog show={showBattery} setShow={setShowBattery} />
+      <ConfirmDialog
+        title="Delete all data"
+        show={showDelete}
+        setShow={setShowDelete}
+        onOk={clear}>
+        This irreversibly deletes all data from the app. Are you sure?
+      </ConfirmDialog>
 
       <Snackbar
         visible={!!snackbar}
