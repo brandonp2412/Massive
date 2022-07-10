@@ -115,7 +115,7 @@ export default function SettingsPage() {
       setItem('predictiveSets', enabled ? 'true' : 'false');
       toast('Predictive sets guess whats next based on todays plan.', 10000);
     },
-    [setPredictiveSets],
+    [setPredictiveSets, toast],
   );
 
   return (
