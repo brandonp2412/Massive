@@ -5,8 +5,10 @@ import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import EditSet from './EditSet';
 import MassiveFab from './MassiveFab';
+import {Plan} from './plan';
 import Set from './set';
 import SetItem from './SetItem';
+import {DAYS} from './time';
 
 const limit = 15;
 
@@ -126,6 +128,49 @@ export default function HomePage() {
     setOffset(newOffset);
   }, [search, end, offset, sets, db, selectSets]);
 
+  const getTodaysPlan = useCallback(async (): Promise<Plan[]> => {
+    const today = DAYS[new Date().getDay()];
+    const [result] = await db.executeSql(
+      `SELECT * FROM plans WHERE days LIKE ? LIMIT 1`,
+      [`%${today}%`],
+    );
+    return result.rows.raw();
+  }, [db]);
+
+  const getTodaysSets = useCallback(async (): Promise<Set[]> => {
+    const today = new Date().toISOString().split('T')[0];
+    const [result] = await db.executeSql(
+      `SELECT * FROM sets WHERE created LIKE ? ORDER BY created DESC`,
+      [`${today}%`],
+    );
+    return result.rows.raw();
+  }, [db]);
+
+  const onAdd = useCallback(async () => {
+    const created = new Date().toISOString();
+    setNewSet({created});
+    setShowNew(true);
+    const todaysPlan = await getTodaysPlan();
+    if (todaysPlan.length === 0) return;
+    console.log(`${HomePage.name}.onAdd: todaysPlan =`, todaysPlan);
+    const todaysSets = await getTodaysSets();
+    const todaysWorkouts = todaysPlan[0].workouts.split(',');
+    if (todaysSets.length === 0)
+      return setNewSet({created, name: todaysWorkouts[0]});
+    console.log(`${HomePage.name}.onAdd: todaysSets =`, todaysSets);
+    const count = todaysSets.filter(
+      set => set.name === todaysSets[0].name,
+    ).length;
+    console.log(`${HomePage.name}.onAdd: count =`, count);
+    if (count < 3) return setNewSet({...todaysSets[0], id: undefined, created});
+    const nextWorkout =
+      todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
+    if (!nextWorkout)
+      return setNewSet({...todaysSets[0], id: undefined, created});
+    console.log(`${HomePage.name}.onAdd: nextWorkout =`, nextWorkout);
+    setNewSet({created, name: nextWorkout});
+  }, []);
+
   return (
     <View style={styles.container}>
       <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
@@ -164,16 +209,7 @@ export default function HomePage() {
         show={showNew}
         setShow={setShowNew}
       />
-      <MassiveFab
-        onPress={() => {
-          setNewSet(
-            newSet
-              ? {...newSet, created: new Date().toISOString()}
-              : {created: new Date().toISOString()},
-          );
-          setShowNew(true);
-        }}
-      />
+      <MassiveFab onPress={onAdd} />
     </View>
   );
 }
