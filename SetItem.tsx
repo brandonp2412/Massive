@@ -6,11 +6,13 @@ import Set from './set';
 
 export default function SetItem({
   item,
-  setSet,
+  setEdit,
   onRemove,
+  setNewSet,
 }: {
   item: Set;
-  setSet: (set: Set) => void;
+  setEdit: (set: Set) => void;
+  setNewSet: (set: Set) => void;
   onRemove: () => void;
 }) {
   const [show, setShow] = useState(false);
@@ -26,9 +28,9 @@ export default function SetItem({
   const copy = useCallback(() => {
     const set = {...item};
     delete set.id;
-    setSet(set);
+    setNewSet(set);
     setShow(false);
-  }, [setSet, setShow, item]);
+  }, [setNewSet, setShow, item]);
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {
@@ -42,7 +44,7 @@ export default function SetItem({
     <>
       <List.Item
         onPress={() => {
-          setSet(item);
+          setEdit(item);
         }}
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit}`}
