@@ -169,7 +169,7 @@ export default function HomePage() {
       return setNewSet({...todaysSets[0], id: undefined, created});
     console.log(`${HomePage.name}.onAdd: nextWorkout =`, nextWorkout);
     setNewSet({created, name: nextWorkout});
-  }, []);
+  }, [getTodaysPlan, getTodaysSets, setNewSet, setShowNew]);
 
   return (
     <View style={styles.container}>
