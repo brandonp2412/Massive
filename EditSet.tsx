@@ -60,15 +60,15 @@ export default function EditSet() {
       todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
     if (!nextWorkout) return;
     setName(nextWorkout);
-  }, []);
+  }, [getTodaysSets, getTodaysPlan]);
 
   useEffect(() => {
     if (params.set.id) return;
     predict();
-  }, [predict]);
+  }, [predict, params.set.id]);
 
-  const onConfirm = (created: Date) => {
-    setCreated(created);
+  const onConfirm = (date: Date) => {
+    setCreated(date);
     setShowDate(false);
   };
 
@@ -79,7 +79,16 @@ export default function EditSet() {
       [name, reps, weight, created.toISOString(), unit, params.set.id],
     );
     navigation.goBack();
-  }, [params.set, name, reps, weight, created, unit, db]);
+  }, [params.set, name, reps, weight, created, unit, db, navigation]);
+
+  const notify = useCallback(async () => {
+    const enabled = await AsyncStorage.getItem('alarmEnabled');
+    if (enabled !== 'true') return;
+    const minutes = await AsyncStorage.getItem('minutes');
+    const seconds = await AsyncStorage.getItem('seconds');
+    const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
+    NativeModules.AlarmModule.timer(milliseconds);
+  }, []);
 
   const add = useCallback(async () => {
     if (name === undefined || reps === '' || weight === '') return;
@@ -96,21 +105,12 @@ export default function EditSet() {
     ]);
     notify();
     navigation.goBack();
-  }, [name, reps, weight, created, unit, db]);
-
-  const notify = useCallback(async () => {
-    const enabled = await AsyncStorage.getItem('alarmEnabled');
-    if (enabled !== 'true') return;
-    const minutes = await AsyncStorage.getItem('minutes');
-    const seconds = await AsyncStorage.getItem('seconds');
-    const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
-    NativeModules.AlarmModule.timer(milliseconds);
-  }, []);
+  }, [name, reps, weight, created, unit, db, navigation, notify]);
 
   const save = useCallback(async () => {
     if (params.set.id) return update();
     return add();
-  }, [update, add]);
+  }, [update, add, params.set.id]);
 
   return (
     <ScrollView style={{padding: 10}}>

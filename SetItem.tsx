@@ -29,7 +29,7 @@ export default function SetItem({
     set.created = new Date().toISOString();
     set.id = 0;
     navigation.navigate('EditSet', {set});
-  }, [navigation]);
+  }, [navigation, item]);
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {

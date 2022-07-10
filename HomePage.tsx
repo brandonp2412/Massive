@@ -1,5 +1,5 @@
 import {DrawerNavigationProp} from '@react-navigation/drawer';
-import {TypedNavigator, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
