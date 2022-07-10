@@ -150,6 +150,7 @@ export default function HomePage() {
     const created = new Date().toISOString();
     setNewSet({created});
     setShowNew(true);
+    if ((await AsyncStorage.getItem('predictiveSets')) === 'false') return;
     const todaysPlan = await getTodaysPlan();
     if (todaysPlan.length === 0) return;
     console.log(`${HomePage.name}.onAdd: todaysPlan =`, todaysPlan);

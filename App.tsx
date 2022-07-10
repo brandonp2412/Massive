@@ -49,6 +49,8 @@ const App = () => {
       if (seconds === null) await setItem('seconds', '30');
       const alarmEnabled = await getItem('alarmEnabled');
       if (alarmEnabled === null) await setItem('alarmEnabled', 'false');
+      if (!(await getItem('predictiveSets')))
+        await setItem('predictiveSets', 'true');
     };
     init();
   }, []);

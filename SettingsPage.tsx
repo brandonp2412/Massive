@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const [minutes, setMinutes] = useState<string>('');
   const [seconds, setSeconds] = useState<string>('');
   const [alarmEnabled, setAlarmEnabled] = useState<boolean>(false);
+  const [predictiveSets, setPredictiveSets] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState('');
   const [showBattery, setShowBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
@@ -108,6 +109,14 @@ export default function SettingsPage() {
     [setShowBattery, ignoring],
   );
 
+  const changePredictive = useCallback(
+    (enabled: boolean) => {
+      setPredictiveSets(enabled);
+      setItem('predictiveSets', enabled ? 'true' : 'false');
+    },
+    [setPredictiveSets],
+  );
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -121,6 +130,7 @@ export default function SettingsPage() {
         }}
         style={styles.text}
       />
+
       <TextInput
         label="Rest seconds"
         value={seconds}
@@ -132,24 +142,35 @@ export default function SettingsPage() {
         }}
         style={styles.text}
       />
+
       <Text style={styles.text}>Rest timers</Text>
       <Switch
         style={[styles.text, {alignSelf: 'flex-start'}]}
         value={alarmEnabled}
         onValueChange={changeAlarmEnabled}
       />
+
+      <Text style={styles.text}>Predictive sets</Text>
+      <Switch
+        style={[styles.text, {alignSelf: 'flex-start'}]}
+        value={predictiveSets}
+        onValueChange={changePredictive}
+      />
+
       <Button
         style={{alignSelf: 'flex-start'}}
         icon="arrow-down"
         onPress={exportSets}>
         Export
       </Button>
+
       <Button
         style={{alignSelf: 'flex-start'}}
         icon="arrow-up"
         onPress={importSets}>
         Import
       </Button>
+
       <Button
         style={{alignSelf: 'flex-start', marginTop: 'auto'}}
         icon="trash"
