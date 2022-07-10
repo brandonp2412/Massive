@@ -34,10 +34,11 @@ export default function EditPlan({
   }, [plan, db]);
 
   const save = useCallback(async () => {
+    console.log(`${EditPlan.name}.save`, {days, workouts, plan});
     if (!days || !workouts) return;
     const newWorkouts = workouts.filter(workout => workout).join(',');
     const newDays = days.filter(day => day).join(',');
-    if (!plan)
+    if (!plan?.id)
       await db.executeSql(`INSERT INTO plans(days, workouts) VALUES (?, ?)`, [
         newDays,
         newWorkouts,
