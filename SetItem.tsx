@@ -1,7 +1,7 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
-import {List, Menu} from 'react-native-paper';
+import {Divider, List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
 import Set from './set';
@@ -28,6 +28,7 @@ export default function SetItem({
     const set: Set = {...item};
     set.created = new Date().toISOString();
     set.id = 0;
+    setShowMenu(false);
     navigation.navigate('EditSet', {set});
   }, [navigation, item]);
 
@@ -51,8 +52,9 @@ export default function SetItem({
             anchor={anchor}
             visible={showMenu}
             onDismiss={() => setShowMenu(false)}>
-            <Menu.Item icon="trash" onPress={remove} title="Delete" />
             <Menu.Item icon="copy" onPress={copy} title="Copy" />
+            <Divider />
+            <Menu.Item icon="trash" onPress={remove} title="Delete" />
           </Menu>
         )}
       />
