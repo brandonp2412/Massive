@@ -10,7 +10,6 @@ import {
 import {Dirs, FileSystem} from 'react-native-file-access';
 import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
 import {DatabaseContext} from './App';
-import BatteryDialog from './BatteryDialog';
 import Set from './set';
 import DocumentPicker from 'react-native-document-picker';
 import ConfirmDialog from './ConfirmDialog';

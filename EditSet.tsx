@@ -34,7 +34,7 @@ export default function EditSet() {
         ),
         title: 'Set',
       });
-    }, []),
+    }, [navigation]),
   );
 
   const getTodaysPlan = useCallback(async (): Promise<Plan[]> => {

@@ -29,7 +29,7 @@ export default function EditPlan() {
         ),
         title: 'Plan',
       });
-    }, []),
+    }, [navigation]),
   );
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function EditPlan() {
         [newDays, newWorkouts, params.plan.id],
       );
     navigation.goBack();
-  }, [days, workouts, db, params.plan]);
+  }, [days, workouts, db, params, navigation]);
 
   const toggleWorkout = useCallback(
     (on: boolean, name: string) => {
