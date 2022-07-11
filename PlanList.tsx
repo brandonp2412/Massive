@@ -37,7 +37,6 @@ export default function PlanList() {
   );
 
   useEffect(() => {
-    if (!search) return;
     refresh();
   }, [search, refresh]);
 

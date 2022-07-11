@@ -51,7 +51,6 @@ export default function SetList() {
   }, [setRefreshing, refresh]);
 
   useEffect(() => {
-    if (!search) return;
     refresh();
   }, [search, refresh]);
 

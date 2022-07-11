@@ -1,21 +1,35 @@
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import * as shape from 'd3-shape';
-import React, {useContext, useEffect, useState} from 'react';
-import {View} from 'react-native';
-import {Button, Dialog, Portal} from 'react-native-paper';
-import {Grid, LineChart, YAxis} from 'react-native-svg-charts';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
+import {Text, View} from 'react-native';
+import {IconButton} from 'react-native-paper';
+import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import {DatabaseContext} from './App';
-import Best from './best';
+import {BestPageParams} from './BestPage';
+import Set from './set';
+import {formatMonth} from './time';
 
-export default function ViewBest({
-  best,
-  setBest,
-}: {
-  best?: Best;
-  setBest: (best?: Best) => void;
-}) {
-  const [data, setData] = useState<number[]>([]);
-  const [unit, setUnit] = useState<string>();
+export default function ViewBest() {
+  const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>();
+  const [sets, setSets] = useState<Set[]>([]);
   const db = useContext(DatabaseContext);
+  const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.getParent()?.setOptions({
+        headerLeft: () => (
+          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
+        ),
+        title: params.best.name,
+      });
+    }, [navigation, params.best.name]),
+  );
 
   useEffect(() => {
     const selectBest = `
@@ -25,52 +39,46 @@ export default function ViewBest({
       GROUP BY name, STRFTIME('%Y-%m-%d', created)
     `;
     const refresh = async () => {
-      const [result] = await db.executeSql(selectBest, [best?.name]);
+      const [result] = await db.executeSql(selectBest, [params.best.name]);
       if (result.rows.length === 0) return;
       console.log(`${ViewBest.name}.${refresh.name}:`, result.rows.raw());
-      setData(result.rows.raw().map(row => row.weight));
-      setUnit(result.rows.item(0).unit);
+      setSets(result.rows.raw());
     };
     refresh();
-  }, [best, db]);
+  }, [params.best.name, db]);
 
-  const contentInset = {top: 20, bottom: 20};
-
+  const axesSvg = {fontSize: 10, fill: 'grey'};
+  const verticalContentInset = {top: 10, bottom: 10};
+  const xAxisHeight = 30;
   return (
-    <Portal>
-      <Dialog visible={!!best} onDismiss={() => setBest(undefined)}>
-        <Dialog.Title>{best?.name}</Dialog.Title>
-        <Dialog.Content>
-          <View style={{height: 200, flexDirection: 'row'}}>
-            <YAxis
-              data={data}
-              contentInset={contentInset}
-              svg={{
-                fill: 'grey',
-                fontSize: 10,
-              }}
-              numberOfTicks={10}
-              formatLabel={value => `${value}${unit}`}
-            />
-            <LineChart
-              style={{flex: 1, marginLeft: 16}}
-              data={data}
-              svg={{stroke: 'rgb(134, 65, 244)'}}
-              curve={shape.curveNatural}
-              contentInset={contentInset}>
-              <Grid />
-            </LineChart>
-          </View>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button
-            mode="contained"
-            icon="close"
-            onPress={() => setBest(undefined)}>
-            Close
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
-    </Portal>
+    <View style={{padding: 10}}>
+      <Text>Best weight per day</Text>
+      <View style={{height: 200, padding: 20, flexDirection: 'row'}}>
+        <YAxis
+          data={sets.map(set => set.weight)}
+          style={{marginBottom: xAxisHeight}}
+          contentInset={verticalContentInset}
+          svg={axesSvg}
+          formatLabel={value => `${value}${sets[0].unit}`}
+        />
+        <View style={{flex: 1, marginLeft: 10}}>
+          <LineChart
+            style={{flex: 1}}
+            data={sets.map(set => set.weight)}
+            contentInset={verticalContentInset}
+            curve={shape.curveNatural}
+            svg={{stroke: 'rgb(134, 65, 244)'}}>
+            <Grid />
+          </LineChart>
+          <XAxis
+            style={{marginHorizontal: -10, height: xAxisHeight}}
+            data={sets}
+            formatLabel={(_value, index) => formatMonth(sets[index].created)}
+            contentInset={{left: 10, right: 10}}
+            svg={axesSvg}
+          />
+        </View>
+      </View>
+    </View>
   );
 }
