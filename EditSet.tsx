@@ -133,7 +133,6 @@ export default function EditSet() {
       <ScrollView style={{height: '90%'}}>
         <TextInput
           style={styles.marginBottom}
-          autoFocus
           label="Name *"
           value={name}
           onChangeText={setName}
