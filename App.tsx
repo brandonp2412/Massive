@@ -90,7 +90,7 @@ const App = () => {
                 options={{
                   drawerIcon: ({focused}) => (
                     <IconButton
-                      icon={focused ? 'bar-chart' : 'bar-chart-outline'}
+                      icon={focused ? 'stats-chart' : 'stats-chart-outline'}
                     />
                   ),
                 }}
