@@ -32,7 +32,7 @@ export default function BestPage() {
               headerLeft: () => (
                 <IconButton icon="menu" onPress={navigation.openDrawer} />
               ),
-              title: 'Home',
+              title: 'Best',
             });
           },
         }}
