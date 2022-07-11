@@ -8,8 +8,8 @@ import EditSet from './EditSet';
 import Set from './set';
 import SetList from './SetList';
 
-const Stack = createStackNavigator<StackParams>();
-export type StackParams = {
+const Stack = createStackNavigator<HomePageParams>();
+export type HomePageParams = {
   Sets: {};
   EditSet: {
     set: Set;
@@ -27,14 +27,6 @@ export default function HomePage() {
         name="EditSet"
         component={EditSet}
         listeners={{
-          focus: () => {
-            navigation.setOptions({
-              headerLeft: () => (
-                <IconButton icon="arrow-back" onPress={navigation.goBack} />
-              ),
-              title: 'Set',
-            });
-          },
           beforeRemove: () => {
             navigation.setOptions({
               headerLeft: () => (

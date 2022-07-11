@@ -1,21 +1,22 @@
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {Plan} from './plan';
+import {PlanPageParams} from './PlanPage';
 
 export default function PlanItem({
   item,
-  setPlan,
   onRemove,
 }: {
   item: Plan;
-  setPlan: (plan: Plan) => void;
   onRemove: () => void;
 }) {
   const [show, setShow] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const db = useContext(DatabaseContext);
+  const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const remove = useCallback(async () => {
     await db.executeSql(`DELETE FROM plans WHERE id = ?`, [item.id]);
@@ -34,7 +35,7 @@ export default function PlanItem({
   return (
     <>
       <List.Item
-        onPress={() => setPlan(item)}
+        onPress={() => navigation.navigate('EditPlan', {plan: item})}
         title={item.days.replace(/,/g, ', ')}
         description={item.workouts.replace(/,/g, ', ')}
         onLongPress={longPress}

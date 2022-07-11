@@ -3,7 +3,7 @@ import React, {useCallback, useContext, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
-import {StackParams} from './HomePage';
+import {HomePageParams} from './HomePage';
 import Set from './set';
 
 export default function SetItem({
@@ -16,7 +16,7 @@ export default function SetItem({
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const db = useContext(DatabaseContext);
-  const navigation = useNavigation<NavigationProp<StackParams>>();
+  const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const remove = useCallback(async () => {
     await db.executeSql(`DELETE FROM sets WHERE id = ?`, [item.id]);

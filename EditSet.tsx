@@ -1,17 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {NativeModules, ScrollView, StyleSheet} from 'react-native';
+import {NativeModules, ScrollView, StyleSheet, View} from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import {Button, TextInput} from 'react-native-paper';
+import {Button, IconButton, TextInput} from 'react-native-paper';
 import {DatabaseContext} from './App';
-import {StackParams} from './HomePage';
+import {HomePageParams} from './HomePage';
 import {Plan} from './plan';
 import Set from './set';
 import {DAYS, format} from './time';
 
 export default function EditSet() {
-  const {params} = useRoute<RouteProp<StackParams, 'EditSet'>>();
+  const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
   const [name, setName] = useState(params.set.name);
   const [reps, setReps] = useState(params.set.reps.toString());
   const [weight, setWeight] = useState(params.set.weight.toString());
@@ -20,6 +25,17 @@ export default function EditSet() {
   const [showDate, setShowDate] = useState(false);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.getParent()?.setOptions({
+        headerLeft: () => (
+          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
+        ),
+        title: 'Set',
+      });
+    }, []),
+  );
 
   const getTodaysPlan = useCallback(async (): Promise<Plan[]> => {
     const today = DAYS[new Date().getDay()];
@@ -113,55 +129,57 @@ export default function EditSet() {
   }, [update, add, params.set.id]);
 
   return (
-    <ScrollView style={{padding: 10}}>
-      <TextInput
-        style={styles.marginBottom}
-        autoFocus
-        label="Name *"
-        value={name}
-        onChangeText={setName}
-        autoCorrect={false}
-      />
-      <TextInput
-        style={styles.marginBottom}
-        label="Reps *"
-        keyboardType="numeric"
-        value={reps}
-        onChangeText={setReps}
-      />
-      <TextInput
-        style={styles.marginBottom}
-        label="Weight *"
-        keyboardType="numeric"
-        value={weight}
-        onChangeText={setWeight}
-        onSubmitEditing={save}
-      />
-      <TextInput
-        style={styles.marginBottom}
-        label="Unit (kg)"
-        value={unit}
-        onChangeText={setUnit}
-        onSubmitEditing={save}
-      />
+    <View style={{padding: 10}}>
+      <ScrollView style={{height: '90%'}}>
+        <TextInput
+          style={styles.marginBottom}
+          autoFocus
+          label="Name *"
+          value={name}
+          onChangeText={setName}
+          autoCorrect={false}
+        />
+        <TextInput
+          style={styles.marginBottom}
+          label="Reps *"
+          keyboardType="numeric"
+          value={reps}
+          onChangeText={setReps}
+        />
+        <TextInput
+          style={styles.marginBottom}
+          label="Weight *"
+          keyboardType="numeric"
+          value={weight}
+          onChangeText={setWeight}
+          onSubmitEditing={save}
+        />
+        <TextInput
+          style={styles.marginBottom}
+          label="Unit (kg)"
+          value={unit}
+          onChangeText={setUnit}
+          onSubmitEditing={save}
+        />
 
-      <Button
-        style={styles.marginBottom}
-        icon="calendar-outline"
-        onPress={() => setShowDate(true)}>
-        {format(created)}
-      </Button>
-      <DateTimePickerModal
-        isVisible={showDate}
-        mode="datetime"
-        onConfirm={onConfirm}
-        onCancel={() => setShowDate(false)}
-        date={created}
-      />
+        <Button
+          style={styles.marginBottom}
+          icon="calendar-outline"
+          onPress={() => setShowDate(true)}>
+          {format(created)}
+        </Button>
+        <DateTimePickerModal
+          isVisible={showDate}
+          mode="datetime"
+          onConfirm={onConfirm}
+          onCancel={() => setShowDate(false)}
+          date={created}
+        />
+      </ScrollView>
       <Button mode="contained" icon="save" onPress={save}>
         Save
       </Button>
-    </ScrollView>
+    </View>
   );
 }
 

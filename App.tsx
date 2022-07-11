@@ -26,7 +26,7 @@ export type DrawerParamList = {
   Home: {};
   Settings: {};
   Best: {};
-  Plan: {};
+  Plans: {};
 };
 
 export const DatabaseContext = React.createContext<SQLiteDatabase>({} as any);
@@ -83,7 +83,7 @@ const App = () => {
                     />
                   ),
                 }}
-                name="Plan"
+                name="Plans"
                 component={PlanPage}
               />
               <Drawer.Screen

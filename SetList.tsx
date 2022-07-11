@@ -7,7 +7,7 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
-import {StackParams} from './HomePage';
+import {HomePageParams} from './HomePage';
 import MassiveFab from './MassiveFab';
 import Set from './set';
 import SetItem from './SetItem';
@@ -21,7 +21,7 @@ export default function SetList() {
   const [refreshing, setRefreshing] = useState(false);
   const [end, setEnd] = useState(false);
   const db = useContext(DatabaseContext);
-  const navigation = useNavigation<NavigationProp<StackParams>>();
+  const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const selectSets = `
     SELECT * from sets 
