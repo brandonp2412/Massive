@@ -94,6 +94,7 @@ export default function SettingsPage() {
     const values = file
       .split('\n')
       .slice(1)
+      .filter(line => line)
       .map(set => {
         const cells = set.split(',');
         return `('${cells[1]}',${cells[2]},${cells[3]},'${cells[4]}','${cells[5]}')`;

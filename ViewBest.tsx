@@ -22,6 +22,7 @@ export default function ViewBest() {
 
   useFocusEffect(
     useCallback(() => {
+      console.log(`${ViewBest.name}.useFocusEffect`);
       navigation.getParent()?.setOptions({
         headerLeft: () => (
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
@@ -32,6 +33,7 @@ export default function ViewBest() {
   );
 
   useEffect(() => {
+    console.log(`${ViewBest.name}.useEffect`);
     const selectBest = `
       SELECT max(weight) AS weight, STRFTIME('%Y-%m-%d', created) as created, unit
       FROM sets
@@ -50,6 +52,7 @@ export default function ViewBest() {
   const axesSvg = {fontSize: 10, fill: 'grey'};
   const verticalContentInset = {top: 10, bottom: 10};
   const xAxisHeight = 30;
+
   return (
     <View style={{padding: 10}}>
       <Text>Best weight per day</Text>
