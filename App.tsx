@@ -1,15 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {
-  DarkTheme,
-  DefaultTheme,
+  DarkTheme as NavigationDarkTheme,
+  DefaultTheme as NavigationDefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {StatusBar, useColorScheme} from 'react-native';
 import {
-  DarkTheme as DarkThemePaper,
-  DefaultTheme as DefaultThemePaper,
+  DarkTheme as PaperDarkTheme,
+  DefaultTheme as PaperDefaultTheme,
   Provider,
 } from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
@@ -28,6 +28,23 @@ export type DrawerParamList = {
 export const DatabaseContext = React.createContext<SQLiteDatabase>({} as any);
 
 const {getItem, setItem} = AsyncStorage;
+
+const CombinedDefaultTheme = {
+  ...PaperDefaultTheme,
+  ...NavigationDefaultTheme,
+  colors: {
+    ...PaperDefaultTheme.colors,
+    ...NavigationDefaultTheme.colors,
+  },
+};
+const CombinedDarkTheme = {
+  ...PaperDarkTheme,
+  ...NavigationDarkTheme,
+  colors: {
+    ...PaperDarkTheme.colors,
+    ...NavigationDarkTheme.colors,
+  },
+};
 
 const App = () => {
   const [db, setDb] = useState<SQLiteDatabase | null>(null);
@@ -54,9 +71,10 @@ const App = () => {
 
   return (
     <Provider
-      theme={dark ? DarkThemePaper : DefaultThemePaper}
+      theme={dark ? CombinedDarkTheme : CombinedDefaultTheme}
       settings={{icon: props => <Ionicon {...props} />}}>
-      <NavigationContainer theme={dark ? DarkTheme : DefaultTheme}>
+      <NavigationContainer
+        theme={dark ? CombinedDarkTheme : CombinedDefaultTheme}>
         <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
         <Routes db={db} />
       </NavigationContainer>

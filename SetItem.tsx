@@ -1,10 +1,11 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
-import {GestureResponderEvent} from 'react-native';
+import {GestureResponderEvent, Text} from 'react-native';
 import {Divider, List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
 import Set from './set';
+import {format} from './time';
 
 export default function SetItem({
   item,
@@ -48,14 +49,25 @@ export default function SetItem({
         description={`${item.reps} x ${item.weight}${item.unit}`}
         onLongPress={longPress}
         right={() => (
-          <Menu
-            anchor={anchor}
-            visible={showMenu}
-            onDismiss={() => setShowMenu(false)}>
-            <Menu.Item icon="copy" onPress={copy} title="Copy" />
-            <Divider />
-            <Menu.Item icon="trash" onPress={remove} title="Delete" />
-          </Menu>
+          <>
+            <Text
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent: 'center',
+                alignSelf: 'center',
+              }}>
+              {format(new Date(item.created))}
+            </Text>
+            <Menu
+              anchor={anchor}
+              visible={showMenu}
+              onDismiss={() => setShowMenu(false)}>
+              <Menu.Item icon="copy" onPress={copy} title="Copy" />
+              <Divider />
+              <Menu.Item icon="trash" onPress={remove} title="Delete" />
+            </Menu>
+          </>
         )}
       />
     </>

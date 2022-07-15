@@ -1,11 +1,13 @@
 import {
+  DarkTheme,
+  DefaultTheme,
   RouteProp,
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, useColorScheme, View} from 'react-native';
 import {Button, IconButton, Switch} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {PlanPageParams} from './PlanPage';
@@ -20,6 +22,7 @@ export default function EditPlan() {
   const [names, setNames] = useState<string[]>([]);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation();
+  const dark = useColorScheme() === 'dark';
 
   useFocusEffect(
     useCallback(() => {
@@ -90,6 +93,9 @@ export default function EditPlan() {
         {DAYS.map(day => (
           <View key={day} style={[styles.row, {alignItems: 'center'}]}>
             <Switch
+              color={
+                dark ? DarkTheme.colors.primary : DefaultTheme.colors.primary
+              }
               value={days.includes(day)}
               style={{marginRight: 5}}
               onValueChange={value => toggleDay(value, day)}
@@ -109,6 +115,9 @@ export default function EditPlan() {
         {names.map(name => (
           <View key={name} style={[styles.row, {alignItems: 'center'}]}>
             <Switch
+              color={
+                dark ? DarkTheme.colors.primary : DefaultTheme.colors.primary
+              }
               value={workouts.includes(name)}
               style={{marginRight: 5}}
               onValueChange={value => toggleWorkout(value, name)}
