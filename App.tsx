@@ -10,18 +10,14 @@ import {StatusBar, useColorScheme} from 'react-native';
 import {
   DarkTheme as DarkThemePaper,
   DefaultTheme as DefaultThemePaper,
-  IconButton,
   Provider,
 } from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import BestPage from './BestPage';
 import {createPlans, createSets, getDb} from './db';
-import HomePage from './HomePage';
-import PlanPage from './PlanPage';
-import SettingsPage from './SettingsPage';
+import Routes from './Routes';
 
-const Drawer = createDrawerNavigator<DrawerParamList>();
+export const Drawer = createDrawerNavigator<DrawerParamList>();
 export type DrawerParamList = {
   Home: {};
   Settings: {};
@@ -62,55 +58,7 @@ const App = () => {
       settings={{icon: props => <Ionicon {...props} />}}>
       <NavigationContainer theme={dark ? DarkTheme : DefaultTheme}>
         <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
-        {db && (
-          <DatabaseContext.Provider value={db}>
-            <Drawer.Navigator
-              screenOptions={{headerTintColor: dark ? 'white' : 'black'}}>
-              <Drawer.Screen
-                options={{
-                  drawerIcon: ({focused}) => (
-                    <IconButton icon={focused ? 'home' : 'home-outline'} />
-                  ),
-                }}
-                name="Home"
-                component={HomePage}
-              />
-              <Drawer.Screen
-                options={{
-                  drawerIcon: ({focused}) => (
-                    <IconButton
-                      icon={focused ? 'calendar' : 'calendar-outline'}
-                    />
-                  ),
-                }}
-                name="Plans"
-                component={PlanPage}
-              />
-              <Drawer.Screen
-                options={{
-                  drawerIcon: ({focused}) => (
-                    <IconButton
-                      icon={focused ? 'stats-chart' : 'stats-chart-outline'}
-                    />
-                  ),
-                }}
-                name="Best"
-                component={BestPage}
-              />
-              <Drawer.Screen
-                options={{
-                  drawerIcon: ({focused}) => (
-                    <IconButton
-                      icon={focused ? 'settings' : 'settings-outline'}
-                    />
-                  ),
-                }}
-                name="Settings"
-                component={SettingsPage}
-              />
-            </Drawer.Navigator>
-          </DatabaseContext.Provider>
-        )}
+        <Routes db={db} />
       </NavigationContainer>
     </Provider>
   );
