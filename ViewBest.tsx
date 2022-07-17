@@ -1,4 +1,6 @@
 import {
+  DarkTheme,
+  DefaultTheme,
   RouteProp,
   useFocusEffect,
   useNavigation,
@@ -6,7 +8,7 @@ import {
 } from '@react-navigation/native';
 import * as shape from 'd3-shape';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text, useColorScheme, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import {DatabaseContext} from './App';
@@ -19,6 +21,7 @@ export default function ViewBest() {
   const [sets, setSets] = useState<Set[]>([]);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation();
+  const dark = useColorScheme() === 'dark';
 
   useFocusEffect(
     useCallback(() => {
@@ -56,7 +59,7 @@ export default function ViewBest() {
   return (
     <View style={{padding: 10}}>
       <Text>Best weight per day</Text>
-      <View style={{height: 200, padding: 20, flexDirection: 'row'}}>
+      <View style={{height: 300, padding: 20, flexDirection: 'row'}}>
         <YAxis
           data={sets.map(set => set.weight)}
           style={{marginBottom: xAxisHeight}}
@@ -69,8 +72,12 @@ export default function ViewBest() {
             style={{flex: 1}}
             data={sets.map(set => set.weight)}
             contentInset={verticalContentInset}
-            curve={shape.curveNatural}
-            svg={{stroke: 'rgb(134, 65, 244)'}}>
+            curve={shape.curveBasis}
+            svg={{
+              stroke: dark
+                ? DarkTheme.colors.primary
+                : DefaultTheme.colors.primary,
+            }}>
             <Grid />
           </LineChart>
           <XAxis
