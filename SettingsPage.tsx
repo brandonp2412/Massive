@@ -13,6 +13,7 @@ import {DatabaseContext} from './App';
 import Set from './set';
 import DocumentPicker from 'react-native-document-picker';
 import ConfirmDialog from './ConfirmDialog';
+import MassiveSwitch from './MassiveSwitch';
 
 const {getItem, setItem} = AsyncStorage;
 
@@ -162,7 +163,7 @@ export default function SettingsPage() {
       />
 
       <Text style={styles.text}>Rest timers</Text>
-      <Switch
+      <MassiveSwitch
         style={[styles.text, {alignSelf: 'flex-start'}]}
         value={alarmEnabled}
         onValueChange={changeAlarmEnabled}
@@ -180,7 +181,7 @@ export default function SettingsPage() {
       </ConfirmDialog>
 
       <Text style={styles.text}>Predictive sets</Text>
-      <Switch
+      <MassiveSwitch
         style={[styles.text, {alignSelf: 'flex-start'}]}
         value={predictiveSets}
         onValueChange={changePredictive}

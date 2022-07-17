@@ -10,6 +10,7 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, useColorScheme, View} from 'react-native';
 import {Button, IconButton, Switch} from 'react-native-paper';
 import {DatabaseContext} from './App';
+import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './PlanPage';
 import {DAYS} from './time';
 
@@ -92,12 +93,8 @@ export default function EditPlan() {
         <Text style={styles.title}>Days</Text>
         {DAYS.map(day => (
           <View key={day} style={[styles.row, {alignItems: 'center'}]}>
-            <Switch
-              color={
-                dark ? DarkTheme.colors.primary : DefaultTheme.colors.primary
-              }
+            <MassiveSwitch
               value={days.includes(day)}
-              style={{marginRight: 5}}
               onValueChange={value => toggleDay(value, day)}
             />
             <Text onPress={() => toggleDay(!days.includes(day), day)}>
@@ -114,12 +111,8 @@ export default function EditPlan() {
         )}
         {names.map(name => (
           <View key={name} style={[styles.row, {alignItems: 'center'}]}>
-            <Switch
-              color={
-                dark ? DarkTheme.colors.primary : DefaultTheme.colors.primary
-              }
+            <MassiveSwitch
               value={workouts.includes(name)}
-              style={{marginRight: 5}}
               onValueChange={value => toggleWorkout(value, name)}
             />
             <Text onPress={() => toggleWorkout(!workouts.includes(name), name)}>
