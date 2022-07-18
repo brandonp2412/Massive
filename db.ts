@@ -21,11 +21,3 @@ export const createPlans = `
     workouts TEXT NOT NULL
   );
 `;
-
-const selectProgress = `
-  SELECT count(*) as count from sets
-  WHERE created LIKE ? 
-    AND name = ?
-`;
-export const getProgress = ({created, name}: {created: string; name: string}) =>
-  getDb().then(db => db.executeSql(selectProgress, [`%${created}%`, name]));
