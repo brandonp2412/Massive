@@ -25,6 +25,7 @@ export default function HomePage() {
       <Stack.Screen name="Sets" component={SetList} />
       <Stack.Screen
         name="EditSet"
+        options={{headerRight: () => <IconButton icon="clock" />}}
         component={EditSet}
         listeners={{
           beforeRemove: () => {

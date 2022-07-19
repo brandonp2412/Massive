@@ -4,6 +4,7 @@ import {IconButton} from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import {DatabaseContext, Drawer, DrawerParamList} from './App';
 import BestPage from './BestPage';
+import DrawerMenu from './DrawerMenu';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
 import SettingsPage from './SettingsPage';
@@ -36,6 +37,7 @@ export default function Routes({db}: {db: SQLiteDatabase | null}) {
             name={route.name}
             component={route.component}
             options={{
+              headerRight: () => <DrawerMenu name={route.name} />,
               drawerIcon: ({focused}) => (
                 <IconButton
                   icon={focused ? route.icon : `${route.icon}-outline`}
