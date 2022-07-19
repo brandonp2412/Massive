@@ -32,7 +32,7 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
 
     @RequiresApi(Build.VERSION_CODES.M)
     @ReactMethod
-    fun ignoringBatteryOptimizations(callback: Callback) {
+    fun ignoringBattery(callback: Callback) {
         val packageName = reactApplicationContext.packageName
         val pm =
             reactApplicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -45,7 +45,7 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
 
     @RequiresApi(Build.VERSION_CODES.M)
     @ReactMethod
-    fun openBatteryOptimizations() {
+    fun openSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = Uri.parse("package:" + reactApplicationContext.packageName)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

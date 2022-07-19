@@ -28,7 +28,7 @@ export default function SettingsPage() {
     setAlarmEnabled((await getItem('alarmEnabled')) === 'true');
     setPredictiveSets((await getItem('predictiveSets')) === 'true');
     setMaxSets((await getItem('maxSets')) || '');
-    NativeModules.AlarmModule.ignoringBatteryOptimizations(setIgnoring);
+    NativeModules.AlarmModule.ignoringBattery(setIgnoring);
   }, []);
 
   useEffect(() => {
@@ -105,7 +105,7 @@ export default function SettingsPage() {
         show={showBattery}
         setShow={setShowBattery}
         onOk={() => {
-          NativeModules.AlarmModule.openBatteryOptimizations();
+          NativeModules.AlarmModule.openSettings();
           setShowBattery(false);
         }}>
         Disable battery optimizations for Massive to use rest timers.
