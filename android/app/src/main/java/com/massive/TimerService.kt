@@ -15,45 +15,57 @@ import androidx.core.app.NotificationCompat
 import kotlin.math.floor
 
 class TimerService : Service() {
+    private var notificationManager: NotificationManager? = null
+    private var endMs: Int? = null
     private var countdownTimer: CountDownTimer? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("TimerService", "Started timer service.")
-        val endMs = intent!!.extras!!.getInt("milliseconds")
-        val notificationManager = getManager(applicationContext)
+        if (intent?.action == "add") {
+            endMs = endMs?.plus(60000)
+            applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
+        }
+        else {
+            endMs = intent!!.extras!!.getInt("milliseconds")
+        }
+        notificationManager = getManager(applicationContext)
         val builder = getBuilder(applicationContext)
         countdownTimer?.cancel()
-        countdownTimer = object : CountDownTimer(endMs.toLong(), 1000) {
-            override fun onTick(currentMs: Long) {
-                val seconds = floor((currentMs / 1000).toDouble() % 60)
-                    .toInt().toString().padStart(2, '0')
-                val minutes = floor((currentMs / 1000).toDouble() / 60)
-                    .toInt().toString().padStart(2, '0')
-                builder.setContentText("$minutes:$seconds")
-                    .setAutoCancel(false)
-                    .setDefaults(0)
-                    .setProgress(endMs, currentMs.toInt(), false)
-                    .setCategory(NotificationCompat.CATEGORY_PROGRESS)
-                    .priority = NotificationCompat.PRIORITY_LOW
-                notificationManager.notify(NOTIFICATION_ID, builder.build())
-            }
-            override fun onFinish() {
-                val finishIntent = Intent(applicationContext, StopAlarm::class.java)
-                val finishPending =
-                    PendingIntent.getActivity(applicationContext, 0, finishIntent, PendingIntent.FLAG_IMMUTABLE)
-                builder.setContentText("Timer finished.")
-                    .setAutoCancel(true)
-                    .setOngoing(false)
-                    .setContentIntent(finishPending)
-                    .setCategory(NotificationCompat.CATEGORY_ALARM)
-                    .priority = NotificationCompat.PRIORITY_HIGH
-                notificationManager.notify(NOTIFICATION_ID, builder.build())
-                applicationContext.startService(Intent(applicationContext, AlarmService::class.java))
-            }
-        }
+        countdownTimer = getTimer(builder, notificationManager!!)
         countdownTimer!!.start()
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun getTimer(builder: NotificationCompat.Builder, notificationManager: NotificationManager): CountDownTimer {
+       return object : CountDownTimer(endMs!!.toLong(), 1000) {
+           override fun onTick(currentMs: Long) {
+               val seconds = floor((currentMs / 1000).toDouble() % 60)
+                   .toInt().toString().padStart(2, '0')
+               val minutes = floor((currentMs / 1000).toDouble() / 60)
+                   .toInt().toString().padStart(2, '0')
+               builder.setContentText("$minutes:$seconds")
+                   .setAutoCancel(false)
+                   .setDefaults(0)
+                   .setProgress(endMs!!, currentMs.toInt(), false)
+                   .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+                   .priority = NotificationCompat.PRIORITY_LOW
+               notificationManager.notify(NOTIFICATION_ID, builder.build())
+           }
+           override fun onFinish() {
+               val finishIntent = Intent(applicationContext, StopAlarm::class.java)
+               val finishPending =
+                   PendingIntent.getActivity(applicationContext, 0, finishIntent, PendingIntent.FLAG_IMMUTABLE)
+               builder.setContentText("Timer finished.")
+                   .setAutoCancel(true)
+                   .setOngoing(false)
+                   .setContentIntent(finishPending)
+                   .setCategory(NotificationCompat.CATEGORY_ALARM)
+                   .priority = NotificationCompat.PRIORITY_HIGH
+               notificationManager.notify(NOTIFICATION_ID, builder.build())
+               applicationContext.startService(Intent(applicationContext, AlarmService::class.java))
+           }
+       }
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -63,6 +75,7 @@ class TimerService : Service() {
     override fun onDestroy() {
         Log.d("TimerService", "Destroying...")
         countdownTimer?.cancel()
+        notificationManager?.cancel(NOTIFICATION_ID)
         super.onDestroy()
     }
 
@@ -71,14 +84,18 @@ class TimerService : Service() {
         val contentIntent = Intent(context, MainActivity::class.java)
         val pendingContent =
             PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
-        val actionIntent = Intent(context, StopTimer::class.java)
-        val pendingAction =
-            PendingIntent.getService(context, 0, actionIntent, PendingIntent.FLAG_IMMUTABLE)
+        val stopIntent = Intent(context, StopTimer::class.java)
+        val pendingStop =
+            PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
+        val addIntent = Intent(context, TimerService::class.java)
+        addIntent.action = "add"
+        val pendingAdd = PendingIntent.getService(context, 0, addIntent, PendingIntent.FLAG_IMMUTABLE)
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_baseline_hourglass_bottom_24)
             .setContentTitle("Resting")
             .setContentIntent(pendingContent)
-            .addAction(R.drawable.ic_baseline_stop_24, "STOP", pendingAction)
+            .addAction(R.drawable.ic_baseline_stop_24, "Stop", pendingStop)
+            .addAction(R.drawable.ic_baseline_stop_24, "Add 1 min", pendingAdd)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
