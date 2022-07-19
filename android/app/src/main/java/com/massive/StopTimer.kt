@@ -8,6 +8,7 @@ import android.util.Log
 class StopTimer : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         applicationContext.stopService(Intent(applicationContext, TimerService::class.java))
+        applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
         return super.onStartCommand(intent, flags, startId)
     }
 
