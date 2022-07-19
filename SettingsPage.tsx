@@ -7,13 +7,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Dirs, FileSystem} from 'react-native-file-access';
-import {Button, Snackbar, Switch, TextInput} from 'react-native-paper';
-import {DatabaseContext} from './App';
-import Set from './set';
 import DocumentPicker from 'react-native-document-picker';
+import {Dirs, FileSystem} from 'react-native-file-access';
+import {Button, Snackbar, TextInput} from 'react-native-paper';
+import {DatabaseContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
 import MassiveSwitch from './MassiveSwitch';
+import Set from './set';
 
 const {getItem, setItem} = AsyncStorage;
 
