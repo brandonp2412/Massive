@@ -71,7 +71,7 @@ export default function EditSet() {
       GROUP BY name;
     `;
       const [weightResult] = await db.executeSql(bestWeight, [query]);
-      if (!weightResult)
+      if (!weightResult.rows.length)
         return {
           weight: 0,
           name: '',
