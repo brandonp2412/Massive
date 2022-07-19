@@ -55,28 +55,62 @@ export default function EditSet() {
     return result.rows.raw();
   }, [db]);
 
+  const getBest = useCallback(
+    async (query: string): Promise<Set> => {
+      const bestWeight = `
+      SELECT name, reps, unit, MAX(weight) AS weight 
+      FROM sets
+      WHERE name = ?
+      GROUP BY name;
+    `;
+      const bestReps = `
+      SELECT name, MAX(reps) as reps, unit, weight 
+      FROM sets
+      WHERE name = ?
+        AND weight = ?
+      GROUP BY name;
+    `;
+      const [weightResult] = await db.executeSql(bestWeight, [query]);
+      if (!weightResult)
+        return {
+          weight: 0,
+          name: '',
+          reps: 0,
+          created: new Date().toISOString(),
+          id: 0,
+        };
+      const [repsResult] = await db.executeSql(bestReps, [
+        query,
+        weightResult.rows.item(0).weight,
+      ]);
+      return repsResult.rows.item(0);
+    },
+    [db],
+  );
+
   const predict = useCallback(async () => {
     if ((await AsyncStorage.getItem('predictiveSets')) === 'false') return;
     const todaysPlan = await getTodaysPlan();
     if (todaysPlan.length === 0) return;
     const todaysSets = await getTodaysSets();
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
-    if (todaysSets.length === 0) return setName(todaysWorkouts[0]);
-    const count = todaysSets.filter(
-      set => set.name === todaysSets[0].name,
-    ).length;
-    const maxSets = await AsyncStorage.getItem('maxSets');
-    if (count < Number(maxSets)) {
-      setName(todaysSets[0].name);
-      setReps(todaysSets[0].reps.toString());
-      setWeight(todaysSets[0].weight.toString());
-      return setUnit(todaysSets[0].unit);
+    let nextWorkout = todaysWorkouts[0];
+    if (todaysSets.length > 0) {
+      const count = todaysSets.filter(
+        set => set.name === todaysSets[0].name,
+      ).length;
+      const maxSets = await AsyncStorage.getItem('maxSets');
+      nextWorkout = todaysSets[0].name;
+      if (count >= Number(maxSets))
+        nextWorkout =
+          todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
     }
-    const nextWorkout =
-      todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
-    if (!nextWorkout) return;
-    setName(nextWorkout);
-  }, [getTodaysSets, getTodaysPlan]);
+    const best = await getBest(nextWorkout);
+    setName(best.name);
+    setReps(best.reps.toString());
+    setWeight(best.weight.toString());
+    setUnit(best.unit);
+  }, [getTodaysSets, getTodaysPlan, getBest]);
 
   useEffect(() => {
     if (params.set.id) return;
