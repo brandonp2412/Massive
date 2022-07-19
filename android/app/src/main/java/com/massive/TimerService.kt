@@ -63,9 +63,6 @@ class TimerService : Service() {
     override fun onDestroy() {
         Log.d("TimerService", "Destroying...")
         countdownTimer?.cancel()
-        val broadcastIntent = Intent(applicationContext, TimerBroadcast::class.java)
-        broadcastIntent.action = "stop"
-        sendBroadcast(broadcastIntent)
         super.onDestroy()
     }
 

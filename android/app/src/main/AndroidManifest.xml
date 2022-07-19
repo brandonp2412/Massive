@@ -35,6 +35,5 @@
         <service android:name=".StopTimer" android:exported="true" android:process=":remote" />
         <service android:name=".AlarmService" android:exported="true" />
         <service android:name=".TimerService" android:exported="true" />
-        <receiver android:name=".TimerBroadcast" android:exported="true" android:process=":remote"/>
     </application>
 </manifest>
