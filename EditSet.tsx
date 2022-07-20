@@ -5,7 +5,13 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {NativeModules, ScrollView, StyleSheet, View} from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {Button, IconButton, TextInput} from 'react-native-paper';
@@ -23,6 +29,7 @@ export default function EditSet() {
   const [created, setCreated] = useState(new Date(params.set.created));
   const [unit, setUnit] = useState(params.set.unit);
   const [showDate, setShowDate] = useState(false);
+  const weightRef = useRef<any>(null);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation();
 
@@ -167,25 +174,29 @@ export default function EditSet() {
       <ScrollView style={{height: '90%'}}>
         <TextInput
           style={styles.marginBottom}
-          label="Name *"
+          label="Name"
           value={name}
           onChangeText={setName}
           autoCorrect={false}
         />
         <TextInput
           style={styles.marginBottom}
-          label="Reps *"
+          label="Reps"
           keyboardType="numeric"
           value={reps}
           onChangeText={setReps}
+          autoFocus
+          blurOnSubmit={false}
+          onSubmitEditing={() => weightRef.current?.focus()}
         />
         <TextInput
           style={styles.marginBottom}
-          label="Weight *"
+          label="Weight"
           keyboardType="numeric"
           value={weight}
           onChangeText={setWeight}
           onSubmitEditing={save}
+          ref={weightRef}
         />
         <TextInput
           style={styles.marginBottom}
