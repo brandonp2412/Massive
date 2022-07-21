@@ -83,7 +83,7 @@ export default function SettingsPage() {
       />
 
       <TextInput
-        label="Max sets"
+        label="Sets per workout"
         value={maxSets}
         keyboardType="numeric"
         onChangeText={value => {
