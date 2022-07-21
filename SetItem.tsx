@@ -50,15 +50,6 @@ export default function SetItem({
         onLongPress={longPress}
         right={() => (
           <>
-            <Text
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent: 'center',
-                alignSelf: 'center',
-              }}>
-              {format(new Date(item.created))}
-            </Text>
             <Menu
               anchor={anchor}
               visible={showMenu}
