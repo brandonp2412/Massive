@@ -17,18 +17,21 @@ import kotlin.math.floor
 class TimerService : Service() {
     private var notificationManager: NotificationManager? = null
     private var endMs: Int? = null
+    private var currentMs: Long? = null
     private var countdownTimer: CountDownTimer? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("TimerService", "Started timer service.")
+        Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs")
         if (intent?.action == "add") {
-            endMs = endMs?.plus(60000)
+            endMs = currentMs!!.toInt().plus(60000)
             applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
         }
         else {
             endMs = intent!!.extras!!.getInt("milliseconds")
         }
+        Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs")
         notificationManager = getManager(applicationContext)
         val builder = getBuilder(applicationContext)
         countdownTimer?.cancel()
@@ -39,19 +42,21 @@ class TimerService : Service() {
 
     private fun getTimer(builder: NotificationCompat.Builder, notificationManager: NotificationManager): CountDownTimer {
        return object : CountDownTimer(endMs!!.toLong(), 1000) {
-           override fun onTick(currentMs: Long) {
-               val seconds = floor((currentMs / 1000).toDouble() % 60)
+           override fun onTick(current: Long) {
+               currentMs = current
+               val seconds = floor((current / 1000).toDouble() % 60)
                    .toInt().toString().padStart(2, '0')
-               val minutes = floor((currentMs / 1000).toDouble() / 60)
+               val minutes = floor((current / 1000).toDouble() / 60)
                    .toInt().toString().padStart(2, '0')
                builder.setContentText("$minutes:$seconds")
                    .setAutoCancel(false)
                    .setDefaults(0)
-                   .setProgress(endMs!!, currentMs.toInt(), false)
+                   .setProgress(endMs!!, current.toInt(), false)
                    .setCategory(NotificationCompat.CATEGORY_PROGRESS)
                    .priority = NotificationCompat.PRIORITY_LOW
                notificationManager.notify(NOTIFICATION_ID, builder.build())
            }
+           @RequiresApi(Build.VERSION_CODES.M)
            override fun onFinish() {
                val finishIntent = Intent(applicationContext, StopAlarm::class.java)
                val finishPending =
