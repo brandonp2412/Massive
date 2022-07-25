@@ -70,7 +70,7 @@ export default function BestList() {
         ListEmptyComponent={
           <List.Item
             title="No exercises yet"
-            description="Once sets have been added, Exercises list your personal bests."
+            description="Once sets have been added, this will highlight your personal bests."
           />
         }
         refreshing={refreshing}
