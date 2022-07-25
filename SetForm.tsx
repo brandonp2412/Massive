@@ -28,6 +28,7 @@ export default function SetForm({
   const [unit, setUnit] = useState(set.unit);
   const [showDate, setShowDate] = useState(false);
   const weightRef = useRef<any>(null);
+  const repsRef = useRef<any>(null);
   const db = useContext(DatabaseContext);
 
   const getTodaysPlan = useCallback(async (): Promise<Plan[]> => {
@@ -103,6 +104,7 @@ export default function SetForm({
     setReps(best.reps.toString());
     setWeight(best.weight.toString());
     setUnit(best.unit);
+    repsRef.current?.focus();
   }, [getTodaysSets, getTodaysPlan, getBest]);
 
   useEffect(() => {
@@ -141,7 +143,7 @@ export default function SetForm({
         keyboardType="numeric"
         value={reps}
         onChangeText={setReps}
-        autoFocus
+        ref={repsRef}
         blurOnSubmit={false}
         onSubmitEditing={() => weightRef.current?.focus()}
       />
