@@ -4,7 +4,7 @@ Massive tracks your reps and sets at the gym. No internet connectivity or high s
 
 ## Features
 
-- Track weight, reps and sets at the gym
+- Track weight, reps and sets
 - Rest timers after each set
 - Progress graphing
 - Day planner
