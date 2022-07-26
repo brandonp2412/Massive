@@ -14,7 +14,9 @@ Massive tracks your reps and sets at the gym. No internet connectivity or high s
 
 # Installation
 
-The easiest installation method on Android devices is to download [the APK](https://brandon.presley.nz/massive.apk).
+<a href='https://play.google.com/store/apps/details?id=com.massive&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+  <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/>
+</a>
 
 # Building from Source
 
