@@ -6,7 +6,7 @@ Massive tracks your reps and sets at the gym. No internet connectivity or high s
 
 - Track weight, reps and sets
 - Rest timers after each set
-- Progress graphing
+- Progress graphs
 - Day planner
 
 <a href='https://play.google.com/store/apps/details?id=com.massive&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
