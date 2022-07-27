@@ -10,8 +10,8 @@ project.ext.react = [
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
-def enableSeparateBuildPerCPUArchitecture = false
-def enableProguardInReleaseBuilds = false
+def enableSeparateBuildPerCPUArchitecture = true
+def enableProguardInReleaseBuilds = true
 def jscFlavor = 'org.webkit:android-jsc:+'
 def enableHermes = project.ext.react.get("enableHermes", false);
 
