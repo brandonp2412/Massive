@@ -108,9 +108,9 @@ export default function SetForm({
   }, [getTodaysSets, getTodaysPlan, getBest]);
 
   useEffect(() => {
-    if (set.id) return;
+    if (set.id || set.name) return;
     predict();
-  }, [predict, set.id]);
+  }, [predict, set.id, set.name]);
 
   const onConfirm = (date: Date) => {
     setCreated(date);
