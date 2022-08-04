@@ -155,6 +155,7 @@ export default function SetForm({
         onChangeText={setWeight}
         onSubmitEditing={handleSubmit}
         ref={weightRef}
+        selectTextOnFocus
       />
       <TextInput
         style={styles.marginBottom}
