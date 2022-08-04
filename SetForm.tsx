@@ -146,6 +146,7 @@ export default function SetForm({
         ref={repsRef}
         blurOnSubmit={false}
         onSubmitEditing={() => weightRef.current?.focus()}
+        selectTextOnFocus
       />
       <TextInput
         style={styles.marginBottom}
