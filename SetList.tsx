@@ -5,17 +5,21 @@ import {
 } from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
 import MassiveFab from './MassiveFab';
+import {Plan} from './plan';
 import Set from './set';
 import SetItem from './SetItem';
+import {DAYS} from './time';
 
 const limit = 15;
 
 export default function SetList() {
   const [sets, setSets] = useState<Set[]>();
+  const [nextSet, setNextSet] = useState<Set>();
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -39,12 +43,6 @@ export default function SetList() {
     setEnd(false);
   }, [search, db, selectSets]);
 
-  useFocusEffect(
-    useCallback(() => {
-      refresh();
-    }, [refresh]),
-  );
-
   const refreshLoader = useCallback(async () => {
     setRefreshing(true);
     refresh().finally(() => setRefreshing(false));
@@ -53,6 +51,85 @@ export default function SetList() {
   useEffect(() => {
     refresh();
   }, [search, refresh]);
+
+  const getTodaysPlan = useCallback(async (): Promise<Plan[]> => {
+    const today = DAYS[new Date().getDay()];
+    const [result] = await db.executeSql(
+      `SELECT * FROM plans WHERE days LIKE ? LIMIT 1`,
+      [`%${today}%`],
+    );
+    return result.rows.raw();
+  }, [db]);
+
+  const getTodaysSets = useCallback(async (): Promise<Set[]> => {
+    const today = new Date().toISOString().split('T')[0];
+    const [result] = await db.executeSql(
+      `SELECT * FROM sets WHERE created LIKE ? ORDER BY created DESC`,
+      [`${today}%`],
+    );
+    return result.rows.raw();
+  }, [db]);
+
+  const getBest = useCallback(
+    async (query: string): Promise<Set> => {
+      const bestWeight = `
+      SELECT name, reps, unit, MAX(weight) AS weight 
+      FROM sets
+      WHERE name = ?
+      GROUP BY name;
+    `;
+      const bestReps = `
+      SELECT name, MAX(reps) as reps, unit, weight 
+      FROM sets
+      WHERE name = ?
+        AND weight = ?
+      GROUP BY name;
+    `;
+      const [weightResult] = await db.executeSql(bestWeight, [query]);
+      if (!weightResult.rows.length)
+        return {
+          weight: 0,
+          name: '',
+          reps: 0,
+          created: new Date().toISOString(),
+          id: 0,
+        };
+      const [repsResult] = await db.executeSql(bestReps, [
+        query,
+        weightResult.rows.item(0).weight,
+      ]);
+      return repsResult.rows.item(0);
+    },
+    [db],
+  );
+
+  const predict = useCallback(async () => {
+    if ((await AsyncStorage.getItem('predictiveSets')) === 'false') return;
+    const todaysPlan = await getTodaysPlan();
+    if (todaysPlan.length === 0) return;
+    const todaysSets = await getTodaysSets();
+    const todaysWorkouts = todaysPlan[0].workouts.split(',');
+    let nextWorkout = todaysWorkouts[0];
+    if (todaysSets.length > 0) {
+      const count = todaysSets.filter(
+        s => s.name === todaysSets[0].name,
+      ).length;
+      const maxSets = await AsyncStorage.getItem('maxSets');
+      nextWorkout = todaysSets[0].name;
+      if (count >= Number(maxSets))
+        nextWorkout =
+          todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
+    }
+    const best = await getBest(nextWorkout);
+    setNextSet({...best, created: new Date().toISOString()});
+  }, [getTodaysSets, getTodaysPlan, getBest]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+      predict();
+    }, [refresh, predict]),
+  );
 
   const renderItem = useCallback(
     ({item}: {item: Set}) => (
@@ -90,8 +167,8 @@ export default function SetList() {
       weight: 0,
       unit: 'kg',
     };
-    navigation.navigate('EditSet', {set});
-  }, [navigation]);
+    navigation.navigate('EditSet', {set: nextSet || set});
+  }, [navigation, nextSet]);
 
   return (
     <View style={styles.container}>
