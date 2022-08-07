@@ -18,6 +18,10 @@ export default function SetForm({
   const [created, setCreated] = useState(new Date(set.created));
   const [unit, setUnit] = useState(set.unit);
   const [showDate, setShowDate] = useState(false);
+  const [selection, setSelection] = useState({
+    start: 0,
+    end: set.reps.toString().length,
+  });
   const weightRef = useRef<any>(null);
 
   const onConfirm = (date: Date) => {
@@ -52,8 +56,11 @@ export default function SetForm({
         value={reps}
         onChangeText={setReps}
         onSubmitEditing={() => weightRef.current?.focus()}
-        selection={{start: 0, end: set.reps.toString().length}}
+        selection={selection}
+        onSelectionChange={e => setSelection(e.nativeEvent.selection)}
         autoFocus
+        selectTextOnFocus
+        blurOnSubmit={false}
       />
       <TextInput
         style={styles.marginBottom}
