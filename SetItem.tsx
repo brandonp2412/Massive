@@ -1,11 +1,10 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
-import {GestureResponderEvent, Text} from 'react-native';
+import {GestureResponderEvent} from 'react-native';
 import {Divider, List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
 import Set from './set';
-import {format} from './time';
 
 export default function SetItem({
   item,
@@ -46,7 +45,7 @@ export default function SetItem({
       <List.Item
         onPress={() => navigation.navigate('EditSet', {set: item})}
         title={item.name}
-        description={`${item.reps} x ${item.weight}${item.unit}`}
+        description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}
         right={() => (
           <>
