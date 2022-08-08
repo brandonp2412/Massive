@@ -24,6 +24,7 @@ export default function SetList() {
   const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [end, setEnd] = useState(false);
+  const [dates, setDates] = useState(false);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
@@ -133,9 +134,15 @@ export default function SetList() {
 
   const renderItem = useCallback(
     ({item}: {item: Set}) => (
-      <SetItem item={item} key={item.id} onRemove={refresh} />
+      <SetItem
+        dates={dates}
+        setDates={setDates}
+        item={item}
+        key={item.id}
+        onRemove={refresh}
+      />
     ),
-    [refresh],
+    [refresh, dates, setDates],
   );
 
   const next = useCallback(async () => {

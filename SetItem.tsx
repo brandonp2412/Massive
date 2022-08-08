@@ -1,20 +1,26 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useContext, useState} from 'react';
-import {GestureResponderEvent} from 'react-native';
+import React, {useCallback, useContext, useMemo, useState} from 'react';
+import {GestureResponderEvent, Text} from 'react-native';
 import {Divider, List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
 import Set from './set';
+import {format} from './time';
 
 export default function SetItem({
   item,
   onRemove,
+  dates,
+  setDates,
 }: {
   item: Set;
   onRemove: () => void;
+  dates: boolean;
+  setDates: (value: boolean) => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
+  const date = useMemo(() => format(new Date(item.created)), [item.created]);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
@@ -40,6 +46,11 @@ export default function SetItem({
     [setShowMenu, setAnchor],
   );
 
+  const toggleDates = useCallback(() => {
+    setDates(!dates);
+    setShowMenu(false);
+  }, [dates, setDates]);
+
   return (
     <>
       <List.Item
@@ -48,16 +59,25 @@ export default function SetItem({
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}
         right={() => (
-          <>
+          <Text
+            style={{
+              alignSelf: 'center',
+            }}>
+            {dates ? date : null}
             <Menu
               anchor={anchor}
               visible={showMenu}
               onDismiss={() => setShowMenu(false)}>
               <Menu.Item icon="copy" onPress={copy} title="Copy" />
+              <Menu.Item
+                icon="calendar-outline"
+                onPress={toggleDates}
+                title="Dates"
+              />
               <Divider />
               <Menu.Item icon="trash" onPress={remove} title="Delete" />
             </Menu>
-          </>
+          </Text>
         )}
       />
     </>
