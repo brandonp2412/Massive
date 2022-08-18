@@ -92,7 +92,6 @@ export default function SetList() {
           weight: 0,
           name: '',
           reps: 0,
-          created: new Date().toISOString(),
           id: 0,
         };
       const [repsResult] = await db.executeSql(bestReps, [
@@ -167,12 +166,12 @@ export default function SetList() {
 
   const onAdd = useCallback(async () => {
     const set: Set = {
-      created: new Date().toISOString(),
       name: '',
       id: 0,
       reps: 0,
       weight: 0,
       unit: 'kg',
+      created: new Date().toISOString(),
     };
     navigation.navigate('EditSet', {set: nextSet || set});
   }, [navigation, nextSet]);

@@ -52,12 +52,12 @@ export default function EditSet() {
 
   const add = useCallback(
     async (set: Set) => {
-      const {name, reps, weight, created, unit} = set;
+      const {name, reps, weight, unit} = set;
       const insert = `
         INSERT INTO sets(name, reps, weight, created, unit) 
-        VALUES (?,?,?,?,?)
+        VALUES (?,?,?,strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime'),?)
       `;
-      await db.executeSql(insert, [name, reps, weight, created, unit]);
+      await db.executeSql(insert, [name, reps, weight, unit]);
       notify();
       navigation.goBack();
     },
