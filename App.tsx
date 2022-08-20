@@ -62,6 +62,8 @@ const App = () => {
       if (seconds === null) await setItem('seconds', '30');
       const alarmEnabled = await getItem('alarmEnabled');
       if (alarmEnabled === null) await setItem('alarmEnabled', 'false');
+      const vibrate = await getItem('vibrate');
+      if (vibrate === null) await setItem('vibrate', 'true');
       if (!(await getItem('predictiveSets')))
         await setItem('predictiveSets', 'true');
       if (!(await getItem('maxSets'))) await setItem('maxSets', '3');

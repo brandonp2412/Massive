@@ -29,13 +29,14 @@ export default function EditSet() {
     }, [navigation]),
   );
 
-  const notify = useCallback(async () => {
+  const startTimer = useCallback(async () => {
     const enabled = await AsyncStorage.getItem('alarmEnabled');
     if (enabled !== 'true') return;
     const minutes = await AsyncStorage.getItem('minutes');
     const seconds = await AsyncStorage.getItem('seconds');
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
-    NativeModules.AlarmModule.timer(milliseconds);
+    const vibrate = (await AsyncStorage.getItem('vibrate')) === 'true';
+    NativeModules.AlarmModule.timer(milliseconds, vibrate);
   }, []);
 
   const update = useCallback(
@@ -57,11 +58,11 @@ export default function EditSet() {
         INSERT INTO sets(name, reps, weight, created, unit) 
         VALUES (?,?,?,strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime'),?)
       `;
+      startTimer();
       await db.executeSql(insert, [name, reps, weight, unit]);
-      notify();
       navigation.goBack();
     },
-    [db, navigation, notify],
+    [db, navigation, startTimer],
   );
 
   const save = useCallback(

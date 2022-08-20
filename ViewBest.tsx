@@ -83,7 +83,7 @@ export default function ViewBest() {
           <XAxis
             style={{marginHorizontal: -10, height: xAxisHeight}}
             data={sets}
-            formatLabel={(_value, index) => formatMonth(sets[index].created)}
+            formatLabel={(_value, index) => formatMonth(sets[index].created!)}
             contentInset={{left: 10, right: 10}}
             svg={axesSvg}
           />

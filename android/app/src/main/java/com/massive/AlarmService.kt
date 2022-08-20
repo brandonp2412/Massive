@@ -30,7 +30,9 @@ class AlarmService : Service(), OnPreparedListener {
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .setUsage(AudioAttributes.USAGE_ALARM)
             .build()
-        vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, 1), audioAttributes)
+        val vibrate = intent.extras!!.getBoolean("vibrate")
+        if (vibrate)
+            vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, 1), audioAttributes)
         return START_STICKY
     }
 

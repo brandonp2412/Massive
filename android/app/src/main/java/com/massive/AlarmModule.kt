@@ -23,10 +23,11 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
-    fun timer(milliseconds: Int) {
+    fun timer(milliseconds: Int, vibrate: Boolean) {
         Log.d("AlarmModule", "Queue alarm for $milliseconds delay")
         val intent = Intent(reactApplicationContext, TimerService::class.java)
         intent.putExtra("milliseconds", milliseconds)
+        intent.putExtra("vibrate", vibrate)
         reactApplicationContext.startService(intent)
     }
 

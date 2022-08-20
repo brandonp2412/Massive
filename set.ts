@@ -3,6 +3,6 @@ export default interface Set {
   name: string;
   reps: number;
   weight: number;
-  created: string;
+  created?: string;
   unit?: string;
 }

@@ -19,17 +19,19 @@ class TimerService : Service() {
     private var endMs: Int? = null
     private var currentMs: Long? = null
     private var countdownTimer: CountDownTimer? = null
+    private var vibrate: Boolean = true
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("TimerService", "Started timer service.")
         Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs")
-        if (intent?.action == "add") {
+        vibrate = intent!!.extras!!.getBoolean("vibrate")
+        if (intent.action == "add") {
             endMs = currentMs!!.toInt().plus(60000)
             applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
         }
         else {
-            endMs = intent!!.extras!!.getInt("milliseconds")
+            endMs = intent.extras!!.getInt("milliseconds")
         }
         Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs")
         notificationManager = getManager(applicationContext)
@@ -68,7 +70,9 @@ class TimerService : Service() {
                    .setCategory(NotificationCompat.CATEGORY_ALARM)
                    .priority = NotificationCompat.PRIORITY_HIGH
                notificationManager.notify(NOTIFICATION_ID, builder.build())
-               applicationContext.startService(Intent(applicationContext, AlarmService::class.java))
+               val alarmIntent = Intent(applicationContext, AlarmService::class.java)
+               alarmIntent.putExtra("vibrate", vibrate)
+               applicationContext.startService(alarmIntent)
            }
        }
     }

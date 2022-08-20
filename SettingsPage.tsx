@@ -14,19 +14,20 @@ import MassiveSwitch from './MassiveSwitch';
 const {getItem, setItem} = AsyncStorage;
 
 export default function SettingsPage() {
+  const [vibrate, setVibrate] = useState(true);
   const [minutes, setMinutes] = useState<string>('');
   const [maxSets, setMaxSets] = useState<string>('3');
   const [seconds, setSeconds] = useState<string>('');
-  const [alarmEnabled, setAlarmEnabled] = useState<boolean>(false);
-  const [predictiveSets, setPredictiveSets] = useState<boolean>(false);
-  const [showBattery, setShowBattery] = useState(false);
+  const [alarm, setAlarm] = useState<boolean>(false);
+  const [predictive, setPredictive] = useState<boolean>(false);
+  const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
 
   const refresh = useCallback(async () => {
     setMinutes((await getItem('minutes')) || '');
     setSeconds((await getItem('seconds')) || '');
-    setAlarmEnabled((await getItem('alarmEnabled')) === 'true');
-    setPredictiveSets((await getItem('predictiveSets')) === 'true');
+    setAlarm((await getItem('alarmEnabled')) === 'true');
+    setPredictive((await getItem('predictiveSets')) === 'true');
     setMaxSets((await getItem('maxSets')) || '');
     NativeModules.AlarmModule.ignoringBattery(setIgnoring);
   }, []);
@@ -37,27 +38,27 @@ export default function SettingsPage() {
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
-      setAlarmEnabled(enabled);
-      if (enabled && !ignoring) setShowBattery(true);
+      setAlarm(enabled);
+      if (enabled && !ignoring) setBattery(true);
       setItem('alarmEnabled', enabled ? 'true' : 'false');
     },
-    [setShowBattery, ignoring],
+    [setBattery, ignoring],
   );
 
   const changePredictive = useCallback(
     (enabled: boolean) => {
-      setPredictiveSets(enabled);
+      setPredictive(enabled);
       setItem('predictiveSets', enabled ? 'true' : 'false');
       ToastAndroid.show(
         'Predictive sets guess whats next based on todays plan.',
         ToastAndroid.LONG,
       );
     },
-    [setPredictiveSets],
+    [setPredictive],
   );
 
-  return (
-    <View style={styles.container}>
+  const textInputs = (
+    <>
       <TextInput
         label="Rest minutes"
         value={minutes}
@@ -68,8 +69,8 @@ export default function SettingsPage() {
           setItem('minutes', text);
         }}
         style={styles.text}
+        selectTextOnFocus
       />
-
       <TextInput
         label="Rest seconds"
         value={seconds}
@@ -80,8 +81,8 @@ export default function SettingsPage() {
           setItem('seconds', s);
         }}
         style={styles.text}
+        selectTextOnFocus
       />
-
       <TextInput
         label="Sets per workout"
         value={maxSets}
@@ -91,30 +92,48 @@ export default function SettingsPage() {
           setItem('maxSets', value);
         }}
         style={styles.text}
+        selectTextOnFocus
       />
+    </>
+  );
 
+  const changeVibrate = useCallback(
+    (value: boolean) => {
+      setVibrate(value);
+      setItem('vibrate', value ? 'true' : 'false');
+    },
+    [setVibrate],
+  );
+
+  return (
+    <View style={styles.container}>
+      {textInputs}
       <Text style={styles.text}>Rest timers</Text>
       <MassiveSwitch
         style={[styles.text, {alignSelf: 'flex-start'}]}
-        value={alarmEnabled}
+        value={alarm}
         onValueChange={changeAlarmEnabled}
       />
-
+      <Text style={styles.text}>Vibrate</Text>
+      <MassiveSwitch
+        style={[styles.text, {alignSelf: 'flex-start'}]}
+        value={vibrate}
+        onValueChange={changeVibrate}
+      />
       <ConfirmDialog
         title="Battery optimizations"
-        show={showBattery}
-        setShow={setShowBattery}
+        show={battery}
+        setShow={setBattery}
         onOk={() => {
           NativeModules.AlarmModule.openSettings();
-          setShowBattery(false);
+          setBattery(false);
         }}>
         Disable battery optimizations for Massive to use rest timers.
       </ConfirmDialog>
-
       <Text style={styles.text}>Predictive sets</Text>
       <MassiveSwitch
         style={[styles.text, {alignSelf: 'flex-start'}]}
-        value={predictiveSets}
+        value={predictive}
         onValueChange={changePredictive}
       />
     </View>

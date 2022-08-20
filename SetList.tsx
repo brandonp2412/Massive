@@ -121,7 +121,7 @@ export default function SetList() {
           todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
     }
     const best = await getBest(nextWorkout);
-    setNextSet({...best, created: new Date().toISOString()});
+    setNextSet({...best});
   }, [getTodaysSets, getTodaysPlan, getBest]);
 
   useFocusEffect(
@@ -171,7 +171,6 @@ export default function SetList() {
       reps: 0,
       weight: 0,
       unit: 'kg',
-      created: new Date().toISOString(),
     };
     navigation.navigate('EditSet', {set: nextSet || set});
   }, [navigation, nextSet]);
