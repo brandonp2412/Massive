@@ -1,11 +1,10 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useContext, useMemo, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {GestureResponderEvent, Text} from 'react-native';
 import {Divider, List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
 import Set from './set';
-import {format} from './time';
 
 export default function SetItem({
   item,
@@ -20,7 +19,6 @@ export default function SetItem({
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
-  const date = useMemo(() => format(new Date(item.created)), [item.created]);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
@@ -32,7 +30,6 @@ export default function SetItem({
 
   const copy = useCallback(() => {
     const set: Set = {...item};
-    set.created = new Date().toISOString();
     set.id = 0;
     setShowMenu(false);
     navigation.navigate('EditSet', {set});
@@ -63,7 +60,7 @@ export default function SetItem({
             style={{
               alignSelf: 'center',
             }}>
-            {dates ? date : null}
+            {dates ? item.created?.replace('T', ' ') : null}
             <Menu
               anchor={anchor}
               visible={showMenu}

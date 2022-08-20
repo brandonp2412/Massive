@@ -31,7 +31,6 @@
     "react-native-file-access": "^2.4.3",
     "react-native-gesture-handler": "^2.5.0",
     "react-native-linear-gradient": "^2.6.2",
-    "react-native-modal-datetime-picker": "^13.1.2",
     "react-native-pager-view": "^5.4.24",
     "react-native-paper": "^4.12.2",
     "react-native-reanimated": "^2.9.0",

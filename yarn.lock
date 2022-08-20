@@ -8020,7 +8020,6 @@ __metadata:
     react-native-file-access: ^2.4.3
     react-native-gesture-handler: ^2.5.0
     react-native-linear-gradient: ^2.6.2
-    react-native-modal-datetime-picker: ^13.1.2
     react-native-pager-view: ^5.4.24
     react-native-paper: ^4.12.2
     react-native-reanimated: ^2.9.0
@@ -9677,18 +9676,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: dd0e27d3ddffa239d46919fd397f1ad68cdb6bcaa48c11ec9b01a0f54f0ad383f203a2245f2f06206e63aa4443fe7b2b1cc105ee262bf9a84ee62dabad6028ad
-  languageName: node
-  linkType: hard
-
-"react-native-modal-datetime-picker@npm:^13.1.2":
-  version: 13.1.2
-  resolution: "react-native-modal-datetime-picker@npm:13.1.2"
-  dependencies:
-    prop-types: ^15.7.2
-  peerDependencies:
-    "@react-native-community/datetimepicker": ">=3.0.0"
-    react-native: ">=0.65.0"
-  checksum: 70a7875dbeb550f97aa26786262a434a5c88dfd048e642fa6e4a7e0b8411c8ff191463a5bb4a82bb18d603cc3b2ef60891bfcaa3144b9e0a40cd756bf662b4a1
   languageName: node
   linkType: hard
 
