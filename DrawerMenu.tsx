@@ -2,7 +2,7 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
 import {ToastAndroid} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
-import {FileSystem} from 'react-native-file-access';
+import RNFS from 'react-native-fs';
 import {Divider, IconButton, Menu} from 'react-native-paper';
 import {DatabaseContext, DrawerParamList} from './App';
 import ConfirmDialog from './ConfirmDialog';
@@ -54,7 +54,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
 
   const uploadSets = useCallback(async () => {
     const result = await DocumentPicker.pickSingle();
-    const file = await FileSystem.readFile(result.uri);
+    const file = await RNFS.readFile(result.uri);
     console.log(`${DrawerMenu.name}.${uploadSets.name}:`, file.length);
     const lines = file.split('\n');
     if (lines[0] != setFields)
@@ -76,7 +76,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
 
   const uploadPlans = useCallback(async () => {
     const result = await DocumentPicker.pickSingle();
-    const file = await FileSystem.readFile(result.uri);
+    const file = await RNFS.readFile(result.uri);
     console.log(`${DrawerMenu.name}.uploadPlans:`, file.length);
     const lines = file.split('\n');
     if (lines[0] != planFields)
