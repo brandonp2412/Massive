@@ -46,6 +46,7 @@ class AlarmService : Service(), OnPreparedListener {
 
     override fun onDestroy() {
         super.onDestroy()
+        mediaPlayer?.stop()
         mediaPlayer?.release()
         vibrator?.cancel()
     }
