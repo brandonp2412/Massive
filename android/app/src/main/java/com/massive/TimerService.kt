@@ -88,17 +88,29 @@ class TimerService : Service() {
         super.onDestroy()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun getBuilder(context: Context): NotificationCompat.Builder {
         val contentIntent = Intent(context, MainActivity::class.java)
         val pendingContent =
-            PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
+            } else {
+                PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            }
         val stopIntent = Intent(context, StopTimer::class.java)
         val pendingStop =
-            PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
+            } else {
+                PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            }
         val addIntent = Intent(context, TimerService::class.java)
         addIntent.action = "add"
-        val pendingAdd = PendingIntent.getService(context, 0, addIntent, PendingIntent.FLAG_IMMUTABLE)
+        addIntent.putExtra("vibrate", vibrate)
+        val pendingAdd = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getService(context, 0, addIntent, PendingIntent.FLAG_MUTABLE)
+        } else {
+            PendingIntent.getService(context, 0, addIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_baseline_hourglass_bottom_24)
             .setContentTitle("Resting")
