@@ -88,21 +88,14 @@ class TimerService : Service() {
         super.onDestroy()
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun getBuilder(context: Context): NotificationCompat.Builder {
         val contentIntent = Intent(context, MainActivity::class.java)
         val pendingContent =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
-            } else {
-                PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-            }
+            PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
         val stopIntent = Intent(context, StopTimer::class.java)
         val pendingStop =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
-            } else {
-                PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-            }
+            PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
         val addIntent = Intent(context, TimerService::class.java)
         addIntent.action = "add"
         addIntent.putExtra("vibrate", vibrate)
