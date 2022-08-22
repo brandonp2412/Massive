@@ -30,7 +30,11 @@ export default function Routes({db}: {db: SQLiteDatabase | null}) {
   return (
     <DatabaseContext.Provider value={db}>
       <Drawer.Navigator
-        screenOptions={{headerTintColor: dark ? 'white' : 'black'}}>
+        screenOptions={{
+          headerTintColor: dark ? 'white' : 'black',
+          drawerType: 'slide',
+          swipeEdgeWidth: 1000,
+        }}>
         {routes.map(route => (
           <Drawer.Screen
             key={route.name}
