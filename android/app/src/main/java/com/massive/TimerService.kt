@@ -1,9 +1,8 @@
 package com.massive
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
+import android.app.NotificationManager.IMPORTANCE_HIGH
+import android.app.NotificationManager.IMPORTANCE_LOW
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -15,7 +14,7 @@ import androidx.core.app.NotificationCompat
 import kotlin.math.floor
 
 class TimerService : Service() {
-    private var notificationManager: NotificationManager? = null
+    private var manager: NotificationManager? = null
     private var endMs: Int? = null
     private var currentMs: Long? = null
     private var countdownTimer: CountDownTimer? = null
@@ -27,54 +26,63 @@ class TimerService : Service() {
         Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs")
         vibrate = intent!!.extras!!.getBoolean("vibrate")
         if (intent.action == "add") {
+            manager?.cancel(NOTIFICATION_ID_DONE)
             endMs = currentMs!!.toInt().plus(60000)
             applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
-        }
-        else {
+        } else {
             endMs = intent.extras!!.getInt("milliseconds")
         }
         Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs")
-        notificationManager = getManager(applicationContext)
+        manager = getManager(applicationContext)
         val builder = getBuilder(applicationContext)
         countdownTimer?.cancel()
-        countdownTimer = getTimer(builder, notificationManager!!)
+        countdownTimer = getTimer(builder)
         countdownTimer!!.start()
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun getTimer(builder: NotificationCompat.Builder, notificationManager: NotificationManager): CountDownTimer {
-       return object : CountDownTimer(endMs!!.toLong(), 1000) {
-           override fun onTick(current: Long) {
-               currentMs = current
-               val seconds = floor((current / 1000).toDouble() % 60)
-                   .toInt().toString().padStart(2, '0')
-               val minutes = floor((current / 1000).toDouble() / 60)
-                   .toInt().toString().padStart(2, '0')
-               builder.setContentText("$minutes:$seconds")
-                   .setAutoCancel(false)
-                   .setDefaults(0)
-                   .setProgress(endMs!!, current.toInt(), false)
-                   .setCategory(NotificationCompat.CATEGORY_PROGRESS)
-                   .priority = NotificationCompat.PRIORITY_LOW
-               notificationManager.notify(NOTIFICATION_ID, builder.build())
-           }
-           @RequiresApi(Build.VERSION_CODES.M)
-           override fun onFinish() {
-               val finishIntent = Intent(applicationContext, StopAlarm::class.java)
-               val finishPending =
-                   PendingIntent.getActivity(applicationContext, 0, finishIntent, PendingIntent.FLAG_IMMUTABLE)
-               builder.setContentText("Timer finished.")
-                   .setAutoCancel(true)
-                   .setOngoing(false)
-                   .setContentIntent(finishPending)
-                   .setCategory(NotificationCompat.CATEGORY_ALARM)
-                   .priority = NotificationCompat.PRIORITY_HIGH
-               notificationManager.notify(NOTIFICATION_ID, builder.build())
-               val alarmIntent = Intent(applicationContext, AlarmService::class.java)
-               alarmIntent.putExtra("vibrate", vibrate)
-               applicationContext.startService(alarmIntent)
-           }
-       }
+    private fun getTimer(builder: NotificationCompat.Builder): CountDownTimer {
+        return object : CountDownTimer(endMs!!.toLong(), 1000) {
+            override fun onTick(current: Long) {
+                currentMs = current
+                val seconds = floor((current / 1000).toDouble() % 60)
+                    .toInt().toString().padStart(2, '0')
+                val minutes = floor((current / 1000).toDouble() / 60)
+                    .toInt().toString().padStart(2, '0')
+                builder.setContentText("$minutes:$seconds")
+                    .setAutoCancel(false)
+                    .setDefaults(0)
+                    .setProgress(endMs!!, current.toInt(), false)
+                    .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+                    .priority = NotificationCompat.PRIORITY_LOW
+                manager?.notify(NOTIFICATION_ID_PENDING, builder.build())
+            }
+
+            @RequiresApi(Build.VERSION_CODES.M)
+            override fun onFinish() {
+                val finishIntent = Intent(applicationContext, StopAlarm::class.java)
+                val finishPending =
+                    PendingIntent.getActivity(
+                        applicationContext,
+                        0,
+                        finishIntent,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                builder.setContentText("Timer finished.")
+                    .setAutoCancel(true)
+                    .setProgress(0, 0, false)
+                    .setOngoing(false)
+                    .setContentIntent(finishPending)
+                    .setChannelId(CHANNEL_ID_DONE)
+                    .setCategory(NotificationCompat.CATEGORY_ALARM)
+                    .priority = NotificationCompat.PRIORITY_HIGH
+                manager?.notify(NOTIFICATION_ID_DONE, builder.build())
+                manager?.cancel(NOTIFICATION_ID_PENDING)
+                val alarmIntent = Intent(applicationContext, AlarmService::class.java)
+                alarmIntent.putExtra("vibrate", vibrate)
+                applicationContext.startService(alarmIntent)
+            }
+        }
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -84,7 +92,8 @@ class TimerService : Service() {
     override fun onDestroy() {
         Log.d("TimerService", "Destroying...")
         countdownTimer?.cancel()
-        notificationManager?.cancel(NOTIFICATION_ID)
+        manager?.cancel(NOTIFICATION_ID_PENDING)
+        manager?.cancel(NOTIFICATION_ID_DONE)
         super.onDestroy()
     }
 
@@ -104,7 +113,7 @@ class TimerService : Service() {
         } else {
             PendingIntent.getService(context, 0, addIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
-        return NotificationCompat.Builder(context, CHANNEL_ID)
+        return NotificationCompat.Builder(context, CHANNEL_ID_PENDING)
             .setSmallIcon(R.drawable.ic_baseline_hourglass_bottom_24)
             .setContentTitle("Resting")
             .setContentIntent(pendingContent)
@@ -114,21 +123,28 @@ class TimerService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getManager(context: Context): NotificationManager {
-        val importance = NotificationManager.IMPORTANCE_LOW
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            CHANNEL_ID, importance
+        val alarmsChannel = NotificationChannel(
+            CHANNEL_ID_DONE,
+            CHANNEL_ID_DONE,
+            IMPORTANCE_HIGH
         )
-        channel.description = "Alarms for rest timings."
+        alarmsChannel.description = "Alarms for rest timers."
+        alarmsChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         val notificationManager = context.getSystemService(
             NotificationManager::class.java
         )
-        notificationManager.createNotificationChannel(channel)
+        notificationManager.createNotificationChannel(alarmsChannel)
+        val timersChannel =
+            NotificationChannel(CHANNEL_ID_PENDING, CHANNEL_ID_PENDING, IMPORTANCE_LOW)
+        timersChannel.description = "Progress on rest timers."
+        notificationManager.createNotificationChannel(timersChannel)
         return notificationManager
     }
 
     companion object {
-        private const val CHANNEL_ID = "MassiveTimer"
-        private const val NOTIFICATION_ID = 1
+        private const val CHANNEL_ID_PENDING = "MassiveTimer"
+        private const val CHANNEL_ID_DONE = "MassiveDone"
+        private const val NOTIFICATION_ID_PENDING = 1
+        private const val NOTIFICATION_ID_DONE = 2
     }
 }
