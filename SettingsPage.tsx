@@ -1,5 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   NativeModules,
   StyleSheet,
@@ -7,7 +13,7 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {TextInput} from 'react-native-paper';
+import {Searchbar, TextInput} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import MassiveSwitch from './MassiveSwitch';
 
@@ -22,6 +28,7 @@ export default function SettingsPage() {
   const [predictive, setPredictive] = useState<boolean>(false);
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
+  const [search, setSearch] = useState('');
 
   const refresh = useCallback(async () => {
     setMinutes((await getItem('minutes')) || '');
@@ -57,46 +64,6 @@ export default function SettingsPage() {
     [setPredictive],
   );
 
-  const textInputs = (
-    <>
-      <TextInput
-        label="Rest minutes"
-        value={minutes}
-        keyboardType="numeric"
-        placeholder="3"
-        onChangeText={text => {
-          setMinutes(text);
-          setItem('minutes', text);
-        }}
-        style={styles.text}
-        selectTextOnFocus
-      />
-      <TextInput
-        label="Rest seconds"
-        value={seconds}
-        keyboardType="numeric"
-        placeholder="30"
-        onChangeText={s => {
-          setSeconds(s);
-          setItem('seconds', s);
-        }}
-        style={styles.text}
-        selectTextOnFocus
-      />
-      <TextInput
-        label="Sets per workout"
-        value={maxSets}
-        keyboardType="numeric"
-        onChangeText={value => {
-          setMaxSets(value);
-          setItem('maxSets', value);
-        }}
-        style={styles.text}
-        selectTextOnFocus
-      />
-    </>
-  );
-
   const changeVibrate = useCallback(
     (value: boolean) => {
       setVibrate(value);
@@ -105,21 +72,106 @@ export default function SettingsPage() {
     [setVibrate],
   );
 
+  const items: {name: string; element: ReactNode}[] = [
+    {
+      name: 'Sets per workout',
+      element: (
+        <TextInput
+          label="Sets per workout"
+          value={maxSets}
+          keyboardType="numeric"
+          onChangeText={value => {
+            setMaxSets(value);
+            setItem('maxSets', value);
+          }}
+          style={styles.text}
+          selectTextOnFocus
+        />
+      ),
+    },
+    {
+      name: 'Rest seconds',
+      element: (
+        <TextInput
+          label="Rest seconds"
+          value={seconds}
+          keyboardType="numeric"
+          placeholder="30"
+          onChangeText={s => {
+            setSeconds(s);
+            setItem('seconds', s);
+          }}
+          style={styles.text}
+          selectTextOnFocus
+        />
+      ),
+    },
+    {
+      name: 'Rest minutes',
+      element: (
+        <TextInput
+          label="Rest minutes"
+          value={minutes}
+          keyboardType="numeric"
+          placeholder="3"
+          onChangeText={text => {
+            setMinutes(text);
+            setItem('minutes', text);
+          }}
+          style={styles.text}
+          selectTextOnFocus
+        />
+      ),
+    },
+    {
+      name: 'Rest timers',
+      element: (
+        <>
+          <Text style={styles.text}>Rest timers</Text>
+          <MassiveSwitch
+            style={[styles.text, {alignSelf: 'flex-start'}]}
+            value={alarm}
+            onValueChange={changeAlarmEnabled}
+          />
+        </>
+      ),
+    },
+    {
+      name: 'Vibrate',
+      element: (
+        <>
+          <Text style={styles.text}>Vibrate</Text>
+          <MassiveSwitch
+            style={[styles.text, {alignSelf: 'flex-start'}]}
+            value={vibrate}
+            onValueChange={changeVibrate}
+          />
+        </>
+      ),
+    },
+    {
+      name: 'Predictive sets',
+      element: (
+        <>
+          <Text style={styles.text}>Predictive sets</Text>
+          <MassiveSwitch
+            style={[styles.text, {alignSelf: 'flex-start'}]}
+            value={predictive}
+            onValueChange={changePredictive}
+          />
+        </>
+      ),
+    },
+  ];
+
   return (
     <View style={styles.container}>
-      {textInputs}
-      <Text style={styles.text}>Rest timers</Text>
-      <MassiveSwitch
-        style={[styles.text, {alignSelf: 'flex-start'}]}
-        value={alarm}
-        onValueChange={changeAlarmEnabled}
-      />
-      <Text style={styles.text}>Vibrate</Text>
-      <MassiveSwitch
-        style={[styles.text, {alignSelf: 'flex-start'}]}
-        value={vibrate}
-        onValueChange={changeVibrate}
-      />
+      <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
+      {items
+        .filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
+        .map(item => (
+          <React.Fragment key={item.name}>{item.element}</React.Fragment>
+        ))}
       <ConfirmDialog
         title="Battery optimizations"
         show={battery}
@@ -130,12 +182,6 @@ export default function SettingsPage() {
         }}>
         Disable battery optimizations for Massive to use rest timers.
       </ConfirmDialog>
-      <Text style={styles.text}>Predictive sets</Text>
-      <MassiveSwitch
-        style={[styles.text, {alignSelf: 'flex-start'}]}
-        value={predictive}
-        onValueChange={changePredictive}
-      />
     </View>
   );
 }
