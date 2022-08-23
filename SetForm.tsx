@@ -19,7 +19,9 @@ export default function SetForm({
     end: set.reps.toString().length,
   });
   const weightRef = useRef<any>(null);
+  const repsRef = useRef<any>(null);
   const handleSubmit = () => {
+    if (!name) return;
     save({
       name,
       reps: Number(reps),
@@ -40,6 +42,8 @@ export default function SetForm({
           onChangeText={setName}
           autoCorrect={false}
           selectTextOnFocus
+          autoFocus={!name}
+          onSubmitEditing={() => repsRef.current?.focus()}
         />
         <TextInput
           style={styles.marginBottom}
@@ -50,9 +54,10 @@ export default function SetForm({
           onSubmitEditing={() => weightRef.current?.focus()}
           selection={selection}
           onSelectionChange={e => setSelection(e.nativeEvent.selection)}
-          autoFocus
+          autoFocus={!!name}
           selectTextOnFocus
           blurOnSubmit={false}
+          ref={repsRef}
         />
         <TextInput
           style={styles.marginBottom}
@@ -74,7 +79,11 @@ export default function SetForm({
         />
         <Text>{set.created?.replace('T', ' ')}</Text>
       </ScrollView>
-      <Button mode="contained" icon="save" onPress={handleSubmit}>
+      <Button
+        disabled={!name}
+        mode="contained"
+        icon="save"
+        onPress={handleSubmit}>
         Save
       </Button>
     </>
