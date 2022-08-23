@@ -16,6 +16,13 @@ import SetItem from './SetItem';
 import {DAYS} from './time';
 
 const limit = 15;
+const defaultSet = {
+  name: '',
+  id: 0,
+  reps: 10,
+  weight: 20,
+  unit: 'kg',
+};
 
 export default function SetList() {
   const [sets, setSets] = useState<Set[]>();
@@ -87,13 +94,7 @@ export default function SetList() {
       GROUP BY name;
     `;
       const [weightResult] = await db.executeSql(bestWeight, [query]);
-      if (!weightResult.rows.length)
-        return {
-          weight: 0,
-          name: '',
-          reps: 0,
-          id: 0,
-        };
+      if (!weightResult.rows.length) return {...defaultSet};
       const [repsResult] = await db.executeSql(bestReps, [
         query,
         weightResult.rows.item(0).weight,
@@ -165,13 +166,7 @@ export default function SetList() {
   }, [search, end, offset, sets, db, selectSets]);
 
   const onAdd = useCallback(async () => {
-    const set: Set = {
-      name: '',
-      id: 0,
-      reps: 5,
-      weight: 1,
-      unit: 'kg',
-    };
+    const set: Set = {...defaultSet};
     navigation.navigate('EditSet', {set: nextSet || set});
   }, [navigation, nextSet]);
 
