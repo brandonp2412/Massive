@@ -168,8 +168,8 @@ export default function SetList() {
     const set: Set = {
       name: '',
       id: 0,
-      reps: 0,
-      weight: 0,
+      reps: 5,
+      weight: 1,
       unit: 'kg',
     };
     navigation.navigate('EditSet', {set: nextSet || set});
