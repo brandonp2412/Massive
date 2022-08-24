@@ -26,7 +26,8 @@ const defaultSet = {
 
 export default function SetList() {
   const [sets, setSets] = useState<Set[]>();
-  const [nextSet, setNextSet] = useState<Set>();
+  const [set, setSet] = useState<Set>();
+  const [nextWorkout, setNextWorkout] = useState<string>();
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -112,18 +113,19 @@ export default function SetList() {
     if (todaysPlan.length === 0) return;
     const todaysSets = await getTodaysSets();
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
-    let nextWorkout = todaysWorkouts[0];
+    let workout = todaysWorkouts[0];
     if (todaysSets.length > 0) {
       const count = todaysSets.filter(
         s => s.name === todaysSets[0].name,
       ).length;
-      nextWorkout = todaysSets[0].name;
+      workout = todaysSets[0].name;
       if (count >= Number(settings.sets))
-        nextWorkout =
+        workout =
           todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
     }
-    const best = await getBest(nextWorkout);
-    setNextSet({...best});
+    const best = await getBest(workout);
+    setSet({...best});
+    setNextWorkout(todaysWorkouts[todaysWorkouts.indexOf(workout) + 1]);
   }, [getTodaysSets, getTodaysPlan, getBest, db]);
 
   useFocusEffect(
@@ -167,9 +169,11 @@ export default function SetList() {
   }, [search, end, offset, sets, db, selectSets]);
 
   const onAdd = useCallback(async () => {
-    const set: Set = {...defaultSet};
-    navigation.navigate('EditSet', {set: nextSet || set});
-  }, [navigation, nextSet]);
+    navigation.navigate('EditSet', {
+      set: set || {...defaultSet},
+      next: nextWorkout,
+    });
+  }, [navigation, set, nextWorkout]);
 
   return (
     <View style={styles.container}>
@@ -184,7 +188,7 @@ export default function SetList() {
           />
         }
         renderItem={renderItem}
-        keyExtractor={set => set.id!.toString()}
+        keyExtractor={s => s.id!.toString()}
         onEndReached={next}
         refreshing={refreshing}
         onRefresh={refreshLoader}

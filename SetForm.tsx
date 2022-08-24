@@ -6,9 +6,11 @@ import Set from './set';
 export default function SetForm({
   save,
   set,
+  next,
 }: {
   set: Set;
   save: (set: Set) => void;
+  next?: string;
 }) {
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
@@ -77,7 +79,12 @@ export default function SetForm({
           onSubmitEditing={handleSubmit}
           selectTextOnFocus
         />
-        <Text>{set.created?.replace('T', ' ')}</Text>
+        {set.created && (
+          <Text style={{marginBottom: 10}}>
+            Created: {set.created?.replace('T', ' ')}
+          </Text>
+        )}
+        {next && <Text>Next: {next}</Text>}
       </ScrollView>
       <Button
         disabled={!name}
