@@ -39,7 +39,7 @@ android {
         missingDimensionStrategy "RNNotifications.reactNativeVersion", "reactNative60"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 20
+        versionCode 21
         versionName "1.1"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
