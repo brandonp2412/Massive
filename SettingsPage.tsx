@@ -97,22 +97,6 @@ export default function SettingsPage() {
       ),
     },
     {
-      name: 'Rest seconds',
-      element: (
-        <TextInput
-          label="Rest seconds"
-          value={seconds}
-          keyboardType="numeric"
-          placeholder="30"
-          onChangeText={s => {
-            setSeconds(s);
-          }}
-          style={styles.text}
-          selectTextOnFocus
-        />
-      ),
-    },
-    {
       name: 'Rest minutes',
       element: (
         <TextInput
@@ -122,6 +106,22 @@ export default function SettingsPage() {
           placeholder="3"
           onChangeText={text => {
             setMinutes(text);
+          }}
+          style={styles.text}
+          selectTextOnFocus
+        />
+      ),
+    },
+    {
+      name: 'Rest seconds',
+      element: (
+        <TextInput
+          label="Rest seconds"
+          value={seconds}
+          keyboardType="numeric"
+          placeholder="30"
+          onChangeText={s => {
+            setSeconds(s);
           }}
           style={styles.text}
           selectTextOnFocus
