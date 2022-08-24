@@ -6026,10 +6026,12 @@ __metadata:
     react-native-reanimated: ^2.9.0
     react-native-safe-area-context: ^4.3.1
     react-native-screens: ^3.14.0
+    react-native-share: ^7.9.0
     react-native-sqlite-storage: ^6.0.1
     react-native-svg: ^12.3.0
     react-native-svg-charts: ^5.4.0
     react-native-vector-icons: ^9.2.0
+    react-native-view-shot: ^3.4.0
     typescript: ^4.4.4
   languageName: unknown
   linkType: soft
@@ -7475,6 +7477,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-share@npm:^7.9.0":
+  version: 7.9.0
+  resolution: "react-native-share@npm:7.9.0"
+  checksum: 8eb2f5b4be8df11224f8f00b2761c2c3b4231590d945f57e8ed91899a455d7b5083bb62aa8a017ed8c15fbdfb95e85f9ee4060ac00c01897ef5c351e756c46af
+  languageName: node
+  linkType: hard
+
 "react-native-sqlite-storage@npm:^6.0.1":
   version: 6.0.1
   resolution: "react-native-sqlite-storage@npm:6.0.1"
@@ -7539,6 +7548,16 @@ __metadata:
     fa5-upgrade: bin/fa5-upgrade.sh
     generate-icon: bin/generate-icon.js
   checksum: 222baf88c3f269234c08a41680e6400a4bf1f4c170f7c2ffac34b2c1c089cdb1084223db2a7d9cc54ee212eec20ff1478f3f482df19062e3057c328642da0be2
+  languageName: node
+  linkType: hard
+
+"react-native-view-shot@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "react-native-view-shot@npm:3.4.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: f42679bdbb55e6bec425a152053ad4d1a79b0847c258526ff00958ab346ac18103a935267525c1dadbe10830f2f277b27d0df3cf61516c53d5a16ccdd87d201c
   languageName: node
   linkType: hard
 

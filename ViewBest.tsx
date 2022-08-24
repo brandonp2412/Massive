@@ -7,14 +7,23 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import * as shape from 'd3-shape';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {Text, useColorScheme, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
+import Share from 'react-native-share';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
+import ViewShot from 'react-native-view-shot';
 import {DatabaseContext} from './App';
 import {BestPageParams} from './BestPage';
 import Set from './set';
 import {formatMonth} from './time';
+import {FileSystem} from 'react-native-file-access';
 
 interface Volume {
   name: string;
@@ -30,6 +39,7 @@ export default function ViewBest() {
   const db = useContext(DatabaseContext);
   const navigation = useNavigation();
   const dark = useColorScheme() === 'dark';
+  const viewShot = useRef<ViewShot>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -38,9 +48,26 @@ export default function ViewBest() {
         headerLeft: () => (
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
+        headerRight: () => (
+          <IconButton
+            onPress={() =>
+              viewShot.current?.capture?.().then(async uri => {
+                const base64 = await FileSystem.readFile(uri, 'base64');
+                const url = `data:image/jpeg;base64,${base64}`;
+                Share.open({
+                  message: `${params.best.name} - Powered by Massive`,
+                  type: 'image/jpeg',
+                  url,
+                  failOnCancel: false,
+                });
+              })
+            }
+            icon="share-social-outline"
+          />
+        ),
         title: params.best.name,
       });
-    }, [navigation, params.best.name]),
+    }, [navigation, params.best]),
   );
 
   useEffect(() => {
@@ -80,7 +107,7 @@ export default function ViewBest() {
   const xAxisHeight = 30;
 
   return (
-    <View style={{padding: 10}}>
+    <ViewShot style={{padding: 10}} ref={viewShot}>
       <Text>Best weight per day</Text>
       <View style={{height: 300, padding: 20, flexDirection: 'row'}}>
         <YAxis
@@ -151,6 +178,6 @@ export default function ViewBest() {
           />
         </View>
       </View>
-    </View>
+    </ViewShot>
   );
 }
