@@ -13,7 +13,7 @@ export type HomePageParams = {
   Sets: {};
   EditSet: {
     set: Set;
-    next?: string;
+    workouts?: string[];
   };
 };
 

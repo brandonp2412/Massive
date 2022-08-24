@@ -6,11 +6,11 @@ import Set from './set';
 export default function SetForm({
   save,
   set,
-  next,
+  workouts,
 }: {
   set: Set;
   save: (set: Set) => void;
-  next?: string;
+  workouts?: string[];
 }) {
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
@@ -81,10 +81,19 @@ export default function SetForm({
         />
         {set.created && (
           <Text style={{marginBottom: 10}}>
-            Created: {set.created?.replace('T', ' ')}
+            {set.created.replace('T', ' ')}
           </Text>
         )}
-        {next && <Text>Next: {next}</Text>}
+        <Text>
+          {workouts?.map((workout, index) => (
+            <Text
+              key={workout}
+              style={{fontWeight: workout === name ? 'bold' : 'normal'}}>
+              {workout}
+              {index === workouts.length - 1 ? '.' : ', '}
+            </Text>
+          ))}
+        </Text>
       </ScrollView>
       <Button
         disabled={!name}

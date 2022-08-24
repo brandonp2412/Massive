@@ -27,7 +27,7 @@ const defaultSet = {
 export default function SetList() {
   const [sets, setSets] = useState<Set[]>();
   const [set, setSet] = useState<Set>();
-  const [nextWorkout, setNextWorkout] = useState<string>();
+  const [workouts, setWorkouts] = useState<string[]>([]);
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -125,7 +125,7 @@ export default function SetList() {
     }
     const best = await getBest(workout);
     setSet({...best});
-    setNextWorkout(todaysWorkouts[todaysWorkouts.indexOf(workout) + 1]);
+    setWorkouts(todaysWorkouts);
   }, [getTodaysSets, getTodaysPlan, getBest, db]);
 
   useFocusEffect(
@@ -171,9 +171,9 @@ export default function SetList() {
   const onAdd = useCallback(async () => {
     navigation.navigate('EditSet', {
       set: set || {...defaultSet},
-      next: nextWorkout,
+      workouts,
     });
-  }, [navigation, set, nextWorkout]);
+  }, [navigation, set, workouts]);
 
   return (
     <View style={styles.container}>

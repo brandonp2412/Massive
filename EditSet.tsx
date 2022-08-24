@@ -78,7 +78,7 @@ export default function EditSet() {
 
   return (
     <View style={{padding: 10}}>
-      <SetForm save={save} set={params.set} next={params.next} />
+      <SetForm save={save} set={params.set} workouts={params.workouts} />
     </View>
   );
 }
