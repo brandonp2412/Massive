@@ -5,7 +5,7 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useContext} from 'react';
-import {NativeModules, View} from 'react-native';
+import {NativeModules, ToastAndroid, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
@@ -58,9 +58,14 @@ export default function EditSet() {
       `;
       startTimer();
       await db.executeSql(insert, [name, reps, weight, unit]);
+      if (
+        weight > params.set.weight ||
+        (reps > params.set.reps && weight === params.set.weight)
+      )
+        ToastAndroid.show("Great work King, that's a new record!", 6000);
       navigation.goBack();
     },
-    [db, navigation, startTimer],
+    [db, navigation, startTimer, params.set],
   );
 
   const save = useCallback(
