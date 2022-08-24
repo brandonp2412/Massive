@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {
   DarkTheme as NavigationDarkTheme,
@@ -14,7 +13,7 @@ import {
 } from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import {createPlans, createSets, getDb} from './db';
+import {createPlans, createSets, createSettings, getDb} from './db';
 import Routes from './Routes';
 
 export const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -26,8 +25,6 @@ export type DrawerParamList = {
 };
 
 export const DatabaseContext = React.createContext<SQLiteDatabase>({} as any);
-
-const {getItem, setItem} = AsyncStorage;
 
 const CombinedDefaultTheme = {
   ...PaperDefaultTheme,
@@ -52,21 +49,17 @@ const App = () => {
 
   useEffect(() => {
     const init = async () => {
-      const gotDb = await getDb();
-      await gotDb.executeSql(createPlans);
-      await gotDb.executeSql(createSets);
-      setDb(gotDb);
-      const minutes = await getItem('minutes');
-      if (minutes === null) await setItem('minutes', '3');
-      const seconds = await getItem('seconds');
-      if (seconds === null) await setItem('seconds', '30');
-      const alarmEnabled = await getItem('alarmEnabled');
-      if (alarmEnabled === null) await setItem('alarmEnabled', 'false');
-      const vibrate = await getItem('vibrate');
-      if (vibrate === null) await setItem('vibrate', 'true');
-      if (!(await getItem('predictiveSets')))
-        await setItem('predictiveSets', 'true');
-      if (!(await getItem('maxSets'))) await setItem('maxSets', '3');
+      const _db = await getDb();
+      await _db.executeSql(createPlans);
+      await _db.executeSql(createSets);
+      await _db.executeSql(createSettings);
+      setDb(_db);
+      const [result] = await _db.executeSql(`SELECT * FROM settings LIMIT 1`);
+      if (result.rows.length === 0)
+        return _db.executeSql(`
+            INSERT INTO settings(minutes,seconds,alarm,vibrate,predict,sets) 
+            VALUES(3,30,false,true,true,3);
+          `);
     };
     init();
   }, []);

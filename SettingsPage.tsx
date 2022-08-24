@@ -1,9 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {
   ReactNode,
   useCallback,
+  useContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import {
@@ -14,10 +13,10 @@ import {
   View,
 } from 'react-native';
 import {Searchbar, TextInput} from 'react-native-paper';
+import {DatabaseContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
 import MassiveSwitch from './MassiveSwitch';
-
-const {getItem, setItem} = AsyncStorage;
+import Settings from './settings';
 
 export default function SettingsPage() {
   const [vibrate, setVibrate] = useState(true);
@@ -29,25 +28,36 @@ export default function SettingsPage() {
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
+  const db = useContext(DatabaseContext);
 
   const refresh = useCallback(async () => {
-    setMinutes((await getItem('minutes')) || '');
-    setSeconds((await getItem('seconds')) || '');
-    setAlarm((await getItem('alarmEnabled')) === 'true');
-    setPredictive((await getItem('predictiveSets')) === 'true');
-    setMaxSets((await getItem('maxSets')) || '');
+    const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
+    const settings: Settings = result.rows.item(0);
+    console.log('SettingsPage.refresh:', {settings});
+    setMinutes(settings.minutes.toString());
+    setSeconds(settings.seconds.toString());
+    setAlarm(!!settings.alarm);
+    setPredictive(!!settings.predict);
+    setMaxSets(settings.sets.toString());
+    setVibrate(!!settings.vibrate);
     NativeModules.AlarmModule.ignoringBattery(setIgnoring);
-  }, []);
+  }, [db]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
+  useEffect(() => {
+    db.executeSql(
+      `UPDATE settings SET vibrate=?,minutes=?,sets=?,seconds=?,alarm=?,predict=?`,
+      [vibrate, minutes, maxSets, seconds, alarm, predictive],
+    );
+  }, [vibrate, minutes, maxSets, seconds, alarm, predictive, db]);
+
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
       setAlarm(enabled);
       if (enabled && !ignoring) setBattery(true);
-      setItem('alarmEnabled', enabled ? 'true' : 'false');
     },
     [setBattery, ignoring],
   );
@@ -55,7 +65,6 @@ export default function SettingsPage() {
   const changePredictive = useCallback(
     (enabled: boolean) => {
       setPredictive(enabled);
-      setItem('predictiveSets', enabled ? 'true' : 'false');
       ToastAndroid.show(
         'Predictive sets guess whats next based on todays plan.',
         ToastAndroid.LONG,
@@ -67,7 +76,6 @@ export default function SettingsPage() {
   const changeVibrate = useCallback(
     (value: boolean) => {
       setVibrate(value);
-      setItem('vibrate', value ? 'true' : 'false');
     },
     [setVibrate],
   );
@@ -82,7 +90,6 @@ export default function SettingsPage() {
           keyboardType="numeric"
           onChangeText={value => {
             setMaxSets(value);
-            setItem('maxSets', value);
           }}
           style={styles.text}
           selectTextOnFocus
@@ -99,7 +106,6 @@ export default function SettingsPage() {
           placeholder="30"
           onChangeText={s => {
             setSeconds(s);
-            setItem('seconds', s);
           }}
           style={styles.text}
           selectTextOnFocus
@@ -116,7 +122,6 @@ export default function SettingsPage() {
           placeholder="3"
           onChangeText={text => {
             setMinutes(text);
-            setItem('minutes', text);
           }}
           style={styles.text}
           selectTextOnFocus
@@ -166,7 +171,12 @@ export default function SettingsPage() {
 
   return (
     <View style={styles.container}>
-      <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
+      <Searchbar
+        style={{marginBottom: 10}}
+        placeholder="Search"
+        value={search}
+        onChangeText={setSearch}
+      />
       {items
         .filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
         .map(item => (

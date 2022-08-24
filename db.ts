@@ -21,3 +21,14 @@ export const createPlans = `
     workouts TEXT NOT NULL
   );
 `;
+
+export const createSettings = `
+  CREATE TABLE IF NOT EXISTS settings (
+    minutes INTEGER NOT NULL DEFAULT 3,
+    seconds INTEGER NOT NULL DEFAULT 30,
+    alarm BOOLEAN NOT NULL DEFAULT false,
+    vibrate BOOLEAN NOT NULL DEFAULT true,
+    predict BOOLEAN NOT NULL DEFAULT true,
+    sets INTEGER NOT NULL DEFAULT 3
+  );
+`;

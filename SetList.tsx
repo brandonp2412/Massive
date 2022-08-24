@@ -5,7 +5,6 @@ import {
 } from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
@@ -13,6 +12,7 @@ import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
 import Set from './set';
 import SetItem from './SetItem';
+import Settings from './settings';
 import {DAYS} from './time';
 
 const limit = 15;
@@ -105,7 +105,9 @@ export default function SetList() {
   );
 
   const predict = useCallback(async () => {
-    if ((await AsyncStorage.getItem('predictiveSets')) === 'false') return;
+    const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
+    const settings: Settings = result.rows.item(0);
+    if (!settings.predict) return;
     const todaysPlan = await getTodaysPlan();
     if (todaysPlan.length === 0) return;
     const todaysSets = await getTodaysSets();
@@ -115,15 +117,14 @@ export default function SetList() {
       const count = todaysSets.filter(
         s => s.name === todaysSets[0].name,
       ).length;
-      const maxSets = await AsyncStorage.getItem('maxSets');
       nextWorkout = todaysSets[0].name;
-      if (count >= Number(maxSets))
+      if (count >= Number(settings.sets))
         nextWorkout =
           todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
     }
     const best = await getBest(nextWorkout);
     setNextSet({...best});
-  }, [getTodaysSets, getTodaysPlan, getBest]);
+  }, [getTodaysSets, getTodaysPlan, getBest, db]);
 
   useFocusEffect(
     useCallback(() => {

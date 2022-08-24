@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   RouteProp,
   useFocusEffect,
@@ -12,6 +11,7 @@ import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
 import Set from './set';
 import SetForm from './SetForm';
+import Settings from './settings';
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
@@ -30,14 +30,12 @@ export default function EditSet() {
   );
 
   const startTimer = useCallback(async () => {
-    const enabled = await AsyncStorage.getItem('alarmEnabled');
-    if (enabled !== 'true') return;
-    const minutes = await AsyncStorage.getItem('minutes');
-    const seconds = await AsyncStorage.getItem('seconds');
-    const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
-    const vibrate = (await AsyncStorage.getItem('vibrate')) === 'true';
-    NativeModules.AlarmModule.timer(milliseconds, vibrate);
-  }, []);
+    const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
+    const settings: Settings = result.rows.item(0);
+    if (!settings.alarm) return;
+    const milliseconds = settings.minutes * 60 * 1000 + settings.seconds * 1000;
+    NativeModules.AlarmModule.timer(milliseconds, !!settings.vibrate);
+  }, [db]);
 
   const update = useCallback(
     async (set: Set) => {
