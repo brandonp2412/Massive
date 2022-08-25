@@ -32,3 +32,7 @@ export const createSettings = `
     sets INTEGER NOT NULL DEFAULT 3
   );
 `;
+
+export const addSound = `
+  ALTER TABLE settings ADD COLUMN sound TEXT NULL;
+`;

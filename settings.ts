@@ -5,4 +5,5 @@ export default interface Settings {
   vibrate: number;
   predict: number;
   sets: number;
+  sound: string;
 }

@@ -36,7 +36,11 @@ export default function EditSet() {
     const settings: Settings = result.rows.item(0);
     if (!settings.alarm) return;
     const milliseconds = settings.minutes * 60 * 1000 + settings.seconds * 1000;
-    NativeModules.AlarmModule.timer(milliseconds, !!settings.vibrate);
+    NativeModules.AlarmModule.timer(
+      milliseconds,
+      !!settings.vibrate,
+      settings.sound,
+    );
   }, [db]);
 
   const update = useCallback(

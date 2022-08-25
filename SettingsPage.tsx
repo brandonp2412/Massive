@@ -6,11 +6,12 @@ import React, {
   useState,
 } from 'react';
 import {NativeModules, StyleSheet, Text, View} from 'react-native';
-import {Searchbar, TextInput} from 'react-native-paper';
+import {Button, Searchbar, TextInput} from 'react-native-paper';
 import {DatabaseContext, SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
 import MassiveSwitch from './MassiveSwitch';
 import Settings from './settings';
+import DocumentPicker from 'react-native-document-picker';
 
 export default function SettingsPage() {
   const [vibrate, setVibrate] = useState(true);
@@ -19,6 +20,7 @@ export default function SettingsPage() {
   const [seconds, setSeconds] = useState<string>('');
   const [alarm, setAlarm] = useState<boolean>(false);
   const [predictive, setPredictive] = useState<boolean>(false);
+  const [sound, setSound] = useState<string>('');
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
@@ -35,6 +37,7 @@ export default function SettingsPage() {
     setPredictive(!!settings.predict);
     setMaxSets(settings.sets.toString());
     setVibrate(!!settings.vibrate);
+    setSound(settings.sound);
     NativeModules.AlarmModule.ignoringBattery(setIgnoring);
   }, [db]);
 
@@ -44,10 +47,10 @@ export default function SettingsPage() {
 
   useEffect(() => {
     db.executeSql(
-      `UPDATE settings SET vibrate=?,minutes=?,sets=?,seconds=?,alarm=?,predict=?`,
-      [vibrate, minutes, maxSets, seconds, alarm, predictive],
+      `UPDATE settings SET vibrate=?,minutes=?,sets=?,seconds=?,alarm=?,predict=?,sound=?`,
+      [vibrate, minutes, maxSets, seconds, alarm, predictive, sound],
     );
-  }, [vibrate, minutes, maxSets, seconds, alarm, predictive, db]);
+  }, [vibrate, minutes, maxSets, seconds, alarm, predictive, sound, db]);
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
@@ -71,6 +74,14 @@ export default function SettingsPage() {
     },
     [setVibrate],
   );
+
+  const changeSound = useCallback(async () => {
+    const {fileCopyUri} = await DocumentPicker.pickSingle({
+      type: 'audio/*',
+      copyTo: 'documentDirectory',
+    });
+    if (fileCopyUri) setSound(fileCopyUri);
+  }, []);
 
   const items: {name: string; element: ReactNode}[] = [
     {
@@ -160,6 +171,15 @@ export default function SettingsPage() {
             onValueChange={changePredictive}
           />
         </>
+      ),
+    },
+    {
+      name: 'Alarm sound',
+      element: (
+        <Button onPress={changeSound}>
+          Alarm sound
+          {sound ? ': ' + sound.split('/')[sound.split('/').length - 1] : null}
+        </Button>
       ),
     },
   ];

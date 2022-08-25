@@ -14,7 +14,7 @@ import {
 } from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import {createPlans, createSets, createSettings, getDb} from './db';
+import {addSound, createPlans, createSets, createSettings, getDb} from './db';
 import Routes from './Routes';
 
 export const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -58,6 +58,7 @@ const App = () => {
       await _db.executeSql(createPlans);
       await _db.executeSql(createSets);
       await _db.executeSql(createSettings);
+      await _db.executeSql(addSound).catch(() => null);
       setDb(_db);
       const [result] = await _db.executeSql(`SELECT * FROM settings LIMIT 1`);
       if (result.rows.length === 0)

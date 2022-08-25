@@ -7,6 +7,7 @@ import android.os.Vibrator
 import androidx.annotation.RequiresApi
 import android.content.Intent
 import android.media.AudioAttributes
+import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.IBinder
@@ -21,9 +22,25 @@ class AlarmService : Service(), OnPreparedListener {
             onDestroy()
             return START_STICKY
         }
-        mediaPlayer = MediaPlayer.create(applicationContext, R.raw.argon)
-        mediaPlayer?.start()
-        mediaPlayer?.setOnCompletionListener { vibrator?.cancel() }
+        val sound = intent.extras?.getString("sound")
+        if (sound == null) {
+            mediaPlayer = MediaPlayer.create(applicationContext, R.raw.argon)
+            mediaPlayer?.start()
+            mediaPlayer?.setOnCompletionListener { vibrator?.cancel() }
+        } else {
+            mediaPlayer = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+                )
+                setDataSource(applicationContext, Uri.parse(sound))
+                prepare()
+                start()
+                setOnCompletionListener { vibrator?.cancel() }
+            }
+        }
         val pattern = longArrayOf(0, 300, 1300, 300, 1300, 300)
         vibrator = applicationContext.getSystemService(VIBRATOR_SERVICE) as Vibrator
         val audioAttributes = AudioAttributes.Builder()
