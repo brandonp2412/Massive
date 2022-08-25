@@ -5,9 +5,9 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useContext} from 'react';
-import {NativeModules, ToastAndroid, View} from 'react-native';
+import {NativeModules, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {DatabaseContext} from './App';
+import {DatabaseContext, SnackbarContext} from './App';
 import {HomePageParams} from './HomePage';
 import Set from './set';
 import SetForm from './SetForm';
@@ -17,6 +17,7 @@ export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
   const db = useContext(DatabaseContext);
   const navigation = useNavigation();
+  const {toast} = useContext(SnackbarContext);
 
   useFocusEffect(
     useCallback(() => {
@@ -24,6 +25,7 @@ export default function EditSet() {
         headerLeft: () => (
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
+        headerRight: null,
         title: 'Set',
       });
     }, [navigation]),
@@ -62,10 +64,10 @@ export default function EditSet() {
         weight > params.set.weight ||
         (reps > params.set.reps && weight === params.set.weight)
       )
-        ToastAndroid.show("Great work King, that's a new record!", 6000);
+        toast("Great work King, that's a new record!", 6000);
       navigation.goBack();
     },
-    [db, navigation, startTimer, params.set],
+    [db, navigation, startTimer, params.set, toast],
   );
 
   const save = useCallback(

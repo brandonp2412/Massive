@@ -7,6 +7,7 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
+import DrawerMenu from './DrawerMenu';
 import {HomePageParams} from './HomePage';
 import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
@@ -132,7 +133,10 @@ export default function SetList() {
     useCallback(() => {
       refresh();
       predict();
-    }, [refresh, predict]),
+      navigation.getParent()?.setOptions({
+        headerRight: () => <DrawerMenu name="Home" />,
+      });
+    }, [refresh, predict, navigation]),
   );
 
   const renderItem = useCallback(

@@ -1,12 +1,11 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
-import {ToastAndroid} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {FileSystem} from 'react-native-file-access';
 import {Divider, IconButton, Menu} from 'react-native-paper';
-import {DatabaseContext, DrawerParamList} from './App';
+import {DatabaseContext, DrawerParamList, SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
-import {write} from './file';
+import {useWrite} from './file';
 import {Plan} from './plan';
 import Set from './set';
 
@@ -17,7 +16,9 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const [showMenu, setShowMenu] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
   const db = useContext(DatabaseContext);
+  const {toast} = useContext(SnackbarContext);
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>();
+  const {write} = useWrite();
 
   const exportSets = useCallback(async () => {
     const [result] = await db.executeSql('SELECT * FROM sets');
@@ -33,7 +34,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       .join('\n');
     console.log(`${DrawerMenu.name}.exportSets`, {length: sets.length});
     await write('sets.csv', data);
-  }, [db]);
+  }, [db, write]);
 
   const exportPlans = useCallback(async () => {
     const [result] = await db.executeSql('SELECT * FROM plans');
@@ -44,7 +45,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       .join('\n');
     console.log(`${DrawerMenu.name}.exportPlans`, {length: sets.length});
     await write('plans.csv', data);
-  }, [db]);
+  }, [db, write]);
 
   const download = useCallback(async () => {
     setShowMenu(false);
@@ -57,8 +58,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
     const file = await FileSystem.readFile(result.uri);
     console.log(`${DrawerMenu.name}.${uploadSets.name}:`, file.length);
     const lines = file.split('\n');
-    if (lines[0] != setFields)
-      return ToastAndroid.show('Invalid csv.', ToastAndroid.SHORT);
+    if (lines[0] != setFields) return toast('Invalid csv.', 3000);
     const values = lines
       .slice(1)
       .filter(line => line)
@@ -70,17 +70,16 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
     await db.executeSql(
       `INSERT INTO sets(name,reps,weight,created,unit) VALUES ${values}`,
     );
-    ToastAndroid.show('Data imported.', ToastAndroid.SHORT);
+    toast('Data imported.', 3000);
     reset({index: 0, routes: [{name}]});
-  }, [db, reset, name]);
+  }, [db, reset, name, toast]);
 
   const uploadPlans = useCallback(async () => {
     const result = await DocumentPicker.pickSingle();
     const file = await FileSystem.readFile(result.uri);
     console.log(`${DrawerMenu.name}.uploadPlans:`, file.length);
     const lines = file.split('\n');
-    if (lines[0] != planFields)
-      return ToastAndroid.show('Invalid csv.', ToastAndroid.SHORT);
+    if (lines[0] != planFields) return toast('Invalid csv.', 3000);
     const values = file
       .split('\n')
       .slice(1)
@@ -91,8 +90,8 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       })
       .join(',');
     await db.executeSql(`INSERT INTO plans(days,workouts) VALUES ${values}`);
-    ToastAndroid.show('Data imported.', ToastAndroid.SHORT);
-  }, [db]);
+    toast('Data imported.', 3000);
+  }, [db, toast]);
 
   const upload = useCallback(async () => {
     setShowMenu(false);
@@ -106,9 +105,9 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
     setShowRemove(false);
     if (name === 'Home') await db.executeSql(`DELETE FROM sets`);
     else if (name === 'Plans') await db.executeSql(`DELETE FROM plans`);
-    ToastAndroid.show('All data has been deleted.', ToastAndroid.SHORT);
+    toast('All data has been deleted.', 4000);
     reset({index: 0, routes: [{name}]});
-  }, [db, reset, name]);
+  }, [db, reset, name, toast]);
 
   if (name === 'Home' || name === 'Plans')
     return (

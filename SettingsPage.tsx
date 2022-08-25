@@ -5,15 +5,9 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {
-  NativeModules,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {NativeModules, StyleSheet, Text, View} from 'react-native';
 import {Searchbar, TextInput} from 'react-native-paper';
-import {DatabaseContext} from './App';
+import {DatabaseContext, SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
 import MassiveSwitch from './MassiveSwitch';
 import Settings from './settings';
@@ -29,6 +23,7 @@ export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
   const db = useContext(DatabaseContext);
+  const {toast} = useContext(SnackbarContext);
 
   const refresh = useCallback(async () => {
     const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
@@ -65,12 +60,9 @@ export default function SettingsPage() {
   const changePredictive = useCallback(
     (enabled: boolean) => {
       setPredictive(enabled);
-      ToastAndroid.show(
-        'Predictive sets guess whats next based on todays plan.',
-        ToastAndroid.LONG,
-      );
+      toast('Predictive sets guess whats next based on todays plan.', 7000);
     },
-    [setPredictive],
+    [setPredictive, toast],
   );
 
   const changeVibrate = useCallback(

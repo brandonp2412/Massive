@@ -10,6 +10,7 @@ import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
   Provider,
+  Snackbar,
 } from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import Ionicon from 'react-native-vector-icons/Ionicons';
@@ -25,6 +26,9 @@ export type DrawerParamList = {
 };
 
 export const DatabaseContext = React.createContext<SQLiteDatabase>({} as any);
+export const SnackbarContext = React.createContext<{
+  toast: (value: string, timeout: number) => void;
+}>({toast: () => null});
 
 const CombinedDefaultTheme = {
   ...PaperDefaultTheme,
@@ -45,6 +49,7 @@ const CombinedDarkTheme = {
 
 const App = () => {
   const [db, setDb] = useState<SQLiteDatabase | null>(null);
+  const [snackbar, setSnackbar] = useState('');
   const dark = useColorScheme() === 'dark';
 
   useEffect(() => {
@@ -64,6 +69,11 @@ const App = () => {
     init();
   }, []);
 
+  const toast = (value: string, timeout: number) => {
+    setSnackbar(value);
+    setTimeout(() => setSnackbar(''), timeout);
+  };
+
   return (
     <Provider
       theme={dark ? CombinedDarkTheme : CombinedDefaultTheme}
@@ -71,8 +81,22 @@ const App = () => {
       <NavigationContainer
         theme={dark ? CombinedDarkTheme : CombinedDefaultTheme}>
         <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
-        <Routes db={db} />
+        <SnackbarContext.Provider value={{toast}}>
+          <Routes db={db} />
+        </SnackbarContext.Provider>
       </NavigationContainer>
+      <Snackbar
+        onDismiss={() => setSnackbar('')}
+        visible={!!snackbar}
+        action={{
+          label: 'Close',
+          onPress: () => setSnackbar(''),
+          color: dark
+            ? CombinedDarkTheme.colors.primary
+            : CombinedDefaultTheme.colors.primary,
+        }}>
+        {snackbar}
+      </Snackbar>
     </Provider>
   );
 };
