@@ -90,12 +90,16 @@ export default function SetForm({
         )}
         <Text>
           {workouts?.map((workout, index) => (
-            <Text
-              key={workout}
-              style={{fontWeight: workout === name ? 'bold' : 'normal'}}>
-              {workout}
+            <React.Fragment key={workout}>
+              <Text
+                style={{
+                  fontWeight: workout === name ? 'bold' : 'normal',
+                  textDecorationLine: workout === name ? 'underline' : 'none',
+                }}>
+                {workout}
+              </Text>
               {index === workouts.length - 1 ? '.' : ', '}
-            </Text>
+            </React.Fragment>
           ))}
         </Text>
       </ScrollView>
