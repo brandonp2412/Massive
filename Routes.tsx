@@ -41,7 +41,6 @@ export default function Routes({db}: {db: SQLiteDatabase | null}) {
             name={route.name}
             component={route.component}
             options={{
-              headerRight: () => <DrawerMenu name={route.name} />,
               drawerIcon: ({focused}) => (
                 <IconButton
                   icon={focused ? route.icon : `${route.icon}-outline`}

@@ -1,14 +1,12 @@
 import {
-  DarkTheme,
-  DefaultTheme,
   RouteProp,
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, useColorScheme, View} from 'react-native';
-import {Button, IconButton, Switch} from 'react-native-paper';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Button, IconButton} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './PlanPage';
@@ -23,7 +21,6 @@ export default function EditPlan() {
   const [names, setNames] = useState<string[]>([]);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation();
-  const dark = useColorScheme() === 'dark';
 
   useFocusEffect(
     useCallback(() => {
@@ -31,6 +28,7 @@ export default function EditPlan() {
         headerLeft: () => (
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
+        headerRight: () => null,
         title: 'Plan',
       });
     }, [navigation]),
