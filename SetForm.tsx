@@ -46,6 +46,7 @@ export default function SetForm({
           selectTextOnFocus
           autoFocus={!name}
           onSubmitEditing={() => repsRef.current?.focus()}
+          mode="outlined"
         />
         <TextInput
           style={styles.marginBottom}
@@ -60,6 +61,7 @@ export default function SetForm({
           selectTextOnFocus
           blurOnSubmit={false}
           ref={repsRef}
+          mode="outlined"
         />
         <TextInput
           style={styles.marginBottom}
@@ -70,6 +72,7 @@ export default function SetForm({
           onSubmitEditing={handleSubmit}
           ref={weightRef}
           selectTextOnFocus
+          mode="outlined"
         />
         <TextInput
           style={styles.marginBottom}
@@ -78,6 +81,7 @@ export default function SetForm({
           onChangeText={setUnit}
           onSubmitEditing={handleSubmit}
           selectTextOnFocus
+          mode="outlined"
         />
         {set.created && (
           <Text style={{marginBottom: 10}}>

@@ -85,6 +85,7 @@ export default function SettingsPage() {
       name: 'Sets per workout',
       element: (
         <TextInput
+          mode="outlined"
           label="Sets per workout"
           value={maxSets}
           keyboardType="numeric"
@@ -100,6 +101,7 @@ export default function SettingsPage() {
       name: 'Rest minutes',
       element: (
         <TextInput
+          mode="outlined"
           label="Rest minutes"
           value={minutes}
           keyboardType="numeric"
@@ -116,6 +118,7 @@ export default function SettingsPage() {
       name: 'Rest seconds',
       element: (
         <TextInput
+          mode="outlined"
           label="Rest seconds"
           value={seconds}
           keyboardType="numeric"
