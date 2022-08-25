@@ -5,9 +5,9 @@ import {FileSystem} from 'react-native-file-access';
 import {Divider, IconButton, Menu} from 'react-native-paper';
 import {DatabaseContext, DrawerParamList, SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
-import {useWrite} from './file';
 import {Plan} from './plan';
 import Set from './set';
+import {write} from './write';
 
 const setFields = 'id,name,reps,weight,created,unit';
 const planFields = 'id,days,workouts';
@@ -18,7 +18,6 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const db = useContext(DatabaseContext);
   const {toast} = useContext(SnackbarContext);
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>();
-  const {write} = useWrite();
 
   const exportSets = useCallback(async () => {
     const [result] = await db.executeSql('SELECT * FROM sets');
@@ -34,7 +33,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       .join('\n');
     console.log(`${DrawerMenu.name}.exportSets`, {length: sets.length});
     await write('sets.csv', data);
-  }, [db, write]);
+  }, [db]);
 
   const exportPlans = useCallback(async () => {
     const [result] = await db.executeSql('SELECT * FROM plans');
@@ -45,7 +44,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       .join('\n');
     console.log(`${DrawerMenu.name}.exportPlans`, {length: sets.length});
     await write('plans.csv', data);
-  }, [db, write]);
+  }, [db]);
 
   const download = useCallback(async () => {
     setShowMenu(false);
