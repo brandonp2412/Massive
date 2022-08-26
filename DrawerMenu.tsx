@@ -9,7 +9,7 @@ import {Plan} from './plan';
 import Set from './set';
 import {write} from './write';
 
-const setFields = 'id,name,reps,weight,created,unit';
+const setFields = 'id,name,reps,weight,created,unit,hidden';
 const planFields = 'id,days,workouts';
 
 export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
@@ -27,7 +27,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       .concat(
         sets.map(
           set =>
-            `${set.id},${set.name},${set.reps},${set.weight},${set.created},${set.unit}`,
+            `${set.id},${set.name},${set.reps},${set.weight},${set.created},${set.unit},${set.hidden}`,
         ),
       )
       .join('\n');
@@ -63,11 +63,11 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       .filter(line => line)
       .map(set => {
         const cells = set.split(',');
-        return `('${cells[1]}',${cells[2]},${cells[3]},'${cells[4]}','${cells[5]}')`;
+        return `('${cells[1]}',${cells[2]},${cells[3]},'${cells[4]}','${cells[5]}',${cells[6]})`;
       })
       .join(',');
     await db.executeSql(
-      `INSERT INTO sets(name,reps,weight,created,unit) VALUES ${values}`,
+      `INSERT INTO sets(name,reps,weight,created,unit,hidden) VALUES ${values}`,
     );
     toast('Data imported.', 3000);
     reset({index: 0, routes: [{name}]});

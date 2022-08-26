@@ -39,7 +39,7 @@ export default function SetList() {
 
   const selectSets = `
     SELECT * from sets 
-    WHERE name LIKE ? 
+    WHERE name LIKE ? AND NOT hidden
     ORDER BY created DESC 
     LIMIT ? OFFSET ?
   `;
@@ -85,14 +85,13 @@ export default function SetList() {
       const bestWeight = `
       SELECT name, reps, unit, MAX(weight) AS weight 
       FROM sets
-      WHERE name = ?
+      WHERE name = ? AND NOT hidden
       GROUP BY name;
     `;
       const bestReps = `
       SELECT name, MAX(reps) as reps, unit, weight 
       FROM sets
-      WHERE name = ?
-        AND weight = ?
+      WHERE name = ? AND weight = ? AND NOT hidden
       GROUP BY name;
     `;
       const [weightResult] = await db.executeSql(bestWeight, [query]);

@@ -3,8 +3,3 @@ export interface Plan {
   days: string;
   workouts: string;
 }
-
-export interface Workout {
-  name: string;
-  sets: number;
-}

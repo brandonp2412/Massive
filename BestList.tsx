@@ -22,14 +22,13 @@ export default function BestList() {
     const bestWeight = `
       SELECT name, reps, unit, MAX(weight) AS weight 
       FROM sets
-      WHERE name LIKE ?
+      WHERE name LIKE ? AND NOT hidden
       GROUP BY name;
     `;
     const bestReps = `
       SELECT name, MAX(reps) as reps, unit, weight 
       FROM sets
-      WHERE name = ?
-        AND weight = ?
+      WHERE name = ? AND weight = ? AND NOT hidden
       GROUP BY name;
     `;
     const [weight] = await db.executeSql(bestWeight, [`%${search}%`]);

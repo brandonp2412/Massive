@@ -4,10 +4,10 @@ import {IconButton} from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import {DatabaseContext, Drawer, DrawerParamList} from './App';
 import BestPage from './BestPage';
-import DrawerMenu from './DrawerMenu';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
 import SettingsPage from './SettingsPage';
+import WorkoutsPage from './WorkoutsPage';
 
 interface Route {
   name: keyof DrawerParamList;
@@ -24,6 +24,7 @@ export default function Routes({db}: {db: SQLiteDatabase | null}) {
     {name: 'Home', component: HomePage, icon: 'home'},
     {name: 'Plans', component: PlanPage, icon: 'calendar'},
     {name: 'Best', component: BestPage, icon: 'stats-chart'},
+    {name: 'Workouts', component: WorkoutsPage, icon: 'barbell'},
     {name: 'Settings', component: SettingsPage, icon: 'settings'},
   ];
 

@@ -74,14 +74,14 @@ export default function ViewBest() {
       SELECT max(weight) AS weight, 
         STRFTIME('%Y-%m-%d', created) as created, unit
       FROM sets
-      WHERE name = ?
+      WHERE name = ? AND NOT hidden
       GROUP BY name, STRFTIME('%Y-%m-%d', created)
     `;
     const selectVolumes = `
       SELECT sum(weight * reps) AS value, 
         STRFTIME('%Y-%m-%d', created) as created, unit
       FROM sets
-      WHERE name = ?
+      WHERE name = ? AND NOT hidden
       GROUP BY name, STRFTIME('%Y-%m-%d', created)
     `;
     const refresh = async () => {

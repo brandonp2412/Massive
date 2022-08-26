@@ -36,3 +36,14 @@ export const createSettings = `
 export const addSound = `
   ALTER TABLE settings ADD COLUMN sound TEXT NULL;
 `;
+
+export const createWorkouts = `
+  CREATE TABLE IF NOT EXISTS workouts(
+    name TEXT PRIMARY KEY, 
+    sets INTEGER DEFAULT 3
+  );
+`;
+
+export const addHidden = `
+  ALTER TABLE sets ADD COLUMN hidden DEFAULT false;
+`;

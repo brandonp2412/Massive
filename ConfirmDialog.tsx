@@ -10,7 +10,7 @@ export default function ConfirmDialog({
   setShow,
 }: {
   title: string;
-  children: string;
+  children: JSX.Element | JSX.Element[] | string;
   onOk: () => void;
   show: boolean;
   setShow: (show: boolean) => void;

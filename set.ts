@@ -5,4 +5,5 @@ export default interface Set {
   weight: number;
   created?: string;
   unit?: string;
+  hidden?: boolean;
 }
