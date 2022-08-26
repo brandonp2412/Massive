@@ -30,7 +30,7 @@ export const SnackbarContext = React.createContext<{
   toast: (value: string, timeout: number) => void;
 }>({toast: () => null});
 
-const CombinedDefaultTheme = {
+export const CombinedDefaultTheme = {
   ...PaperDefaultTheme,
   ...NavigationDefaultTheme,
   colors: {
@@ -38,12 +38,14 @@ const CombinedDefaultTheme = {
     ...NavigationDefaultTheme.colors,
   },
 };
-const CombinedDarkTheme = {
+export const CombinedDarkTheme = {
   ...PaperDarkTheme,
   ...NavigationDarkTheme,
   colors: {
     ...PaperDarkTheme.colors,
     ...NavigationDarkTheme.colors,
+    primary: '#B3E5fC',
+    background: '#121212',
   },
 };
 

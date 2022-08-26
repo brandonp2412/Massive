@@ -1,6 +1,4 @@
 import {
-  DarkTheme,
-  DefaultTheme,
   RouteProp,
   useFocusEffect,
   useNavigation,
@@ -15,15 +13,15 @@ import React, {
   useState,
 } from 'react';
 import {Text, useColorScheme, View} from 'react-native';
+import {FileSystem} from 'react-native-file-access';
 import {IconButton} from 'react-native-paper';
 import Share from 'react-native-share';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import ViewShot from 'react-native-view-shot';
-import {DatabaseContext} from './App';
+import {CombinedDarkTheme, CombinedDefaultTheme, DatabaseContext} from './App';
 import {BestPageParams} from './BestPage';
 import Set from './set';
 import {formatMonth} from './time';
-import {FileSystem} from 'react-native-file-access';
 
 interface Volume {
   name: string;
@@ -125,8 +123,8 @@ export default function ViewBest() {
             curve={shape.curveBasis}
             svg={{
               stroke: dark
-                ? DarkTheme.colors.primary
-                : DefaultTheme.colors.primary,
+                ? CombinedDarkTheme.colors.primary
+                : CombinedDefaultTheme.colors.primary,
             }}>
             <Grid />
           </LineChart>
@@ -162,8 +160,8 @@ export default function ViewBest() {
             curve={shape.curveBasis}
             svg={{
               stroke: dark
-                ? DarkTheme.colors.primary
-                : DefaultTheme.colors.primary,
+                ? CombinedDarkTheme.colors.primary
+                : CombinedDefaultTheme.colors.primary,
             }}>
             <Grid />
           </LineChart>

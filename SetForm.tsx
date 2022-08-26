@@ -1,6 +1,7 @@
 import React, {useRef, useState} from 'react';
-import {ScrollView, StyleSheet, Text} from 'react-native';
-import {Button, TextInput} from 'react-native-paper';
+import {ScrollView, Text} from 'react-native';
+import {Button} from 'react-native-paper';
+import MassiveInput from './MassiveInput';
 import Set from './set';
 
 export default function SetForm({
@@ -37,19 +38,15 @@ export default function SetForm({
   return (
     <>
       <ScrollView style={{height: '90%'}}>
-        <TextInput
-          style={styles.marginBottom}
+        <MassiveInput
           label="Name"
           value={name}
           onChangeText={setName}
           autoCorrect={false}
-          selectTextOnFocus
           autoFocus={!name}
           onSubmitEditing={() => repsRef.current?.focus()}
-          mode="outlined"
         />
-        <TextInput
-          style={styles.marginBottom}
+        <MassiveInput
           label="Reps"
           keyboardType="numeric"
           value={reps}
@@ -58,30 +55,22 @@ export default function SetForm({
           selection={selection}
           onSelectionChange={e => setSelection(e.nativeEvent.selection)}
           autoFocus={!!name}
-          selectTextOnFocus
           blurOnSubmit={false}
-          ref={repsRef}
-          mode="outlined"
+          innerRef={repsRef}
         />
-        <TextInput
-          style={styles.marginBottom}
+        <MassiveInput
           label="Weight"
           keyboardType="numeric"
           value={weight}
           onChangeText={setWeight}
           onSubmitEditing={handleSubmit}
-          ref={weightRef}
-          selectTextOnFocus
-          mode="outlined"
+          innerRef={weightRef}
         />
-        <TextInput
-          style={styles.marginBottom}
+        <MassiveInput
           label="Unit (kg)"
           value={unit}
           onChangeText={setUnit}
           onSubmitEditing={handleSubmit}
-          selectTextOnFocus
-          mode="outlined"
         />
         {set.created && (
           <Text style={{marginBottom: 10}}>
@@ -113,9 +102,3 @@ export default function SetForm({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  marginBottom: {
-    marginBottom: 10,
-  },
-});

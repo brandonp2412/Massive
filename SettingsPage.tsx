@@ -6,12 +6,13 @@ import React, {
   useState,
 } from 'react';
 import {NativeModules, StyleSheet, Text, View} from 'react-native';
-import {Button, Searchbar, TextInput} from 'react-native-paper';
+import DocumentPicker from 'react-native-document-picker';
+import {Button, Searchbar} from 'react-native-paper';
 import {DatabaseContext, SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
+import MassiveInput from './MassiveInput';
 import MassiveSwitch from './MassiveSwitch';
 import Settings from './settings';
-import DocumentPicker from 'react-native-document-picker';
 
 export default function SettingsPage() {
   const [vibrate, setVibrate] = useState(true);
@@ -87,24 +88,20 @@ export default function SettingsPage() {
     {
       name: 'Sets per workout',
       element: (
-        <TextInput
-          mode="outlined"
+        <MassiveInput
           label="Sets per workout"
           value={maxSets}
           keyboardType="numeric"
           onChangeText={value => {
             setMaxSets(value);
           }}
-          style={styles.text}
-          selectTextOnFocus
         />
       ),
     },
     {
       name: 'Rest minutes',
       element: (
-        <TextInput
-          mode="outlined"
+        <MassiveInput
           label="Rest minutes"
           value={minutes}
           keyboardType="numeric"
@@ -112,16 +109,13 @@ export default function SettingsPage() {
           onChangeText={text => {
             setMinutes(text);
           }}
-          style={styles.text}
-          selectTextOnFocus
         />
       ),
     },
     {
       name: 'Rest seconds',
       element: (
-        <TextInput
-          mode="outlined"
+        <MassiveInput
           label="Rest seconds"
           value={seconds}
           keyboardType="numeric"
@@ -129,8 +123,6 @@ export default function SettingsPage() {
           onChangeText={s => {
             setSeconds(s);
           }}
-          style={styles.text}
-          selectTextOnFocus
         />
       ),
     },

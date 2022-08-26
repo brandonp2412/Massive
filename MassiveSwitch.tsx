@@ -1,7 +1,7 @@
 import React from 'react';
-import {DarkTheme, DefaultTheme} from '@react-navigation/native';
 import {useColorScheme} from 'react-native';
 import {Switch} from 'react-native-paper';
+import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
 
 export default function MassiveSwitch(
   props: Partial<React.ComponentProps<typeof Switch>>,
@@ -10,7 +10,11 @@ export default function MassiveSwitch(
 
   return (
     <Switch
-      color={dark ? DarkTheme.colors.primary : DefaultTheme.colors.primary}
+      color={
+        dark
+          ? CombinedDarkTheme.colors.primary
+          : CombinedDefaultTheme.colors.primary
+      }
       style={{marginRight: 5}}
       {...props}
     />
