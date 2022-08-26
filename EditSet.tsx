@@ -26,9 +26,9 @@ export default function EditSet() {
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
         headerRight: null,
-        title: 'Set',
+        title: params.set.id ? 'Edit set' : 'Create set',
       });
-    }, [navigation]),
+    }, [navigation, params.set.id]),
   );
 
   const startTimer = useCallback(async () => {

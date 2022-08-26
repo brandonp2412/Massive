@@ -29,9 +29,9 @@ export default function EditPlan() {
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
         headerRight: () => null,
-        title: 'Plan',
+        title: params.plan.id ? 'Edit plan' : 'Create plan',
       });
-    }, [navigation]),
+    }, [navigation, params.plan.id]),
   );
 
   useEffect(() => {
