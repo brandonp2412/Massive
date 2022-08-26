@@ -9,7 +9,6 @@ import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import Best from './best';
 import {BestPageParams} from './BestPage';
-import DrawerMenu from './DrawerMenu';
 
 export default function BestList() {
   const [bests, setBests] = useState<Best[]>([]);
