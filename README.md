@@ -20,7 +20,6 @@ Massive tracks your reps and sets at the gym. No internet connectivity or high s
 <img src="images/timer.png" width="318"/>
 <img src="images/plans.png" width="318"/>
 <img src="images/plan-edit.png" width="318"/>
-<img src="images/best.png" width="318"/>
 <img src="images/best-view.png" width="318"/>
 <img src="images/settings.png" width="318"/>
 <img src="images/drawer.png" width="318"/>
