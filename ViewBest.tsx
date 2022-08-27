@@ -53,7 +53,7 @@ export default function ViewBest() {
                 const base64 = await FileSystem.readFile(uri, 'base64');
                 const url = `data:image/jpeg;base64,${base64}`;
                 Share.open({
-                  message: `${params.best.name} - Powered by Massive`,
+                  message: params.best.name,
                   type: 'image/jpeg',
                   url,
                   failOnCancel: false,
