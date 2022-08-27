@@ -5,7 +5,7 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useContext} from 'react';
-import {NativeModules, View} from 'react-native';
+import {NativeModules, PermissionsAndroid, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {DatabaseContext, SnackbarContext} from './App';
 import {HomePageParams} from './HomePage';
@@ -64,6 +64,9 @@ export default function EditSet() {
       `;
       startTimer();
       await db.executeSql(insert, [name, reps, weight, unit]);
+      const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
+      const settings: Settings = result.rows.item(0);
+      if (settings.notify === 0) return navigation.goBack();
       if (
         weight > params.set.weight ||
         (reps > params.set.reps && weight === params.set.weight)

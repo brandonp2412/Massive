@@ -47,3 +47,7 @@ export const createWorkouts = `
 export const addHidden = `
   ALTER TABLE sets ADD COLUMN hidden DEFAULT false;
 `;
+
+export const addNotify = `
+  ALTER TABLE settings ADD COLUMN notify DEFAULT false;
+`;

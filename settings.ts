@@ -6,4 +6,5 @@ export default interface Settings {
   predict: number;
   sets: number;
   sound: string;
+  notify: number;
 }

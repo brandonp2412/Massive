@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {NativeModules, StyleSheet, Text, View} from 'react-native';
+import {NativeModules, ScrollView, StyleSheet, Text, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Searchbar} from 'react-native-paper';
 import {DatabaseContext, SnackbarContext} from './App';
@@ -19,9 +19,10 @@ export default function SettingsPage() {
   const [minutes, setMinutes] = useState<string>('');
   const [maxSets, setMaxSets] = useState<string>('3');
   const [seconds, setSeconds] = useState<string>('');
-  const [alarm, setAlarm] = useState<boolean>(false);
-  const [predictive, setPredictive] = useState<boolean>(false);
+  const [alarm, setAlarm] = useState(false);
+  const [predict, setPredict] = useState(false);
   const [sound, setSound] = useState<string>('');
+  const [notify, setNotify] = useState(false);
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
@@ -35,7 +36,7 @@ export default function SettingsPage() {
     setMinutes(settings.minutes.toString());
     setSeconds(settings.seconds.toString());
     setAlarm(!!settings.alarm);
-    setPredictive(!!settings.predict);
+    setPredict(!!settings.predict);
     setMaxSets(settings.sets.toString());
     setVibrate(!!settings.vibrate);
     setSound(settings.sound);
@@ -48,32 +49,34 @@ export default function SettingsPage() {
 
   useEffect(() => {
     db.executeSql(
-      `UPDATE settings SET vibrate=?,minutes=?,sets=?,seconds=?,alarm=?,predict=?,sound=?`,
-      [vibrate, minutes, maxSets, seconds, alarm, predictive, sound],
+      `UPDATE settings SET vibrate=?,minutes=?,sets=?,seconds=?,alarm=?,predict=?,sound=?,notify=?`,
+      [vibrate, minutes, maxSets, seconds, alarm, predict, sound, notify],
     );
-  }, [vibrate, minutes, maxSets, seconds, alarm, predictive, sound, db]);
+  }, [vibrate, minutes, maxSets, seconds, alarm, predict, sound, notify, db]);
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
       setAlarm(enabled);
+      toast('Time your rest duration after each set.', 4000);
       if (enabled && !ignoring) setBattery(true);
     },
-    [setBattery, ignoring],
+    [setBattery, ignoring, toast],
   );
 
-  const changePredictive = useCallback(
+  const changePredict = useCallback(
     (enabled: boolean) => {
-      setPredictive(enabled);
-      toast('Predictive sets guess whats next based on todays plan.', 7000);
+      setPredict(enabled);
+      toast('Predict your next set based on todays plan.', 4000);
     },
-    [setPredictive, toast],
+    [setPredict, toast],
   );
 
   const changeVibrate = useCallback(
     (value: boolean) => {
       setVibrate(value);
+      toast('When a timer completes, vibrate your phone.', 4000);
     },
-    [setVibrate],
+    [setVibrate, toast],
   );
 
   const changeSound = useCallback(async () => {
@@ -83,6 +86,14 @@ export default function SettingsPage() {
     });
     if (fileCopyUri) setSound(fileCopyUri);
   }, []);
+
+  const changeNotify = useCallback(
+    (value: boolean) => {
+      setNotify(value);
+      toast('If a set is a new record, show a notification.', 4000);
+    },
+    [toast],
+  );
 
   const items: {name: string; element: ReactNode}[] = [
     {
@@ -153,14 +164,27 @@ export default function SettingsPage() {
       ),
     },
     {
-      name: 'Predictive sets',
+      name: 'Predict sets',
       element: (
         <>
-          <Text style={styles.text}>Predictive sets</Text>
+          <Text style={styles.text}>Predict sets</Text>
           <MassiveSwitch
             style={[styles.text, {alignSelf: 'flex-start'}]}
-            value={predictive}
-            onValueChange={changePredictive}
+            value={predict}
+            onValueChange={changePredict}
+          />
+        </>
+      ),
+    },
+    {
+      name: 'Record notifications',
+      element: (
+        <>
+          <Text style={styles.text}>Record notifications</Text>
+          <MassiveSwitch
+            style={[styles.text, {alignSelf: 'flex-start'}]}
+            value={notify}
+            onValueChange={changeNotify}
           />
         </>
       ),
@@ -184,11 +208,15 @@ export default function SettingsPage() {
         value={search}
         onChangeText={setSearch}
       />
-      {items
-        .filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
-        .map(item => (
-          <React.Fragment key={item.name}>{item.element}</React.Fragment>
-        ))}
+      <ScrollView>
+        {items
+          .filter(item =>
+            item.name.toLowerCase().includes(search.toLowerCase()),
+          )
+          .map(item => (
+            <React.Fragment key={item.name}>{item.element}</React.Fragment>
+          ))}
+      </ScrollView>
       <ConfirmDialog
         title="Battery optimizations"
         show={battery}
