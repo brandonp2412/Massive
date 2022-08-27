@@ -5,7 +5,7 @@ import {
   NavigationContainer,
 } from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {StatusBar, useColorScheme} from 'react-native';
+import {useColorScheme} from 'react-native';
 import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
@@ -94,7 +94,6 @@ const App = () => {
       settings={{icon: props => <Ionicon {...props} />}}>
       <NavigationContainer
         theme={dark ? CombinedDarkTheme : CombinedDefaultTheme}>
-        <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
         <SnackbarContext.Provider value={{toast}}>
           <Routes db={db} />
         </SnackbarContext.Provider>
