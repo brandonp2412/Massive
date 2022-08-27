@@ -7,7 +7,6 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
 import {DatabaseContext} from './App';
-import DrawerMenu from './DrawerMenu';
 import MassiveFab from './MassiveFab';
 import SetList from './SetList';
 import Workout from './workout';
@@ -54,10 +53,7 @@ export default function WorkoutList() {
   useFocusEffect(
     useCallback(() => {
       refresh();
-      navigation.getParent()?.setOptions({
-        headerRight: () => <DrawerMenu name="Home" />,
-      });
-    }, [refresh, navigation]),
+    }, [refresh]),
   );
 
   const renderItem = useCallback(
