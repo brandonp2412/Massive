@@ -105,7 +105,7 @@ const App = () => {
           label: 'Close',
           onPress: () => setSnackbar(''),
           color: dark
-            ? CombinedDarkTheme.colors.primary
+            ? CombinedDarkTheme.colors.background
             : CombinedDefaultTheme.colors.primary,
         }}>
         {snackbar}
