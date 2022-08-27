@@ -71,7 +71,7 @@ export default function EditSet() {
         weight > params.set.weight ||
         (reps > params.set.reps && weight === params.set.weight)
       )
-        toast("Great work King, that's a new record!", 6000);
+        toast("Great work King, that's a new record!", 3000);
       navigation.goBack();
     },
     [db, navigation, startTimer, params.set, toast],
