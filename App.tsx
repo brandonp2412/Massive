@@ -54,7 +54,7 @@ export const CombinedDarkTheme = {
     ...PaperDarkTheme.colors,
     ...NavigationDarkTheme.colors,
     primary: '#B3E5fC',
-    background: '#121212',
+    background: '#0e0e0e',
   },
 };
 
