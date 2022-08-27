@@ -1,0 +1,7 @@
+Tired of forgetting where you are in your current workout? Massive helps you remember your rest timings, last personal best and plan for the day. Record your reps & sets progress and visualize your improvement with graphs.
+
+Massives rest timer can be toggled on and off, and it automatically starts after each set is logged.
+
+All data is stored offline on your phones storage, so don't worry about internet connectivity.
+
+Source code is found at https://gitea.presley.nz/brandon.presley/Massive
