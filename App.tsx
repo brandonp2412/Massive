@@ -67,6 +67,7 @@ const App = () => {
   useEffect(() => {
     const init = async () => {
       const _db = await getDb();
+      setDb(_db);
       await _db.executeSql(createPlans);
       await _db.executeSql(createSets);
       await _db.executeSql(createSettings);
@@ -80,7 +81,6 @@ const App = () => {
             INSERT INTO settings(minutes,seconds,alarm,vibrate,predict,sets) 
             VALUES(3,30,false,true,true,3);
           `);
-      setDb(_db);
     };
     init();
   }, []);
