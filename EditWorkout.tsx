@@ -15,6 +15,7 @@ import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
   const [name, setName] = useState('');
+  const [uri, setUri] = useState('');
   const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
   const db = useContext(DatabaseContext);
   const navigation = useNavigation();
@@ -28,22 +29,32 @@ export default function EditWorkout() {
         headerRight: null,
         title: params.value.name ? 'Edit workout' : 'New workout',
       });
-    }, [navigation, params.value.name]),
+      db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
+        params.value.name,
+      ]).then(([result]) => setUri(result.rows.item(0)?.image));
+    }, [navigation, params.value.name, db]),
   );
 
   const update = useCallback(async () => {
     console.log(`${EditWorkout.name}.update`, set);
-    await db.executeSql(`UPDATE sets SET name = ? WHERE name = ?`, [
-      name,
-      params.value.name,
-    ]);
-    await db.executeSql(
-      `UPDATE plans SET workouts = REPLACE(workouts, ?, ?) 
+    if (name) {
+      await db.executeSql(`UPDATE sets SET name = ? WHERE name = ?`, [
+        name,
+        params.value.name,
+      ]);
+      await db.executeSql(
+        `UPDATE plans SET workouts = REPLACE(workouts, ?, ?) 
       WHERE workouts LIKE ?`,
-      [params.value.name, name, `%${params.value.name}%`],
-    );
+        [params.value.name, name, `%${params.value.name}%`],
+      );
+    }
+    if (uri)
+      await db.executeSql(`UPDATE sets SET image = ? WHERE name = ?`, [
+        uri,
+        params.value.name,
+      ]);
     navigation.goBack();
-  }, [db, navigation, params.value.name, name]);
+  }, [db, navigation, params.value.name, name, uri]);
 
   const add = useCallback(async () => {
     const insert = `
@@ -59,18 +70,32 @@ export default function EditWorkout() {
     return add();
   }, [update, add, params.value.name]);
 
+  const changeImage = useCallback(async () => {
+    const {fileCopyUri} = await DocumentPicker.pickSingle({
+      type: 'image/*',
+      copyTo: 'documentDirectory',
+    });
+    if (fileCopyUri) setUri(fileCopyUri);
+  }, []);
+
   return (
     <ScrollView style={{padding: 10, height: '90%'}}>
       {params.value.name ? (
         <>
           <MassiveInput label="Old name" value={params.value.name} disabled />
           <MassiveInput label="New name" value={name} onChangeText={setName} />
+          <View style={{flexDirection: 'row', paddingBottom: 10}}>
+            {uri && <Image source={{uri}} style={{height: 50, width: 50}} />}
+            <Button onPress={changeImage} icon="image">
+              Image
+            </Button>
+          </View>
         </>
       ) : (
         <MassiveInput label="Name" value={name} onChangeText={setName} />
       )}
       <Button
-        disabled={!name && !!params.value.name}
+        disabled={!name && !!params.value.name && !uri}
         mode="contained"
         icon="save"
         onPress={save}>

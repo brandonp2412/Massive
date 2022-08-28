@@ -1,6 +1,6 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
-import {GestureResponderEvent, Text} from 'react-native';
+import {GestureResponderEvent, Image, Text} from 'react-native';
 import {Divider, List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import {HomePageParams} from './HomePage';
@@ -11,11 +11,15 @@ export default function SetItem({
   onRemove,
   dates,
   setDates,
+  images,
+  setImages,
 }: {
   item: Set;
   onRemove: () => void;
   dates: boolean;
   setDates: (value: boolean) => void;
+  images: boolean;
+  setImages: (value: boolean) => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
@@ -46,7 +50,14 @@ export default function SetItem({
   const toggleDates = useCallback(() => {
     setDates(!dates);
     setShowMenu(false);
-  }, [dates, setDates]);
+    if (!dates && images) setImages(false);
+  }, [dates, setDates, images, setImages]);
+
+  const toggleImages = useCallback(() => {
+    setImages(!images);
+    setShowMenu(false);
+    if (!images && dates) setDates(false);
+  }, [dates, setDates, images, setImages]);
 
   return (
     <>
@@ -56,16 +67,31 @@ export default function SetItem({
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}
         right={() => (
-          <Text
-            style={{
-              alignSelf: 'center',
-            }}>
-            {dates ? item.created?.replace('T', ' ') : null}
+          <>
+            {dates && (
+              <Text
+                style={{
+                  alignSelf: 'center',
+                }}>
+                {item.created?.replace('T', ' ')}
+              </Text>
+            )}
+            {images && (
+              <Image
+                source={{uri: item.image}}
+                style={{height: 75, width: 75}}
+              />
+            )}
             <Menu
               anchor={anchor}
               visible={showMenu}
               onDismiss={() => setShowMenu(false)}>
               <Menu.Item icon="copy" onPress={copy} title="Copy" />
+              <Menu.Item
+                icon="image-outline"
+                onPress={toggleImages}
+                title="Images"
+              />
               <Menu.Item
                 icon="calendar-outline"
                 onPress={toggleDates}
@@ -74,7 +100,7 @@ export default function SetItem({
               <Divider />
               <Menu.Item icon="trash" onPress={remove} title="Delete" />
             </Menu>
-          </Text>
+          </>
         )}
       />
     </>

@@ -16,6 +16,7 @@ import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import {
   addHidden,
+  addImage,
   addNotify,
   addSound,
   createPlans,
@@ -75,6 +76,7 @@ const App = () => {
       await _db.executeSql(createWorkouts);
       await _db.executeSql(addHidden).catch(() => null);
       await _db.executeSql(addNotify).catch(() => null);
+      await _db.executeSql(addImage).catch(() => null);
       const [result] = await _db.executeSql(`SELECT * FROM settings LIMIT 1`);
       if (result.rows.length === 0)
         return _db.executeSql(`

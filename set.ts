@@ -6,4 +6,5 @@ export default interface Set {
   created?: string;
   unit?: string;
   hidden?: boolean;
+  image?: string;
 }

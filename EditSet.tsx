@@ -57,13 +57,13 @@ export default function EditSet() {
 
   const add = useCallback(
     async (set: Set) => {
-      const {name, reps, weight, unit} = set;
+      const {name, reps, weight, unit, image} = set;
       const insert = `
-        INSERT INTO sets(name, reps, weight, created, unit) 
-        VALUES (?,?,?,strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime'),?)
+        INSERT INTO sets(name, reps, weight, created, unit, image) 
+        VALUES (?,?,?,strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime'),?, ?)
       `;
       startTimer();
-      await db.executeSql(insert, [name, reps, weight, unit]);
+      await db.executeSql(insert, [name, reps, weight, unit, image]);
       const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
       const settings: Settings = result.rows.item(0);
       if (settings.notify === 0) return navigation.goBack();

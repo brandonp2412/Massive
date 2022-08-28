@@ -51,3 +51,7 @@ export const addHidden = `
 export const addNotify = `
   ALTER TABLE settings ADD COLUMN notify DEFAULT false;
 `;
+
+export const addImage = `
+  ALTER TABLE sets ADD COLUMN image TEXT NULL;
+`;

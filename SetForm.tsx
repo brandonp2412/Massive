@@ -18,6 +18,7 @@ export default function SetForm({
   const [reps, setReps] = useState(set.reps.toString());
   const [weight, setWeight] = useState(set.weight.toString());
   const [unit, setUnit] = useState(set.unit);
+  const [uri, setUri] = useState(set.image);
   const [selection, setSelection] = useState({
     start: 0,
     end: set.reps.toString().length,
@@ -33,8 +34,18 @@ export default function SetForm({
       weight: Number(weight),
       id: set.id,
       unit,
+      image: uri,
     });
   };
+  const db = useContext(DatabaseContext);
+
+  useEffect(() => {
+    console.log('SetForm.useEffect:', {uri, name: set.name});
+    if (!uri)
+      db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
+        set.name,
+      ]).then(([result]) => setUri(result.rows.item(0).image));
+  }, [uri, db, set.name]);
 
   return (
     <>
@@ -78,7 +89,7 @@ export default function SetForm({
             {set.created.replace('T', ' ')}
           </Text>
         )}
-        <Text>
+        <Text style={{marginBottom: 10}}>
           {workouts?.map((workout, index) => (
             <React.Fragment key={workout}>
               <Text
@@ -92,6 +103,7 @@ export default function SetForm({
             </React.Fragment>
           ))}
         </Text>
+        {uri && <Image source={{uri}} style={{width: 250, height: 250}} />}
       </ScrollView>
       <Button
         disabled={!name}

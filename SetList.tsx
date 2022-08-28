@@ -34,6 +34,7 @@ export default function SetList() {
   const [refreshing, setRefreshing] = useState(false);
   const [end, setEnd] = useState(false);
   const [dates, setDates] = useState(false);
+  const [images, setImages] = useState(false);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
@@ -143,12 +144,14 @@ export default function SetList() {
       <SetItem
         dates={dates}
         setDates={setDates}
+        images={images}
+        setImages={setImages}
         item={item}
         key={item.id}
         onRemove={refresh}
       />
     ),
-    [refresh, dates, setDates],
+    [refresh, dates, setDates, images, setImages],
   );
 
   const next = useCallback(async () => {
