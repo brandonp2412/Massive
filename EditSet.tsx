@@ -5,7 +5,7 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useContext} from 'react';
-import {NativeModules, PermissionsAndroid, View} from 'react-native';
+import {NativeModules, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {DatabaseContext, SnackbarContext} from './App';
 import {HomePageParams} from './HomePage';
