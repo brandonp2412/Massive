@@ -40,6 +40,7 @@ export default function SettingsPage() {
     setMaxSets(settings.sets.toString());
     setVibrate(!!settings.vibrate);
     setSound(settings.sound);
+    setNotify(!!settings.notify);
     NativeModules.AlarmModule.ignoringBattery(setIgnoring);
   }, [db]);
 
