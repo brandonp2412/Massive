@@ -5,7 +5,8 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
-import {ScrollView} from 'react-native';
+import {Image, ScrollView, View} from 'react-native';
+import DocumentPicker from 'react-native-document-picker';
 import {Button, IconButton} from 'react-native-paper';
 import {set} from 'react-native-reanimated';
 import {DatabaseContext} from './App';

@@ -1,6 +1,7 @@
-import React, {useRef, useState} from 'react';
-import {ScrollView, Text} from 'react-native';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {Image, ScrollView, Text} from 'react-native';
 import {Button} from 'react-native-paper';
+import {DatabaseContext} from './App';
 import MassiveInput from './MassiveInput';
 import Set from './set';
 
