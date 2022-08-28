@@ -1,4 +1,5 @@
 import {
+  NavigationProp,
   RouteProp,
   useFocusEffect,
   useNavigation,
@@ -11,6 +12,7 @@ import {DatabaseContext} from './App';
 import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './PlanPage';
 import {DAYS} from './time';
+import {DrawerParamList} from './App';
 
 export default function EditPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>();
@@ -20,7 +22,7 @@ export default function EditPlan() {
   );
   const [names, setNames] = useState<string[]>([]);
   const db = useContext(DatabaseContext);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   useFocusEffect(
     useCallback(() => {
@@ -102,10 +104,9 @@ export default function EditPlan() {
         ))}
         <Text style={[styles.title, {marginTop: 10}]}>Workouts</Text>
         {names.length === 0 && (
-          <Text style={{maxWidth: '80%'}}>
-            No sets found. Try going to the home page and adding some workouts
-            first.
-          </Text>
+          <View>
+            <Text>No workouts found.</Text>
+          </View>
         )}
         {names.map(name => (
           <View key={name} style={[styles.row, {alignItems: 'center'}]}>
@@ -119,13 +120,27 @@ export default function EditPlan() {
           </View>
         ))}
       </ScrollView>
-      <Button
-        style={{marginTop: 10}}
-        mode="contained"
-        icon="save"
-        onPress={save}>
-        Save
-      </Button>
+      {names.length === 0 ? (
+        <Button
+          mode="contained"
+          onPress={() => {
+            navigation.goBack();
+            navigation.navigate('Workouts', {
+              screen: 'EditWorkout',
+              params: {value: {name: ''}},
+            });
+          }}>
+          Add workout
+        </Button>
+      ) : (
+        <Button
+          style={{marginTop: 10}}
+          mode="contained"
+          icon="save"
+          onPress={save}>
+          Save
+        </Button>
+      )}
     </View>
   );
 }

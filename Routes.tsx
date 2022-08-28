@@ -33,7 +33,6 @@ export default function Routes({db}: {db: SQLiteDatabase | null}) {
       <Drawer.Navigator
         screenOptions={{
           headerTintColor: dark ? 'white' : 'black',
-          drawerType: 'slide',
           swipeEdgeWidth: 1000,
         }}>
         {routes.map(route => (
