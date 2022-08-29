@@ -50,14 +50,12 @@ export default function SetItem({
   const toggleDates = useCallback(() => {
     setDates(!dates);
     setShowMenu(false);
-    if (!dates && images) setImages(false);
-  }, [dates, setDates, images, setImages]);
+  }, [dates, setDates]);
 
   const toggleImages = useCallback(() => {
     setImages(!images);
     setShowMenu(false);
-    if (!images && dates) setDates(false);
-  }, [dates, setDates, images, setImages]);
+  }, [images, setImages]);
 
   return (
     <>
@@ -66,6 +64,11 @@ export default function SetItem({
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}
+        left={() =>
+          images && (
+            <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
+          )
+        }
         right={() => (
           <>
             {dates && (
@@ -75,12 +78,6 @@ export default function SetItem({
                 }}>
                 {item.created?.replace('T', ' ')}
               </Text>
-            )}
-            {images && (
-              <Image
-                source={{uri: item.image}}
-                style={{height: 75, width: 75}}
-              />
             )}
             <Menu
               anchor={anchor}
