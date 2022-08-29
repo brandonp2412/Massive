@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Image, ScrollView, Text} from 'react-native';
+import {ScrollView, Text} from 'react-native';
 import {Button} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import MassiveInput from './MassiveInput';
@@ -103,7 +103,6 @@ export default function SetForm({
             </React.Fragment>
           ))}
         </Text>
-        {uri && <Image source={{uri}} style={{width: 250, height: 250}} />}
       </ScrollView>
       <Button
         disabled={!name}
