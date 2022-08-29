@@ -1,6 +1,6 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useContext, useState} from 'react';
-import {GestureResponderEvent, Text} from 'react-native';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
+import {GestureResponderEvent, Image, Text} from 'react-native';
 import {List, Menu} from 'react-native-paper';
 import {DatabaseContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
@@ -17,8 +17,18 @@ export default function WorkoutItem({
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const [showRemove, setShowRemove] = useState('');
+  const [uri, setUri] = useState('');
   const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
+
+  useEffect(() => {
+    db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
+      item.name,
+    ]).then(([result]) => {
+      setUri(result.rows.item(0)?.image);
+      console.log(WorkoutItem.name, item.name, result.rows.item(0)?.image);
+    });
+  }, [db, item.name]);
 
   const remove = useCallback(async () => {
     await db.executeSql(`DELETE FROM sets WHERE name = ?`, [item.name]);
@@ -41,24 +51,27 @@ export default function WorkoutItem({
         title={item.name}
         onLongPress={longPress}
         right={() => (
-          <Text
-            style={{
-              alignSelf: 'center',
-            }}>
-            <Menu
-              anchor={anchor}
-              visible={showMenu}
-              onDismiss={() => setShowMenu(false)}>
-              <Menu.Item
-                icon="trash"
-                onPress={() => {
-                  setShowRemove(item.name);
-                  setShowMenu(false);
-                }}
-                title="Delete"
-              />
-            </Menu>
-          </Text>
+          <>
+            {uri && <Image source={{uri}} style={{height: 75, width: 75}} />}
+            <Text
+              style={{
+                alignSelf: 'center',
+              }}>
+              <Menu
+                anchor={anchor}
+                visible={showMenu}
+                onDismiss={() => setShowMenu(false)}>
+                <Menu.Item
+                  icon="trash"
+                  onPress={() => {
+                    setShowRemove(item.name);
+                    setShowMenu(false);
+                  }}
+                  title="Delete"
+                />
+              </Menu>
+            </Text>
+          </>
         )}
       />
       <ConfirmDialog
