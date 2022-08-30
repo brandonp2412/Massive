@@ -27,7 +27,7 @@ export default function EditWorkout() {
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
         headerRight: null,
-        title: params.value.name ? 'Edit workout' : 'New workout',
+        title: params.value.name ? params.value.name : 'New workout',
       });
       db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
         params.value.name,
@@ -82,8 +82,12 @@ export default function EditWorkout() {
     <ScrollView style={{padding: 10, height: '90%'}}>
       {params.value.name ? (
         <>
-          <MassiveInput label="Old name" value={params.value.name} disabled />
-          <MassiveInput label="New name" value={name} onChangeText={setName} />
+          <MassiveInput
+            placeholder={params.value.name}
+            label="New name"
+            value={name}
+            onChangeText={setName}
+          />
           <View style={{flexDirection: 'row', paddingBottom: 10}}>
             {uri && <Image source={{uri}} style={{height: 50, width: 50}} />}
             <Button onPress={changeImage} icon="image">
