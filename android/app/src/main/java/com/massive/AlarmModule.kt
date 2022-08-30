@@ -1,5 +1,7 @@
 package com.massive
 
+import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -7,7 +9,9 @@ import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.startActivity
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -45,12 +49,21 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
         }
     }
 
+    @SuppressLint("BatteryLife")
     @RequiresApi(Build.VERSION_CODES.M)
     @ReactMethod
-    fun openSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+    fun ignoreBattery() {
+        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
         intent.data = Uri.parse("package:" + reactApplicationContext.packageName)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        reactApplicationContext.startActivity(intent)
+        try {
+            reactApplicationContext.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(
+                reactApplicationContext,
+                "Requests to ignore battery optimizations are disabled on your device.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 }

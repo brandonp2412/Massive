@@ -223,7 +223,7 @@ export default function SettingsPage() {
         show={battery}
         setShow={setBattery}
         onOk={() => {
-          NativeModules.AlarmModule.openSettings();
+          NativeModules.AlarmModule.ignoreBattery();
           setBattery(false);
         }}>
         Disable battery optimizations for Massive to use rest timers.
