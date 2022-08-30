@@ -44,7 +44,7 @@ export default function SetForm({
     if (!uri)
       db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
         set.name,
-      ]).then(([result]) => setUri(result.rows.item(0).image));
+      ]).then(([result]) => setUri(result.rows.item(0)?.image));
   }, [uri, db, set.name]);
 
   return (
