@@ -33,28 +33,7 @@ export default function Routes() {
   const dark = useColorScheme() === 'dark';
 
   useEffect(() => {
-    const init = async () => {
-      const _db = await getDb();
-      try {
-        await _db.executeSql(createPlans);
-        await _db.executeSql(createSets);
-        await _db.executeSql(createSettings);
-        await _db.executeSql(createWorkouts);
-        await _db.executeSql(addSound).catch(() => null);
-        await _db.executeSql(addHidden).catch(() => null);
-        await _db.executeSql(addNotify).catch(() => null);
-        await _db.executeSql(addImage).catch(() => null);
-        const [result] = await _db.executeSql(`SELECT * FROM settings LIMIT 1`);
-        if (result.rows.length === 0)
-          return _db.executeSql(`
-            INSERT INTO settings(minutes,seconds,alarm,vibrate,predict,sets) 
-            VALUES(3,30,false,true,true,3);
-          `);
-      } finally {
-        setDb(_db);
-      }
-    };
-    init();
+    getDb().then(setDb);
   }, []);
 
   if (!db) return null;

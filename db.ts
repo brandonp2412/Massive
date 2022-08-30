@@ -1,9 +1,8 @@
 import {enablePromise, openDatabase} from 'react-native-sqlite-storage';
 
 enablePromise(true);
-export const getDb = () => openDatabase({name: 'massive.db'});
 
-export const createSets = `
+const createSets = `
   CREATE TABLE IF NOT EXISTS sets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -14,7 +13,7 @@ export const createSets = `
   );
 `;
 
-export const createPlans = `
+const createPlans = `
   CREATE TABLE IF NOT EXISTS plans (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     days TEXT NOT NULL,
@@ -22,7 +21,7 @@ export const createPlans = `
   );
 `;
 
-export const createSettings = `
+const createSettings = `
   CREATE TABLE IF NOT EXISTS settings (
     minutes INTEGER NOT NULL DEFAULT 3,
     seconds INTEGER NOT NULL DEFAULT 30,
@@ -33,25 +32,54 @@ export const createSettings = `
   );
 `;
 
-export const addSound = `
+const addSound = `
   ALTER TABLE settings ADD COLUMN sound TEXT NULL;
 `;
 
-export const createWorkouts = `
+const createWorkouts = `
   CREATE TABLE IF NOT EXISTS workouts(
     name TEXT PRIMARY KEY, 
     sets INTEGER DEFAULT 3
   );
 `;
 
-export const addHidden = `
+const addHidden = `
   ALTER TABLE sets ADD COLUMN hidden DEFAULT false;
 `;
 
-export const addNotify = `
+const addNotify = `
   ALTER TABLE settings ADD COLUMN notify DEFAULT false;
 `;
 
-export const addImage = `
+const addImage = `
   ALTER TABLE sets ADD COLUMN image TEXT NULL;
 `;
+
+const addImages = `
+  ALTER TABLE settings ADD COLUMN images BOOLEAN DEFAULT false;
+`;
+
+const selectSettings = `
+  SELECT * FROM settings LIMIT 1
+`;
+
+const insertSettings = `
+  INSERT INTO settings(minutes,seconds,alarm,vibrate,predict,sets) 
+  VALUES(3,30,false,true,true,3);
+`;
+
+export const getDb = async () => {
+  const db = await openDatabase({name: 'massive.db'});
+  await db.executeSql(createPlans);
+  await db.executeSql(createSets);
+  await db.executeSql(createSettings);
+  await db.executeSql(createWorkouts);
+  await db.executeSql(addSound).catch(() => null);
+  await db.executeSql(addHidden).catch(() => null);
+  await db.executeSql(addNotify).catch(() => null);
+  await db.executeSql(addImage).catch(() => null);
+  await db.executeSql(addImages).catch(() => null);
+  const [result] = await db.executeSql(selectSettings);
+  if (result.rows.length === 0) await db.executeSql(insertSettings);
+  return db;
+};
