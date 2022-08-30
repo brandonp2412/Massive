@@ -3,9 +3,10 @@ import React, {useCallback, useContext, useState} from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import {FileSystem} from 'react-native-file-access';
 import {Divider, IconButton, Menu} from 'react-native-paper';
-import {DatabaseContext, DrawerParamList, SnackbarContext} from './App';
+import {DrawerParamList, SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
 import {Plan} from './plan';
+import {DatabaseContext} from './Routes';
 import Set from './set';
 import {write} from './write';
 

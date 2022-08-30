@@ -4,7 +4,7 @@ import {
   DefaultTheme as NavigationDefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {
   DarkTheme as PaperDarkTheme,
@@ -12,19 +12,7 @@ import {
   Provider,
   Snackbar,
 } from 'react-native-paper';
-import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import {
-  addHidden,
-  addImage,
-  addNotify,
-  addSound,
-  createPlans,
-  createSets,
-  createSettings,
-  createWorkouts,
-  getDb,
-} from './db';
 import Routes from './Routes';
 
 export const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -34,9 +22,9 @@ export type DrawerParamList = {
   Best: {};
   Plans: {};
   Workouts: {};
+  Loading: {};
 };
 
-export const DatabaseContext = React.createContext<SQLiteDatabase>({} as any);
 export const SnackbarContext = React.createContext<{
   toast: (value: string, timeout: number) => void;
 }>({toast: () => null});
@@ -61,31 +49,8 @@ export const CombinedDarkTheme = {
 };
 
 const App = () => {
-  const [db, setDb] = useState<SQLiteDatabase | null>(null);
   const [snackbar, setSnackbar] = useState('');
   const dark = useColorScheme() === 'dark';
-
-  useEffect(() => {
-    const init = async () => {
-      const _db = await getDb();
-      setDb(_db);
-      await _db.executeSql(createPlans);
-      await _db.executeSql(createSets);
-      await _db.executeSql(createSettings);
-      await _db.executeSql(addSound).catch(() => null);
-      await _db.executeSql(createWorkouts);
-      await _db.executeSql(addHidden).catch(() => null);
-      await _db.executeSql(addNotify).catch(() => null);
-      await _db.executeSql(addImage).catch(() => null);
-      const [result] = await _db.executeSql(`SELECT * FROM settings LIMIT 1`);
-      if (result.rows.length === 0)
-        return _db.executeSql(`
-            INSERT INTO settings(minutes,seconds,alarm,vibrate,predict,sets) 
-            VALUES(3,30,false,true,true,3);
-          `);
-    };
-    init();
-  }, []);
 
   const toast = (value: string, timeout: number) => {
     setSnackbar(value);
@@ -99,7 +64,7 @@ const App = () => {
       <NavigationContainer
         theme={dark ? CombinedDarkTheme : CombinedDefaultTheme}>
         <SnackbarContext.Provider value={{toast}}>
-          <Routes db={db} />
+          <Routes />
         </SnackbarContext.Provider>
       </NavigationContainer>
       <Snackbar

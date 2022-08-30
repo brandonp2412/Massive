@@ -8,7 +8,7 @@ import {
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, IconButton} from 'react-native-paper';
-import {DatabaseContext} from './App';
+import {DatabaseContext} from './Routes';
 import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './PlanPage';
 import {DAYS} from './time';

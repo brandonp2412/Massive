@@ -9,7 +9,7 @@ import {Image, ScrollView, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, IconButton} from 'react-native-paper';
 import {set} from 'react-native-reanimated';
-import {DatabaseContext} from './App';
+import {DatabaseContext} from './Routes';
 import MassiveInput from './MassiveInput';
 import {WorkoutsPageParams} from './WorkoutsPage';
 

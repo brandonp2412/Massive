@@ -8,10 +8,11 @@ import React, {
 import {NativeModules, ScrollView, StyleSheet, Text, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Searchbar} from 'react-native-paper';
-import {DatabaseContext, SnackbarContext} from './App';
+import {SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
 import MassiveInput from './MassiveInput';
 import MassiveSwitch from './MassiveSwitch';
+import {DatabaseContext} from './Routes';
 import Settings from './settings';
 
 export default function SettingsPage() {

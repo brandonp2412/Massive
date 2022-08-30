@@ -1,9 +1,20 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
-import {DatabaseContext, Drawer, DrawerParamList} from './App';
+import {Drawer, DrawerParamList} from './App';
 import BestPage from './BestPage';
+import {
+  addHidden,
+  addImage,
+  addNotify,
+  addSound,
+  createPlans,
+  createSets,
+  createSettings,
+  createWorkouts,
+  getDb,
+} from './db';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
 import SettingsPage from './SettingsPage';
@@ -15,8 +26,36 @@ interface Route {
   icon: string;
 }
 
-export default function Routes({db}: {db: SQLiteDatabase | null}) {
+export const DatabaseContext = React.createContext<SQLiteDatabase>(null as any);
+
+export default function Routes() {
+  const [db, setDb] = useState<SQLiteDatabase | null>(null);
   const dark = useColorScheme() === 'dark';
+
+  useEffect(() => {
+    const init = async () => {
+      const _db = await getDb();
+      try {
+        await _db.executeSql(createPlans);
+        await _db.executeSql(createSets);
+        await _db.executeSql(createSettings);
+        await _db.executeSql(createWorkouts);
+        await _db.executeSql(addSound).catch(() => null);
+        await _db.executeSql(addHidden).catch(() => null);
+        await _db.executeSql(addNotify).catch(() => null);
+        await _db.executeSql(addImage).catch(() => null);
+        const [result] = await _db.executeSql(`SELECT * FROM settings LIMIT 1`);
+        if (result.rows.length === 0)
+          return _db.executeSql(`
+            INSERT INTO settings(minutes,seconds,alarm,vibrate,predict,sets) 
+            VALUES(3,30,false,true,true,3);
+          `);
+      } finally {
+        setDb(_db);
+      }
+    };
+    init();
+  }, []);
 
   if (!db) return null;
 

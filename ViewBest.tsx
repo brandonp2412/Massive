@@ -18,8 +18,9 @@ import {IconButton} from 'react-native-paper';
 import Share from 'react-native-share';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import ViewShot from 'react-native-view-shot';
-import {CombinedDarkTheme, CombinedDefaultTheme, DatabaseContext} from './App';
+import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
 import {BestPageParams} from './BestPage';
+import {DatabaseContext} from './Routes';
 import Set from './set';
 import {formatMonth} from './time';
 

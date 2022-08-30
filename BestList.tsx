@@ -6,7 +6,7 @@ import {
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {DatabaseContext} from './App';
+import {DatabaseContext} from './Routes';
 import Best from './best';
 import {BestPageParams} from './BestPage';
 
