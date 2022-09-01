@@ -12,7 +12,7 @@ export default function MassiveFab(
     <FAB
       {...props}
       icon="add"
-      color="black"
+      color={dark ? CombinedDarkTheme.colors.background : 'white'}
       style={{
         position: 'absolute',
         right: 10,
