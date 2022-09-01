@@ -34,7 +34,7 @@ export default function SetList() {
   const [refreshing, setRefreshing] = useState(false);
   const [end, setEnd] = useState(false);
   const [dates, setDates] = useState(false);
-  const [images, setImages] = useState(false);
+  const [images, setImages] = useState(true);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
@@ -111,10 +111,12 @@ export default function SetList() {
     const settings: Settings = result.rows.item(0);
     if (!settings.predict) return;
     const todaysPlan = await getTodaysPlan();
+    console.log(`${SetList.name}.predict:`, {todaysPlan});
     if (todaysPlan.length === 0) return;
     const todaysSets = await getTodaysSets();
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
     let workout = todaysWorkouts[0];
+    console.log(`${SetList.name}.predict:`, {todaysSets, todaysWorkouts});
     if (todaysSets.length > 0) {
       const count = todaysSets.filter(
         s => s.name === todaysSets[0].name,
@@ -124,7 +126,9 @@ export default function SetList() {
         workout =
           todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
     }
+    console.log(`${SetList.name}.predict:`, {workout});
     const best = await getBest(workout);
+    console.log(`${SetList.name}.predict:`, {best});
     setSet({...best});
     setWorkouts(todaysWorkouts);
   }, [getTodaysSets, getTodaysPlan, getBest, db]);
@@ -136,7 +140,11 @@ export default function SetList() {
       navigation.getParent()?.setOptions({
         headerRight: () => <DrawerMenu name="Home" />,
       });
-    }, [refresh, predict, navigation]),
+      db.executeSql('SELECT * FROM settings LIMIT 1').then(([result]) => {
+        const settings: Settings = result.rows.item(0);
+        setImages(!!settings.images);
+      });
+    }, [refresh, predict, navigation, db]),
   );
 
   const renderItem = useCallback(
