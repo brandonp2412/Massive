@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {ScrollView, Text, useColorScheme} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
+import {SnackbarContext} from './App';
 import MassiveInput from './MassiveInput';
 import {DatabaseContext} from './Routes';
 import Set from './set';
@@ -27,8 +28,24 @@ export default function SetForm({
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
   const dark = useColorScheme() === 'dark';
+  const db = useContext(DatabaseContext);
+  const {toast} = useContext(SnackbarContext);
+
+  useEffect(() => {
+    console.log('SetForm.useEffect:', {uri, name: set.name});
+    if (!uri)
+      db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
+        set.name,
+      ]).then(([result]) => setUri(result.rows.item(0)?.image));
+  }, [uri, db, set.name]);
+
   const handleSubmit = () => {
     if (!name) return;
+    if (created && !created.match(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d$/))
+      return toast(
+        'Created must be of the format YYYY-mm-ddTHH:mm:ss. E.g. 1996-12-24T12:59:40',
+        7000,
+      );
     save({
       name,
       reps: Number(reps),
@@ -39,15 +56,6 @@ export default function SetForm({
       image: uri,
     });
   };
-  const db = useContext(DatabaseContext);
-
-  useEffect(() => {
-    console.log('SetForm.useEffect:', {uri, name: set.name});
-    if (!uri)
-      db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
-        set.name,
-      ]).then(([result]) => setUri(result.rows.item(0)?.image));
-  }, [uri, db, set.name]);
 
   return (
     <>
