@@ -1,8 +1,8 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ScrollView, Text} from 'react-native';
-import {Button} from 'react-native-paper';
-import {DatabaseContext} from './Routes';
+import {ScrollView, Text, useColorScheme} from 'react-native';
+import {Button, TextInput} from 'react-native-paper';
 import MassiveInput from './MassiveInput';
+import {DatabaseContext} from './Routes';
 import Set from './set';
 
 export default function SetForm({
@@ -19,18 +19,20 @@ export default function SetForm({
   const [weight, setWeight] = useState(set.weight.toString());
   const [unit, setUnit] = useState(set.unit);
   const [uri, setUri] = useState(set.image);
+  const [created, setCreated] = useState(set.created);
   const [selection, setSelection] = useState({
     start: 0,
     end: set.reps.toString().length,
   });
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
+  const dark = useColorScheme() === 'dark';
   const handleSubmit = () => {
     if (!name) return;
     save({
       name,
       reps: Number(reps),
-      created: set.created,
+      created,
       weight: Number(weight),
       id: set.id,
       unit,
@@ -85,9 +87,14 @@ export default function SetForm({
           onSubmitEditing={handleSubmit}
         />
         {set.created && (
-          <Text style={{marginBottom: 10}}>
-            {set.created.replace('T', ' ')}
-          </Text>
+          <TextInput
+            label="Created"
+            value={created}
+            onChangeText={setCreated}
+            selectionColor={dark ? '#2A2A2A' : ''}
+            mode="outlined"
+            style={{marginBottom: 10}}
+          />
         )}
         <Text style={{marginBottom: 10}}>
           {workouts?.map((workout, index) => (
