@@ -65,7 +65,8 @@ export default function SetItem({
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}
         left={() =>
-          images && (
+          images &&
+          item.image && (
             <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
           )
         }
