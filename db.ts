@@ -64,8 +64,7 @@ const selectSettings = `
 `;
 
 const insertSettings = `
-  INSERT INTO settings(minutes,seconds,alarm,vibrate,predict,sets) 
-  VALUES(3,30,false,true,true,3);
+  INSERT INTO settings(minutes) VALUES(3);
 `;
 
 export const getDb = async () => {

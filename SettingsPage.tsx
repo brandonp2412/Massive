@@ -24,6 +24,7 @@ export default function SettingsPage() {
   const [predict, setPredict] = useState(false);
   const [sound, setSound] = useState<string>('');
   const [notify, setNotify] = useState(false);
+  const [images, setImages] = useState(false);
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
@@ -42,6 +43,7 @@ export default function SettingsPage() {
     setVibrate(!!settings.vibrate);
     setSound(settings.sound);
     setNotify(!!settings.notify);
+    setImages(!!settings.images);
     NativeModules.AlarmModule.ignoringBattery(setIgnoring);
   }, [db]);
 
@@ -51,10 +53,31 @@ export default function SettingsPage() {
 
   useEffect(() => {
     db.executeSql(
-      `UPDATE settings SET vibrate=?,minutes=?,sets=?,seconds=?,alarm=?,predict=?,sound=?,notify=?`,
-      [vibrate, minutes, maxSets, seconds, alarm, predict, sound, notify],
+      `UPDATE settings SET vibrate=?,minutes=?,sets=?,seconds=?,alarm=?,predict=?,sound=?,notify=?,images=?`,
+      [
+        vibrate,
+        minutes,
+        maxSets,
+        seconds,
+        alarm,
+        predict,
+        sound,
+        notify,
+        images,
+      ],
     );
-  }, [vibrate, minutes, maxSets, seconds, alarm, predict, sound, notify, db]);
+  }, [
+    vibrate,
+    minutes,
+    maxSets,
+    seconds,
+    alarm,
+    predict,
+    sound,
+    notify,
+    db,
+    images,
+  ]);
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
@@ -187,6 +210,19 @@ export default function SettingsPage() {
             style={[styles.text, {alignSelf: 'flex-start'}]}
             value={notify}
             onValueChange={changeNotify}
+          />
+        </>
+      ),
+    },
+    {
+      name: 'Show images',
+      element: (
+        <>
+          <Text style={styles.text}>Show images</Text>
+          <MassiveSwitch
+            style={[styles.text, {alignSelf: 'flex-start'}]}
+            value={images}
+            onValueChange={setImages}
           />
         </>
       ),

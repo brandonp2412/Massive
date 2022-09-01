@@ -7,4 +7,5 @@ export default interface Settings {
   sets: number;
   sound: string;
   notify: number;
+  images: number;
 }
