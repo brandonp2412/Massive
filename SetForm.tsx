@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ScrollView, Text, useColorScheme} from 'react-native';
-import {Button, TextInput} from 'react-native-paper';
+import {ScrollView, Text, View} from 'react-native';
+import {Button} from 'react-native-paper';
 import {SnackbarContext} from './App';
 import MassiveInput from './MassiveInput';
 import {DatabaseContext} from './Routes';
@@ -20,16 +20,29 @@ export default function SetForm({
   const [weight, setWeight] = useState(set.weight.toString());
   const [unit, setUnit] = useState(set.unit);
   const [uri, setUri] = useState(set.image);
-  const [created, setCreated] = useState(set.created);
+  const [year, setYear] = useState('');
+  const [month, setMonth] = useState('');
+  const [day, setDay] = useState('');
+  const [hour, setHour] = useState('');
+  const [minute, setMinute] = useState('');
   const [selection, setSelection] = useState({
     start: 0,
     end: set.reps.toString().length,
   });
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
-  const dark = useColorScheme() === 'dark';
   const db = useContext(DatabaseContext);
-  const {toast} = useContext(SnackbarContext);
+
+  useEffect(() => {
+    if (!set.created) return;
+    const matches = set.created.match(/\d+/g);
+    if (!matches) return;
+    setYear(matches[0]);
+    setMonth(matches[1]);
+    setDay(matches[2]);
+    setHour(matches[3]);
+    setMinute(matches[4]);
+  }, [set.created]);
 
   useEffect(() => {
     console.log('SetForm.useEffect:', {uri, name: set.name});
@@ -41,15 +54,10 @@ export default function SetForm({
 
   const handleSubmit = () => {
     if (!name) return;
-    if (created && !created.match(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d$/))
-      return toast(
-        'Created must be of the format YYYY-mm-ddTHH:mm:ss. E.g. 1996-12-24T12:59:40',
-        7000,
-      );
     save({
       name,
       reps: Number(reps),
-      created,
+      created: `${year}-${month}-${day}T${hour}:${minute}`,
       weight: Number(weight),
       id: set.id,
       unit,
@@ -95,14 +103,43 @@ export default function SetForm({
           onSubmitEditing={handleSubmit}
         />
         {set.created && (
-          <TextInput
-            label="Created"
-            value={created}
-            onChangeText={setCreated}
-            selectionColor={dark ? '#2A2A2A' : ''}
-            mode="outlined"
-            style={{marginBottom: 10}}
-          />
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+            }}>
+            <MassiveInput
+              label="Year"
+              value={year}
+              onChangeText={setYear}
+              keyboardType="numeric"
+            />
+            <MassiveInput
+              label="Month"
+              value={month}
+              onChangeText={setMonth}
+              keyboardType="numeric"
+            />
+            <MassiveInput
+              label="Day"
+              value={day}
+              onChangeText={setDay}
+              keyboardType="numeric"
+            />
+            <MassiveInput
+              label="Hour"
+              value={hour}
+              onChangeText={setHour}
+              keyboardType="numeric"
+            />
+            <MassiveInput
+              label="Minute"
+              value={minute}
+              onChangeText={setMinute}
+              keyboardType="numeric"
+            />
+          </View>
         )}
         <Text style={{marginBottom: 10}}>
           {workouts?.map((workout, index) => (

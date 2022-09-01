@@ -14,7 +14,7 @@ export default function MassiveInput(
     <TextInput
       selectionColor={dark ? '#2A2A2A' : CombinedDefaultTheme.colors.border}
       mode="outlined"
-      style={{marginBottom: 10}}
+      style={{marginBottom: 10, minWidth: 100}}
       selectTextOnFocus
       ref={props.innerRef}
       {...props}
