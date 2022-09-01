@@ -1,7 +1,6 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
-import {Button} from 'react-native-paper';
-import {SnackbarContext} from './App';
+import {ScrollView, View} from 'react-native';
+import {Button, Text} from 'react-native-paper';
 import MassiveInput from './MassiveInput';
 import {DatabaseContext} from './Routes';
 import Set from './set';

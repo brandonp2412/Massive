@@ -1,7 +1,7 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {GestureResponderEvent, Image, Text} from 'react-native';
-import {List, Menu} from 'react-native-paper';
+import {GestureResponderEvent, Image} from 'react-native';
+import {List, Menu, Text} from 'react-native-paper';
 import {DatabaseContext} from './Routes';
 import ConfirmDialog from './ConfirmDialog';
 import Workout from './workout';

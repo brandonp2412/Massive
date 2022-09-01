@@ -5,9 +5,9 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {NativeModules, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {NativeModules, ScrollView, StyleSheet, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
-import {Button, Searchbar} from 'react-native-paper';
+import {Button, Searchbar, Text} from 'react-native-paper';
 import {SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
 import MassiveInput from './MassiveInput';

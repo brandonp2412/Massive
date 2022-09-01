@@ -12,9 +12,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {Text, useColorScheme, View} from 'react-native';
+import {useColorScheme, View} from 'react-native';
 import {FileSystem} from 'react-native-file-access';
-import {IconButton} from 'react-native-paper';
+import {Text, IconButton} from 'react-native-paper';
 import Share from 'react-native-share';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import ViewShot from 'react-native-view-shot';
