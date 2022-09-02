@@ -1913,6 +1913,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-picker/picker@npm:^1.8.3":
+  version: 1.16.8
+  resolution: "@react-native-picker/picker@npm:1.16.8"
+  peerDependencies:
+    react: 16 || 17
+    react-native: ">=0.57"
+  checksum: c0176e41ba7486bf0a27ab5471315848cb166330313bd12e29ee65b7d2e1dfde22383de6a89be15770d132b33bca1764e64feee3acf22c67c3733fd877d3e91f
+  languageName: node
+  linkType: hard
+
+"@react-native-picker/picker@npm:^2.4.4":
+  version: 2.4.4
+  resolution: "@react-native-picker/picker@npm:2.4.4"
+  peerDependencies:
+    react: ">=16"
+    react-native: ">=0.57"
+  checksum: 8a122707e39f3f6a97536bd7800bdb2a326bdcff85d7e03472250454974a14789c8963c0d99397410955a9bbe31a67cef38bccfd0834b161e8a169e25ecc2304
+  languageName: node
+  linkType: hard
+
 "@react-native/assets@npm:1.0.0":
   version: 1.0.0
   resolution: "@react-native/assets@npm:1.0.0"
@@ -6001,6 +6021,7 @@ __metadata:
     "@babel/runtime": ^7.12.5
     "@react-native-community/eslint-config": ^2.0.0
     "@react-native-masked-view/masked-view": ^0.2.6
+    "@react-native-picker/picker": ^2.4.4
     "@react-navigation/drawer": ^6.4.3
     "@react-navigation/native": ^6.0.10
     "@react-navigation/stack": ^6.2.2
@@ -6023,6 +6044,7 @@ __metadata:
     react-native-linear-gradient: ^2.6.2
     react-native-pager-view: ^5.4.24
     react-native-paper: ^4.12.2
+    react-native-picker-select: ^8.0.4
     react-native-reanimated: ^2.9.0
     react-native-safe-area-context: ^4.3.1
     react-native-screens: ^3.14.0
@@ -7431,6 +7453,16 @@ __metadata:
     react-native: "*"
     react-native-vector-icons: "*"
   checksum: 591833deb94abec5abeb75296a6170d20943a307c8fb01ee8840db4c071dc6c3999d450b6407cfa13f6e1481c3693809955590c31ac374ba6626c96b1d52d9b0
+  languageName: node
+  linkType: hard
+
+"react-native-picker-select@npm:^8.0.4":
+  version: 8.0.4
+  resolution: "react-native-picker-select@npm:8.0.4"
+  dependencies:
+    "@react-native-picker/picker": ^1.8.3
+    lodash.isequal: ^4.5.0
+  checksum: 9656a2f7b330a9e5a8b6b90393140fc5370762d2a14de4c5d31ce43de8abc677870c7f2ee8a493f48535157ddcbc3311cf3f41dac262bd84e50e913f0d4a24ff
   languageName: node
   linkType: hard
 

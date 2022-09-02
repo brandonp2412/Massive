@@ -4,7 +4,6 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import * as shape from 'd3-shape';
 import React, {
   useCallback,
   useContext,
@@ -12,14 +11,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {useColorScheme, View} from 'react-native';
 import {FileSystem} from 'react-native-file-access';
-import {Text, IconButton} from 'react-native-paper';
+import {IconButton} from 'react-native-paper';
+import RNPickerSelect from 'react-native-picker-select';
 import Share from 'react-native-share';
-import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import ViewShot from 'react-native-view-shot';
-import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
 import {BestPageParams} from './BestPage';
+import Chart from './Chart';
 import {DatabaseContext} from './Routes';
 import Set from './set';
 import {formatMonth} from './time';
@@ -31,13 +29,25 @@ interface Volume {
   unit: string;
 }
 
+enum Metrics {
+  Weight = 'Best weight per day',
+  Volume = 'Best volume per day',
+}
+
+enum Periods {
+  Weekly = 'This week',
+  Monthly = 'This month',
+  Yearly = 'This year',
+}
+
 export default function ViewBest() {
   const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>();
   const [weights, setWeights] = useState<Set[]>([]);
   const [volumes, setVolumes] = useState<Volume[]>([]);
+  const [metric, setMetric] = useState(Metrics.Weight);
+  const [period, setPeriod] = useState(Periods.Monthly);
   const db = useContext(DatabaseContext);
   const navigation = useNavigation();
-  const dark = useColorScheme() === 'dark';
   const viewShot = useRef<ViewShot>(null);
 
   useFocusEffect(
@@ -69,114 +79,91 @@ export default function ViewBest() {
     }, [navigation, params.best]),
   );
 
-  useEffect(() => {
-    console.log(`${ViewBest.name}.useEffect`);
-    const selectWeights = `
+  const refreshWeight = useCallback(async () => {
+    const select = `
       SELECT max(weight) AS weight, 
         STRFTIME('%Y-%m-%d', created) as created, unit
       FROM sets
       WHERE name = ? AND NOT hidden
+        AND DATE(created) >= DATE('now', 'weekday 0', ?)
       GROUP BY name, STRFTIME('%Y-%m-%d', created)
     `;
-    const selectVolumes = `
+    let difference = '-7 days';
+    if (period === Periods.Monthly) difference = '-1 months';
+    else if (period === Periods.Yearly) difference = '-1 years';
+    const [result] = await db.executeSql(select, [
+      params.best.name,
+      difference,
+    ]);
+    if (result.rows.length === 0) return;
+    setWeights(result.rows.raw());
+  }, [params.best.name, db, period]);
+
+  const refreshVolume = useCallback(async () => {
+    const select = `
       SELECT sum(weight * reps) AS value, 
         STRFTIME('%Y-%m-%d', created) as created, unit
       FROM sets
       WHERE name = ? AND NOT hidden
+        AND DATE(created) >= DATE('now', 'weekday 0', ?)
       GROUP BY name, STRFTIME('%Y-%m-%d', created)
     `;
-    const refresh = async () => {
-      const [weightsResult] = await db.executeSql(selectWeights, [
-        params.best.name,
-      ]);
-      if (weightsResult.rows.length === 0) return;
-      setWeights(weightsResult.rows.raw());
-      const [volumesResult] = await db.executeSql(selectVolumes, [
-        params.best.name,
-      ]);
-      console.log(volumesResult.rows.raw());
-      if (volumesResult.rows.length === 0) return;
-      setVolumes(volumesResult.rows.raw());
-    };
-    refresh();
-  }, [params.best.name, db]);
+    let difference = '-7 days';
+    if (period === Periods.Monthly) difference = '-1 months';
+    else if (period === Periods.Yearly) difference = '-1 years';
+    const [result] = await db.executeSql(select, [
+      params.best.name,
+      difference,
+    ]);
+    if (result.rows.length === 0) return;
+    setVolumes(result.rows.raw());
+  }, [db, params.best.name, period]);
 
-  const axesSvg = {fontSize: 10, fill: 'grey'};
-  const verticalContentInset = {top: 10, bottom: 10};
-  const xAxisHeight = 30;
+  useEffect(() => {
+    if (metric === Metrics.Weight) refreshWeight();
+    else if (metric === Metrics.Volume) refreshVolume();
+    console.log(`${ViewBest.name}.useEffect`, {metric, period});
+  }, [params.best.name, db, metric, period, refreshVolume, refreshWeight]);
 
   return (
     <ViewShot style={{padding: 10}} ref={viewShot}>
-      <Text>Best weight per day</Text>
-      <View style={{height: 300, padding: 20, flexDirection: 'row'}}>
-        <YAxis
-          data={weights.map(set => set.weight)}
-          style={{marginBottom: xAxisHeight}}
-          contentInset={verticalContentInset}
-          svg={axesSvg}
-          formatLabel={value => `${value}${weights[0].unit}`}
-        />
-        <View style={{flex: 1, marginLeft: 10}}>
-          <LineChart
-            style={{flex: 1}}
-            data={weights.map(set => set.weight)}
-            contentInset={verticalContentInset}
-            curve={shape.curveBasis}
-            svg={{
-              stroke: dark
-                ? CombinedDarkTheme.colors.primary
-                : CombinedDefaultTheme.colors.primary,
-            }}>
-            <Grid />
-          </LineChart>
-          <XAxis
-            style={{marginHorizontal: -10, height: xAxisHeight}}
-            data={weights}
-            formatLabel={(_value, index) =>
-              formatMonth(weights[index].created!)
-            }
-            contentInset={{left: 10, right: 10}}
-            svg={axesSvg}
-          />
-        </View>
-      </View>
-      <Text>Volume per day</Text>
-      <View style={{height: 300, padding: 20, flexDirection: 'row'}}>
-        <YAxis
-          data={volumes.map(volume => volume.value)}
-          style={{marginBottom: xAxisHeight}}
-          contentInset={verticalContentInset}
-          svg={axesSvg}
-          formatLabel={(value: number) =>
+      <RNPickerSelect
+        onValueChange={setMetric}
+        items={[
+          {label: Metrics.Weight, value: Metrics.Weight},
+          {label: Metrics.Volume, value: Metrics.Volume},
+        ]}
+        value={metric}
+      />
+      <RNPickerSelect
+        onValueChange={setPeriod}
+        items={[
+          {label: Periods.Weekly, value: Periods.Weekly},
+          {label: Periods.Monthly, value: Periods.Monthly},
+          {label: Periods.Yearly, value: Periods.Yearly},
+        ]}
+        value={period}
+      />
+      {metric === Metrics.Volume && (
+        <Chart
+          yData={volumes.map(v => v.value)}
+          yFormat={(value: number) =>
             `${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${
               volumes[0].unit
             }`
           }
+          xData={weights}
+          xFormat={(_value, index) => formatMonth(weights[index].created!)}
         />
-        <View style={{flex: 1, marginLeft: 10}}>
-          <LineChart
-            style={{flex: 1}}
-            data={volumes.map(volume => volume.value)}
-            contentInset={verticalContentInset}
-            curve={shape.curveBasis}
-            svg={{
-              stroke: dark
-                ? CombinedDarkTheme.colors.primary
-                : CombinedDefaultTheme.colors.primary,
-            }}>
-            <Grid />
-          </LineChart>
-          <XAxis
-            style={{marginHorizontal: -10, height: xAxisHeight}}
-            data={weights}
-            formatLabel={(_value, index) =>
-              formatMonth(volumes[index]?.created)
-            }
-            contentInset={{left: 10, right: 10}}
-            svg={axesSvg}
-          />
-        </View>
-      </View>
+      )}
+      {metric === Metrics.Weight && (
+        <Chart
+          yData={weights.map(set => set.weight)}
+          yFormat={value => `${value}${weights[0].unit}`}
+          xData={weights}
+          xFormat={(_value, index) => formatMonth(weights[index].created!)}
+        />
+      )}
     </ViewShot>
   );
 }
