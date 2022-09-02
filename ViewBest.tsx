@@ -31,7 +31,7 @@ interface Volume {
 
 enum Metrics {
   Weight = 'Best weight per day',
-  Volume = 'Best volume per day',
+  Volume = 'Volume per day',
 }
 
 enum Periods {
