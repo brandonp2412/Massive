@@ -135,31 +135,30 @@ export default function SettingsPage() {
       ),
     },
     {
-      name: 'Rest minutes',
+      name: 'Rest minutes Rest seconds',
       element: (
-        <MassiveInput
-          label="Rest minutes"
-          value={minutes}
-          keyboardType="numeric"
-          placeholder="3"
-          onChangeText={text => {
-            setMinutes(text);
-          }}
-        />
-      ),
-    },
-    {
-      name: 'Rest seconds',
-      element: (
-        <MassiveInput
-          label="Rest seconds"
-          value={seconds}
-          keyboardType="numeric"
-          placeholder="30"
-          onChangeText={s => {
-            setSeconds(s);
-          }}
-        />
+        <View style={{flexDirection: 'row', marginBottom: 10}}>
+          <MassiveInput
+            style={{width: 125, marginRight: 10}}
+            label="Rest minutes"
+            value={minutes}
+            keyboardType="numeric"
+            placeholder="3"
+            onChangeText={text => {
+              setMinutes(text);
+            }}
+          />
+          <MassiveInput
+            style={{width: 125}}
+            label="Rest seconds"
+            value={seconds}
+            keyboardType="numeric"
+            placeholder="30"
+            onChangeText={s => {
+              setSeconds(s);
+            }}
+          />
+        </View>
       ),
     },
     {
