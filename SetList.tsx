@@ -6,11 +6,11 @@ import {
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {DatabaseContext} from './Routes';
 import DrawerMenu from './DrawerMenu';
 import {HomePageParams} from './HomePage';
 import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
+import {DatabaseContext} from './Routes';
 import Set from './set';
 import SetItem from './SetItem';
 import Settings from './settings';

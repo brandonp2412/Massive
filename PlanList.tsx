@@ -6,12 +6,12 @@ import {
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {DatabaseContext} from './Routes';
 import DrawerMenu from './DrawerMenu';
 import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
 import PlanItem from './PlanItem';
 import {PlanPageParams} from './PlanPage';
+import {DatabaseContext} from './Routes';
 
 export default function PlanList() {
   const [search, setSearch] = useState('');

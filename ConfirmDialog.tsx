@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Button, Dialog, Portal} from 'react-native-paper';
+import {Button, Dialog, Portal, Text} from 'react-native-paper';
 
 export default function ConfirmDialog({
   title,

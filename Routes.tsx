@@ -4,17 +4,7 @@ import {IconButton} from 'react-native-paper';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import {Drawer, DrawerParamList} from './App';
 import BestPage from './BestPage';
-import {
-  addHidden,
-  addImage,
-  addNotify,
-  addSound,
-  createPlans,
-  createSets,
-  createSettings,
-  createWorkouts,
-  getDb,
-} from './db';
+import {getDb} from './db';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
 import SettingsPage from './SettingsPage';

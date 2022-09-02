@@ -2,8 +2,8 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {Divider, List, Menu, Text} from 'react-native-paper';
-import {DatabaseContext} from './Routes';
 import {HomePageParams} from './HomePage';
+import {DatabaseContext} from './Routes';
 import Set from './set';
 
 export default function SetItem({

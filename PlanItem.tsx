@@ -2,9 +2,9 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {List, Menu} from 'react-native-paper';
-import {DatabaseContext} from './Routes';
 import {Plan} from './plan';
 import {PlanPageParams} from './PlanPage';
+import {DatabaseContext} from './Routes';
 
 export default function PlanItem({
   item,

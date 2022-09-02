@@ -6,8 +6,8 @@ import {
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {DatabaseContext} from './Routes';
 import MassiveFab from './MassiveFab';
+import {DatabaseContext} from './Routes';
 import SetList from './SetList';
 import Workout from './workout';
 import WorkoutItem from './WorkoutItem';

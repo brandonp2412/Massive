@@ -8,11 +8,11 @@ import {
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, IconButton} from 'react-native-paper';
-import {DatabaseContext} from './Routes';
+import {DrawerParamList} from './App';
 import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './PlanPage';
+import {DatabaseContext} from './Routes';
 import {DAYS} from './time';
-import {DrawerParamList} from './App';
 
 export default function EditPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>();
