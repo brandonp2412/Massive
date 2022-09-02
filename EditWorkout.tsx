@@ -89,7 +89,7 @@ export default function EditWorkout() {
             onChangeText={setName}
           />
           <View style={{flexDirection: 'row', paddingBottom: 10}}>
-            {uri && <Image source={{uri}} style={{height: 50, width: 50}} />}
+            {uri && <Image source={{uri}} style={{height: 75, width: 75}} />}
             <Button onPress={changeImage} icon="image">
               Image
             </Button>
