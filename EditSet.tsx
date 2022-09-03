@@ -48,8 +48,8 @@ export default function EditSet() {
     async (set: Set) => {
       console.log(`${EditSet.name}.update`, set);
       await db.executeSql(
-        `UPDATE sets SET name = ?, reps = ?, weight = ?, created = ?, unit = ? WHERE id = ?`,
-        [set.name, set.reps, set.weight, set.created, set.unit, set.id],
+        `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
+        [set.name, set.reps, set.weight, set.unit, set.id],
       );
       navigation.goBack();
     },
