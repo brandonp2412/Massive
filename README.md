@@ -39,7 +39,14 @@ cd android
 ./gradlew assembleRelease
 ```
 
-The apk file can be found at `./app/build/outputs/apk/release/app-release.apk`
+The apk file can be found at `android/app/build/outputs/apk/release/app-*-release.apk`
+The APKs are separated by architecture, for example we have:
+- `app-arm64-v8a-release.apk`
+- `app-armeabi-v7a-release.apk`
+- `app-x86_64-release.apk`
+- `app-x86-release.apk`
+
+Your phone is probably `app-arm64-v8a-release.apk`.
 
 # Running in Development
 
