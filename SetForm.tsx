@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import {ScrollView} from 'react-native';
 import {Button, Text} from 'react-native-paper';
 import MassiveInput from './MassiveInput';
 import {DatabaseContext} from './Routes';
@@ -19,11 +19,6 @@ export default function SetForm({
   const [weight, setWeight] = useState(set.weight.toString());
   const [unit, setUnit] = useState(set.unit);
   const [uri, setUri] = useState(set.image);
-  const [year, setYear] = useState('');
-  const [month, setMonth] = useState('');
-  const [day, setDay] = useState('');
-  const [hour, setHour] = useState('');
-  const [minute, setMinute] = useState('');
   const [selection, setSelection] = useState({
     start: 0,
     end: set.reps.toString().length,
@@ -31,17 +26,6 @@ export default function SetForm({
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
   const db = useContext(DatabaseContext);
-
-  useEffect(() => {
-    if (!set.created) return;
-    const matches = set.created.match(/\d+/g);
-    if (!matches) return;
-    setYear(matches[0]);
-    setMonth(matches[1]);
-    setDay(matches[2]);
-    setHour(matches[3]);
-    setMinute(matches[4]);
-  }, [set.created]);
 
   useEffect(() => {
     console.log('SetForm.useEffect:', {uri, name: set.name});
@@ -56,7 +40,6 @@ export default function SetForm({
     save({
       name,
       reps: Number(reps),
-      created: `${year}-${month}-${day}T${hour}:${minute}`,
       weight: Number(weight),
       id: set.id,
       unit,
@@ -101,45 +84,6 @@ export default function SetForm({
           onChangeText={setUnit}
           onSubmitEditing={handleSubmit}
         />
-        {set.created && (
-          <View
-            style={{
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-            }}>
-            <MassiveInput
-              label="Year"
-              value={year}
-              onChangeText={setYear}
-              keyboardType="numeric"
-            />
-            <MassiveInput
-              label="Month"
-              value={month}
-              onChangeText={setMonth}
-              keyboardType="numeric"
-            />
-            <MassiveInput
-              label="Day"
-              value={day}
-              onChangeText={setDay}
-              keyboardType="numeric"
-            />
-            <MassiveInput
-              label="Hour"
-              value={hour}
-              onChangeText={setHour}
-              keyboardType="numeric"
-            />
-            <MassiveInput
-              label="Minute"
-              value={minute}
-              onChangeText={setMinute}
-              keyboardType="numeric"
-            />
-          </View>
-        )}
         <Text style={{marginBottom: 10}}>
           {workouts?.map((workout, index) => (
             <React.Fragment key={workout}>
