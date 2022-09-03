@@ -1,6 +1,7 @@
 # Massive
 
 Massive tracks your reps and sets at the gym. No internet connectivity or high spec device is required.
+<br />
 <img src="https://img.shields.io/f-droid/v/com.massive.svg?logo=F-Droid" />
 
 ## Features
