@@ -117,7 +117,7 @@ export default function SetList() {
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
     let workout = todaysWorkouts[0];
     console.log(`${SetList.name}.predict:`, {todaysSets, todaysWorkouts});
-    if (todaysWorkouts.includes(todaysSets[0].name) && todaysSets.length > 0) {
+    if (todaysWorkouts.includes(todaysSets[0]?.name) && todaysSets.length > 0) {
       const count = todaysSets.filter(
         s => s.name === todaysSets[0].name,
       ).length;
