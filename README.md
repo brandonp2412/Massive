@@ -15,6 +15,7 @@ Massive tracks your reps and sets at the gym. No internet connectivity or high s
 <a href="https://f-droid.org/en/packages/com.massive">
   <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="75">
 </a>
+<img src="https://img.shields.io/f-droid/v/com.massive.svg?logo=F-Droid" />
 
 # Screenshots
 
