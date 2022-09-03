@@ -62,7 +62,7 @@ Then start the metro server:
 yarn start
 ```
 
-Then run the `android` script:
+Then (in a separate terminal) run the `android` script:
 
 ```
 yarn android
