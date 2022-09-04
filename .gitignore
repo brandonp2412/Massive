@@ -62,7 +62,6 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 
-deploy.sh
 README.pdf
 build
 
