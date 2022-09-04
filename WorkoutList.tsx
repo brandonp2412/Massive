@@ -19,7 +19,6 @@ export default function WorkoutList() {
   const [workouts, setWorkouts] = useState<Workout[]>();
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
   const [end, setEnd] = useState(false);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
@@ -33,11 +32,6 @@ export default function WorkoutList() {
     setOffset(0);
     setEnd(false);
   }, [search]);
-
-  const refreshLoader = useCallback(async () => {
-    setRefreshing(true);
-    refresh().finally(() => setRefreshing(false));
-  }, [setRefreshing, refresh]);
 
   useEffect(() => {
     refresh();
@@ -58,7 +52,6 @@ export default function WorkoutList() {
 
   const next = useCallback(async () => {
     if (end) return;
-    setRefreshing(true);
     const newOffset = offset + limit;
     console.log(`${SetList.name}.next:`, {
       offset,
@@ -70,7 +63,7 @@ export default function WorkoutList() {
       search: `%${search}%`,
       limit,
       offset: newOffset,
-    }).finally(() => setRefreshing(false));
+    });
     if (newWorkouts.length === 0) return setEnd(true);
     if (!workouts) return;
     setWorkouts([...workouts, ...newWorkouts]);
@@ -99,8 +92,6 @@ export default function WorkoutList() {
         renderItem={renderItem}
         keyExtractor={w => w.name}
         onEndReached={next}
-        refreshing={refreshing}
-        onRefresh={refreshLoader}
       />
       <MassiveFab onPress={onAdd} />
     </View>

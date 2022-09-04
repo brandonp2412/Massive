@@ -28,7 +28,6 @@ export default function SetList() {
   const [workouts, setWorkouts] = useState<string[]>([]);
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
   const [end, setEnd] = useState(false);
   const [dates, setDates] = useState(false);
   const [images, setImages] = useState(true);
@@ -41,11 +40,6 @@ export default function SetList() {
     setOffset(0);
     setEnd(false);
   }, [search]);
-
-  const refreshLoader = useCallback(async () => {
-    setRefreshing(true);
-    refresh().finally(() => setRefreshing(false));
-  }, [setRefreshing, refresh]);
 
   useEffect(() => {
     refresh();
@@ -105,7 +99,6 @@ export default function SetList() {
 
   const next = useCallback(async () => {
     if (end) return;
-    setRefreshing(true);
     const newOffset = offset + limit;
     console.log(`${SetList.name}.next:`, {
       offset,
@@ -147,8 +140,6 @@ export default function SetList() {
         renderItem={renderItem}
         keyExtractor={s => s.id!.toString()}
         onEndReached={next}
-        refreshing={refreshing}
-        onRefresh={refreshLoader}
       />
       <MassiveFab onPress={onAdd} />
     </View>

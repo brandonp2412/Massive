@@ -13,7 +13,6 @@ import Set from './set';
 export default function BestList() {
   const [bests, setBests] = useState<Set[]>([]);
   const [search, setSearch] = useState('');
-  const [refreshing, setRefresing] = useState(false);
   const navigation = useNavigation<NavigationProp<BestPageParams>>();
 
   const refresh = useCallback(async () => {
@@ -56,12 +55,6 @@ export default function BestList() {
             description="Once sets have been added, this will highlight your personal bests."
           />
         }
-        refreshing={refreshing}
-        onRefresh={async () => {
-          setRefresing(true);
-          await refresh();
-          setRefresing(false);
-        }}
         renderItem={renderItem}
         data={bests}
       />

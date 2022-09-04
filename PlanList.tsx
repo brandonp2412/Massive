@@ -16,7 +16,6 @@ import {PlanPageParams} from './PlanPage';
 export default function PlanList() {
   const [search, setSearch] = useState('');
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [refreshing, setRefresing] = useState(false);
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const refresh = useCallback(async () => {
@@ -51,11 +50,6 @@ export default function PlanList() {
         data={plans}
         renderItem={renderItem}
         keyExtractor={set => set.id?.toString() || ''}
-        refreshing={refreshing}
-        onRefresh={() => {
-          setRefresing(true);
-          refresh().finally(() => setRefresing(false));
-        }}
         ListEmptyComponent={
           <List.Item
             title="No plans yet"
