@@ -3,11 +3,11 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
+import {db} from './db';
 import MassiveFab from './MassiveFab';
-import {DatabaseContext} from './Routes';
 import SetList from './SetList';
 import Workout from './workout';
 import WorkoutItem from './WorkoutItem';
@@ -21,7 +21,6 @@ export default function WorkoutList() {
   const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [end, setEnd] = useState(false);
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
   const select = `
@@ -39,7 +38,7 @@ export default function WorkoutList() {
     setWorkouts(result.rows.raw());
     setOffset(0);
     setEnd(false);
-  }, [search, db, select]);
+  }, [search, select]);
 
   const refreshLoader = useCallback(async () => {
     setRefreshing(true);
@@ -81,7 +80,7 @@ export default function WorkoutList() {
     setWorkouts([...workouts, ...result.rows.raw()]);
     if (result.rows.length < limit) return setEnd(true);
     setOffset(newOffset);
-  }, [search, end, offset, workouts, db, select]);
+  }, [search, end, offset, workouts, select]);
 
   const onAdd = useCallback(async () => {
     navigation.navigate('EditWorkout', {

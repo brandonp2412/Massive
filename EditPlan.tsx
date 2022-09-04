@@ -5,13 +5,13 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, IconButton} from 'react-native-paper';
 import {DrawerParamList} from './App';
+import {db} from './db';
 import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './PlanPage';
-import {DatabaseContext} from './Routes';
 import {DAYS} from './time';
 
 export default function EditPlan() {
@@ -21,7 +21,6 @@ export default function EditPlan() {
     params.plan.workouts.split(','),
   );
   const [names, setNames] = useState<string[]>([]);
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   useFocusEffect(
@@ -45,7 +44,7 @@ export default function EditPlan() {
       setNames(namesResult.rows.raw().map(({name}) => name));
     };
     refresh();
-  }, [db]);
+  }, []);
 
   const save = useCallback(async () => {
     console.log(`${EditPlan.name}.save`, {days, workouts, params});
@@ -63,7 +62,7 @@ export default function EditPlan() {
         [newDays, newWorkouts, params.plan.id],
       );
     navigation.goBack();
-  }, [days, workouts, db, params, navigation]);
+  }, [days, workouts, params, navigation]);
 
   const toggleWorkout = useCallback(
     (on: boolean, name: string) => {

@@ -4,13 +4,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FileSystem} from 'react-native-file-access';
 import {IconButton} from 'react-native-paper';
 import RNPickerSelect from 'react-native-picker-select';
@@ -18,7 +12,7 @@ import Share from 'react-native-share';
 import ViewShot from 'react-native-view-shot';
 import {BestPageParams} from './BestPage';
 import Chart from './Chart';
-import {DatabaseContext} from './Routes';
+import {db} from './db';
 import Set from './set';
 import {formatMonth} from './time';
 
@@ -46,7 +40,6 @@ export default function ViewBest() {
   const [volumes, setVolumes] = useState<Volume[]>([]);
   const [metric, setMetric] = useState(Metrics.Weight);
   const [period, setPeriod] = useState(Periods.Monthly);
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation();
   const viewShot = useRef<ViewShot>(null);
 
@@ -97,7 +90,7 @@ export default function ViewBest() {
     ]);
     if (result.rows.length === 0) return;
     setWeights(result.rows.raw());
-  }, [params.best.name, db, period]);
+  }, [params.best.name, period]);
 
   const refreshVolume = useCallback(async () => {
     const select = `
@@ -117,13 +110,13 @@ export default function ViewBest() {
     ]);
     if (result.rows.length === 0) return;
     setVolumes(result.rows.raw());
-  }, [db, params.best.name, period]);
+  }, [params.best.name, period]);
 
   useEffect(() => {
     if (metric === Metrics.Weight) refreshWeight();
     else if (metric === Metrics.Volume) refreshVolume();
     console.log(`${ViewBest.name}.useEffect`, {metric, period});
-  }, [params.best.name, db, metric, period, refreshVolume, refreshWeight]);
+  }, [params.best.name, metric, period, refreshVolume, refreshWeight]);
 
   return (
     <ViewShot style={{padding: 10}} ref={viewShot}>

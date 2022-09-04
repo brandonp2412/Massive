@@ -10,9 +10,9 @@ import DocumentPicker from 'react-native-document-picker';
 import {Button, Searchbar, Text} from 'react-native-paper';
 import {SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
+import {db} from './db';
 import MassiveInput from './MassiveInput';
 import MassiveSwitch from './MassiveSwitch';
-import {DatabaseContext} from './Routes';
 import Settings from './settings';
 
 export default function SettingsPage() {
@@ -28,7 +28,6 @@ export default function SettingsPage() {
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
-  const db = useContext(DatabaseContext);
   const {toast} = useContext(SnackbarContext);
 
   const refresh = useCallback(async () => {
@@ -45,7 +44,7 @@ export default function SettingsPage() {
     setNotify(!!settings.notify);
     setImages(!!settings.images);
     NativeModules.AlarmModule.ignoringBattery(setIgnoring);
-  }, [db]);
+  }, []);
 
   useEffect(() => {
     refresh();
@@ -75,7 +74,6 @@ export default function SettingsPage() {
     predict,
     sound,
     notify,
-    db,
     images,
   ]);
 

@@ -1,4 +1,8 @@
-import {enablePromise, openDatabase} from 'react-native-sqlite-storage';
+import {
+  enablePromise,
+  openDatabase,
+  SQLiteDatabase,
+} from 'react-native-sqlite-storage';
 
 enablePromise(true);
 
@@ -67,8 +71,10 @@ const insertSettings = `
   INSERT INTO settings(minutes) VALUES(3);
 `;
 
-export const getDb = async () => {
-  const db = await openDatabase({name: 'massive.db'});
+export let db: SQLiteDatabase;
+
+export const migrations = async () => {
+  db = await openDatabase({name: 'massive.db'});
   await db.executeSql(createPlans);
   await db.executeSql(createSets);
   await db.executeSql(createSettings);

@@ -1,9 +1,9 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
-import {DatabaseContext} from './Routes';
+import {db} from './db';
 import Workout from './workout';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
@@ -18,7 +18,6 @@ export default function WorkoutItem({
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const [showRemove, setShowRemove] = useState('');
   const [uri, setUri] = useState('');
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
   useEffect(() => {
@@ -28,13 +27,13 @@ export default function WorkoutItem({
       setUri(result.rows.item(0)?.image);
       console.log(WorkoutItem.name, item.name, result.rows.item(0)?.image);
     });
-  }, [db, item.name]);
+  }, [item.name]);
 
   const remove = useCallback(async () => {
     await db.executeSql(`DELETE FROM sets WHERE name = ?`, [item.name]);
     setShowMenu(false);
     onRemoved();
-  }, [setShowMenu, db, onRemoved, item.name]);
+  }, [setShowMenu, onRemoved, item.name]);
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {

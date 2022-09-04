@@ -1,10 +1,10 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {List, Menu} from 'react-native-paper';
+import {db} from './db';
 import {Plan} from './plan';
 import {PlanPageParams} from './PlanPage';
-import {DatabaseContext} from './Routes';
 
 export default function PlanItem({
   item,
@@ -15,14 +15,13 @@ export default function PlanItem({
 }) {
   const [show, setShow] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const remove = useCallback(async () => {
     await db.executeSql(`DELETE FROM plans WHERE id = ?`, [item.id]);
     setShow(false);
     onRemove();
-  }, [db, setShow, item.id, onRemove]);
+  }, [setShow, item.id, onRemove]);
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {

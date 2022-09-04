@@ -3,21 +3,20 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
+import {db} from './db';
 import DrawerMenu from './DrawerMenu';
 import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
 import PlanItem from './PlanItem';
 import {PlanPageParams} from './PlanPage';
-import {DatabaseContext} from './Routes';
 
 export default function PlanList() {
   const [search, setSearch] = useState('');
   const [plans, setPlans] = useState<Plan[]>([]);
   const [refreshing, setRefresing] = useState(false);
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const refresh = useCallback(async () => {
@@ -29,7 +28,7 @@ export default function PlanList() {
       db.executeSql(selectPlans, [`%${s}%`, `%${s}%`]);
     const [plansResult] = await getPlans({s: search});
     setPlans(plansResult.rows.raw());
-  }, [search, db]);
+  }, [search]);
 
   useFocusEffect(
     useCallback(() => {

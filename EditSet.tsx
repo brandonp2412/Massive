@@ -8,15 +8,14 @@ import React, {useCallback, useContext} from 'react';
 import {NativeModules, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {SnackbarContext} from './App';
+import {db} from './db';
 import {HomePageParams} from './HomePage';
-import {DatabaseContext} from './Routes';
 import Set from './set';
 import SetForm from './SetForm';
 import Settings from './settings';
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation();
   const {toast} = useContext(SnackbarContext);
 
@@ -42,7 +41,7 @@ export default function EditSet() {
       !!settings.vibrate,
       settings.sound,
     );
-  }, [db]);
+  }, []);
 
   const update = useCallback(
     async (set: Set) => {
@@ -53,7 +52,7 @@ export default function EditSet() {
       );
       navigation.goBack();
     },
-    [db, navigation],
+    [navigation],
   );
 
   const add = useCallback(
@@ -75,7 +74,7 @@ export default function EditSet() {
         toast("Great work King, that's a new record!", 3000);
       navigation.goBack();
     },
-    [db, navigation, startTimer, params.set, toast],
+    [navigation, startTimer, params.set, toast],
   );
 
   const save = useCallback(

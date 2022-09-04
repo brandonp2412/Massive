@@ -1,8 +1,8 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ScrollView} from 'react-native';
 import {Button, Text} from 'react-native-paper';
+import {db} from './db';
 import MassiveInput from './MassiveInput';
-import {DatabaseContext} from './Routes';
 import Set from './set';
 
 export default function SetForm({
@@ -25,7 +25,6 @@ export default function SetForm({
   });
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
-  const db = useContext(DatabaseContext);
 
   useEffect(() => {
     console.log('SetForm.useEffect:', {uri, name: set.name});
@@ -33,7 +32,7 @@ export default function SetForm({
       db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
         set.name,
       ]).then(([result]) => setUri(result.rows.item(0)?.image));
-  }, [uri, db, set.name]);
+  }, [uri, set.name]);
 
   const handleSubmit = () => {
     if (!name) return;

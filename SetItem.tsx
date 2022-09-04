@@ -1,9 +1,9 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {Divider, List, Menu, Text} from 'react-native-paper';
+import {db} from './db';
 import {HomePageParams} from './HomePage';
-import {DatabaseContext} from './Routes';
 import Set from './set';
 
 export default function SetItem({
@@ -23,14 +23,13 @@ export default function SetItem({
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const remove = useCallback(async () => {
     await db.executeSql(`DELETE FROM sets WHERE id = ?`, [item.id]);
     setShowMenu(false);
     onRemove();
-  }, [setShowMenu, db, onRemove, item.id]);
+  }, [setShowMenu, onRemove, item.id]);
 
   const copy = useCallback(() => {
     const set: Set = {...item};

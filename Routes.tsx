@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import {Drawer, DrawerParamList} from './App';
 import BestPage from './BestPage';
-import {getDb} from './db';
+import {migrations} from './db';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
 import SettingsPage from './SettingsPage';
@@ -16,17 +15,15 @@ interface Route {
   icon: string;
 }
 
-export const DatabaseContext = React.createContext<SQLiteDatabase>(null as any);
-
 export default function Routes() {
-  const [db, setDb] = useState<SQLiteDatabase | null>(null);
+  const [migrated, setMigrated] = useState(false);
   const dark = useColorScheme() === 'dark';
 
   useEffect(() => {
-    getDb().then(setDb);
+    migrations().then(() => setMigrated(true));
   }, []);
 
-  if (!db) return null;
+  if (!migrated) return null;
 
   const routes: Route[] = [
     {name: 'Home', component: HomePage, icon: 'home'},
@@ -37,27 +34,25 @@ export default function Routes() {
   ];
 
   return (
-    <DatabaseContext.Provider value={db}>
-      <Drawer.Navigator
-        screenOptions={{
-          headerTintColor: dark ? 'white' : 'black',
-          swipeEdgeWidth: 1000,
-        }}>
-        {routes.map(route => (
-          <Drawer.Screen
-            key={route.name}
-            name={route.name}
-            component={route.component}
-            options={{
-              drawerIcon: ({focused}) => (
-                <IconButton
-                  icon={focused ? route.icon : `${route.icon}-outline`}
-                />
-              ),
-            }}
-          />
-        ))}
-      </Drawer.Navigator>
-    </DatabaseContext.Provider>
+    <Drawer.Navigator
+      screenOptions={{
+        headerTintColor: dark ? 'white' : 'black',
+        swipeEdgeWidth: 1000,
+      }}>
+      {routes.map(route => (
+        <Drawer.Screen
+          key={route.name}
+          name={route.name}
+          component={route.component}
+          options={{
+            drawerIcon: ({focused}) => (
+              <IconButton
+                icon={focused ? route.icon : `${route.icon}-outline`}
+              />
+            ),
+          }}
+        />
+      ))}
+    </Drawer.Navigator>
   );
 }

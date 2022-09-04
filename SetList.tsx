@@ -3,14 +3,14 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
+import {db} from './db';
 import DrawerMenu from './DrawerMenu';
 import {HomePageParams} from './HomePage';
 import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
-import {DatabaseContext} from './Routes';
 import Set from './set';
 import SetItem from './SetItem';
 import Settings from './settings';
@@ -35,7 +35,6 @@ export default function SetList() {
   const [end, setEnd] = useState(false);
   const [dates, setDates] = useState(false);
   const [images, setImages] = useState(true);
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const selectSets = `
@@ -52,7 +51,7 @@ export default function SetList() {
     setSets(result.rows.raw());
     setOffset(0);
     setEnd(false);
-  }, [search, db, selectSets]);
+  }, [search, selectSets]);
 
   const refreshLoader = useCallback(async () => {
     setRefreshing(true);

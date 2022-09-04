@@ -3,18 +3,17 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
 import Best from './best';
 import {BestPageParams} from './BestPage';
-import {DatabaseContext} from './Routes';
+import {db} from './db';
 
 export default function BestList() {
   const [bests, setBests] = useState<Best[]>([]);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation<NavigationProp<BestPageParams>>();
 
   const refresh = useCallback(async () => {
@@ -41,7 +40,7 @@ export default function BestList() {
       newBest = newBest.concat(reps.rows.raw());
     }
     setBests(newBest);
-  }, [search, db]);
+  }, [search]);
 
   useFocusEffect(
     useCallback(() => {

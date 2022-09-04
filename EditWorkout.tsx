@@ -4,20 +4,19 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Image, ScrollView, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, IconButton} from 'react-native-paper';
 import {set} from 'react-native-reanimated';
+import {db} from './db';
 import MassiveInput from './MassiveInput';
-import {DatabaseContext} from './Routes';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
   const [name, setName] = useState('');
   const [uri, setUri] = useState('');
   const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
-  const db = useContext(DatabaseContext);
   const navigation = useNavigation();
 
   useFocusEffect(
@@ -32,7 +31,7 @@ export default function EditWorkout() {
       db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
         params.value.name,
       ]).then(([result]) => setUri(result.rows.item(0)?.image));
-    }, [navigation, params.value.name, db]),
+    }, [navigation, params.value.name]),
   );
 
   const update = useCallback(async () => {
@@ -54,7 +53,7 @@ export default function EditWorkout() {
         params.value.name,
       ]);
     navigation.goBack();
-  }, [db, navigation, params.value.name, name, uri]);
+  }, [navigation, params.value.name, name, uri]);
 
   const add = useCallback(async () => {
     const insert = `
@@ -63,7 +62,7 @@ export default function EditWorkout() {
       `;
     await db.executeSql(insert, [name]);
     navigation.goBack();
-  }, [db, navigation, name]);
+  }, [navigation, name]);
 
   const save = useCallback(async () => {
     if (params.value.name) return update();
