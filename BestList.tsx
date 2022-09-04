@@ -17,9 +17,12 @@ export default function BestList() {
 
   const refresh = useCallback(async () => {
     const weights = await getBestWeights(search);
+    console.log(BestList.name, {weights});
     let newBest: Set[] = [];
-    for (const set of weights)
-      newBest.push(...(await getBestReps(search, set.weight)));
+    for (const set of weights) {
+      const reps = await getBestReps(set.name, set.weight);
+      newBest.push(...reps);
+    }
     setBests(newBest);
   }, [search]);
 
