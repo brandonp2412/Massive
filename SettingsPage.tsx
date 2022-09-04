@@ -10,9 +10,9 @@ import DocumentPicker from 'react-native-document-picker';
 import {Button, Searchbar, Text} from 'react-native-paper';
 import {SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
-import {getSettings, setSettings} from './db';
 import MassiveInput from './MassiveInput';
 import MassiveSwitch from './MassiveSwitch';
+import {getSettings, setSettings} from './settings.service';
 
 export default function SettingsPage() {
   const [vibrate, setVibrate] = useState(true);

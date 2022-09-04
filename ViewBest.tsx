@@ -10,9 +10,9 @@ import {IconButton} from 'react-native-paper';
 import RNPickerSelect from 'react-native-picker-select';
 import Share from 'react-native-share';
 import ViewShot from 'react-native-view-shot';
+import {getVolumes, getWeightsBy} from './best.service';
 import {BestPageParams} from './BestPage';
 import Chart from './Chart';
-import {getVolumes, getWeights} from './db';
 import {Metrics} from './metrics';
 import {Periods} from './periods';
 import Set from './set';
@@ -59,7 +59,7 @@ export default function ViewBest() {
 
   useEffect(() => {
     if (metric === Metrics.Weight)
-      getWeights(params.best.name, period).then(setWeights);
+      getWeightsBy(params.best.name, period).then(setWeights);
     else if (metric === Metrics.Volume)
       getVolumes(params.best.name, period).then(setVolumes);
 

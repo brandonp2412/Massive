@@ -2,8 +2,8 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {List, Menu} from 'react-native-paper';
-import {deletePlan} from './db';
 import {Plan} from './plan';
+import {deletePlan} from './plan.service';
 import {PlanPageParams} from './PlanPage';
 
 export default function PlanItem({

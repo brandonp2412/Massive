@@ -6,8 +6,8 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {getWorkouts} from './db';
 import MassiveFab from './MassiveFab';
+import {getWorkouts} from './set.service';
 import SetList from './SetList';
 import Workout from './workout';
 import WorkoutItem from './WorkoutItem';

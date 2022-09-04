@@ -8,10 +8,11 @@ import React, {useCallback, useContext} from 'react';
 import {NativeModules, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {SnackbarContext} from './App';
-import {addSet, getSettings, setSet} from './db';
 import {HomePageParams} from './HomePage';
 import Set from './set';
+import {addSet, setSet} from './set.service';
 import SetForm from './SetForm';
+import {getSettings} from './settings.service';
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();

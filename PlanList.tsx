@@ -6,10 +6,10 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {getPlans} from './db';
 import DrawerMenu from './DrawerMenu';
 import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
+import {getPlans} from './plan.service';
 import PlanItem from './PlanItem';
 import {PlanPageParams} from './PlanPage';
 

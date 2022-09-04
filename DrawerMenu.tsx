@@ -5,15 +5,9 @@ import {FileSystem} from 'react-native-file-access';
 import {Divider, IconButton, Menu} from 'react-native-paper';
 import {DrawerParamList, SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
-import {
-  addPlans,
-  addSets,
-  deletePlans,
-  deleteSets,
-  getAllPlans,
-  getAllSets,
-} from './db';
 import {Plan} from './plan';
+import {addPlans, deletePlans, getAllPlans} from './plan.service';
+import {addSets, deleteSets, getAllSets} from './set.service';
 import {write} from './write';
 
 const setFields = 'id,name,reps,weight,created,unit,hidden';

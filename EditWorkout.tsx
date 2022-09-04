@@ -9,9 +9,10 @@ import {Image, ScrollView, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, IconButton} from 'react-native-paper';
 import {set} from 'react-native-reanimated';
-import {addSet, getSets, setSetImage, setSetName, setWorkouts} from './db';
 import MassiveInput from './MassiveInput';
+import {setWorkouts} from './plan.service';
 import Set from './set';
+import {addSet, getSets, setSetImage, setSetName} from './set.service';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {

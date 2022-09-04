@@ -6,19 +6,15 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {
-  defaultSet,
-  getBest,
-  getSets,
-  getSettings,
-  getTodaysPlan,
-  getTodaysSets,
-} from './db';
+import {getBestSet} from './best.service';
 import DrawerMenu from './DrawerMenu';
 import {HomePageParams} from './HomePage';
 import MassiveFab from './MassiveFab';
+import {getTodaysPlan} from './plan.service';
 import Set from './set';
+import {defaultSet, getSets, getTodaysSets} from './set.service';
 import SetItem from './SetItem';
+import {getSettings} from './settings.service';
 
 const limit = 15;
 
@@ -65,7 +61,7 @@ export default function SetList() {
           todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
     }
     console.log(`${SetList.name}.predict:`, {workout});
-    const best = await getBest(workout);
+    const best = await getBestSet(workout);
     console.log(`${SetList.name}.predict:`, {best});
     setSet({...best});
     setWorkouts(todaysWorkouts);

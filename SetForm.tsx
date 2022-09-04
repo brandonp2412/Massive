@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ScrollView} from 'react-native';
 import {Button, Text} from 'react-native-paper';
-import {getSets} from './db';
 import MassiveInput from './MassiveInput';
 import Set from './set';
+import {getSets} from './set.service';
 
 export default function SetForm({
   save,

@@ -6,8 +6,8 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
+import {getBestReps, getBestWeights} from './best.service';
 import {BestPageParams} from './BestPage';
-import {getBestReps, getBestWeights} from './db';
 import Set from './set';
 
 export default function BestList() {

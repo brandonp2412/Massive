@@ -3,7 +3,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
-import {deleteSetsBy, getSets} from './db';
+import {deleteSetsBy, getSets} from './set.service';
 import Workout from './workout';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
