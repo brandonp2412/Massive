@@ -72,3 +72,10 @@ yarn android
 
 You can find the metadata yaml file in the fdroiddata repository: 
 https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/com.massive.yml
+
+# Relevant Documentation
+
+- Android https://developer.android.com/docs
+- TypeScript https://www.typescriptlang.org/docs/
+- JavaScript https://developer.mozilla.org/en-US/docs/Web/JavaScript
+- SQLite https://sqlite.org/docs.html
