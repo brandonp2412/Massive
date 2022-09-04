@@ -11,7 +11,7 @@ Massive tracks your reps and sets at the gym. No internet connectivity or high s
 - Progress graphs
 - Day planner
 
-<div>
+<div style="display: flex; align-items: center;">
   <a href="https://play.google.com/store/apps/details?id=com.massive">
     <img height="75" alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"/>
   </a>
