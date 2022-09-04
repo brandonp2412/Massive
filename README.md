@@ -3,7 +3,6 @@
 Massive tracks your reps and sets at the gym. No internet connectivity or high spec device is required.
 <br />
 <br />
-<img src="https://img.shields.io/f-droid/v/com.massive.svg?logo=F-Droid" />
 
 ## Features
 
@@ -12,12 +11,15 @@ Massive tracks your reps and sets at the gym. No internet connectivity or high s
 - Progress graphs
 - Day planner
 
-<a href="https://play.google.com/store/apps/details?id=com.massive&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
-  <img height="75" alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"/>
-</a>
-<a href="https://f-droid.org/en/packages/com.massive">
-  <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="75">
-</a>
+<div>
+  <a href="https://play.google.com/store/apps/details?id=com.massive">
+    <img height="75" alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"/>
+  </a>
+  <a href="https://f-droid.org/en/packages/com.massive">
+    <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="75">
+  </a>
+  <img src="https://img.shields.io/f-droid/v/com.massive.svg?logo=F-Droid" />
+</div>
 
 # Screenshots
 
