@@ -9,13 +9,14 @@ import {Image, ScrollView, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, IconButton} from 'react-native-paper';
 import {set} from 'react-native-reanimated';
-import {db} from './db';
+import {addSet, getSets, setSetImage, setSetName, setWorkouts} from './db';
 import MassiveInput from './MassiveInput';
+import Set from './set';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
   const [name, setName] = useState('');
-  const [uri, setUri] = useState('');
+  const [uri, setUri] = useState<string>();
   const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
   const navigation = useNavigation();
 
@@ -28,39 +29,24 @@ export default function EditWorkout() {
         headerRight: null,
         title: params.value.name ? params.value.name : 'New workout',
       });
-      db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
-        params.value.name,
-      ]).then(([result]) => setUri(result.rows.item(0)?.image));
+      getSets({search: params.value.name, limit: 1, offset: 0}).then(sets =>
+        setUri(sets[0]?.image),
+      );
     }, [navigation, params.value.name]),
   );
 
   const update = useCallback(async () => {
     console.log(`${EditWorkout.name}.update`, set);
     if (name) {
-      await db.executeSql(`UPDATE sets SET name = ? WHERE name = ?`, [
-        name,
-        params.value.name,
-      ]);
-      await db.executeSql(
-        `UPDATE plans SET workouts = REPLACE(workouts, ?, ?) 
-      WHERE workouts LIKE ?`,
-        [params.value.name, name, `%${params.value.name}%`],
-      );
+      await setSetName(params.value.name, name);
+      await setWorkouts(params.value.name, name);
     }
-    if (uri)
-      await db.executeSql(`UPDATE sets SET image = ? WHERE name = ?`, [
-        uri,
-        params.value.name,
-      ]);
+    if (uri) await setSetImage(params.value.name, uri);
     navigation.goBack();
   }, [navigation, params.value.name, name, uri]);
 
   const add = useCallback(async () => {
-    const insert = `
-        INSERT INTO sets(name, reps, weight, created, unit, hidden) 
-        VALUES (?,0,0,strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime'),'kg',true)
-      `;
-    await db.executeSql(insert, [name]);
+    await addSet({name, reps: 0, weight: 0, hidden: true} as Set);
     navigation.goBack();
   }, [navigation, name]);
 

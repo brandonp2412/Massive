@@ -6,24 +6,21 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {db} from './db';
+import {
+  defaultSet,
+  getBest,
+  getSets,
+  getSettings,
+  getTodaysPlan,
+  getTodaysSets,
+} from './db';
 import DrawerMenu from './DrawerMenu';
 import {HomePageParams} from './HomePage';
 import MassiveFab from './MassiveFab';
-import {Plan} from './plan';
 import Set from './set';
 import SetItem from './SetItem';
-import Settings from './settings';
-import {DAYS} from './time';
 
 const limit = 15;
-const defaultSet = {
-  name: '',
-  id: 0,
-  reps: 10,
-  weight: 20,
-  unit: 'kg',
-};
 
 export default function SetList() {
   const [sets, setSets] = useState<Set[]>();
@@ -37,21 +34,13 @@ export default function SetList() {
   const [images, setImages] = useState(true);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
-  const selectSets = `
-    SELECT * from sets 
-    WHERE name LIKE ? AND NOT hidden
-    ORDER BY created DESC 
-    LIMIT ? OFFSET ?
-  `;
-
   const refresh = useCallback(async () => {
-    const [result] = await db.executeSql(selectSets, [`%${search}%`, limit, 0]);
-    if (!result) return setSets([]);
-    console.log(`${SetList.name}.refresh:`, {search, limit});
-    setSets(result.rows.raw());
+    const newSets = await getSets({search: `%${search}%`, limit, offset: 0});
+    if (newSets.length === 0) return setSets([]);
+    setSets(newSets);
     setOffset(0);
     setEnd(false);
-  }, [search, selectSets]);
+  }, [search]);
 
   const refreshLoader = useCallback(async () => {
     setRefreshing(true);
@@ -62,52 +51,8 @@ export default function SetList() {
     refresh();
   }, [search, refresh]);
 
-  const getTodaysPlan = useCallback(async (): Promise<Plan[]> => {
-    const today = DAYS[new Date().getDay()];
-    const [result] = await db.executeSql(
-      `SELECT * FROM plans WHERE days LIKE ? LIMIT 1`,
-      [`%${today}%`],
-    );
-    return result.rows.raw();
-  }, [db]);
-
-  const getTodaysSets = useCallback(async (): Promise<Set[]> => {
-    const today = new Date().toISOString().split('T')[0];
-    const [result] = await db.executeSql(
-      `SELECT * FROM sets WHERE created LIKE ? ORDER BY created DESC`,
-      [`${today}%`],
-    );
-    return result.rows.raw();
-  }, [db]);
-
-  const getBest = useCallback(
-    async (query: string): Promise<Set> => {
-      const bestWeight = `
-      SELECT name, reps, unit, MAX(weight) AS weight 
-      FROM sets
-      WHERE name = ? AND NOT hidden
-      GROUP BY name;
-    `;
-      const bestReps = `
-      SELECT name, MAX(reps) as reps, unit, weight 
-      FROM sets
-      WHERE name = ? AND weight = ? AND NOT hidden
-      GROUP BY name;
-    `;
-      const [weightResult] = await db.executeSql(bestWeight, [query]);
-      if (!weightResult.rows.length) return {...defaultSet};
-      const [repsResult] = await db.executeSql(bestReps, [
-        query,
-        weightResult.rows.item(0).weight,
-      ]);
-      return repsResult.rows.item(0);
-    },
-    [db],
-  );
-
   const predict = useCallback(async () => {
-    const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
-    const settings: Settings = result.rows.item(0);
+    const settings = await getSettings();
     if (!settings.predict) return;
     const todaysPlan = await getTodaysPlan();
     console.log(`${SetList.name}.predict:`, {todaysPlan});
@@ -130,7 +75,7 @@ export default function SetList() {
     console.log(`${SetList.name}.predict:`, {best});
     setSet({...best});
     setWorkouts(todaysWorkouts);
-  }, [getTodaysSets, getTodaysPlan, getBest, db]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -139,11 +84,8 @@ export default function SetList() {
       navigation.getParent()?.setOptions({
         headerRight: () => <DrawerMenu name="Home" />,
       });
-      db.executeSql('SELECT * FROM settings LIMIT 1').then(([result]) => {
-        const settings: Settings = result.rows.item(0);
-        setImages(!!settings.images);
-      });
-    }, [refresh, predict, navigation, db]),
+      getSettings().then(settings => setImages(!!settings.images));
+    }, [refresh, predict, navigation]),
   );
 
   const renderItem = useCallback(
@@ -171,15 +113,17 @@ export default function SetList() {
       newOffset,
       search,
     });
-    const [result] = await db
-      .executeSql(selectSets, [`%${search}%`, limit, newOffset])
-      .finally(() => setRefreshing(false));
-    if (result.rows.length === 0) return setEnd(true);
+    const newSets = await getSets({
+      search: `%${search}%`,
+      limit,
+      offset: newOffset,
+    });
+    if (newSets.length === 0) return setEnd(true);
     if (!sets) return;
-    setSets([...sets, ...result.rows.raw()]);
-    if (result.rows.length < limit) return setEnd(true);
+    setSets([...sets, ...newSets]);
+    if (newSets.length < limit) return setEnd(true);
     setOffset(newOffset);
-  }, [search, end, offset, sets, db, selectSets]);
+  }, [search, end, offset, sets]);
 
   const onAdd = useCallback(async () => {
     navigation.navigate('EditSet', {

@@ -10,15 +10,14 @@ import DocumentPicker from 'react-native-document-picker';
 import {Button, Searchbar, Text} from 'react-native-paper';
 import {SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
-import {db} from './db';
+import {getSettings, setSettings} from './db';
 import MassiveInput from './MassiveInput';
 import MassiveSwitch from './MassiveSwitch';
-import Settings from './settings';
 
 export default function SettingsPage() {
   const [vibrate, setVibrate] = useState(true);
   const [minutes, setMinutes] = useState<string>('');
-  const [maxSets, setMaxSets] = useState<string>('3');
+  const [sets, setMaxSets] = useState<string>('3');
   const [seconds, setSeconds] = useState<string>('');
   const [alarm, setAlarm] = useState(false);
   const [predict, setPredict] = useState(false);
@@ -31,8 +30,7 @@ export default function SettingsPage() {
   const {toast} = useContext(SnackbarContext);
 
   const refresh = useCallback(async () => {
-    const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
-    const settings: Settings = result.rows.item(0);
+    const settings = await getSettings();
     console.log('SettingsPage.refresh:', {settings});
     setMinutes(settings.minutes.toString());
     setSeconds(settings.seconds.toString());
@@ -51,31 +49,18 @@ export default function SettingsPage() {
   }, [refresh]);
 
   useEffect(() => {
-    db.executeSql(
-      `UPDATE settings SET vibrate=?,minutes=?,sets=?,seconds=?,alarm=?,predict=?,sound=?,notify=?,images=?`,
-      [
-        vibrate,
-        minutes,
-        maxSets,
-        seconds,
-        alarm,
-        predict,
-        sound,
-        notify,
-        images,
-      ],
-    );
-  }, [
-    vibrate,
-    minutes,
-    maxSets,
-    seconds,
-    alarm,
-    predict,
-    sound,
-    notify,
-    images,
-  ]);
+    setSettings({
+      vibrate: +vibrate,
+      minutes: +minutes,
+      seconds: +seconds,
+      alarm: +alarm,
+      predict: +predict,
+      sound,
+      notify: +notify,
+      images: +images,
+      sets: +sets,
+    });
+  }, [vibrate, minutes, sets, seconds, alarm, predict, sound, notify, images]);
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
@@ -124,7 +109,7 @@ export default function SettingsPage() {
       element: (
         <MassiveInput
           label="Sets per workout"
-          value={maxSets}
+          value={sets}
           keyboardType="numeric"
           onChangeText={value => {
             setMaxSets(value);

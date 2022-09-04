@@ -8,11 +8,10 @@ import React, {useCallback, useContext} from 'react';
 import {NativeModules, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {SnackbarContext} from './App';
-import {db} from './db';
+import {addSet, getSettings, setSet} from './db';
 import {HomePageParams} from './HomePage';
 import Set from './set';
 import SetForm from './SetForm';
-import Settings from './settings';
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
@@ -32,8 +31,7 @@ export default function EditSet() {
   );
 
   const startTimer = useCallback(async () => {
-    const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
-    const settings: Settings = result.rows.item(0);
+    const settings = await getSettings();
     if (!settings.alarm) return;
     const milliseconds = settings.minutes * 60 * 1000 + settings.seconds * 1000;
     NativeModules.AlarmModule.timer(
@@ -46,10 +44,7 @@ export default function EditSet() {
   const update = useCallback(
     async (set: Set) => {
       console.log(`${EditSet.name}.update`, set);
-      await db.executeSql(
-        `UPDATE sets SET name = ?, reps = ?, weight = ?, unit = ? WHERE id = ?`,
-        [set.name, set.reps, set.weight, set.unit, set.id],
-      );
+      await setSet(set);
       navigation.goBack();
     },
     [navigation],
@@ -57,19 +52,13 @@ export default function EditSet() {
 
   const add = useCallback(
     async (set: Set) => {
-      const {name, reps, weight, unit, image} = set;
-      const insert = `
-        INSERT INTO sets(name, reps, weight, created, unit, image) 
-        VALUES (?,?,?,strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime'),?, ?)
-      `;
       startTimer();
-      await db.executeSql(insert, [name, reps, weight, unit, image]);
-      const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
-      const settings: Settings = result.rows.item(0);
+      await addSet(set);
+      const settings = await getSettings();
       if (settings.notify === 0) return navigation.goBack();
       if (
-        weight > params.set.weight ||
-        (reps > params.set.reps && weight === params.set.weight)
+        set.weight > params.set.weight ||
+        (set.reps > params.set.reps && set.weight === params.set.weight)
       )
         toast("Great work King, that's a new record!", 3000);
       navigation.goBack();

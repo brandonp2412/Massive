@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ScrollView} from 'react-native';
 import {Button, Text} from 'react-native-paper';
-import {db} from './db';
+import {getSets} from './db';
 import MassiveInput from './MassiveInput';
 import Set from './set';
 
@@ -29,9 +29,9 @@ export default function SetForm({
   useEffect(() => {
     console.log('SetForm.useEffect:', {uri, name: set.name});
     if (!uri)
-      db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
-        set.name,
-      ]).then(([result]) => setUri(result.rows.item(0)?.image));
+      getSets({search: set.name, limit: 1, offset: 0}).then(sets =>
+        setUri(sets[0]?.image),
+      );
   }, [uri, set.name]);
 
   const handleSubmit = () => {

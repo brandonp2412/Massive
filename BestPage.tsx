@@ -4,15 +4,15 @@ import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
 import {DrawerParamList} from './App';
-import Best from './best';
 import BestList from './BestList';
+import Set from './set';
 import ViewBest from './ViewBest';
 
 const Stack = createStackNavigator<BestPageParams>();
 export type BestPageParams = {
   BestList: {};
   ViewBest: {
-    best: Best;
+    best: Set;
   };
 };
 

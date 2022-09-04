@@ -6,7 +6,7 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {db} from './db';
+import {getWorkouts} from './db';
 import MassiveFab from './MassiveFab';
 import SetList from './SetList';
 import Workout from './workout';
@@ -23,22 +23,16 @@ export default function WorkoutList() {
   const [end, setEnd] = useState(false);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
-  const select = `
-    SELECT DISTINCT sets.name
-    FROM sets
-    WHERE sets.name LIKE ? 
-    ORDER BY sets.name
-    LIMIT ? OFFSET ?
-  `;
-
   const refresh = useCallback(async () => {
-    const [result] = await db.executeSql(select, [`%${search}%`, limit, 0]);
-    if (!result) return setWorkouts([]);
-    console.log(`${WorkoutList.name}.refresh:`, {search, limit});
-    setWorkouts(result.rows.raw());
+    const newWorkouts = await getWorkouts({
+      search: `%${search}%`,
+      limit,
+      offset: 0,
+    });
+    setWorkouts(newWorkouts);
     setOffset(0);
     setEnd(false);
-  }, [search, select]);
+  }, [search]);
 
   const refreshLoader = useCallback(async () => {
     setRefreshing(true);
@@ -72,15 +66,17 @@ export default function WorkoutList() {
       newOffset,
       search,
     });
-    const [result] = await db
-      .executeSql(select, [`%${search}%`, limit, newOffset])
-      .finally(() => setRefreshing(false));
-    if (result.rows.length === 0) return setEnd(true);
+    const newWorkouts = await getWorkouts({
+      search: `%${search}%`,
+      limit,
+      offset: newOffset,
+    }).finally(() => setRefreshing(false));
+    if (newWorkouts.length === 0) return setEnd(true);
     if (!workouts) return;
-    setWorkouts([...workouts, ...result.rows.raw()]);
-    if (result.rows.length < limit) return setEnd(true);
+    setWorkouts([...workouts, ...newWorkouts]);
+    if (newWorkouts.length < limit) return setEnd(true);
     setOffset(newOffset);
-  }, [search, end, offset, workouts, select]);
+  }, [search, end, offset, workouts]);
 
   const onAdd = useCallback(async () => {
     navigation.navigate('EditWorkout', {

@@ -5,9 +5,15 @@ import {FileSystem} from 'react-native-file-access';
 import {Divider, IconButton, Menu} from 'react-native-paper';
 import {DrawerParamList, SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
-import {db} from './db';
+import {
+  addPlans,
+  addSets,
+  deletePlans,
+  deleteSets,
+  getAllPlans,
+  getAllSets,
+} from './db';
 import {Plan} from './plan';
-import Set from './set';
 import {write} from './write';
 
 const setFields = 'id,name,reps,weight,created,unit,hidden';
@@ -20,9 +26,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>();
 
   const exportSets = useCallback(async () => {
-    const [result] = await db.executeSql('SELECT * FROM sets');
-    if (result.rows.length === 0) return;
-    const sets: Set[] = result.rows.raw();
+    const sets = await getAllSets();
     const data = [setFields]
       .concat(
         sets.map(
@@ -36,13 +40,11 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   }, []);
 
   const exportPlans = useCallback(async () => {
-    const [result] = await db.executeSql('SELECT * FROM plans');
-    if (result.rows.length === 0) return;
-    const sets: Plan[] = result.rows.raw();
+    const plans: Plan[] = await getAllPlans();
     const data = [planFields]
-      .concat(sets.map(set => `"${set.id}","${set.days}","${set.workouts}"`))
+      .concat(plans.map(set => `"${set.id}","${set.days}","${set.workouts}"`))
       .join('\n');
-    console.log(`${DrawerMenu.name}.exportPlans`, {length: sets.length});
+    console.log(`${DrawerMenu.name}.exportPlans`, {length: plans.length});
     await write('plans.csv', data);
   }, []);
 
@@ -66,12 +68,10 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
         return `('${cells[1]}',${cells[2]},${cells[3]},'${cells[4]}','${cells[5]}',${cells[6]})`;
       })
       .join(',');
-    await db.executeSql(
-      `INSERT INTO sets(name,reps,weight,created,unit,hidden) VALUES ${values}`,
-    );
+    await addSets(values);
     toast('Data imported.', 3000);
     reset({index: 0, routes: [{name}]});
-  }, [db, reset, name, toast]);
+  }, [reset, name, toast]);
 
   const uploadPlans = useCallback(async () => {
     const result = await DocumentPicker.pickSingle();
@@ -88,9 +88,9 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
         return `('${cells[1]}','${cells[2]}')`;
       })
       .join(',');
-    await db.executeSql(`INSERT INTO plans(days,workouts) VALUES ${values}`);
+    await addPlans(values);
     toast('Data imported.', 3000);
-  }, [db, toast]);
+  }, [toast]);
 
   const upload = useCallback(async () => {
     setShowMenu(false);
@@ -102,11 +102,11 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const remove = useCallback(async () => {
     setShowMenu(false);
     setShowRemove(false);
-    if (name === 'Home') await db.executeSql(`DELETE FROM sets`);
-    else if (name === 'Plans') await db.executeSql(`DELETE FROM plans`);
+    if (name === 'Home') await deleteSets();
+    else if (name === 'Plans') await deletePlans();
     toast('All data has been deleted.', 4000);
     reset({index: 0, routes: [{name}]});
-  }, [db, reset, name, toast]);
+  }, [reset, name, toast]);
 
   if (name === 'Home' || name === 'Plans')
     return (

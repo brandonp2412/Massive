@@ -3,7 +3,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
-import {db} from './db';
+import {deleteSetsBy, getSets} from './db';
 import Workout from './workout';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
@@ -17,20 +17,17 @@ export default function WorkoutItem({
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const [showRemove, setShowRemove] = useState('');
-  const [uri, setUri] = useState('');
+  const [uri, setUri] = useState<string>();
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
   useEffect(() => {
-    db.executeSql(`SELECT image FROM sets WHERE name = ? LIMIT 1`, [
-      item.name,
-    ]).then(([result]) => {
-      setUri(result.rows.item(0)?.image);
-      console.log(WorkoutItem.name, item.name, result.rows.item(0)?.image);
-    });
+    getSets({search: item.name, limit: 1, offset: 0}).then(sets =>
+      setUri(sets[0]?.image),
+    );
   }, [item.name]);
 
   const remove = useCallback(async () => {
-    await db.executeSql(`DELETE FROM sets WHERE name = ?`, [item.name]);
+    await deleteSetsBy(item.name);
     setShowMenu(false);
     onRemoved();
   }, [setShowMenu, onRemoved, item.name]);

@@ -12,27 +12,12 @@ import Share from 'react-native-share';
 import ViewShot from 'react-native-view-shot';
 import {BestPageParams} from './BestPage';
 import Chart from './Chart';
-import {db} from './db';
+import {getVolumes, getWeights} from './db';
+import {Metrics} from './metrics';
+import {Periods} from './periods';
 import Set from './set';
 import {formatMonth} from './time';
-
-interface Volume {
-  name: string;
-  created: string;
-  value: number;
-  unit: string;
-}
-
-enum Metrics {
-  Weight = 'Best weight per day',
-  Volume = 'Volume per day',
-}
-
-enum Periods {
-  Weekly = 'This week',
-  Monthly = 'This month',
-  Yearly = 'This year',
-}
+import Volume from './volume';
 
 export default function ViewBest() {
   const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>();
@@ -72,51 +57,14 @@ export default function ViewBest() {
     }, [navigation, params.best]),
   );
 
-  const refreshWeight = useCallback(async () => {
-    const select = `
-      SELECT max(weight) AS weight, 
-        STRFTIME('%Y-%m-%d', created) as created, unit
-      FROM sets
-      WHERE name = ? AND NOT hidden
-        AND DATE(created) >= DATE('now', 'weekday 0', ?)
-      GROUP BY name, STRFTIME('%Y-%m-%d', created)
-    `;
-    let difference = '-7 days';
-    if (period === Periods.Monthly) difference = '-1 months';
-    else if (period === Periods.Yearly) difference = '-1 years';
-    const [result] = await db.executeSql(select, [
-      params.best.name,
-      difference,
-    ]);
-    if (result.rows.length === 0) return;
-    setWeights(result.rows.raw());
-  }, [params.best.name, period]);
-
-  const refreshVolume = useCallback(async () => {
-    const select = `
-      SELECT sum(weight * reps) AS value, 
-        STRFTIME('%Y-%m-%d', created) as created, unit
-      FROM sets
-      WHERE name = ? AND NOT hidden
-        AND DATE(created) >= DATE('now', 'weekday 0', ?)
-      GROUP BY name, STRFTIME('%Y-%m-%d', created)
-    `;
-    let difference = '-7 days';
-    if (period === Periods.Monthly) difference = '-1 months';
-    else if (period === Periods.Yearly) difference = '-1 years';
-    const [result] = await db.executeSql(select, [
-      params.best.name,
-      difference,
-    ]);
-    if (result.rows.length === 0) return;
-    setVolumes(result.rows.raw());
-  }, [params.best.name, period]);
-
   useEffect(() => {
-    if (metric === Metrics.Weight) refreshWeight();
-    else if (metric === Metrics.Volume) refreshVolume();
+    if (metric === Metrics.Weight)
+      getWeights(params.best.name, period).then(setWeights);
+    else if (metric === Metrics.Volume)
+      getVolumes(params.best.name, period).then(setVolumes);
+
     console.log(`${ViewBest.name}.useEffect`, {metric, period});
-  }, [params.best.name, metric, period, refreshVolume, refreshWeight]);
+  }, [params.best.name, metric, period]);
 
   return (
     <ViewShot style={{padding: 10}} ref={viewShot}>

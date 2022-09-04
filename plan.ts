@@ -1,5 +1,5 @@
 export interface Plan {
-  id: number;
+  id?: number;
   days: string;
   workouts: string;
 }

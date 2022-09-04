@@ -6,39 +6,21 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import Best from './best';
 import {BestPageParams} from './BestPage';
-import {db} from './db';
+import {getBestReps, getBestWeights} from './db';
+import Set from './set';
 
 export default function BestList() {
-  const [bests, setBests] = useState<Best[]>([]);
+  const [bests, setBests] = useState<Set[]>([]);
   const [search, setSearch] = useState('');
   const [refreshing, setRefresing] = useState(false);
   const navigation = useNavigation<NavigationProp<BestPageParams>>();
 
   const refresh = useCallback(async () => {
-    const bestWeight = `
-      SELECT name, reps, unit, MAX(weight) AS weight 
-      FROM sets
-      WHERE name LIKE ? AND NOT hidden
-      GROUP BY name;
-    `;
-    const bestReps = `
-      SELECT name, MAX(reps) as reps, unit, weight 
-      FROM sets
-      WHERE name = ? AND weight = ? AND NOT hidden
-      GROUP BY name;
-    `;
-    const [weight] = await db.executeSql(bestWeight, [`%${search}%`]);
-    if (!weight) return setBests([]);
-    let newBest: Best[] = [];
-    for (let i = 0; i < weight.rows.length; i++) {
-      const [reps] = await db.executeSql(bestReps, [
-        weight.rows.item(i).name,
-        weight.rows.item(i).weight,
-      ]);
-      newBest = newBest.concat(reps.rows.raw());
-    }
+    const weights = await getBestWeights(search);
+    let newBest: Set[] = [];
+    for (const set of weights)
+      newBest.push(...(await getBestReps(search, set.weight)));
     setBests(newBest);
   }, [search]);
 
@@ -55,7 +37,7 @@ export default function BestList() {
     refresh();
   }, [search, refresh]);
 
-  const renderItem = ({item}: {item: Best}) => (
+  const renderItem = ({item}: {item: Set}) => (
     <List.Item
       key={item.name}
       title={item.name}

@@ -6,7 +6,7 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {List, Searchbar} from 'react-native-paper';
-import {db} from './db';
+import {getPlans} from './db';
 import DrawerMenu from './DrawerMenu';
 import MassiveFab from './MassiveFab';
 import {Plan} from './plan';
@@ -20,14 +20,7 @@ export default function PlanList() {
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const refresh = useCallback(async () => {
-    const selectPlans = `
-      SELECT * from plans
-      WHERE days LIKE ? OR workouts LIKE ?
-    `;
-    const getPlans = ({s}: {s: string}) =>
-      db.executeSql(selectPlans, [`%${s}%`, `%${s}%`]);
-    const [plansResult] = await getPlans({s: search});
-    setPlans(plansResult.rows.raw());
+    getPlans(search).then(setPlans);
   }, [search]);
 
   useFocusEffect(
@@ -57,7 +50,7 @@ export default function PlanList() {
         style={{height: '100%'}}
         data={plans}
         renderItem={renderItem}
-        keyExtractor={set => set.id.toString()}
+        keyExtractor={set => set.id?.toString() || ''}
         refreshing={refreshing}
         onRefresh={() => {
           setRefresing(true);

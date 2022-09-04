@@ -2,7 +2,7 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {List, Menu} from 'react-native-paper';
-import {db} from './db';
+import {deletePlan} from './db';
 import {Plan} from './plan';
 import {PlanPageParams} from './PlanPage';
 
@@ -18,7 +18,7 @@ export default function PlanItem({
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const remove = useCallback(async () => {
-    await db.executeSql(`DELETE FROM plans WHERE id = ?`, [item.id]);
+    if (item.id) await deletePlan(item.id);
     setShow(false);
     onRemove();
   }, [setShow, item.id, onRemove]);

@@ -9,7 +9,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, IconButton} from 'react-native-paper';
 import {DrawerParamList} from './App';
-import {db} from './db';
+import {addPlan, getNames, setPlan} from './db';
 import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './PlanPage';
 import {DAYS} from './time';
@@ -36,14 +36,7 @@ export default function EditPlan() {
   );
 
   useEffect(() => {
-    const refresh = async () => {
-      const [namesResult] = await db.executeSql(
-        'SELECT DISTINCT name FROM sets',
-      );
-      if (!namesResult.rows.length) return setNames([]);
-      setNames(namesResult.rows.raw().map(({name}) => name));
-    };
-    refresh();
+    getNames().then(setNames);
   }, []);
 
   const save = useCallback(async () => {
@@ -51,16 +44,9 @@ export default function EditPlan() {
     if (!days || !workouts) return;
     const newWorkouts = workouts.filter(workout => workout).join(',');
     const newDays = days.filter(day => day).join(',');
-    if (!params.plan.id)
-      await db.executeSql(`INSERT INTO plans(days, workouts) VALUES (?, ?)`, [
-        newDays,
-        newWorkouts,
-      ]);
+    if (!params.plan.id) await addPlan({days: newDays, workouts: newWorkouts});
     else
-      await db.executeSql(
-        `UPDATE plans SET days = ?, workouts = ? WHERE id = ?`,
-        [newDays, newWorkouts, params.plan.id],
-      );
+      await setPlan({days: newDays, workouts: newWorkouts, id: params.plan.id});
     navigation.goBack();
   }, [days, workouts, params, navigation]);
 
