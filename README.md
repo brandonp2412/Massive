@@ -68,7 +68,7 @@ Then (in a separate terminal) run the `android` script:
 yarn android
 ```
 
-# How is Massive packaged for Fdroid?
+# Fdroid Metadata
 
 You can find the metadata yaml file in the fdroiddata repository: 
 https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/com.massive.yml
