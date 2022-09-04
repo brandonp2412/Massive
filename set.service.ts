@@ -102,7 +102,8 @@ export const setSetImage = async (name: string, image: string) => {
 
 export const getNames = async (): Promise<string[]> => {
   const [result] = await db.executeSql('SELECT DISTINCT name FROM sets');
-  return result.rows.raw();
+  const values: {name: string}[] = result.rows.raw();
+  return values.map(value => value.name);
 };
 
 export const getWorkouts = async ({

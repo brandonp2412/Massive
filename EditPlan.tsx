@@ -37,7 +37,10 @@ export default function EditPlan() {
   );
 
   useEffect(() => {
-    getNames().then(setNames);
+    getNames().then(n => {
+      console.log(EditPlan.name, {n});
+      setNames(n);
+    });
   }, []);
 
   const save = useCallback(async () => {
