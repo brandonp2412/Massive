@@ -17,7 +17,7 @@ import kotlin.math.floor
 
 class TimerService() : Service() {
     private lateinit var manager: NotificationManager
-    private lateinit var countdownTimer: CountDownTimer
+    private var countdownTimer: CountDownTimer? = null
     private var endMs: Int = 0
     private var currentMs: Long = 0
     private var vibrate: Boolean = true
@@ -37,9 +37,9 @@ class TimerService() : Service() {
         Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs,vibrate=$vibrate,sound=$sound")
         manager = getManager(applicationContext)
         val builder = getBuilder(applicationContext)
-        countdownTimer.cancel()
+        countdownTimer?.cancel()
         countdownTimer = getTimer(builder)
-        countdownTimer.start()
+        countdownTimer?.start()
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -103,7 +103,7 @@ class TimerService() : Service() {
 
     override fun onDestroy() {
         Log.d("TimerService", "Destroying...")
-        countdownTimer.cancel()
+        countdownTimer?.cancel()
         manager.cancel(NOTIFICATION_ID_PENDING)
         manager.cancel(NOTIFICATION_ID_DONE)
         super.onDestroy()
