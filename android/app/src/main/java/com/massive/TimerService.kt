@@ -1,10 +1,12 @@
 package com.massive
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.app.NotificationManager.IMPORTANCE_LOW
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
@@ -13,38 +15,36 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import kotlin.math.floor
 
-class TimerService : Service() {
-    private var manager: NotificationManager? = null
-    private var endMs: Int? = null
-    private var currentMs: Long? = null
-    private var countdownTimer: CountDownTimer? = null
+class TimerService() : Service() {
+    private lateinit var manager: NotificationManager
+    private lateinit var countdownTimer: CountDownTimer
+    private var endMs: Int = 0
+    private var currentMs: Long = 0
     private var vibrate: Boolean = true
     private var sound: String? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("TimerService", "Started timer service.")
-        Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs")
         vibrate = intent!!.extras!!.getBoolean("vibrate")
         sound = intent.extras?.getString("sound")
         if (intent.action == "add") {
-            manager?.cancel(NOTIFICATION_ID_DONE)
-            endMs = currentMs!!.toInt().plus(60000)
+            manager.cancel(NOTIFICATION_ID_DONE)
+            endMs = currentMs.toInt().plus(60000)
             applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
         } else {
             endMs = intent.extras!!.getInt("milliseconds")
         }
-        Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs")
+        Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs,vibrate=$vibrate,sound=$sound")
         manager = getManager(applicationContext)
         val builder = getBuilder(applicationContext)
-        countdownTimer?.cancel()
+        countdownTimer.cancel()
         countdownTimer = getTimer(builder)
-        countdownTimer!!.start()
+        countdownTimer.start()
         return super.onStartCommand(intent, flags, startId)
     }
 
     private fun getTimer(builder: NotificationCompat.Builder): CountDownTimer {
-        return object : CountDownTimer(endMs!!.toLong(), 1000) {
+        return object : CountDownTimer(endMs.toLong(), 1000) {
             override fun onTick(current: Long) {
                 currentMs = current
                 val seconds = floor((current / 1000).toDouble() % 60)
@@ -54,10 +54,10 @@ class TimerService : Service() {
                 builder.setContentText("$minutes:$seconds")
                     .setAutoCancel(false)
                     .setDefaults(0)
-                    .setProgress(endMs!!, current.toInt(), false)
+                    .setProgress(endMs, current.toInt(), false)
                     .setCategory(NotificationCompat.CATEGORY_PROGRESS)
                     .priority = NotificationCompat.PRIORITY_LOW
-                manager?.notify(NOTIFICATION_ID_PENDING, builder.build())
+                manager.notify(NOTIFICATION_ID_PENDING, builder.build())
             }
 
             @RequiresApi(Build.VERSION_CODES.M)
@@ -87,8 +87,8 @@ class TimerService : Service() {
                     .setCategory(NotificationCompat.CATEGORY_ALARM)
                     .setDeleteIntent(pendingStop)
                     .priority = NotificationCompat.PRIORITY_HIGH
-                manager?.notify(NOTIFICATION_ID_DONE, builder.build())
-                manager?.cancel(NOTIFICATION_ID_PENDING)
+                manager.notify(NOTIFICATION_ID_DONE, builder.build())
+                manager.cancel(NOTIFICATION_ID_PENDING)
                 val alarmIntent = Intent(applicationContext, AlarmService::class.java)
                 alarmIntent.putExtra("vibrate", vibrate)
                 alarmIntent.putExtra("sound", sound)
@@ -103,12 +103,13 @@ class TimerService : Service() {
 
     override fun onDestroy() {
         Log.d("TimerService", "Destroying...")
-        countdownTimer?.cancel()
-        manager?.cancel(NOTIFICATION_ID_PENDING)
-        manager?.cancel(NOTIFICATION_ID_DONE)
+        countdownTimer.cancel()
+        manager.cancel(NOTIFICATION_ID_PENDING)
+        manager.cancel(NOTIFICATION_ID_DONE)
         super.onDestroy()
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getBuilder(context: Context): NotificationCompat.Builder {
         val contentIntent = Intent(context, MainActivity::class.java)
@@ -120,6 +121,8 @@ class TimerService : Service() {
         val addIntent = Intent(context, TimerService::class.java)
         addIntent.action = "add"
         addIntent.putExtra("vibrate", vibrate)
+        addIntent.putExtra("sound", sound)
+        addIntent.data = Uri.parse("$currentMs")
         val pendingAdd = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getService(context, 0, addIntent, PendingIntent.FLAG_MUTABLE)
         } else {
