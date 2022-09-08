@@ -21,14 +21,20 @@ export default function EditSet() {
 
   useFocusEffect(
     useCallback(() => {
-      navigation.getParent()?.setOptions({
-        headerLeft: () => (
-          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
-        ),
-        headerRight: null,
-        title: params.set.id ? 'Edit set' : 'Create set',
+      getSettings().then(settings => {
+        let title = 'Edit set';
+        if (!params.set.id && params.set.name)
+          title = `Add set (${params.count} / ${settings.sets})`;
+        if (!params.set.id && !params.set.name) title = 'Add set';
+        navigation.getParent()?.setOptions({
+          headerLeft: () => (
+            <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
+          ),
+          headerRight: null,
+          title,
+        });
       });
-    }, [navigation, params.set.id]),
+    }, [navigation, params]),
   );
 
   const startTimer = useCallback(async () => {
