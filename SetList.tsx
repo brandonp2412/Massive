@@ -21,7 +21,6 @@ const limit = 15;
 export default function SetList() {
   const [sets, setSets] = useState<Set[]>();
   const [set, setSet] = useState<Set>();
-  const [count, setCount] = useState(1);
   const [workouts, setWorkouts] = useState<string[]>([]);
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
@@ -53,12 +52,11 @@ export default function SetList() {
     let workout = todaysWorkouts[0];
     console.log(`${SetList.name}.predict:`, {todaysSets, todaysWorkouts});
     if (todaysWorkouts.includes(todaysSets[0]?.name) && todaysSets.length > 0) {
-      const _count = todaysSets.filter(
+      const count = todaysSets.filter(
         s => s.name === todaysSets[0].name,
       ).length;
-      setCount(_count);
       workout = todaysSets[0].name;
-      if (_count >= Number(settings.sets))
+      if (count >= Number(settings.sets))
         workout =
           todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1];
     }
@@ -119,10 +117,9 @@ export default function SetList() {
   const onAdd = useCallback(async () => {
     navigation.navigate('EditSet', {
       set: set || {...defaultSet},
-      count,
       workouts,
     });
-  }, [navigation, set, workouts, count]);
+  }, [navigation, set, workouts]);
 
   return (
     <View style={styles.container}>
