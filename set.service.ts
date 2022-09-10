@@ -97,7 +97,7 @@ export const setSetName = async (oldName: string, newName: string) => {
 
 export const setSetImage = async (name: string, image: string) => {
   const update = `UPDATE sets SET image = ? WHERE name = ?`;
-  return db.executeSql(update, [name, image]);
+  return db.executeSql(update, [image, name]);
 };
 
 export const getNames = async (): Promise<string[]> => {

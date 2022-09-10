@@ -8,7 +8,6 @@ import React, {useCallback, useState} from 'react';
 import {Image, ScrollView, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, IconButton} from 'react-native-paper';
-import {set} from 'react-native-reanimated';
 import MassiveInput from './MassiveInput';
 import {setWorkouts} from './plan.service';
 import Set from './set';
@@ -37,7 +36,11 @@ export default function EditWorkout() {
   );
 
   const update = useCallback(async () => {
-    console.log(`${EditWorkout.name}.update`, set);
+    console.log(`${EditWorkout.name}.update`, {
+      params: params.value.name,
+      name,
+      uri,
+    });
     if (name) {
       await setSetName(params.value.name, name);
       await setWorkouts(params.value.name, name);
