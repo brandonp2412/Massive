@@ -2,9 +2,9 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {NativeModules, ScrollView, StyleSheet, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Searchbar, Text} from 'react-native-paper';
-import {SnackbarContext} from './App';
 import ConfirmDialog from './ConfirmDialog';
 import MassiveInput from './MassiveInput';
+import {SnackbarContext} from './MassiveSnack';
 import MassiveSwitch from './MassiveSwitch';
 import {getSettings, setSettings} from './settings.service';
 
@@ -65,7 +65,8 @@ export default function SettingsPage() {
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
       setAlarm(enabled);
-      toast('Time your rest duration after each set.', 4000);
+      if (enabled) toast('Timers will now run after each set.', 4000);
+      else toast('Stopped timers running after each set.', 4000);
       if (enabled && !ignoring) setBattery(true);
     },
     [setBattery, ignoring, toast],
@@ -74,15 +75,18 @@ export default function SettingsPage() {
   const changePredict = useCallback(
     (enabled: boolean) => {
       setPredict(enabled);
-      toast('Predict your next set based on todays plan.', 4000);
+      if (enabled)
+        toast('Predicting your next set based on todays plan.', 4000);
+      else toast('New sets will always be empty.', 4000);
     },
     [setPredict, toast],
   );
 
   const changeVibrate = useCallback(
-    (value: boolean) => {
-      setVibrate(value);
-      toast('When a timer completes, vibrate your phone.', 4000);
+    (enabled: boolean) => {
+      setVibrate(enabled);
+      if (enabled) toast('When a timer completes, vibrate your phone.', 4000);
+      else toast('Stop vibrating at the end of timers.', 4000);
     },
     [setVibrate, toast],
   );
@@ -92,13 +96,16 @@ export default function SettingsPage() {
       type: 'audio/*',
       copyTo: 'documentDirectory',
     });
-    if (fileCopyUri) setSound(fileCopyUri);
-  }, []);
+    if (!fileCopyUri) return;
+    setSound(fileCopyUri);
+    toast('This song will now play after rest timers complete.', 4000);
+  }, [toast]);
 
   const changeNotify = useCallback(
-    (value: boolean) => {
-      setNotify(value);
-      toast('If a set is a new record, show a notification.', 4000);
+    (enabled: boolean) => {
+      setNotify(enabled);
+      if (enabled) toast('Show when a set is a new record.', 4000);
+      else toast('Stopped showing notifications for new records.', 4000);
     },
     [toast],
   );

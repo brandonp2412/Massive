@@ -4,15 +4,15 @@ import {
   DefaultTheme as NavigationDefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native';
-import React, {useState} from 'react';
+import React from 'react';
 import {useColorScheme} from 'react-native';
 import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
   Provider,
-  Snackbar,
 } from 'react-native-paper';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import MassiveSnack from './MassiveSnack';
 import Routes from './Routes';
 
 export const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -24,10 +24,6 @@ export type DrawerParamList = {
   Workouts: {};
   Loading: {};
 };
-
-export const SnackbarContext = React.createContext<{
-  toast: (value: string, timeout: number) => void;
-}>({toast: () => null});
 
 export const CombinedDefaultTheme = {
   ...PaperDefaultTheme,
@@ -49,13 +45,7 @@ export const CombinedDarkTheme = {
 };
 
 const App = () => {
-  const [snackbar, setSnackbar] = useState('');
   const dark = useColorScheme() === 'dark';
-
-  const toast = (value: string, timeout: number) => {
-    setSnackbar(value);
-    setTimeout(() => setSnackbar(''), timeout);
-  };
 
   return (
     <Provider
@@ -63,22 +53,10 @@ const App = () => {
       settings={{icon: props => <Ionicon {...props} />}}>
       <NavigationContainer
         theme={dark ? CombinedDarkTheme : CombinedDefaultTheme}>
-        <SnackbarContext.Provider value={{toast}}>
+        <MassiveSnack>
           <Routes />
-        </SnackbarContext.Provider>
+        </MassiveSnack>
       </NavigationContainer>
-      <Snackbar
-        onDismiss={() => setSnackbar('')}
-        visible={!!snackbar}
-        action={{
-          label: 'Close',
-          onPress: () => setSnackbar(''),
-          color: dark
-            ? CombinedDarkTheme.colors.background
-            : CombinedDefaultTheme.colors.primary,
-        }}>
-        {snackbar}
-      </Snackbar>
     </Provider>
   );
 };

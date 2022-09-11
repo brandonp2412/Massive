@@ -7,8 +7,8 @@ import {
 import React, {useCallback, useContext} from 'react';
 import {NativeModules, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {SnackbarContext} from './App';
 import {HomePageParams} from './HomePage';
+import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
 import {addSet, setSet} from './set.service';
 import SetForm from './SetForm';
