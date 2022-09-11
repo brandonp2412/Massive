@@ -1,9 +1,9 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
-import {deleteSetsBy, getSets} from './set.service';
+import {deleteSetsBy} from './set.service';
 import Workout from './workout';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
@@ -17,14 +17,7 @@ export default function WorkoutItem({
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const [showRemove, setShowRemove] = useState('');
-  const [uri, setUri] = useState<string>();
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
-
-  useEffect(() => {
-    getSets({search: item.name, limit: 1, offset: 0}).then(sets =>
-      setUri(sets[0]?.image),
-    );
-  }, [item.name]);
 
   const remove = useCallback(async () => {
     await deleteSetsBy(item.name);
@@ -48,7 +41,12 @@ export default function WorkoutItem({
         onLongPress={longPress}
         right={() => (
           <>
-            {uri && <Image source={{uri}} style={{height: 75, width: 75}} />}
+            {item.image && (
+              <Image
+                source={{uri: item.image}}
+                style={{height: 75, width: 75}}
+              />
+            )}
             <Text
               style={{
                 alignSelf: 'center',

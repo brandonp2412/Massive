@@ -112,7 +112,7 @@ export const getWorkouts = async ({
   offset,
 }: PageParams): Promise<Workout[]> => {
   const select = `
-    SELECT DISTINCT sets.name
+    SELECT DISTINCT sets.name, sets.image
     FROM sets
     WHERE sets.name LIKE ? 
     ORDER BY sets.name
