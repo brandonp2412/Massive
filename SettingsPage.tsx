@@ -134,7 +134,9 @@ export default function SettingsPage() {
       />
       <ScrollView>
         {inputs
-          .filter(input => input.name.toLowerCase().includes(search))
+          .filter(input =>
+            input.name.toLowerCase().includes(search.toLowerCase()),
+          )
           .map(input => (
             <MassiveInput
               key={input.name}
@@ -145,7 +147,9 @@ export default function SettingsPage() {
             />
           ))}
         {switches
-          .filter(input => input.name.toLowerCase().includes(search))
+          .filter(input =>
+            input.name.toLowerCase().includes(search.toLowerCase()),
+          )
           .map(input => (
             <React.Fragment key={input.name}>
               <Text style={styles.text}>{input.name}</Text>
@@ -156,7 +160,7 @@ export default function SettingsPage() {
               />
             </React.Fragment>
           ))}
-        {'alarm sound'.includes(search) && (
+        {'alarm sound'.includes(search.toLowerCase()) && (
           <Button onPress={changeSound}>
             Alarm sound
             {sound
