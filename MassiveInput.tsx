@@ -2,6 +2,7 @@ import React from 'react';
 import {useColorScheme} from 'react-native';
 import {TextInput} from 'react-native-paper';
 import {CombinedDefaultTheme} from './App';
+import {MARGIN} from './constants';
 
 export default function MassiveInput(
   props: Partial<React.ComponentProps<typeof TextInput>> & {
@@ -14,7 +15,7 @@ export default function MassiveInput(
     <TextInput
       selectionColor={dark ? '#2A2A2A' : CombinedDefaultTheme.colors.border}
       mode="outlined"
-      style={{marginBottom: 10, minWidth: 100}}
+      style={{marginBottom: MARGIN, minWidth: 100}}
       selectTextOnFocus
       ref={props.innerRef}
       {...props}

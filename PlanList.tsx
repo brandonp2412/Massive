@@ -4,10 +4,10 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-import {List, Searchbar} from 'react-native-paper';
+import {FlatList} from 'react-native';
+import {List} from 'react-native-paper';
 import DrawerMenu from './DrawerMenu';
-import MassiveFab from './MassiveFab';
+import Page from './Page';
 import {Plan} from './plan';
 import {getPlans} from './plan.service';
 import PlanItem from './PlanItem';
@@ -42,9 +42,11 @@ export default function PlanList() {
     [refresh],
   );
 
+  const onAdd = () =>
+    navigation.navigate('EditPlan', {plan: {days: '', workouts: '', id: 0}});
+
   return (
-    <View style={styles.container}>
-      <Searchbar value={search} onChangeText={setSearch} placeholder="Search" />
+    <Page onAdd={onAdd} search={search} setSearch={setSearch}>
       <FlatList
         style={{height: '100%'}}
         data={plans}
@@ -57,25 +59,6 @@ export default function PlanList() {
           />
         }
       />
-
-      <MassiveFab
-        onPress={() =>
-          navigation.navigate('EditPlan', {
-            plan: {days: '', workouts: '', id: 0},
-          })
-        }
-      />
-    </View>
+    </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 10,
-    paddingBottom: '10%',
-  },
-  progress: {
-    marginTop: 10,
-  },
-});

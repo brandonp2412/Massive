@@ -2,7 +2,7 @@ import {db} from './db';
 import Set from './set';
 import Workout from './workout';
 
-export const setSet = async (value: Set) => {
+export const updateSet = async (value: Set) => {
   const update = `
     UPDATE sets 
     SET name = ?, reps = ?, weight = ?, unit = ? 
@@ -90,12 +90,12 @@ export const defaultSet = {
   unit: 'kg',
 };
 
-export const setSetName = async (oldName: string, newName: string) => {
+export const updateSetName = async (oldName: string, newName: string) => {
   const update = `UPDATE sets SET name = ? WHERE name = ?`;
   return db.executeSql(update, [newName, oldName]);
 };
 
-export const setSetImage = async (name: string, image: string) => {
+export const updateSetImage = async (name: string, image: string) => {
   const update = `UPDATE sets SET image = ? WHERE name = ?`;
   return db.executeSql(update, [image, name]);
 };

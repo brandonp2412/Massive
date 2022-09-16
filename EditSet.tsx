@@ -7,10 +7,11 @@ import {
 import React, {useCallback, useContext} from 'react';
 import {NativeModules, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
+import {PADDING} from './constants';
 import {HomePageParams} from './HomePage';
 import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
-import {addSet, setSet} from './set.service';
+import {addSet, updateSet} from './set.service';
 import SetForm from './SetForm';
 import {getSettings} from './settings.service';
 
@@ -45,7 +46,7 @@ export default function EditSet() {
   const update = useCallback(
     async (set: Set) => {
       console.log(`${EditSet.name}.update`, set);
-      await setSet(set);
+      await updateSet(set);
       navigation.goBack();
     },
     [navigation],
@@ -76,7 +77,7 @@ export default function EditSet() {
   );
 
   return (
-    <View style={{padding: 10}}>
+    <View style={{padding: PADDING}}>
       <SetForm save={save} set={params.set} workouts={params.workouts} />
     </View>
   );

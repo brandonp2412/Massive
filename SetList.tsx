@@ -4,12 +4,12 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-import {List, Searchbar} from 'react-native-paper';
+import {FlatList} from 'react-native';
+import {List} from 'react-native-paper';
 import {getBestSet} from './best.service';
 import DrawerMenu from './DrawerMenu';
 import {HomePageParams} from './HomePage';
-import MassiveFab from './MassiveFab';
+import Page from './Page';
 import {getTodaysPlan} from './plan.service';
 import Set from './set';
 import {defaultSet, getSets, getTodaysSets} from './set.service';
@@ -122,8 +122,7 @@ export default function SetList() {
   }, [navigation, set, workouts]);
 
   return (
-    <View style={styles.container}>
-      <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
+    <Page onAdd={onAdd} search={search} setSearch={setSearch}>
       <FlatList
         data={sets}
         style={{height: '100%'}}
@@ -137,15 +136,6 @@ export default function SetList() {
         keyExtractor={s => s.id!.toString()}
         onEndReached={next}
       />
-      <MassiveFab onPress={onAdd} />
-    </View>
+    </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 10,
-    paddingBottom: '10%',
-  },
-});

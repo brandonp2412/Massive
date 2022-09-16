@@ -3,6 +3,7 @@ import React from 'react';
 import {useColorScheme, View} from 'react-native';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
+import {MARGIN, PADDING} from './constants';
 import Set from './set';
 
 export default function Chart({
@@ -23,7 +24,7 @@ export default function Chart({
 
   return (
     <>
-      <View style={{height: 300, padding: 20, flexDirection: 'row'}}>
+      <View style={{height: 300, padding: PADDING, flexDirection: 'row'}}>
         <YAxis
           data={yData}
           style={{marginBottom: xAxisHeight}}
@@ -31,7 +32,7 @@ export default function Chart({
           svg={axesSvg}
           formatLabel={yFormat}
         />
-        <View style={{flex: 1, marginLeft: 10}}>
+        <View style={{flex: 1, marginLeft: MARGIN}}>
           <LineChart
             style={{flex: 1}}
             data={yData}

@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ScrollView} from 'react-native';
 import {Button, Text} from 'react-native-paper';
+import {MARGIN} from './constants';
 import MassiveInput from './MassiveInput';
 import Set from './set';
 import {getSets} from './set.service';
@@ -83,7 +84,7 @@ export default function SetForm({
           onChangeText={setUnit}
           onSubmitEditing={handleSubmit}
         />
-        <Text style={{marginBottom: 10}}>
+        <Text style={{marginBottom: MARGIN}}>
           {workouts?.map((workout, index) => (
             <React.Fragment key={workout}>
               <Text

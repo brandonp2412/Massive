@@ -13,6 +13,7 @@ import ViewShot from 'react-native-view-shot';
 import {getVolumes, getWeightsBy} from './best.service';
 import {BestPageParams} from './BestPage';
 import Chart from './Chart';
+import {PADDING} from './constants';
 import {Metrics} from './metrics';
 import {Periods} from './periods';
 import Set from './set';
@@ -67,7 +68,7 @@ export default function ViewBest() {
   }, [params.best.name, metric, period]);
 
   return (
-    <ViewShot style={{padding: 10}} ref={viewShot}>
+    <ViewShot style={{padding: PADDING}} ref={viewShot}>
       <RNPickerSelect
         onValueChange={setMetric}
         items={[

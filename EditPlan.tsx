@@ -9,8 +9,9 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, IconButton} from 'react-native-paper';
 import {DrawerParamList} from './App';
+import {MARGIN, PADDING} from './constants';
 import MassiveSwitch from './MassiveSwitch';
-import {addPlan, setPlan} from './plan.service';
+import {addPlan, updatePlan} from './plan.service';
 import {PlanPageParams} from './PlanPage';
 import {getNames} from './set.service';
 import {DAYS} from './time';
@@ -50,7 +51,11 @@ export default function EditPlan() {
     const newDays = days.filter(day => day).join(',');
     if (!params.plan.id) await addPlan({days: newDays, workouts: newWorkouts});
     else
-      await setPlan({days: newDays, workouts: newWorkouts, id: params.plan.id});
+      await updatePlan({
+        days: newDays,
+        workouts: newWorkouts,
+        id: params.plan.id,
+      });
     navigation.goBack();
   }, [days, workouts, params, navigation]);
 
@@ -77,7 +82,7 @@ export default function EditPlan() {
   );
 
   return (
-    <View style={{padding: 10}}>
+    <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
         <Text style={styles.title}>Days</Text>
         {DAYS.map(day => (
@@ -91,7 +96,7 @@ export default function EditPlan() {
             </Text>
           </View>
         ))}
-        <Text style={[styles.title, {marginTop: 10}]}>Workouts</Text>
+        <Text style={[styles.title, {marginTop: MARGIN}]}>Workouts</Text>
         {names.length === 0 && (
           <View>
             <Text>No workouts found.</Text>
@@ -123,7 +128,7 @@ export default function EditPlan() {
         </Button>
       ) : (
         <Button
-          style={{marginTop: 10}}
+          style={{marginTop: MARGIN}}
           mode="contained"
           icon="save"
           onPress={save}>
@@ -137,7 +142,7 @@ export default function EditPlan() {
 const styles = StyleSheet.create({
   title: {
     fontSize: 20,
-    marginBottom: 10,
+    marginBottom: MARGIN,
   },
   row: {
     flexDirection: 'row',

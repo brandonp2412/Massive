@@ -7,21 +7,10 @@ export const getSettings = async () => {
   return settings;
 };
 
-export const setSettings = async (value: Settings) => {
-  const update = `
-    UPDATE settings 
-    SET vibrate=?,minutes=?,sets=?,seconds=?,alarm=?,
-      predict=?,sound=?,notify=?,images=?
-  `;
-  return db.executeSql(update, [
-    value.vibrate,
-    value.minutes,
-    value.sets,
-    value.seconds,
-    value.alarm,
-    value.predict,
-    value.sound,
-    value.notify,
-    value.images,
-  ]);
+export const updateSettings = async (value: Settings) => {
+  const keys = Object.keys(value) as (keyof Settings)[];
+  const sets = keys.map(key => `${key}=?`).join(',');
+  const update = `UPDATE settings SET ${sets}`;
+  const values = keys.map(key => value[key]);
+  return db.executeSql(update, values);
 };

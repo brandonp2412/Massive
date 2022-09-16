@@ -1,12 +1,14 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {NativeModules, ScrollView, StyleSheet, View} from 'react-native';
+import {NativeModules, ScrollView, StyleSheet} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
-import {Button, Searchbar, Text} from 'react-native-paper';
+import {Button, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
+import {MARGIN} from './constants';
 import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
 import MassiveSwitch from './MassiveSwitch';
-import {getSettings, setSettings} from './settings.service';
+import Page from './Page';
+import {getSettings, updateSettings} from './settings.service';
 
 interface Input<T> {
   name: string;
@@ -49,7 +51,7 @@ export default function SettingsPage() {
   }, [refresh]);
 
   useEffect(() => {
-    setSettings({
+    updateSettings({
       vibrate: +vibrate,
       minutes: +minutes,
       seconds: +seconds,
@@ -125,14 +127,8 @@ export default function SettingsPage() {
   ];
 
   return (
-    <View style={styles.container}>
-      <Searchbar
-        style={{marginBottom: 10}}
-        placeholder="Search"
-        value={search}
-        onChangeText={setSearch}
-      />
-      <ScrollView>
+    <Page search={search} setSearch={setSearch}>
+      <ScrollView style={{marginTop: MARGIN}}>
         {inputs
           .filter(input =>
             input.name.toLowerCase().includes(search.toLowerCase()),
@@ -179,16 +175,12 @@ export default function SettingsPage() {
         }}>
         Disable battery optimizations for Massive to use rest timers.
       </ConfirmDialog>
-    </View>
+    </Page>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    flex: 1,
-  },
   text: {
-    marginBottom: 10,
+    marginBottom: MARGIN,
   },
 });

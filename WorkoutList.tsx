@@ -4,9 +4,9 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-import {List, Searchbar} from 'react-native-paper';
-import MassiveFab from './MassiveFab';
+import {FlatList} from 'react-native';
+import {List} from 'react-native-paper';
+import Page from './Page';
 import {getWorkouts} from './set.service';
 import SetList from './SetList';
 import Workout from './workout';
@@ -78,11 +78,10 @@ export default function WorkoutList() {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
-      <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
+    <Page onAdd={onAdd} search={search} setSearch={setSearch}>
       <FlatList
         data={workouts}
-        style={{height: '95%', paddingBottom: 10}}
+        style={{height: '100%'}}
         ListEmptyComponent={
           <List.Item
             title="No workouts yet."
@@ -93,15 +92,6 @@ export default function WorkoutList() {
         keyExtractor={w => w.name}
         onEndReached={next}
       />
-      <MassiveFab onPress={onAdd} />
-    </View>
+    </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 10,
-    paddingBottom: '10%',
-  },
-});

@@ -8,10 +8,11 @@ import React, {useCallback, useState} from 'react';
 import {Image, ScrollView, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, IconButton} from 'react-native-paper';
+import {PADDING} from './constants';
 import MassiveInput from './MassiveInput';
-import {setWorkouts} from './plan.service';
+import {updateWorkouts} from './plan.service';
 import Set from './set';
-import {addSet, getSets, setSetImage, setSetName} from './set.service';
+import {addSet, getSets, updateSetImage, updateSetName} from './set.service';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
@@ -42,10 +43,10 @@ export default function EditWorkout() {
       uri,
     });
     if (name) {
-      await setSetName(params.value.name, name);
-      await setWorkouts(params.value.name, name);
+      await updateSetName(params.value.name, name);
+      await updateWorkouts(params.value.name, name);
     }
-    if (uri) await setSetImage(params.value.name, uri);
+    if (uri) await updateSetImage(params.value.name, uri);
     navigation.goBack();
   }, [navigation, params.value.name, name, uri]);
 
@@ -68,7 +69,7 @@ export default function EditWorkout() {
   }, []);
 
   return (
-    <ScrollView style={{padding: 10, height: '90%'}}>
+    <ScrollView style={{padding: PADDING}}>
       {params.value.name ? (
         <>
           <MassiveInput
@@ -77,7 +78,7 @@ export default function EditWorkout() {
             value={name}
             onChangeText={setName}
           />
-          <View style={{flexDirection: 'row', paddingBottom: 10}}>
+          <View style={{flexDirection: 'row', paddingBottom: PADDING}}>
             {uri && <Image source={{uri}} style={{height: 75, width: 75}} />}
             <Button onPress={changeImage} icon="image">
               Image

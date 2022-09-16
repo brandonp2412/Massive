@@ -4,10 +4,11 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-import {List, Searchbar} from 'react-native-paper';
+import {FlatList} from 'react-native';
+import {List} from 'react-native-paper';
 import {getBestReps, getBestWeights} from './best.service';
 import {BestPageParams} from './BestPage';
+import Page from './Page';
 import Set from './set';
 
 export default function BestList() {
@@ -49,8 +50,7 @@ export default function BestList() {
   );
 
   return (
-    <View style={styles.container}>
-      <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
+    <Page search={search} setSearch={setSearch}>
       <FlatList
         ListEmptyComponent={
           <List.Item
@@ -61,14 +61,6 @@ export default function BestList() {
         renderItem={renderItem}
         data={bests}
       />
-    </View>
+    </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    flexGrow: 1,
-    paddingBottom: '10%',
-  },
-});

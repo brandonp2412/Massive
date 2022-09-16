@@ -20,7 +20,7 @@ export const getTodaysPlan = async (): Promise<Plan[]> => {
   return result.rows.raw();
 };
 
-export const setWorkouts = async (oldName: string, newName: string) => {
+export const updateWorkouts = async (oldName: string, newName: string) => {
   const update = `
     UPDATE plans SET workouts = REPLACE(workouts, ?, ?) 
       WHERE workouts LIKE ?
@@ -28,7 +28,7 @@ export const setWorkouts = async (oldName: string, newName: string) => {
   return db.executeSql(update, [oldName, newName, `%${oldName}%`]);
 };
 
-export const setPlan = async (value: Plan) => {
+export const updatePlan = async (value: Plan) => {
   const update = `UPDATE plans SET days = ?, workouts = ? WHERE id = ?`;
   return db.executeSql(update, [value.days, value.workouts, value.id]);
 };
