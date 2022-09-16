@@ -9,13 +9,14 @@ export const SnackbarContext = React.createContext<{
 
 const MassiveSnack = ({children}: {children: JSX.Element[] | JSX.Element}) => {
   const [snackbar, setSnackbar] = useState('');
+  const [timeoutId, setTimeoutId] = useState(0);
   const dark = useColorScheme() === 'dark';
-  let timeoutId: number;
 
   const toast = (value: string, timeout: number) => {
     setSnackbar(value);
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => setSnackbar(''), timeout);
+    const id = setTimeout(() => setSnackbar(''), timeout);
+    setTimeoutId(id);
   };
 
   return (
