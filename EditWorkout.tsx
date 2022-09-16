@@ -5,10 +5,10 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {Image, ScrollView, View} from 'react-native';
+import {Pressable, ScrollView} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
-import {Button, IconButton} from 'react-native-paper';
-import {PADDING} from './constants';
+import {Button, Card, IconButton} from 'react-native-paper';
+import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
 import {updateWorkouts} from './plan.service';
 import Set from './set';
@@ -30,9 +30,10 @@ export default function EditWorkout() {
         headerRight: null,
         title: params.value.name ? params.value.name : 'New workout',
       });
-      getSets({search: params.value.name, limit: 1, offset: 0}).then(sets =>
-        setUri(sets[0]?.image),
-      );
+      if (params.value.name)
+        getSets({search: params.value.name, limit: 1, offset: 0}).then(sets =>
+          setUri(sets[0]?.image),
+        );
     }, [navigation, params.value.name]),
   );
 
@@ -70,23 +71,22 @@ export default function EditWorkout() {
 
   return (
     <ScrollView style={{padding: PADDING}}>
-      {params.value.name ? (
-        <>
-          <MassiveInput
-            placeholder={params.value.name}
-            label="New name"
-            value={name}
-            onChangeText={setName}
-          />
-          <View style={{flexDirection: 'row', paddingBottom: PADDING}}>
-            {uri && <Image source={{uri}} style={{height: 75, width: 75}} />}
-            <Button onPress={changeImage} icon="image">
-              Image
-            </Button>
-          </View>
-        </>
+      <MassiveInput
+        label={params.value.name}
+        value={name}
+        onChangeText={setName}
+      />
+      {uri ? (
+        <Pressable style={{marginBottom: MARGIN}} onPress={changeImage}>
+          <Card.Cover source={{uri}} />
+        </Pressable>
       ) : (
-        <MassiveInput label="Name" value={name} onChangeText={setName} />
+        <Button
+          style={{marginBottom: MARGIN}}
+          onPress={changeImage}
+          icon="image">
+          Image
+        </Button>
       )}
       <Button
         disabled={!name && !!params.value.name && !uri}
