@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {NativeModules, ScrollView, StyleSheet} from 'react-native';
+import {NativeModules, ScrollView} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
@@ -112,6 +112,15 @@ export default function SettingsPage() {
     [toast],
   );
 
+  const changeImages = useCallback(
+    (enabled: boolean) => {
+      setImages(enabled);
+      if (enabled) toast('Show images for sets.', 4000);
+      else toast('Stopped showing images for sets.', 4000);
+    },
+    [toast],
+  );
+
   const inputs: Input<string>[] = [
     {name: 'Sets per workout', value: sets, onChange: setSets},
     {name: 'Rest minutes', value: minutes, onChange: setMinutes},
@@ -123,7 +132,7 @@ export default function SettingsPage() {
     {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
     {name: 'Predict sets', value: predict, onChange: changePredict},
     {name: 'Record notifications', value: notify, onChange: changeNotify},
-    {name: 'Show images', value: images, onChange: setImages},
+    {name: 'Show images', value: images, onChange: changeImages},
   ];
 
   return (
@@ -148,9 +157,9 @@ export default function SettingsPage() {
           )
           .map(input => (
             <React.Fragment key={input.name}>
-              <Text style={styles.text}>{input.name}</Text>
+              <Text style={{marginBottom: MARGIN}}>{input.name}</Text>
               <MassiveSwitch
-                style={[styles.text, {alignSelf: 'flex-start'}]}
+                style={{alignSelf: 'flex-start', marginBottom: MARGIN}}
                 value={input.value}
                 onValueChange={input.onChange}
               />
@@ -178,9 +187,3 @@ export default function SettingsPage() {
     </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  text: {
-    marginBottom: MARGIN,
-  },
-});
