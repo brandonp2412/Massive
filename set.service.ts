@@ -106,7 +106,7 @@ export const getNames = async (): Promise<string[]> => {
   return values.map(value => value.name);
 };
 
-export const getWorkouts = async ({
+export const getDistinctSets = async ({
   search,
   limit,
   offset,

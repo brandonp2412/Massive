@@ -71,6 +71,10 @@ const insertSettings = `
   INSERT INTO settings(minutes) VALUES(3);
 `;
 
+const addSteps = `
+  ALTER TABLE workouts ADD COLUMN steps TEXT NULL;
+`;
+
 export let db: SQLiteDatabase;
 
 export const migrations = async () => {
@@ -84,6 +88,7 @@ export const migrations = async () => {
   await db.executeSql(addNotify).catch(() => null);
   await db.executeSql(addImage).catch(() => null);
   await db.executeSql(addImages).catch(() => null);
+  await db.executeSql(addSteps).catch(() => null);
   const [result] = await db.executeSql(selectSettings);
   if (result.rows.length === 0) await db.executeSql(insertSettings);
 };

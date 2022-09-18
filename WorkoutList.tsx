@@ -7,7 +7,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
 import Page from './Page';
-import {getWorkouts} from './set.service';
+import {getDistinctSets} from './set.service';
 import SetList from './SetList';
 import Workout from './workout';
 import WorkoutItem from './WorkoutItem';
@@ -23,7 +23,7 @@ export default function WorkoutList() {
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
   const refresh = useCallback(async () => {
-    const newWorkouts = await getWorkouts({
+    const newWorkouts = await getDistinctSets({
       search: `%${search}%`,
       limit,
       offset: 0,
@@ -59,7 +59,7 @@ export default function WorkoutList() {
       newOffset,
       search,
     });
-    const newWorkouts = await getWorkouts({
+    const newWorkouts = await getDistinctSets({
       search: `%${search}%`,
       limit,
       offset: newOffset,
@@ -73,7 +73,7 @@ export default function WorkoutList() {
 
   const onAdd = useCallback(async () => {
     navigation.navigate('EditWorkout', {
-      value: {name: '', sets: 3, image: ''},
+      value: {name: '', sets: 3, image: '', steps: ''},
     });
   }, [navigation]);
 
