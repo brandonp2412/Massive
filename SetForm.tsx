@@ -79,7 +79,8 @@ export default function SetForm({
           innerRef={weightRef}
         />
         <MassiveInput
-          label="Unit (kg)"
+          autoCapitalize="none"
+          label="Unit"
           value={unit}
           onChangeText={setUnit}
           onSubmitEditing={handleSubmit}
