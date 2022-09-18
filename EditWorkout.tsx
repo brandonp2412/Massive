@@ -19,6 +19,7 @@ import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
   const [name, setName] = useState('');
+  const [removeImage, setRemoveImage] = useState(false);
   const [steps, setSteps] = useState('');
   const [uri, setUri] = useState<string>();
   const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
@@ -52,10 +53,10 @@ export default function EditWorkout() {
       await updateSetName(params.value.name, name);
       await updateWorkouts(params.value.name, name);
     }
-    if (uri) await updateSetImage(params.value.name, uri);
+    if (uri || removeImage) await updateSetImage(params.value.name, uri || '');
     if (steps) await updateSteps(params.value.name, steps);
     navigation.goBack();
-  }, [navigation, params.value.name, name, uri, steps]);
+  }, [navigation, params.value.name, name, uri, steps, removeImage]);
 
   const add = useCallback(async () => {
     await addSet({name, reps: 0, weight: 0, hidden: true, image: uri} as Set);
@@ -76,13 +77,21 @@ export default function EditWorkout() {
     if (fileCopyUri) setUri(fileCopyUri);
   }, []);
 
+  const onRemoveImage = useCallback(async () => {
+    setUri('');
+    setRemoveImage(true);
+  }, []);
+
   return (
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
         {uri ? (
-          <Pressable style={{marginBottom: MARGIN}} onPress={changeImage}>
-            <Card.Cover source={{uri}} />
-          </Pressable>
+          <>
+            <Pressable style={{marginBottom: MARGIN}} onPress={changeImage}>
+              <Card.Cover source={{uri}} />
+            </Pressable>
+            <Button onPress={onRemoveImage}>Remove image</Button>
+          </>
         ) : (
           <Button
             style={{marginBottom: MARGIN}}
