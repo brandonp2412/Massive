@@ -76,7 +76,7 @@ const addSteps = `
 `;
 
 const insertWorkouts = `
-  INSERT INTO workouts (name) SELECT DISTINCT name FROM sets;
+  INSERT OR IGNORE INTO workouts (name) SELECT DISTINCT name FROM sets;
 `;
 
 export let db: SQLiteDatabase;
