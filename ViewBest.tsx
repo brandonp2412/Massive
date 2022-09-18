@@ -4,12 +4,13 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
+import {View} from 'react-native';
 import {FileSystem} from 'react-native-file-access';
 import {IconButton} from 'react-native-paper';
 import RNPickerSelect from 'react-native-picker-select';
 import Share from 'react-native-share';
-import ViewShot from 'react-native-view-shot';
+import {captureScreen} from 'react-native-view-shot';
 import {getVolumes, getWeightsBy} from './best.service';
 import {BestPageParams} from './BestPage';
 import Chart from './Chart';
@@ -27,7 +28,6 @@ export default function ViewBest() {
   const [metric, setMetric] = useState(Metrics.Weight);
   const [period, setPeriod] = useState(Periods.Monthly);
   const navigation = useNavigation();
-  const viewShot = useRef<ViewShot>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -39,14 +39,12 @@ export default function ViewBest() {
         headerRight: () => (
           <IconButton
             onPress={() =>
-              viewShot.current?.capture?.().then(async uri => {
+              captureScreen().then(async uri => {
                 const base64 = await FileSystem.readFile(uri, 'base64');
                 const url = `data:image/jpeg;base64,${base64}`;
                 Share.open({
-                  message: params.best.name,
                   type: 'image/jpeg',
                   url,
-                  failOnCancel: false,
                 });
               })
             }
@@ -68,7 +66,7 @@ export default function ViewBest() {
   }, [params.best.name, metric, period]);
 
   return (
-    <ViewShot style={{padding: PADDING}} ref={viewShot}>
+    <View style={{padding: PADDING}}>
       <RNPickerSelect
         onValueChange={setMetric}
         items={[
@@ -106,6 +104,6 @@ export default function ViewBest() {
           xFormat={(_value, index) => formatMonth(weights[index].created!)}
         />
       )}
-    </ViewShot>
+    </View>
   );
 }
