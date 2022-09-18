@@ -4,19 +4,23 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList} from 'react-native';
+import {FlatList, Image} from 'react-native';
 import {List} from 'react-native-paper';
 import {getBestReps, getBestWeights} from './best.service';
 import {BestPageParams} from './BestPage';
 import Page from './Page';
 import Set from './set';
+import Settings from './settings';
+import {getSettings} from './settings.service';
 
 export default function BestList() {
   const [bests, setBests] = useState<Set[]>([]);
   const [search, setSearch] = useState('');
+  const [settings, setSettings] = useState<Settings>();
   const navigation = useNavigation<NavigationProp<BestPageParams>>();
 
   const refresh = useCallback(async () => {
+    getSettings().then(setSettings);
     const weights = await getBestWeights(search);
     console.log(`${BestList.name}.refresh:`, {length: weights.length});
     let newBest: Set[] = [];
@@ -44,8 +48,14 @@ export default function BestList() {
     <List.Item
       key={item.name}
       title={item.name}
-      description={`${item.reps} x ${item.weight}${item.unit}`}
+      description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
       onPress={() => navigation.navigate('ViewBest', {best: item})}
+      left={() =>
+        (settings?.images && item.image && (
+          <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
+        )) ||
+        null
+      }
     />
   );
 

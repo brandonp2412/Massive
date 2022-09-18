@@ -39,33 +39,30 @@ export default function WorkoutItem({
         onPress={() => navigation.navigate('EditWorkout', {value: item})}
         title={item.name}
         onLongPress={longPress}
+        left={() =>
+          item.image && (
+            <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
+          )
+        }
         right={() => (
-          <>
-            {item.image && (
-              <Image
-                source={{uri: item.image}}
-                style={{height: 75, width: 75}}
+          <Text
+            style={{
+              alignSelf: 'center',
+            }}>
+            <Menu
+              anchor={anchor}
+              visible={showMenu}
+              onDismiss={() => setShowMenu(false)}>
+              <Menu.Item
+                icon="trash"
+                onPress={() => {
+                  setShowRemove(item.name);
+                  setShowMenu(false);
+                }}
+                title="Delete"
               />
-            )}
-            <Text
-              style={{
-                alignSelf: 'center',
-              }}>
-              <Menu
-                anchor={anchor}
-                visible={showMenu}
-                onDismiss={() => setShowMenu(false)}>
-                <Menu.Item
-                  icon="trash"
-                  onPress={() => {
-                    setShowRemove(item.name);
-                    setShowMenu(false);
-                  }}
-                  title="Delete"
-                />
-              </Menu>
-            </Text>
-          </>
+            </Menu>
+          </Text>
         )}
       />
       <ConfirmDialog

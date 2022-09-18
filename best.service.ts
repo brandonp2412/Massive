@@ -79,7 +79,7 @@ export const getBestReps = async (
   weight: number,
 ): Promise<Set[]> => {
   const select = `
-    SELECT name, MAX(reps) as reps, unit, weight 
+    SELECT name, MAX(reps) as reps, unit, weight, image
     FROM sets
     WHERE name = ? AND weight = ? AND NOT hidden
     GROUP BY name;
