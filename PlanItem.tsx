@@ -35,8 +35,12 @@ export default function PlanItem({
     <>
       <List.Item
         onPress={() => navigation.navigate('EditPlan', {plan: item})}
-        title={item.days.replace(/,/g, ', ')}
-        description={item.workouts.replace(/,/g, ', ')}
+        title={
+          item.days
+            ? item.days.replace(/,/g, ', ')
+            : item.workouts.replace(/,/g, ', ')
+        }
+        description={item.days ? item.workouts.replace(/,/g, ', ') : null}
         onLongPress={longPress}
         right={() => (
           <Menu anchor={anchor} visible={show} onDismiss={() => setShow(false)}>

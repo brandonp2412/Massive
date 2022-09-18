@@ -18,23 +18,27 @@ import {DAYS} from './time';
 
 export default function EditPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>();
-  const [days, setDays] = useState<string[]>(params.plan.days.split(','));
+  const {plan} = params;
+  const [days, setDays] = useState<string[]>(
+    plan.days ? plan.days.split(',') : [],
+  );
   const [workouts, setWorkouts] = useState<string[]>(
-    params.plan.workouts.split(','),
+    plan.workouts ? plan.workouts.split(',') : [],
   );
   const [names, setNames] = useState<string[]>([]);
   const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   useFocusEffect(
     useCallback(() => {
+      console.log(`${EditPlan.name}.focus:`, {plan});
       navigation.getParent()?.setOptions({
         headerLeft: () => (
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
         headerRight: () => null,
-        title: params.plan.id ? 'Edit plan' : 'Create plan',
+        title: plan.id ? 'Edit plan' : 'Create plan',
       });
-    }, [navigation, params.plan.id]),
+    }, [navigation, plan]),
   );
 
   useEffect(() => {
@@ -45,19 +49,19 @@ export default function EditPlan() {
   }, []);
 
   const save = useCallback(async () => {
-    console.log(`${EditPlan.name}.save`, {days, workouts, params});
+    console.log(`${EditPlan.name}.save`, {days, workouts, plan});
     if (!days || !workouts) return;
     const newWorkouts = workouts.filter(workout => workout).join(',');
     const newDays = days.filter(day => day).join(',');
-    if (!params.plan.id) await addPlan({days: newDays, workouts: newWorkouts});
+    if (!plan.id) await addPlan({days: newDays, workouts: newWorkouts});
     else
       await updatePlan({
         days: newDays,
         workouts: newWorkouts,
-        id: params.plan.id,
+        id: plan.id,
       });
     navigation.goBack();
-  }, [days, workouts, params, navigation]);
+  }, [days, workouts, plan, navigation]);
 
   const toggleWorkout = useCallback(
     (on: boolean, name: string) => {
@@ -116,6 +120,7 @@ export default function EditPlan() {
       </ScrollView>
       {names.length === 0 ? (
         <Button
+          disabled={workouts.length === 0 && days.length === 0}
           mode="contained"
           onPress={() => {
             navigation.goBack();
@@ -128,6 +133,7 @@ export default function EditPlan() {
         </Button>
       ) : (
         <Button
+          disabled={workouts.length === 0 && days.length === 0}
           style={{marginTop: MARGIN}}
           mode="contained"
           icon="save"
