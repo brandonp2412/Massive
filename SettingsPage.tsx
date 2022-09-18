@@ -77,8 +77,7 @@ export default function SettingsPage() {
   const changePredict = useCallback(
     (enabled: boolean) => {
       setPredict(enabled);
-      if (enabled)
-        toast('Predicting your next set based on todays plan.', 4000);
+      if (enabled) toast('Predict your next set based on todays plan.', 4000);
       else toast('New sets will always be empty.', 4000);
     },
     [setPredict, toast],
