@@ -6,7 +6,6 @@ import com.facebook.react.*
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.soloader.SoLoader
 import com.massive.newarchitecture.MainApplicationReactNativeHost
-import org.pgsqlite.SQLitePluginPackage
 import java.lang.reflect.InvocationTargetException
 
 class MainApplication : Application(), ReactApplication {
@@ -17,7 +16,6 @@ class MainApplication : Application(), ReactApplication {
 
         override fun getPackages(): List<ReactPackage> {
             val packages: MutableList<ReactPackage> = PackageList(this).packages
-            packages.add(SQLitePluginPackage())
             packages.add(MassivePackage())
             return packages
         }
