@@ -85,21 +85,25 @@ export default function EditWorkout() {
   return (
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
-        {uri ? (
+        {uri && (
           <>
             <Pressable style={{marginBottom: MARGIN}} onPress={changeImage}>
               <Card.Cover source={{uri}} />
             </Pressable>
-            <Button onPress={onRemoveImage}>Remove image</Button>
+            <Button
+              icon="trash"
+              style={{marginBottom: MARGIN}}
+              onPress={onRemoveImage}>
+              Remove image
+            </Button>
           </>
-        ) : (
-          <Button
-            style={{marginBottom: MARGIN}}
-            onPress={changeImage}
-            icon="image">
-            Image
-          </Button>
         )}
+        <Button
+          style={{marginBottom: MARGIN}}
+          onPress={changeImage}
+          icon="image">
+          Change image
+        </Button>
         <MassiveInput
           label={params.value.name || 'Name'}
           value={name}
