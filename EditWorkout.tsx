@@ -5,9 +5,10 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {Pressable, ScrollView, View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
-import {Button, Card, IconButton} from 'react-native-paper';
+import {Button, Card, IconButton, TouchableRipple} from 'react-native-paper';
+import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
 import {updateWorkouts} from './plan.service';
@@ -20,6 +21,7 @@ import {WorkoutsPageParams} from './WorkoutsPage';
 export default function EditWorkout() {
   const [name, setName] = useState('');
   const [removeImage, setRemoveImage] = useState(false);
+  const [showRemove, setShowRemove] = useState(false);
   const [steps, setSteps] = useState('');
   const [uri, setUri] = useState<string>();
   const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
@@ -77,33 +79,15 @@ export default function EditWorkout() {
     if (fileCopyUri) setUri(fileCopyUri);
   }, []);
 
-  const onRemoveImage = useCallback(async () => {
+  const handleRemove = useCallback(async () => {
     setUri('');
     setRemoveImage(true);
+    setShowRemove(false);
   }, []);
 
   return (
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
-        {uri && (
-          <>
-            <Pressable style={{marginBottom: MARGIN}} onPress={changeImage}>
-              <Card.Cover source={{uri}} />
-            </Pressable>
-            <Button
-              icon="trash"
-              style={{marginBottom: MARGIN}}
-              onPress={onRemoveImage}>
-              Remove image
-            </Button>
-          </>
-        )}
-        <Button
-          style={{marginBottom: MARGIN}}
-          onPress={changeImage}
-          icon="image">
-          Change image
-        </Button>
         <MassiveInput
           label={params.value.name || 'Name'}
           value={name}
@@ -116,10 +100,32 @@ export default function EditWorkout() {
           label="Steps"
           multiline
         />
+        {uri ? (
+          <TouchableRipple
+            style={{marginBottom: MARGIN}}
+            onPress={changeImage}
+            onLongPress={() => setShowRemove(true)}>
+            <Card.Cover source={{uri}} />
+          </TouchableRipple>
+        ) : (
+          <Button
+            style={{marginBottom: MARGIN}}
+            onPress={changeImage}
+            icon="image">
+            Image
+          </Button>
+        )}
       </ScrollView>
       <Button mode="contained" icon="save" onPress={save}>
         Save
       </Button>
+      <ConfirmDialog
+        title="Remove image"
+        onOk={handleRemove}
+        show={showRemove}
+        setShow={setShowRemove}>
+        Are you sure you want to remove the image?
+      </ConfirmDialog>
     </View>
   );
 }
