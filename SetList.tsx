@@ -50,7 +50,8 @@ export default function SetList() {
     const todaysSets = await getTodaysSets();
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
     let workout = todaysWorkouts[0];
-    console.log(`${SetList.name}.predict:`, {todaysSets, todaysWorkouts});
+    console.log(`${SetList.name}.predict:`, {todaysSets});
+    console.log(`${SetList.name}.predict:`, {todaysWorkouts});
     if (todaysWorkouts.includes(todaysSets[0]?.name) && todaysSets.length > 0) {
       const count = todaysSets.filter(
         s => s.name === todaysSets[0].name,
@@ -62,7 +63,7 @@ export default function SetList() {
     }
     console.log(`${SetList.name}.predict:`, {workout});
     const best = await getBestSet(workout);
-    console.log(`${SetList.name}.predict:`, {best});
+    console.log(`${SetList.name}.predict:`, {bestName: best.name});
     setSet({...best});
     setWorkouts(todaysWorkouts);
   }, []);
@@ -96,12 +97,7 @@ export default function SetList() {
   const next = useCallback(async () => {
     if (end) return;
     const newOffset = offset + limit;
-    console.log(`${SetList.name}.next:`, {
-      offset,
-      limit,
-      newOffset,
-      search,
-    });
+    console.log(`${SetList.name}.next:`, {offset, newOffset, search});
     const newSets = await getSets({
       search: `%${search}%`,
       limit,
