@@ -62,8 +62,8 @@ export default function ViewBest() {
       getWeightsBy(params.best.name, period).then(setWeights);
     else if (metric === Metrics.Volume)
       getVolumes(params.best.name, period).then(setVolumes);
-
-    console.log(`${ViewBest.name}.useEffect`, {metric, period});
+    console.log(`${ViewBest.name}.useEffect`, {metric});
+    console.log(`${ViewBest.name}.useEffect`, {period});
   }, [params.best.name, metric, period]);
 
   return (
