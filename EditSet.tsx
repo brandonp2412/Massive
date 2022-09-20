@@ -22,20 +22,22 @@ export default function EditSet() {
 
   useFocusEffect(
     useCallback(() => {
+      console.log(`${EditSet.name}.focus:`, params);
       navigation.getParent()?.setOptions({
         headerLeft: () => (
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
         headerRight: null,
-        title: params.set.id ? 'Edit set' : 'Create set',
+        title: typeof params.set.id === 'number' ? 'Edit set' : 'Create set',
       });
-    }, [navigation, params.set.id]),
+    }, [navigation, params]),
   );
 
-  const startTimer = useCallback(async () => {
+  const startTimer = useCallback(async (set: Set) => {
     const settings = await getSettings();
     if (!settings.alarm) return;
-    const milliseconds = settings.minutes * 60 * 1000 + settings.seconds * 1000;
+    const milliseconds =
+      Number(set.minutes) * 60 * 1000 + Number(set.seconds) * 1000;
     NativeModules.AlarmModule.timer(
       milliseconds,
       !!settings.vibrate,
@@ -54,7 +56,8 @@ export default function EditSet() {
 
   const add = useCallback(
     async (set: Set) => {
-      startTimer();
+      console.log(`${EditSet.name}.add`, {set});
+      startTimer(set);
       await addSet(set);
       const settings = await getSettings();
       if (settings.notify === 0) return navigation.goBack();
@@ -70,7 +73,7 @@ export default function EditSet() {
 
   const save = useCallback(
     async (set: Set) => {
-      if (params.set.id) return update(set);
+      if (typeof params.set.id === 'number') return update(set);
       return add(set);
     },
     [update, add, params.set.id],

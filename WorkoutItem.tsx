@@ -35,11 +35,15 @@ export default function WorkoutItem({
     [setShowMenu, setAnchor],
   );
 
+  const minutes = item.minutes.toString().padStart(2, '0');
+  const seconds = item.seconds.toString().padStart(2, '0');
+
   return (
     <>
       <List.Item
         onPress={() => navigation.navigate('EditWorkout', {value: item})}
         title={item.name}
+        description={`${item.sets} sets with ${minutes}:${seconds} rest`}
         onLongPress={longPress}
         left={() =>
           item.image && (

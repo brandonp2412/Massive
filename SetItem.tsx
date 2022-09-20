@@ -26,14 +26,14 @@ export default function SetItem({
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const remove = useCallback(async () => {
-    await deleteSet(item.id);
+    if (typeof item.id === 'number') await deleteSet(item.id);
     setShowMenu(false);
     onRemove();
   }, [setShowMenu, onRemove, item.id]);
 
   const copy = useCallback(() => {
     const set: Set = {...item};
-    set.id = 0;
+    delete set.id;
     setShowMenu(false);
     navigation.navigate('EditSet', {set});
   }, [navigation, item]);

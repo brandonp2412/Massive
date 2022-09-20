@@ -53,7 +53,8 @@ export default function EditPlan() {
     if (!days || !workouts) return;
     const newWorkouts = workouts.filter(workout => workout).join(',');
     const newDays = days.filter(day => day).join(',');
-    if (!plan.id) await addPlan({days: newDays, workouts: newWorkouts});
+    if (typeof plan.id === 'undefined')
+      await addPlan({days: newDays, workouts: newWorkouts});
     else
       await updatePlan({
         days: newDays,

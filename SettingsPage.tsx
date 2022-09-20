@@ -4,7 +4,6 @@ import DocumentPicker from 'react-native-document-picker';
 import {Button, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
-import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
 import MassiveSwitch from './MassiveSwitch';
 import Page from './Page';
@@ -18,9 +17,6 @@ interface Input<T> {
 
 export default function SettingsPage() {
   const [vibrate, setVibrate] = useState(true);
-  const [minutes, setMinutes] = useState<string>('');
-  const [sets, setSets] = useState<string>('3');
-  const [seconds, setSeconds] = useState<string>('');
   const [alarm, setAlarm] = useState(false);
   const [predict, setPredict] = useState(false);
   const [sound, setSound] = useState<string>('');
@@ -34,11 +30,8 @@ export default function SettingsPage() {
   const refresh = useCallback(async () => {
     const settings = await getSettings();
     console.log('SettingsPage.refresh:', {settings});
-    setMinutes(settings.minutes.toString());
-    setSeconds(settings.seconds.toString());
     setAlarm(!!settings.alarm);
     setPredict(!!settings.predict);
-    setSets(settings.sets.toString());
     setVibrate(!!settings.vibrate);
     setSound(settings.sound);
     setNotify(!!settings.notify);
@@ -53,16 +46,13 @@ export default function SettingsPage() {
   useEffect(() => {
     updateSettings({
       vibrate: +vibrate,
-      minutes: +minutes,
-      seconds: +seconds,
       alarm: +alarm,
       predict: +predict,
       sound,
       notify: +notify,
       images: +images,
-      sets: +sets,
     });
-  }, [vibrate, minutes, sets, seconds, alarm, predict, sound, notify, images]);
+  }, [vibrate, alarm, predict, sound, notify, images]);
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
@@ -120,12 +110,6 @@ export default function SettingsPage() {
     [toast],
   );
 
-  const inputs: Input<string>[] = [
-    {name: 'Sets per workout', value: sets, onChange: setSets},
-    {name: 'Rest minutes', value: minutes, onChange: setMinutes},
-    {name: 'Rest seconds', value: seconds, onChange: setSeconds},
-  ];
-
   const switches: Input<boolean>[] = [
     {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
     {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
@@ -136,20 +120,7 @@ export default function SettingsPage() {
 
   return (
     <Page search={search} setSearch={setSearch}>
-      <ScrollView style={{marginTop: MARGIN}}>
-        {inputs
-          .filter(input =>
-            input.name.toLowerCase().includes(search.toLowerCase()),
-          )
-          .map(input => (
-            <MassiveInput
-              key={input.name}
-              label={input.name}
-              value={input.value}
-              keyboardType="numeric"
-              onChangeText={input.onChange}
-            />
-          ))}
+      <ScrollView style={{margin: MARGIN}}>
         {switches
           .filter(input =>
             input.name.toLowerCase().includes(search.toLowerCase()),
@@ -165,7 +136,7 @@ export default function SettingsPage() {
             </React.Fragment>
           ))}
         {'alarm sound'.includes(search.toLowerCase()) && (
-          <Button onPress={changeSound}>
+          <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
             Alarm sound
             {sound
               ? ': ' + sound.split('/')[sound.split('/').length - 1]

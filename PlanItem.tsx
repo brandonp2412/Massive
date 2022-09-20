@@ -18,7 +18,7 @@ export default function PlanItem({
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const remove = useCallback(async () => {
-    if (item.id) await deletePlan(item.id);
+    if (typeof item.id === 'number') await deletePlan(item.id);
     setShow(false);
     onRemove();
   }, [setShow, item.id, onRemove]);

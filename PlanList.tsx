@@ -43,7 +43,7 @@ export default function PlanList() {
   );
 
   const onAdd = () =>
-    navigation.navigate('EditPlan', {plan: {days: '', workouts: '', id: 0}});
+    navigation.navigate('EditPlan', {plan: {days: '', workouts: ''}});
 
   return (
     <Page onAdd={onAdd} search={search} setSearch={setSearch}>

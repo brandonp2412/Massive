@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ScrollView} from 'react-native';
-import {Button, Text} from 'react-native-paper';
+import {ScrollView, View} from 'react-native';
+import {Button} from 'react-native-paper';
 import {MARGIN} from './constants';
 import MassiveInput from './MassiveInput';
 import Set from './set';
@@ -20,18 +20,23 @@ export default function SetForm({
   const [weight, setWeight] = useState(set.weight.toString());
   const [unit, setUnit] = useState(set.unit);
   const [uri, setUri] = useState(set.image);
+  const [minutes, setMinutes] = useState(set.minutes?.toString());
+  const [seconds, setSeconds] = useState(set.seconds?.toString());
   const [selection, setSelection] = useState({
     start: 0,
     end: set.reps.toString().length,
   });
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
+  const unitRef = useRef<any>(null);
+  const minutesRef = useRef<any>(null);
+  const secondsRef = useRef<any>(null);
 
   useEffect(() => {
     console.log('SetForm.useEffect:', {uri, name: set.name});
     if (!uri)
-      getSets({search: set.name, limit: 1, offset: 0}).then(sets =>
-        setUri(sets[0]?.image),
+      getSets({search: set.name, limit: 1, offset: 0}).then(([s]) =>
+        setUri(s?.image),
       );
   }, [uri, set.name]);
 
@@ -44,6 +49,9 @@ export default function SetForm({
       id: set.id,
       unit,
       image: uri,
+      minutes: Number(minutes ?? 3),
+      seconds: Number(seconds ?? 30),
+      sets: set.sets ?? 3,
     });
   };
 
@@ -75,7 +83,7 @@ export default function SetForm({
           keyboardType="numeric"
           value={weight}
           onChangeText={setWeight}
-          onSubmitEditing={handleSubmit}
+          onSubmitEditing={() => unitRef.current?.focus()}
           innerRef={weightRef}
         />
         <MassiveInput
@@ -83,22 +91,35 @@ export default function SetForm({
           label="Unit"
           value={unit}
           onChangeText={setUnit}
-          onSubmitEditing={handleSubmit}
+          onSubmitEditing={() => minutesRef.current?.focus()}
+          innerRef={unitRef}
         />
-        <Text style={{marginBottom: MARGIN}}>
-          {workouts?.map((workout, index) => (
-            <React.Fragment key={workout}>
-              <Text
-                style={{
-                  fontWeight: workout === name ? 'bold' : 'normal',
-                  textDecorationLine: workout === name ? 'underline' : 'none',
-                }}>
-                {workout}
-              </Text>
-              {index === workouts.length - 1 ? '.' : ', '}
-            </React.Fragment>
-          ))}
-        </Text>
+        {workouts && (
+          <MassiveInput
+            label="Todays workout"
+            value={workouts?.join(', ')}
+            editable={false}
+          />
+        )}
+        {!set.id && (
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            <MassiveInput
+              style={{width: '48%'}}
+              label="Rest minutes"
+              value={minutes}
+              onChangeText={setMinutes}
+              innerRef={minutesRef}
+              onSubmitEditing={() => secondsRef.current?.focus()}
+            />
+            <MassiveInput
+              style={{width: '48%', marginLeft: MARGIN}}
+              label="Rest seconds"
+              value={seconds}
+              onChangeText={setSeconds}
+              innerRef={secondsRef}
+            />
+          </View>
+        )}
       </ScrollView>
       <Button
         disabled={!name}

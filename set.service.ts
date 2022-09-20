@@ -26,12 +26,14 @@ export const addSets = async (values: string) => {
 };
 
 export const addSet = async (value: Set) => {
+  const keys = Object.keys(value) as (keyof Set)[];
+  const questions = keys.map(() => '?').join(',');
   const insert = `
-    INSERT INTO sets(name, reps, weight, created, unit, image) 
-    VALUES (?,?,?,strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime'),?, ?)
+    INSERT INTO sets(${keys.join(',')},created) 
+    VALUES (${questions},strftime('%Y-%m-%dT%H:%M:%S','now','localtime'))
   `;
-  const {name, reps, weight, unit, image} = value;
-  return db.executeSql(insert, [name, reps, weight, unit, image]);
+  const values = keys.map(key => value[key]);
+  return db.executeSql(insert, values);
 };
 
 export const deleteSets = async () => {
@@ -90,9 +92,24 @@ export const defaultSet = {
   unit: 'kg',
 };
 
-export const updateSetName = async (oldName: string, newName: string) => {
-  const update = `UPDATE sets SET name = ? WHERE name = ?`;
-  return db.executeSql(update, [newName, oldName]);
+export const updateManySet = async ({
+  oldName,
+  newName,
+  minutes,
+  seconds,
+  sets,
+}: {
+  oldName: string;
+  newName: string;
+  minutes: string;
+  seconds: string;
+  sets: string;
+}) => {
+  const update = `
+    UPDATE sets SET name = ?, minutes = ?, seconds = ?, sets = ? 
+    WHERE name = ?
+  `;
+  return db.executeSql(update, [newName, minutes, seconds, sets, oldName]);
 };
 
 export const updateSetImage = async (name: string, image: string) => {
@@ -112,9 +129,10 @@ export const getDistinctSets = async ({
   offset,
 }: PageParams): Promise<Workout[]> => {
   const select = `
-    SELECT DISTINCT sets.name, sets.image
+    SELECT DISTINCT name, image, sets, minutes, seconds
     FROM sets
     WHERE sets.name LIKE ? 
+    GROUP BY sets.name
     ORDER BY sets.name
     LIMIT ? OFFSET ?
   `;

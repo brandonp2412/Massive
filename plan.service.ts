@@ -20,7 +20,7 @@ export const getTodaysPlan = async (): Promise<Plan[]> => {
   return result.rows.raw();
 };
 
-export const updateWorkouts = async (oldName: string, newName: string) => {
+export const updatePlanWorkouts = async (oldName: string, newName: string) => {
   const update = `
     UPDATE plans SET workouts = REPLACE(workouts, ?, ?) 
       WHERE workouts LIKE ?

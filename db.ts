@@ -79,6 +79,30 @@ const insertWorkouts = `
   INSERT OR IGNORE INTO workouts (name) SELECT DISTINCT name FROM sets;
 `;
 
+const removeSeconds = `
+  ALTER TABLE settings DROP COLUMN seconds
+`;
+
+const removeMinutes = `
+  ALTER TABLE settings DROP COLUMN minutes
+`;
+
+const removeSets = `
+  ALTER TABLE settings DROP COLUMN sets
+`;
+
+const addSets = `
+  ALTER TABLE sets ADD COLUMN sets INTEGER NOT NULL DEFAULT 3
+`;
+
+const addMinutes = `
+  ALTER TABLE sets ADD COLUMN minutes INTEGER NOT NULL DEFAULT 3
+`;
+
+const addSeconds = `
+  ALTER TABLE sets ADD COLUMN seconds INTEGER NOT NULL DEFAULT 30
+`;
+
 export let db: SQLiteDatabase;
 
 export const migrations = async () => {
@@ -94,6 +118,12 @@ export const migrations = async () => {
   await db.executeSql(addImages).catch(() => null);
   await db.executeSql(addSteps).catch(() => null);
   await db.executeSql(insertWorkouts).catch(() => null);
+  await db.executeSql(removeSeconds).catch(() => null);
+  await db.executeSql(removeMinutes).catch(() => null);
+  await db.executeSql(removeSets).catch(() => null);
+  await db.executeSql(addSets).catch(() => null);
+  await db.executeSql(addMinutes).catch(() => null);
+  await db.executeSql(addSeconds).catch(() => null);
   const [result] = await db.executeSql(selectSettings);
   if (result.rows.length === 0) await db.executeSql(insertSettings);
 };

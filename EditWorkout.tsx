@@ -11,20 +11,28 @@ import {Button, Card, IconButton, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
-import {updateWorkouts} from './plan.service';
+import {updatePlanWorkouts} from './plan.service';
 import Set from './set';
-import {addSet, getSets, updateSetImage, updateSetName} from './set.service';
+import {addSet, getSets, updateManySet, updateSetImage} from './set.service';
 import Workout from './workout';
-import {addWorkout, getWorkout, updateSteps} from './workout.service';
+import {
+  addWorkout,
+  getWorkout,
+  updateName,
+  updateSteps,
+} from './workout.service';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
-  const [name, setName] = useState('');
+  const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
+  const [name, setName] = useState(params.value.name);
   const [removeImage, setRemoveImage] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
   const [steps, setSteps] = useState('');
   const [uri, setUri] = useState<string>();
-  const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
+  const [minutes, setMinutes] = useState('');
+  const [seconds, setSeconds] = useState('');
+  const [sets, setSets] = useState('');
   const navigation = useNavigation();
 
   useFocusEffect(
@@ -37,39 +45,60 @@ export default function EditWorkout() {
         title: params.value.name ? params.value.name : 'New workout',
       });
       if (!params.value.name) return;
-      getSets({search: params.value.name, limit: 1, offset: 0}).then(sets =>
-        setUri(sets[0]?.image),
+      getSets({search: params.value.name, limit: 1, offset: 0}).then(
+        ([set]) => {
+          if (!set) return;
+          setUri(set.image);
+          setMinutes(set.minutes?.toString() ?? '3');
+          setSeconds(set.seconds?.toString() ?? '30');
+          setSets(set.sets?.toString() ?? '3');
+        },
       );
+      console.log(`${EditWorkout.name}.focus`, {params});
       getWorkout(params.value.name).then(workout => setSteps(workout.steps));
-    }, [navigation, params.value.name]),
+    }, [navigation, params]),
   );
 
-  const update = useCallback(async () => {
+  const update = async () => {
     console.log(`${EditWorkout.name}.update`, {
       params: params.value.name,
       name,
       uri,
       steps,
     });
-    if (name) {
-      await updateSetName(params.value.name, name);
-      await updateWorkouts(params.value.name, name);
-    }
+    await updateManySet({
+      oldName: params.value.name,
+      newName: name || params.value.name,
+      sets,
+      seconds,
+      minutes,
+    });
+    await updatePlanWorkouts(params.value.name, name || params.value.name);
+    await updateName(params.value.name, name);
     if (uri || removeImage) await updateSetImage(params.value.name, uri || '');
     if (steps) await updateSteps(params.value.name, steps);
     navigation.goBack();
-  }, [navigation, params.value.name, name, uri, steps, removeImage]);
+  };
 
-  const add = useCallback(async () => {
-    await addSet({name, reps: 0, weight: 0, hidden: true, image: uri} as Set);
-    await addWorkout({name, steps} as Workout);
+  const add = async () => {
+    await addSet({
+      name,
+      reps: 0,
+      weight: 0,
+      hidden: true,
+      image: uri,
+      minutes: +minutes,
+      seconds: +seconds,
+      sets: +sets,
+    } as Set);
+    addWorkout({name, steps} as Workout);
     navigation.goBack();
-  }, [navigation, name, steps, uri]);
+  };
 
-  const save = useCallback(async () => {
+  const save = async () => {
     if (params.value.name) return update();
     return add();
-  }, [update, add, params.value.name]);
+  };
 
   const changeImage = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
@@ -88,17 +117,31 @@ export default function EditWorkout() {
   return (
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
-        <MassiveInput
-          label={params.value.name || 'Name'}
-          value={name}
-          onChangeText={setName}
-        />
+        <MassiveInput label="Name" value={name} onChangeText={setName} />
         <MassiveInput
           selectTextOnFocus={false}
           value={steps}
           onChangeText={setSteps}
           label="Steps"
           multiline
+        />
+        <MassiveInput
+          value={sets}
+          onChangeText={setSets}
+          label="Sets per workout"
+          keyboardType="numeric"
+        />
+        <MassiveInput
+          value={minutes}
+          onChangeText={setMinutes}
+          label="Rest minutes"
+          keyboardType="numeric"
+        />
+        <MassiveInput
+          value={seconds}
+          onChangeText={setSeconds}
+          label="Rest seconds"
+          keyboardType="numeric"
         />
         {uri ? (
           <TouchableRipple

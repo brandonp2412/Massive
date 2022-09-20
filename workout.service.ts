@@ -11,11 +11,18 @@ export const getWorkout = async (name: string): Promise<Workout> => {
   return result.rows.raw()[0];
 };
 
+export const updateName = (oldName: string, newName: string) => {
+  const update = `
+    UPDATE workouts SET name = ? WHERE name = ?
+  `;
+  return db.executeSql(update, [newName, oldName]);
+};
+
 export const updateSteps = (name: string, steps: string): Promise<unknown> => {
-  const select = `
+  const update = `
     UPDATE workouts SET steps = ? WHERE name = ?
   `;
-  return db.executeSql(select, [steps, name]);
+  return db.executeSql(update, [steps, name]);
 };
 
 export const addWorkout = (value: Workout) => {

@@ -73,7 +73,7 @@ export default function WorkoutList() {
 
   const onAdd = useCallback(async () => {
     navigation.navigate('EditWorkout', {
-      value: {name: '', sets: 3, image: '', steps: ''},
+      value: {name: '', sets: 3, image: '', steps: ''} as Workout,
     });
   }, [navigation]);
 
