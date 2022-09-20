@@ -81,7 +81,7 @@ export default function WorkoutList() {
     <Page onAdd={onAdd} search={search} setSearch={setSearch}>
       <FlatList
         data={workouts}
-        style={{height: '100%'}}
+        style={{height: '99%'}}
         ListEmptyComponent={
           <List.Item
             title="No workouts yet."

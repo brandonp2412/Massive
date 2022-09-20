@@ -62,6 +62,7 @@ export default function BestList() {
   return (
     <Page search={search} setSearch={setSearch}>
       <FlatList
+        style={{height: '99%'}}
         ListEmptyComponent={
           <List.Item
             title="No exercises yet"

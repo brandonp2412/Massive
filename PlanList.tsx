@@ -48,7 +48,7 @@ export default function PlanList() {
   return (
     <Page onAdd={onAdd} search={search} setSearch={setSearch}>
       <FlatList
-        style={{height: '100%'}}
+        style={{height: '99%'}}
         data={plans}
         renderItem={renderItem}
         keyExtractor={set => set.id?.toString() || ''}

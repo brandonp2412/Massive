@@ -121,7 +121,7 @@ export default function SetList() {
     <Page onAdd={onAdd} search={search} setSearch={setSearch}>
       <FlatList
         data={sets}
-        style={{height: '100%'}}
+        style={{height: '99%'}}
         ListEmptyComponent={
           <List.Item
             title="No sets yet"
