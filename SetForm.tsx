@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import {ScrollView} from 'react-native';
 import {Button} from 'react-native-paper';
-import {MARGIN} from './constants';
 import MassiveInput from './MassiveInput';
 import Set from './set';
 import {getSets} from './set.service';
@@ -20,8 +19,6 @@ export default function SetForm({
   const [weight, setWeight] = useState(set.weight.toString());
   const [unit, setUnit] = useState(set.unit);
   const [uri, setUri] = useState(set.image);
-  const [minutes, setMinutes] = useState(set.minutes?.toString());
-  const [seconds, setSeconds] = useState(set.seconds?.toString());
   const [selection, setSelection] = useState({
     start: 0,
     end: set.reps.toString().length,
@@ -29,8 +26,6 @@ export default function SetForm({
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
   const unitRef = useRef<any>(null);
-  const minutesRef = useRef<any>(null);
-  const secondsRef = useRef<any>(null);
 
   useEffect(() => {
     console.log('SetForm.useEffect:', {uri, name: set.name});
@@ -49,8 +44,8 @@ export default function SetForm({
       id: set.id,
       unit,
       image: uri,
-      minutes: Number(minutes ?? 3),
-      seconds: Number(seconds ?? 30),
+      minutes: Number(set.minutes ?? 3),
+      seconds: Number(set.seconds ?? 30),
       sets: set.sets ?? 3,
     });
   };
@@ -91,34 +86,14 @@ export default function SetForm({
           label="Unit"
           value={unit}
           onChangeText={setUnit}
-          onSubmitEditing={() => minutesRef.current?.focus()}
           innerRef={unitRef}
         />
         {workouts && (
           <MassiveInput
             label="Todays workout"
             value={workouts?.join(', ')}
-            editable={false}
+            disabled
           />
-        )}
-        {!set.id && (
-          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-            <MassiveInput
-              style={{width: '48%'}}
-              label="Rest minutes"
-              value={minutes}
-              onChangeText={setMinutes}
-              innerRef={minutesRef}
-              onSubmitEditing={() => secondsRef.current?.focus()}
-            />
-            <MassiveInput
-              style={{width: '48%', marginLeft: MARGIN}}
-              label="Rest seconds"
-              value={seconds}
-              onChangeText={setSeconds}
-              innerRef={secondsRef}
-            />
-          </View>
         )}
       </ScrollView>
       <Button
