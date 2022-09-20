@@ -116,7 +116,7 @@ export default function EditWorkout() {
           </Button>
         )}
       </ScrollView>
-      <Button mode="contained" icon="save" onPress={save}>
+      <Button disabled={!name} mode="contained" icon="save" onPress={save}>
         Save
       </Button>
       <ConfirmDialog
