@@ -25,3 +25,11 @@ export const addWorkout = (value: Workout) => {
   `;
   return db.executeSql(insert, [value.name, value.steps]);
 };
+
+export const removeWorkout = (name: string) => {
+  const remove = `
+    DELETE FROM workouts
+    WHERE name = ?
+  `;
+  return db.executeSql(remove, [name]);
+};

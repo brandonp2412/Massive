@@ -5,6 +5,7 @@ import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {deleteSetsBy} from './set.service';
 import Workout from './workout';
+import {removeWorkout} from './workout.service';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function WorkoutItem({
@@ -21,6 +22,7 @@ export default function WorkoutItem({
 
   const remove = useCallback(async () => {
     await deleteSetsBy(item.name);
+    await removeWorkout(item.name);
     setShowMenu(false);
     onRemoved();
   }, [setShowMenu, onRemoved, item.name]);
