@@ -79,7 +79,7 @@ export default function SetForm({
           keyboardType="numeric"
           value={weight}
           onChangeText={setWeight}
-          onSubmitEditing={() => unitRef.current?.focus()}
+          onSubmitEditing={handleSubmit}
           innerRef={weightRef}
         />
         {!!settings.showUnit && (
