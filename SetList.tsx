@@ -14,7 +14,7 @@ import {getTodaysPlan} from './plan.service';
 import Set from './set';
 import {defaultSet, getSets, getTodaysSets} from './set.service';
 import SetItem from './SetItem';
-import {getSettings} from './settings.service';
+import {settings} from './settings.service';
 
 const limit = 15;
 
@@ -43,8 +43,8 @@ export default function SetList() {
   }, [search, refresh]);
 
   const predict = useCallback(async () => {
-    const settings = await getSettings();
-    if (!settings.predict) return;
+    console.log(`${SetList.name}.predict:`, {settings});
+    if (!settings.predict) return setSet({...defaultSet});
     const todaysPlan = await getTodaysPlan();
     console.log(`${SetList.name}.predict:`, {todaysPlan});
     if (todaysPlan.length === 0) return;
@@ -78,7 +78,7 @@ export default function SetList() {
       navigation.getParent()?.setOptions({
         headerRight: () => <DrawerMenu name="Home" />,
       });
-      getSettings().then(settings => setImages(!!settings.images));
+      setImages(!!settings.images);
     }, [refresh, predict, navigation]),
   );
 

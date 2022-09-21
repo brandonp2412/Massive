@@ -4,6 +4,7 @@ import {Button} from 'react-native-paper';
 import MassiveInput from './MassiveInput';
 import Set from './set';
 import {getSets} from './set.service';
+import {settings} from './settings.service';
 
 export default function SetForm({
   save,
@@ -81,13 +82,15 @@ export default function SetForm({
           onSubmitEditing={() => unitRef.current?.focus()}
           innerRef={weightRef}
         />
-        <MassiveInput
-          autoCapitalize="none"
-          label="Unit"
-          value={unit}
-          onChangeText={setUnit}
-          innerRef={unitRef}
-        />
+        {!!settings.showUnit && (
+          <MassiveInput
+            autoCapitalize="none"
+            label="Unit"
+            value={unit}
+            onChangeText={setUnit}
+            innerRef={unitRef}
+          />
+        )}
         {workouts && (
           <MassiveInput
             label="Todays workout"

@@ -1,10 +1,11 @@
 import {db} from './db';
 import Settings from './settings';
 
+export let settings: Settings;
+
 export const getSettings = async () => {
   const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
-  const settings: Settings = result.rows.item(0);
-  return settings;
+  settings = result.rows.item(0);
 };
 
 export const updateSettings = async (value: Settings) => {

@@ -13,7 +13,7 @@ import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
 import {addSet, updateSet} from './set.service';
 import SetForm from './SetForm';
-import {getSettings} from './settings.service';
+import {settings} from './settings.service';
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
@@ -34,7 +34,6 @@ export default function EditSet() {
   );
 
   const startTimer = useCallback(async (set: Set) => {
-    const settings = await getSettings();
     if (!settings.alarm) return;
     const milliseconds =
       Number(set.minutes) * 60 * 1000 + Number(set.seconds) * 1000;
@@ -59,8 +58,7 @@ export default function EditSet() {
       console.log(`${EditSet.name}.add`, {set});
       startTimer(set);
       await addSet(set);
-      const settings = await getSettings();
-      if (settings.notify === 0) return navigation.goBack();
+      if (!settings.notify) return navigation.goBack();
       if (
         set.weight > params.set.weight ||
         (set.reps > params.set.reps && set.weight === params.set.weight)

@@ -3,6 +3,7 @@ import {
   openDatabase,
   SQLiteDatabase,
 } from 'react-native-sqlite-storage';
+import {getSettings} from './settings.service';
 
 enablePromise(true);
 
@@ -103,6 +104,10 @@ const addSeconds = `
   ALTER TABLE sets ADD COLUMN seconds INTEGER NOT NULL DEFAULT 30
 `;
 
+const addShowUnit = `
+  ALTER TABLE settings ADD COLUMN showUnit BOOLEAN DEFAULT true;
+`;
+
 export let db: SQLiteDatabase;
 
 export const migrations = async () => {
@@ -124,8 +129,10 @@ export const migrations = async () => {
   await db.executeSql(addSets).catch(() => null);
   await db.executeSql(addMinutes).catch(() => null);
   await db.executeSql(addSeconds).catch(() => null);
+  await db.executeSql(addShowUnit).catch(() => null);
   const [result] = await db.executeSql(selectSettings);
   if (result.rows.length === 0) await db.executeSql(insertSettings);
+  await getSettings();
 };
 
 export interface PageParams {

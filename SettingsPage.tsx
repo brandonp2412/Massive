@@ -1,3 +1,4 @@
+import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {NativeModules, ScrollView} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
@@ -7,7 +8,7 @@ import {MARGIN} from './constants';
 import {SnackbarContext} from './MassiveSnack';
 import MassiveSwitch from './MassiveSwitch';
 import Page from './Page';
-import {getSettings, updateSettings} from './settings.service';
+import {getSettings, settings, updateSettings} from './settings.service';
 
 interface Input<T> {
   name: string;
@@ -25,23 +26,21 @@ export default function SettingsPage() {
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
+  const [showUnit, setShowUnit] = useState(true);
   const {toast} = useContext(SnackbarContext);
 
-  const refresh = useCallback(async () => {
-    const settings = await getSettings();
-    console.log('SettingsPage.refresh:', {settings});
-    setAlarm(!!settings.alarm);
-    setPredict(!!settings.predict);
-    setVibrate(!!settings.vibrate);
-    setSound(settings.sound);
-    setNotify(!!settings.notify);
-    setImages(!!settings.images);
-    NativeModules.AlarmModule.ignoringBattery(setIgnoring);
-  }, []);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  useFocusEffect(
+    useCallback(() => {
+      console.log('SettingsPage.refresh:', {settings});
+      setAlarm(!!settings.alarm);
+      setPredict(!!settings.predict);
+      setVibrate(!!settings.vibrate);
+      setSound(settings.sound);
+      setNotify(!!settings.notify);
+      setImages(!!settings.images);
+      NativeModules.AlarmModule.ignoringBattery(setIgnoring);
+    }, []),
+  );
 
   useEffect(() => {
     updateSettings({
@@ -51,8 +50,10 @@ export default function SettingsPage() {
       sound,
       notify: +notify,
       images: +images,
+      showUnit: +showUnit,
     });
-  }, [vibrate, alarm, predict, sound, notify, images]);
+    getSettings();
+  }, [vibrate, alarm, predict, sound, notify, images, showUnit]);
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
@@ -110,12 +111,22 @@ export default function SettingsPage() {
     [toast],
   );
 
+  const changeUnit = useCallback(
+    (enabled: boolean) => {
+      setShowUnit(enabled);
+      if (enabled) toast('Show option to select unit for sets.', 4000);
+      else toast('Hid the unit option when adding/editing sets.', 4000);
+    },
+    [toast],
+  );
+
   const switches: Input<boolean>[] = [
     {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
     {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
     {name: 'Predict sets', value: predict, onChange: changePredict},
     {name: 'Record notifications', value: notify, onChange: changeNotify},
     {name: 'Show images', value: images, onChange: changeImages},
+    {name: 'Show unit', value: showUnit, onChange: changeUnit},
   ];
 
   return (

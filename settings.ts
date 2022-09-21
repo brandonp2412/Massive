@@ -5,4 +5,5 @@ export default interface Settings {
   sound: string;
   notify: number;
   images: number;
+  showUnit: number;
 }
