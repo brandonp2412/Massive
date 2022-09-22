@@ -1,6 +1,7 @@
-import {db, defaultSet} from './db';
+import {db} from './db';
 import {Periods} from './periods';
 import Set from './set';
+import {defaultSet} from './set.service';
 import Volume from './volume';
 
 export const getBestSet = async (name: string): Promise<Set> => {

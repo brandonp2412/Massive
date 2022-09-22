@@ -140,11 +140,3 @@ export interface PageParams {
   limit: number;
   offset: number;
 }
-
-export const defaultSet = {
-  name: '',
-  id: 0,
-  reps: 10,
-  weight: 20,
-  unit: 'kg',
-};

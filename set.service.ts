@@ -84,9 +84,8 @@ export const getTodaysSets = async (): Promise<Set[]> => {
   return result.rows.raw();
 };
 
-export const defaultSet = {
+export const defaultSet: Set = {
   name: '',
-  id: 0,
   reps: 10,
   weight: 20,
   unit: 'kg',

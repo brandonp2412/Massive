@@ -47,7 +47,7 @@ export default function SetList() {
     if (!settings.predict) return setSet({...defaultSet});
     const todaysPlan = await getTodaysPlan();
     console.log(`${SetList.name}.predict:`, {todaysPlan});
-    if (todaysPlan.length === 0) return;
+    if (todaysPlan.length === 0) return setSet({...defaultSet});
     const todaysSets = await getTodaysSets();
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
     let workout = todaysWorkouts[0];
@@ -114,6 +114,7 @@ export default function SetList() {
   }, [search, end, offset, sets]);
 
   const onAdd = useCallback(async () => {
+    console.log(`${SetList.name}.onAdd`, {set, defaultSet, workouts});
     navigation.navigate('EditSet', {
       set: set || {...defaultSet},
       workouts,
