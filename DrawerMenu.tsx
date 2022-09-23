@@ -11,7 +11,8 @@ import {addPlans, deletePlans, getAllPlans} from './plan.service';
 import {addSets, deleteSets, getAllSets} from './set.service';
 import {write} from './write';
 
-const setFields = 'id,name,reps,weight,created,unit,hidden';
+const setFields =
+  'id,name,reps,weight,created,unit,hidden,sets,minutes,seconds';
 const planFields = 'id,days,workouts';
 
 export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
@@ -26,7 +27,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       .concat(
         sets.map(
           set =>
-            `${set.id},${set.name},${set.reps},${set.weight},${set.created},${set.unit},${set.hidden}`,
+            `${set.id},${set.name},${set.reps},${set.weight},${set.created},${set.unit},${set.hidden},${set.sets},${set.minutes},${set.seconds}`,
         ),
       )
       .join('\n');
@@ -54,16 +55,30 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
     const file = await FileSystem.readFile(result.uri);
     console.log(`${DrawerMenu.name}.${uploadSets.name}:`, file.length);
     const lines = file.split('\n');
-    if (lines[0] != setFields) return toast('Invalid csv.', 3000);
+    console.log(lines[0]);
+    if (!setFields.includes(lines[0])) return toast('Invalid csv.', 3000);
     const values = lines
       .slice(1)
       .filter(line => line)
       .map(set => {
-        const cells = set.split(',');
-        return `('${cells[1]}',${cells[2]},${cells[3]},'${cells[4]}','${cells[5]}',${cells[6]})`;
+        const [
+          ,
+          setName,
+          reps,
+          weight,
+          created,
+          unit,
+          hidden,
+          sets,
+          minutes,
+          seconds,
+        ] = set.split(',');
+        return `('${setName}',${reps},${weight},'${created}','${unit}',${hidden},${
+          sets ?? 3
+        },${minutes ?? 3},${seconds ?? 30})`;
       })
       .join(',');
-    await addSets(values);
+    await addSets(setFields.split(',').slice(1).join(','), values);
     toast('Data imported.', 3000);
     reset({index: 0, routes: [{name}]});
   }, [reset, name, toast]);
@@ -79,8 +94,10 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       .slice(1)
       .filter(line => line)
       .map(set => {
-        const cells = set.split('","').map(cell => cell.replace(/"/g, ''));
-        return `('${cells[1]}','${cells[2]}')`;
+        const [, days, workouts] = set
+          .split('","')
+          .map(cell => cell.replace(/"/g, ''));
+        return `('${days}','${workouts}')`;
       })
       .join(',');
     await addPlans(values);
