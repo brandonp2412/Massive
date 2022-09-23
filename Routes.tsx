@@ -3,9 +3,10 @@ import {useColorScheme} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {Drawer, DrawerParamList} from './App';
 import BestPage from './BestPage';
-import {migrations} from './db';
+import {runMigrations} from './db';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
+import {getSettings} from './settings.service';
 import SettingsPage from './SettingsPage';
 import WorkoutsPage from './WorkoutsPage';
 
@@ -20,7 +21,9 @@ export default function Routes() {
   const dark = useColorScheme() === 'dark';
 
   useEffect(() => {
-    migrations().then(() => setMigrated(true));
+    runMigrations()
+      .then(getSettings)
+      .then(() => setMigrated(true));
   }, []);
 
   if (!migrated) return null;

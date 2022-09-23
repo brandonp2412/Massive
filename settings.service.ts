@@ -6,6 +6,7 @@ export let settings: Settings;
 export const getSettings = async () => {
   const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
   settings = result.rows.item(0);
+  return settings;
 };
 
 export const updateSettings = async (value: Settings) => {

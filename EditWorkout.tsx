@@ -12,15 +12,7 @@ import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
 import {updatePlanWorkouts} from './plan.service';
-import Set from './set';
 import {addSet, getSets, updateManySet, updateSetImage} from './set.service';
-import Workout from './workout';
-import {
-  addWorkout,
-  getWorkout,
-  updateName,
-  updateSteps,
-} from './workout.service';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
@@ -52,31 +44,23 @@ export default function EditWorkout() {
           setMinutes(set.minutes?.toString() ?? '3');
           setSeconds(set.seconds?.toString() ?? '30');
           setSets(set.sets?.toString() ?? '3');
+          setSteps(set.steps ?? '');
         },
       );
-      console.log(`${EditWorkout.name}.focus`, {params});
-      getWorkout(params.value.name).then(workout => setSteps(workout.steps));
     }, [navigation, params]),
   );
 
   const update = async () => {
-    console.log(`${EditWorkout.name}.update`, {
-      params: params.value.name,
-      name,
-      uri,
-      steps,
-    });
     await updateManySet({
       oldName: params.value.name,
       newName: name || params.value.name,
       sets,
       seconds,
       minutes,
+      steps,
     });
     await updatePlanWorkouts(params.value.name, name || params.value.name);
-    await updateName(params.value.name, name);
     if (uri || removeImage) await updateSetImage(params.value.name, uri || '');
-    if (steps) await updateSteps(params.value.name, steps);
     navigation.goBack();
   };
 
@@ -90,8 +74,8 @@ export default function EditWorkout() {
       minutes: +minutes,
       seconds: +seconds,
       sets: +sets,
-    } as Set);
-    addWorkout({name, steps} as Workout);
+      steps,
+    });
     navigation.goBack();
   };
 

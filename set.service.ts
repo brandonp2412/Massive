@@ -17,9 +17,10 @@ export const updateSet = async (value: Set) => {
   ]);
 };
 
-export const addSets = async (values: string) => {
+export const addSets = async (columns: string, values: string) => {
+  console.log({columns, values});
   const insert = `
-    INSERT INTO sets(name,reps,weight,created,unit,hidden) 
+    INSERT INTO sets(${columns}) 
     VALUES ${values}
   `;
   return db.executeSql(insert);
@@ -54,7 +55,7 @@ export const getAllSets = async (): Promise<Set[]> => {
   return result.rows.raw();
 };
 
-export interface PageParams {
+interface PageParams {
   search: string;
   limit: number;
   offset: number;
@@ -97,18 +98,27 @@ export const updateManySet = async ({
   minutes,
   seconds,
   sets,
+  steps,
 }: {
   oldName: string;
   newName: string;
   minutes: string;
   seconds: string;
   sets: string;
+  steps: string;
 }) => {
   const update = `
-    UPDATE sets SET name = ?, minutes = ?, seconds = ?, sets = ? 
+    UPDATE sets SET name = ?, minutes = ?, seconds = ?, sets = ?, steps = ?
     WHERE name = ?
   `;
-  return db.executeSql(update, [newName, minutes, seconds, sets, oldName]);
+  return db.executeSql(update, [
+    newName,
+    minutes,
+    seconds,
+    sets,
+    steps,
+    oldName,
+  ]);
 };
 
 export const updateSetImage = async (name: string, image: string) => {

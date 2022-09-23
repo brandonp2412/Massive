@@ -10,4 +10,5 @@ export default interface Set {
   unit?: string;
   hidden?: boolean;
   image?: string;
+  steps?: string;
 }
