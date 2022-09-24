@@ -26,19 +26,19 @@ export type DrawerParamList = {
 };
 
 export const CombinedDefaultTheme = {
-  ...PaperDefaultTheme,
   ...NavigationDefaultTheme,
+  ...PaperDefaultTheme,
   colors: {
-    ...PaperDefaultTheme.colors,
     ...NavigationDefaultTheme.colors,
+    ...PaperDefaultTheme.colors,
   },
 };
 export const CombinedDarkTheme = {
-  ...PaperDarkTheme,
   ...NavigationDarkTheme,
+  ...PaperDarkTheme,
   colors: {
-    ...PaperDarkTheme.colors,
     ...NavigationDarkTheme.colors,
+    ...PaperDarkTheme.colors,
     primary: '#B3E5fC',
     background: '#0e0e0e',
   },

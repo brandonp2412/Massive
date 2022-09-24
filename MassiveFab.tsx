@@ -11,6 +11,7 @@ export default function MassiveFab(
     <FAB
       {...props}
       icon="add"
+      color={color === '#B3E5fC' ? 'black' : undefined}
       style={{
         position: 'absolute',
         right: 10,
