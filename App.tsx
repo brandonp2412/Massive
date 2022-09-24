@@ -4,7 +4,7 @@ import {
   DefaultTheme as NavigationDefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native';
-import React from 'react';
+import React, {useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {
   DarkTheme as PaperDarkTheme,
@@ -44,20 +44,40 @@ export const CombinedDarkTheme = {
   },
 };
 
+export const CustomTheme = React.createContext({
+  color: '',
+  setColor: (_value: string) => {},
+});
+
 const App = () => {
   const dark = useColorScheme() === 'dark';
+  const [color, setColor] = useState(
+    dark
+      ? CombinedDarkTheme.colors.primary
+      : CombinedDefaultTheme.colors.primary,
+  );
+  const theme = dark
+    ? {
+        ...CombinedDarkTheme,
+        colors: {...CombinedDarkTheme.colors, primary: color},
+      }
+    : {
+        ...CombinedDefaultTheme,
+        colors: {...CombinedDefaultTheme.colors, primary: color},
+      };
 
   return (
-    <Provider
-      theme={dark ? CombinedDarkTheme : CombinedDefaultTheme}
-      settings={{icon: props => <Ionicon {...props} />}}>
-      <NavigationContainer
-        theme={dark ? CombinedDarkTheme : CombinedDefaultTheme}>
-        <MassiveSnack>
-          <Routes />
-        </MassiveSnack>
-      </NavigationContainer>
-    </Provider>
+    <CustomTheme.Provider value={{color, setColor}}>
+      <Provider
+        theme={theme}
+        settings={{icon: props => <Ionicon {...props} />}}>
+        <NavigationContainer theme={theme}>
+          <MassiveSnack>
+            <Routes />
+          </MassiveSnack>
+        </NavigationContainer>
+      </Provider>
+    </CustomTheme.Provider>
   );
 };
 

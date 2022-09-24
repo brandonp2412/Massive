@@ -1,8 +1,8 @@
 import * as shape from 'd3-shape';
-import React from 'react';
-import {useColorScheme, View} from 'react-native';
+import React, {useContext} from 'react';
+import {View} from 'react-native';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
-import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
+import {CustomTheme} from './App';
 import {MARGIN, PADDING} from './constants';
 import Set from './set';
 
@@ -17,7 +17,7 @@ export default function Chart({
   xFormat: (value: any, index: number) => string;
   yFormat: (value: any) => string;
 }) {
-  const dark = useColorScheme() === 'dark';
+  const {color} = useContext(CustomTheme);
   const axesSvg = {fontSize: 10, fill: 'grey'};
   const verticalContentInset = {top: 10, bottom: 10};
   const xAxisHeight = 30;
@@ -39,9 +39,7 @@ export default function Chart({
             contentInset={verticalContentInset}
             curve={shape.curveBasis}
             svg={{
-              stroke: dark
-                ? CombinedDarkTheme.colors.primary
-                : CombinedDefaultTheme.colors.primary,
+              stroke: color,
             }}>
             <Grid />
           </LineChart>

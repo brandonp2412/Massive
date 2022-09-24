@@ -1,8 +1,10 @@
+import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {NativeModules, ScrollView} from 'react-native';
+import {NativeModules, ScrollView, StyleSheet} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Text} from 'react-native-paper';
+import {CustomTheme} from './App';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
 import {SnackbarContext} from './MassiveSnack';
@@ -27,6 +29,7 @@ export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
   const [showUnit, setShowUnit] = useState(true);
+  const {color, setColor} = useContext(CustomTheme);
   const {toast} = useContext(SnackbarContext);
 
   useFocusEffect(
@@ -35,7 +38,7 @@ export default function SettingsPage() {
       setAlarm(!!settings.alarm);
       setPredict(!!settings.predict);
       setVibrate(!!settings.vibrate);
-      setSound(settings.sound);
+      setSound(settings.sound ?? '');
       setNotify(!!settings.notify);
       setImages(!!settings.images);
       NativeModules.AlarmModule.ignoringBattery(setIgnoring);
@@ -51,9 +54,10 @@ export default function SettingsPage() {
       notify: +notify,
       images: +images,
       showUnit: +showUnit,
+      color,
     });
     getSettings();
-  }, [vibrate, alarm, predict, sound, notify, images, showUnit]);
+  }, [vibrate, alarm, predict, sound, notify, images, showUnit, color]);
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
@@ -131,16 +135,16 @@ export default function SettingsPage() {
 
   return (
     <Page search={search} setSearch={setSearch}>
-      <ScrollView style={{margin: MARGIN}}>
+      <ScrollView style={{marginTop: MARGIN}}>
         {switches
           .filter(input =>
             input.name.toLowerCase().includes(search.toLowerCase()),
           )
           .map(input => (
             <React.Fragment key={input.name}>
-              <Text style={{marginBottom: MARGIN}}>{input.name}</Text>
+              <Text style={styles.item}>{input.name}</Text>
               <MassiveSwitch
-                style={{alignSelf: 'flex-start', marginBottom: MARGIN}}
+                style={styles.item}
                 value={input.value}
                 onValueChange={input.onChange}
               />
@@ -153,6 +157,18 @@ export default function SettingsPage() {
               ? ': ' + sound.split('/')[sound.split('/').length - 1]
               : null}
           </Button>
+        )}
+        {'color'.includes(search.toLowerCase()) && (
+          <Picker
+            style={{color}}
+            dropdownIconColor={color}
+            selectedValue={color}
+            onValueChange={value => setColor(value)}>
+            <Picker.Item value="#B3E5fC" label="Cyan theme" color="#B3E5fC" />
+            <Picker.Item value="#8156a7" label="Purple theme" color="#8156a7" />
+            <Picker.Item value="#007AFF" label="Blue theme" color="#007AFF" />
+            <Picker.Item value="#ffc0cb" label="Pink theme" color="#ffc0cb" />
+          </Picker>
         )}
       </ScrollView>
       <ConfirmDialog
@@ -168,3 +184,11 @@ export default function SettingsPage() {
     </Page>
   );
 }
+
+const styles = StyleSheet.create({
+  item: {
+    alignSelf: 'flex-start',
+    marginBottom: MARGIN,
+    marginLeft: MARGIN,
+  },
+});

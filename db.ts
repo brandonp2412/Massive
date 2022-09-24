@@ -88,6 +88,9 @@ const migrations = [
   `
     DROP TABLE workouts
   `,
+  `
+    ALTER TABLE settings ADD COLUMN color TEXT NULL
+  `,
 ];
 
 export let db: SQLiteDatabase;

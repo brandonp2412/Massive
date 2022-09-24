@@ -1,12 +1,13 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {useColorScheme} from 'react-native';
 import {FAB} from 'react-native-paper';
-import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
+import {CombinedDarkTheme, CustomTheme} from './App';
 
 export default function MassiveFab(
   props: Partial<React.ComponentProps<typeof FAB>>,
 ) {
   const dark = useColorScheme() === 'dark';
+  const {color} = useContext(CustomTheme);
 
   return (
     <FAB
@@ -17,9 +18,7 @@ export default function MassiveFab(
         position: 'absolute',
         right: 10,
         bottom: 60,
-        backgroundColor: dark
-          ? CombinedDarkTheme.colors.primary
-          : CombinedDefaultTheme.colors.primary,
+        backgroundColor: color,
       }}
     />
   );

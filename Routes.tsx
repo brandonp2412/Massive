@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {Drawer, DrawerParamList} from './App';
+import {CustomTheme, Drawer, DrawerParamList} from './App';
 import BestPage from './BestPage';
 import {runMigrations} from './db';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
-import {getSettings} from './settings.service';
+import {getSettings, settings} from './settings.service';
 import SettingsPage from './SettingsPage';
 import WorkoutsPage from './WorkoutsPage';
 
@@ -19,12 +19,16 @@ interface Route {
 export default function Routes() {
   const [migrated, setMigrated] = useState(false);
   const dark = useColorScheme() === 'dark';
+  const {setColor} = useContext(CustomTheme);
 
   useEffect(() => {
     runMigrations()
       .then(getSettings)
-      .then(() => setMigrated(true));
-  }, []);
+      .then(() => setMigrated(true))
+      .then(() => {
+        if (settings.color) setColor(settings.color);
+      });
+  }, [setColor]);
 
   if (!migrated) return null;
 
