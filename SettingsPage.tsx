@@ -41,6 +41,7 @@ export default function SettingsPage() {
       setSound(settings.sound ?? '');
       setNotify(!!settings.notify);
       setImages(!!settings.images);
+      setShowUnit(!!settings.showUnit);
       NativeModules.AlarmModule.ignoringBattery(setIgnoring);
     }, []),
   );
