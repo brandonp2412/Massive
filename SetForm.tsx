@@ -92,7 +92,7 @@ export default function SetForm({
             innerRef={unitRef}
           />
         )}
-        {workouts.length > 0 && (
+        {workouts.length > 0 && !!settings.workouts && (
           <MassiveInput
             label="Todays workout"
             value={workouts?.join(', ')}

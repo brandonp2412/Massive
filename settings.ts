@@ -7,4 +7,5 @@ export default interface Settings {
   images?: number;
   showUnit?: number;
   color?: string;
+  workouts: number;
 }

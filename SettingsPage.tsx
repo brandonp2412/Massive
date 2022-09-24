@@ -29,6 +29,7 @@ export default function SettingsPage() {
   const [notify, setNotify] = useState(!!settings.notify);
   const [images, setImages] = useState(!!settings.images);
   const [showUnit, setShowUnit] = useState(!!settings.showUnit);
+  const [workouts, setWorkouts] = useState(!!settings.workouts);
   const {color, setColor} = useContext(CustomTheme);
   const {toast} = useContext(SnackbarContext);
 
@@ -48,9 +49,20 @@ export default function SettingsPage() {
       images: +images,
       showUnit: +showUnit,
       color,
+      workouts: +workouts,
     });
     getSettings();
-  }, [vibrate, alarm, predict, sound, notify, images, showUnit, color]);
+  }, [
+    vibrate,
+    alarm,
+    predict,
+    sound,
+    notify,
+    images,
+    showUnit,
+    color,
+    workouts,
+  ]);
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
@@ -117,6 +129,15 @@ export default function SettingsPage() {
     [toast],
   );
 
+  const changeWorkouts = useCallback(
+    (enabled: boolean) => {
+      setWorkouts(enabled);
+      if (enabled) toast('Show todays workouts when editing a set.', 4000);
+      else toast('Stopped showing todays workouts when editing a set.', 4000);
+    },
+    [toast],
+  );
+
   const switches: Input<boolean>[] = [
     {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
     {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
@@ -124,6 +145,7 @@ export default function SettingsPage() {
     {name: 'Record notifications', value: notify, onChange: changeNotify},
     {name: 'Show images', value: images, onChange: changeImages},
     {name: 'Show unit', value: showUnit, onChange: changeUnit},
+    {name: 'Show todays workout', value: workouts, onChange: changeWorkouts},
   ];
 
   return (
