@@ -157,8 +157,8 @@ class TimerService() : Service() {
     }
 
     companion object {
-        private const val CHANNEL_ID_PENDING = "MassiveTimer"
-        private const val CHANNEL_ID_DONE = "MassiveDone"
+        private const val CHANNEL_ID_PENDING = "Timer"
+        private const val CHANNEL_ID_DONE = "Alarm"
         private const val NOTIFICATION_ID_PENDING = 1
         private const val NOTIFICATION_ID_DONE = 2
     }
