@@ -24,7 +24,7 @@ export default function EditWorkout() {
   const [uri, setUri] = useState(params.value.image);
   const [minutes, setMinutes] = useState(params.value.minutes?.toString());
   const [seconds, setSeconds] = useState(params.value.seconds?.toString());
-  const [sets, setSets] = useState('');
+  const [sets, setSets] = useState(params.value.sets?.toString());
   const navigation = useNavigation();
 
   useFocusEffect(
@@ -44,7 +44,7 @@ export default function EditWorkout() {
     await updateManySet({
       oldName: params.value.name,
       newName: name || params.value.name,
-      sets,
+      sets: sets ?? '3',
       seconds: seconds?.toString() ?? '30',
       minutes: minutes?.toString() ?? '3',
       steps,

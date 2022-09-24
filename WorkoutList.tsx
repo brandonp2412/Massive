@@ -28,6 +28,7 @@ export default function WorkoutList() {
       limit,
       offset: 0,
     });
+    console.log(`${WorkoutList.name}`, {newWorkout: newWorkouts[0]});
     setWorkouts(newWorkouts);
     setOffset(0);
     setEnd(false);
