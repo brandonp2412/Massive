@@ -8,4 +8,5 @@ export default interface Settings {
   showUnit?: number;
   color?: string;
   workouts: number;
+  steps: number;
 }

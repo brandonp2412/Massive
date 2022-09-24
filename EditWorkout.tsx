@@ -13,6 +13,7 @@ import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
 import {updatePlanWorkouts} from './plan.service';
 import {addSet, updateManySet, updateSetImage} from './set.service';
+import {settings} from './settings.service';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
@@ -92,13 +93,15 @@ export default function EditWorkout() {
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
         <MassiveInput label="Name" value={name} onChangeText={setName} />
-        <MassiveInput
-          selectTextOnFocus={false}
-          value={steps}
-          onChangeText={setSteps}
-          label="Steps"
-          multiline
-        />
+        {!!settings.steps && (
+          <MassiveInput
+            selectTextOnFocus={false}
+            value={steps}
+            onChangeText={setSteps}
+            label="Steps"
+            multiline
+          />
+        )}
         <MassiveInput
           value={sets}
           onChangeText={setSets}

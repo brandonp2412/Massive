@@ -30,6 +30,7 @@ export default function SettingsPage() {
   const [images, setImages] = useState(!!settings.images);
   const [showUnit, setShowUnit] = useState(!!settings.showUnit);
   const [workouts, setWorkouts] = useState(!!settings.workouts);
+  const [steps, setSteps] = useState(!!settings.steps);
   const {color, setColor} = useContext(CustomTheme);
   const {toast} = useContext(SnackbarContext);
 
@@ -50,6 +51,7 @@ export default function SettingsPage() {
       showUnit: +showUnit,
       color,
       workouts: +workouts,
+      steps: +steps,
     });
     getSettings();
   }, [
@@ -62,6 +64,7 @@ export default function SettingsPage() {
     showUnit,
     color,
     workouts,
+    steps,
   ]);
 
   const changeAlarmEnabled = useCallback(
@@ -124,7 +127,7 @@ export default function SettingsPage() {
     (enabled: boolean) => {
       setShowUnit(enabled);
       if (enabled) toast('Show option to select unit for sets.', 4000);
-      else toast('Hid the unit option when adding/editing sets.', 4000);
+      else toast('Hid unit option for sets.', 4000);
     },
     [toast],
   );
@@ -132,8 +135,17 @@ export default function SettingsPage() {
   const changeWorkouts = useCallback(
     (enabled: boolean) => {
       setWorkouts(enabled);
-      if (enabled) toast('Show todays workouts when editing a set.', 4000);
-      else toast('Stopped showing todays workouts when editing a set.', 4000);
+      if (enabled) toast('Show workout for sets.', 4000);
+      else toast('Stopped showing workout for sets.', 4000);
+    },
+    [toast],
+  );
+
+  const changeSteps = useCallback(
+    (enabled: boolean) => {
+      setSteps(enabled);
+      if (enabled) toast('Show steps for a workout.', 4000);
+      else toast('Stopped showing steps for workouts.', 4000);
     },
     [toast],
   );
@@ -145,7 +157,8 @@ export default function SettingsPage() {
     {name: 'Record notifications', value: notify, onChange: changeNotify},
     {name: 'Show images', value: images, onChange: changeImages},
     {name: 'Show unit', value: showUnit, onChange: changeUnit},
-    {name: 'Show todays workout', value: workouts, onChange: changeWorkouts},
+    {name: 'Show workouts', value: workouts, onChange: changeWorkouts},
+    {name: 'Show steps', value: steps, onChange: changeSteps},
   ];
 
   return (
@@ -173,7 +186,7 @@ export default function SettingsPage() {
               : null}
           </Button>
         )}
-        {'color'.includes(search.toLowerCase()) && (
+        {'theme'.includes(search.toLowerCase()) && (
           <Picker
             style={{color}}
             dropdownIconColor={color}

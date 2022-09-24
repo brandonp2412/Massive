@@ -97,6 +97,9 @@ const migrations = [
   `
     ALTER TABLE settings ADD COLUMN workouts BOOLEAN DEFAULT 1
   `,
+  `
+    ALTER TABLE settings ADD COLUMN steps BOOLEAN DEFAULT 1
+  `,
 ];
 
 export let db: SQLiteDatabase;
