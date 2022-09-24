@@ -35,7 +35,7 @@ export default function SetItem({
     const set: Set = {...item};
     delete set.id;
     setShowMenu(false);
-    navigation.navigate('EditSet', {set});
+    navigation.navigate('EditSet', {set, workouts: []});
   }, [navigation, item]);
 
   const longPress = useCallback(
@@ -59,7 +59,9 @@ export default function SetItem({
   return (
     <>
       <List.Item
-        onPress={() => navigation.navigate('EditSet', {set: item})}
+        onPress={() =>
+          navigation.navigate('EditSet', {set: item, workouts: []})
+        }
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}

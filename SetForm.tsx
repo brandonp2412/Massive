@@ -13,7 +13,7 @@ export default function SetForm({
 }: {
   set: Set;
   save: (set: Set) => void;
-  workouts?: string[];
+  workouts: string[];
 }) {
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
@@ -91,7 +91,7 @@ export default function SetForm({
             innerRef={unitRef}
           />
         )}
-        {workouts && (
+        {workouts.length > 0 && (
           <MassiveInput
             label="Todays workout"
             value={workouts?.join(', ')}
