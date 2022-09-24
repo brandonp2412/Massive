@@ -7,16 +7,16 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
 import Page from './Page';
+import Set from './set';
 import {getDistinctSets} from './set.service';
 import SetList from './SetList';
-import Workout from './workout';
 import WorkoutItem from './WorkoutItem';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 const limit = 15;
 
 export default function WorkoutList() {
-  const [workouts, setWorkouts] = useState<Workout[]>();
+  const [workouts, setWorkouts] = useState<Set[]>();
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
   const [end, setEnd] = useState(false);
@@ -44,7 +44,7 @@ export default function WorkoutList() {
   );
 
   const renderItem = useCallback(
-    ({item}: {item: Workout}) => (
+    ({item}: {item: Set}) => (
       <WorkoutItem item={item} key={item.name} onRemoved={refresh} />
     ),
     [refresh],
@@ -73,7 +73,7 @@ export default function WorkoutList() {
 
   const onAdd = useCallback(async () => {
     navigation.navigate('EditWorkout', {
-      value: {name: '', sets: 3, image: '', steps: ''} as Workout,
+      value: {name: '', sets: 3, image: '', steps: '', reps: 0, weight: 0},
     });
   }, [navigation]);
 

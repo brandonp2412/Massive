@@ -1,6 +1,5 @@
 import {db} from './db';
 import Set from './set';
-import Workout from './workout';
 
 export const updateSet = async (value: Set) => {
   const update = `
@@ -115,7 +114,7 @@ export const updateManySet = async ({
   minutes: string;
   seconds: string;
   sets: string;
-  steps: string;
+  steps?: string;
 }) => {
   const update = `
     UPDATE sets SET name = ?, minutes = ?, seconds = ?, sets = ?, steps = ?
@@ -146,9 +145,9 @@ export const getDistinctSets = async ({
   search,
   limit,
   offset,
-}: PageParams): Promise<Workout[]> => {
+}: PageParams): Promise<Set[]> => {
   const select = `
-    SELECT DISTINCT name, image, sets, minutes, seconds
+    SELECT name, image, sets, minutes, seconds, steps
     FROM sets
     WHERE sets.name LIKE ? 
     GROUP BY sets.name

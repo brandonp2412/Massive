@@ -12,18 +12,18 @@ import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
 import {updatePlanWorkouts} from './plan.service';
-import {addSet, getSet, updateManySet, updateSetImage} from './set.service';
+import {addSet, updateManySet, updateSetImage} from './set.service';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
   const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
-  const [name, setName] = useState(params.value.name);
   const [removeImage, setRemoveImage] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
-  const [steps, setSteps] = useState('');
-  const [uri, setUri] = useState<string>();
-  const [minutes, setMinutes] = useState('');
-  const [seconds, setSeconds] = useState('');
+  const [name, setName] = useState(params.value.name);
+  const [steps, setSteps] = useState(params.value.steps);
+  const [uri, setUri] = useState(params.value.image);
+  const [minutes, setMinutes] = useState(params.value.minutes?.toString());
+  const [seconds, setSeconds] = useState(params.value.seconds?.toString());
   const [sets, setSets] = useState('');
   const navigation = useNavigation();
 
@@ -37,15 +37,6 @@ export default function EditWorkout() {
         title: params.value.name || 'New workout',
       });
       if (!name) return;
-      getSet(name).then(set => {
-        console.log(`${EditWorkout.name}.focus`, {set, name});
-        if (!set) return;
-        setUri(set.image);
-        setMinutes(set.minutes?.toString() ?? '3');
-        setSeconds(set.seconds?.toString() ?? '30');
-        setSets(set.sets?.toString() ?? '3');
-        setSteps(set.steps ?? '');
-      });
     }, [navigation, name, params.value.name]),
   );
 
@@ -54,8 +45,8 @@ export default function EditWorkout() {
       oldName: params.value.name,
       newName: name || params.value.name,
       sets,
-      seconds,
-      minutes,
+      seconds: seconds?.toString() ?? '30',
+      minutes: minutes?.toString() ?? '3',
       steps,
     });
     await updatePlanWorkouts(params.value.name, name || params.value.name);
@@ -70,9 +61,9 @@ export default function EditWorkout() {
       weight: 0,
       hidden: true,
       image: uri,
-      minutes: +minutes,
-      seconds: +seconds,
-      sets: +sets,
+      minutes: minutes ? +minutes : 3,
+      seconds: seconds ? +seconds : 30,
+      sets: sets ? +sets : 3,
       steps,
     });
     navigation.goBack();

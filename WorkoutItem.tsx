@@ -3,15 +3,15 @@ import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
+import Set from './set';
 import {deleteSetsBy} from './set.service';
-import Workout from './workout';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function WorkoutItem({
   item,
   onRemoved,
 }: {
-  item: Workout;
+  item: Set;
   onRemoved: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -33,8 +33,8 @@ export default function WorkoutItem({
     [setShowMenu, setAnchor],
   );
 
-  const minutes = item.minutes.toString().padStart(2, '0');
-  const seconds = item.seconds.toString().padStart(2, '0');
+  const minutes = item.minutes?.toString().padStart(2, '0');
+  const seconds = item.seconds?.toString().padStart(2, '0');
 
   return (
     <>

@@ -5,13 +5,13 @@ import React from 'react';
 import {IconButton} from 'react-native-paper';
 import {DrawerParamList} from './App';
 import EditWorkout from './EditWorkout';
-import Workout from './workout';
+import Set from './set';
 import WorkoutList from './WorkoutList';
 
 export type WorkoutsPageParams = {
   WorkoutList: {};
   EditWorkout: {
-    value: Workout;
+    value: Set;
   };
 };
 const Stack = createStackNavigator<WorkoutsPageParams>();
