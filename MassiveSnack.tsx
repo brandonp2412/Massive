@@ -7,7 +7,11 @@ export const SnackbarContext = React.createContext<{
   toast: (value: string, timeout: number) => void;
 }>({toast: () => null});
 
-const MassiveSnack = ({children}: {children: JSX.Element[] | JSX.Element}) => {
+export default function MassiveSnack({
+  children,
+}: {
+  children: JSX.Element[] | JSX.Element;
+}) {
   const [snackbar, setSnackbar] = useState('');
   const [timeoutId, setTimeoutId] = useState(0);
   const dark = useColorScheme() === 'dark';
@@ -37,6 +41,4 @@ const MassiveSnack = ({children}: {children: JSX.Element[] | JSX.Element}) => {
       </Snackbar>
     </>
   );
-};
-
-export default MassiveSnack;
+}

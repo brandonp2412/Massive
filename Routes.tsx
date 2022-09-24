@@ -1,20 +1,15 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {CustomTheme, Drawer, DrawerParamList} from './App';
+import {CustomTheme, Drawer} from './App';
 import BestPage from './BestPage';
 import {runMigrations} from './db';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
+import Route from './route';
 import {getSettings, settings} from './settings.service';
 import SettingsPage from './SettingsPage';
 import WorkoutsPage from './WorkoutsPage';
-
-interface Route {
-  name: keyof DrawerParamList;
-  component: React.ComponentType<any>;
-  icon: string;
-}
 
 export default function Routes() {
   const [migrated, setMigrated] = useState(false);
