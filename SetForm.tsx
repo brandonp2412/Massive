@@ -96,7 +96,7 @@ export default function SetForm({
           <MassiveInput
             label="Todays workout"
             value={workouts?.join(', ')}
-            disabled
+            editable={false}
           />
         )}
       </ScrollView>
