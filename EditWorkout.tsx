@@ -12,7 +12,7 @@ import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
 import {updatePlanWorkouts} from './plan.service';
-import {addSet, getSets, updateManySet, updateSetImage} from './set.service';
+import {addSet, getSet, updateManySet, updateSetImage} from './set.service';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
@@ -34,20 +34,19 @@ export default function EditWorkout() {
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
         headerRight: null,
-        title: params.value.name ? params.value.name : 'New workout',
+        title: params.value.name || 'New workout',
       });
-      if (!params.value.name) return;
-      getSets({search: params.value.name, limit: 1, offset: 0}).then(
-        ([set]) => {
-          if (!set) return;
-          setUri(set.image);
-          setMinutes(set.minutes?.toString() ?? '3');
-          setSeconds(set.seconds?.toString() ?? '30');
-          setSets(set.sets?.toString() ?? '3');
-          setSteps(set.steps ?? '');
-        },
-      );
-    }, [navigation, params]),
+      if (!name) return;
+      getSet(name).then(set => {
+        console.log(`${EditWorkout.name}.focus`, {set, name});
+        if (!set) return;
+        setUri(set.image);
+        setMinutes(set.minutes?.toString() ?? '3');
+        setSeconds(set.seconds?.toString() ?? '30');
+        setSets(set.sets?.toString() ?? '3');
+        setSteps(set.steps ?? '');
+      });
+    }, [navigation, name, params.value.name]),
   );
 
   const update = async () => {
