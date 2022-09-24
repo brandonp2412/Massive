@@ -10,6 +10,7 @@ export const getSettings = async () => {
 };
 
 export const updateSettings = async (value: Settings) => {
+  console.log(`${updateSettings.name}`, {value});
   const keys = Object.keys(value) as (keyof Settings)[];
   const sets = keys.map(key => `${key}=?`).join(',');
   const update = `UPDATE settings SET ${sets}`;

@@ -19,29 +19,21 @@ interface Input<T> {
 }
 
 export default function SettingsPage() {
-  const [vibrate, setVibrate] = useState(true);
-  const [alarm, setAlarm] = useState(false);
-  const [predict, setPredict] = useState(false);
-  const [sound, setSound] = useState<string>('');
-  const [notify, setNotify] = useState(false);
-  const [images, setImages] = useState(false);
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
-  const [showUnit, setShowUnit] = useState(true);
+  const [vibrate, setVibrate] = useState(!!settings.vibrate);
+  const [alarm, setAlarm] = useState(!!settings.alarm);
+  const [predict, setPredict] = useState(!!settings.predict);
+  const [sound, setSound] = useState(settings.sound);
+  const [notify, setNotify] = useState(!!settings.notify);
+  const [images, setImages] = useState(!!settings.images);
+  const [showUnit, setShowUnit] = useState(!!settings.showUnit);
   const {color, setColor} = useContext(CustomTheme);
   const {toast} = useContext(SnackbarContext);
 
   useFocusEffect(
     useCallback(() => {
-      console.log('SettingsPage.refresh:', {settings});
-      setAlarm(!!settings.alarm);
-      setPredict(!!settings.predict);
-      setVibrate(!!settings.vibrate);
-      setSound(settings.sound ?? '');
-      setNotify(!!settings.notify);
-      setImages(!!settings.images);
-      setShowUnit(!!settings.showUnit);
       NativeModules.AlarmModule.ignoringBattery(setIgnoring);
     }, []),
   );
