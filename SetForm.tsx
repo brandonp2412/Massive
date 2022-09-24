@@ -60,6 +60,7 @@ export default function SetForm({
           onChangeText={setName}
           autoCorrect={false}
           autoFocus={!name}
+          blurOnSubmit={false}
           onSubmitEditing={() => repsRef.current?.focus()}
         />
         <MassiveInput
