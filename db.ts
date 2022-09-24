@@ -91,6 +91,9 @@ const migrations = [
   `
     ALTER TABLE settings ADD COLUMN color TEXT NULL
   `,
+  `
+    UPDATE settings SET showUnit = 1
+  `,
 ];
 
 export let db: SQLiteDatabase;
