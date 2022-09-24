@@ -35,7 +35,7 @@ export default function SetItem({
     const set: Set = {...item};
     delete set.id;
     setShowMenu(false);
-    navigation.navigate('EditSet', {set, workouts: []});
+    navigation.navigate('EditSet', {set, workouts: [], count: 0});
   }, [navigation, item]);
 
   const longPress = useCallback(

@@ -21,6 +21,7 @@ const limit = 15;
 export default function SetList() {
   const [sets, setSets] = useState<Set[]>();
   const [set, setSet] = useState<Set>();
+  const [count, setCount] = useState(0);
   const [workouts, setWorkouts] = useState<string[]>([]);
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
@@ -29,20 +30,8 @@ export default function SetList() {
   const [images, setImages] = useState(true);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
-  const refresh = useCallback(async () => {
-    const newSets = await getSets({search: `%${search}%`, limit, offset: 0});
-    console.log(`${SetList.name}.refresh:`, {newSets});
-    if (newSets.length === 0) return setSets([]);
-    setSets(newSets);
-    setOffset(0);
-    setEnd(false);
-  }, [search]);
-
-  useEffect(() => {
-    refresh();
-  }, [search, refresh]);
-
   const predict = useCallback(async () => {
+    setCount(0);
     console.log(`${SetList.name}.predict:`, {settings});
     if (!settings.predict) return setSet({...defaultSet});
     const todaysPlan = await getTodaysPlan();
@@ -55,15 +44,17 @@ export default function SetList() {
     console.log(`${SetList.name}.predict:`, {todaysWorkouts});
     let best = await getBestSet(workout);
     if (todaysWorkouts.includes(todaysSets[0]?.name) && todaysSets.length > 0) {
-      const count = todaysSets.filter(
+      const _count = todaysSets.filter(
         s => s.name === todaysSets[0].name,
       ).length;
       workout = todaysSets[0].name;
       best = await getBestSet(workout);
-      if (count >= Number(best.sets))
+      if (_count >= Number(best.sets))
         best = await getBestSet(
           todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1],
         );
+      if (best.name === '') setCount(0);
+      else setCount(_count);
     }
     console.log(`${SetList.name}.predict:`, {workout});
     console.log(`${SetList.name}.predict:`, {best});
@@ -71,16 +62,29 @@ export default function SetList() {
     setWorkouts(todaysWorkouts);
   }, []);
 
+  const refresh = useCallback(async () => {
+    predict();
+    const newSets = await getSets({search: `%${search}%`, limit, offset: 0});
+    console.log(`${SetList.name}.refresh:`, {newSets});
+    if (newSets.length === 0) return setSets([]);
+    setSets(newSets);
+    setOffset(0);
+    setEnd(false);
+  }, [search, predict]);
+
   useFocusEffect(
     useCallback(() => {
       refresh();
-      predict();
       navigation.getParent()?.setOptions({
         headerRight: () => <DrawerMenu name="Home" />,
       });
       setImages(!!settings.images);
-    }, [refresh, predict, navigation]),
+    }, [refresh, navigation]),
   );
+
+  useEffect(() => {
+    refresh();
+  }, [search, refresh]);
 
   const renderItem = useCallback(
     ({item}: {item: Set}) => (
@@ -118,8 +122,9 @@ export default function SetList() {
     navigation.navigate('EditSet', {
       set: set || {...defaultSet},
       workouts,
+      count,
     });
-  }, [navigation, set, workouts]);
+  }, [navigation, set, workouts, count]);
 
   return (
     <Page onAdd={onAdd} search={search} setSearch={setSearch}>

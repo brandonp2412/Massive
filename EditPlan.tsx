@@ -11,8 +11,8 @@ import {Button, IconButton} from 'react-native-paper';
 import {MARGIN, PADDING} from './constants';
 import {DrawerParamList} from './drawer-param-list';
 import MassiveSwitch from './MassiveSwitch';
+import {PlanPageParams} from './plan-page-params';
 import {addPlan, updatePlan} from './plan.service';
-import {PlanPageParams} from './PlanPage';
 import {getNames} from './set.service';
 import {DAYS} from './time';
 

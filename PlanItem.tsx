@@ -3,8 +3,8 @@ import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {List, Menu} from 'react-native-paper';
 import {Plan} from './plan';
+import {PlanPageParams} from './plan-page-params';
 import {deletePlan} from './plan.service';
-import {PlanPageParams} from './PlanPage';
 
 export default function PlanItem({
   item,

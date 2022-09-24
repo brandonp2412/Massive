@@ -9,9 +9,9 @@ import {List} from 'react-native-paper';
 import DrawerMenu from './DrawerMenu';
 import Page from './Page';
 import {Plan} from './plan';
+import {PlanPageParams} from './plan-page-params';
 import {getPlans} from './plan.service';
 import PlanItem from './PlanItem';
-import {PlanPageParams} from './PlanPage';
 
 export default function PlanList() {
   const [search, setSearch] = useState('');

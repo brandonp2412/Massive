@@ -5,5 +5,6 @@ export type HomePageParams = {
   EditSet: {
     set: Set;
     workouts: string[];
+    count: number;
   };
 };

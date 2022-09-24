@@ -17,26 +17,30 @@ import {settings} from './settings.service';
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
+  const {set, count, workouts} = params;
   const navigation = useNavigation();
   const {toast} = useContext(SnackbarContext);
 
   useFocusEffect(
     useCallback(() => {
-      console.log(`${EditSet.name}.focus:`, params);
+      console.log(`${EditSet.name}.focus:`, set);
+      let title = 'Create set';
+      if (typeof set.id === 'number') title = 'Edit set';
+      else if (count > 0) title = `${set.name} (${count + 1} / ${set.sets})`;
       navigation.getParent()?.setOptions({
         headerLeft: () => (
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
         ),
         headerRight: null,
-        title: typeof params.set.id === 'number' ? 'Edit set' : 'Create set',
+        title,
       });
-    }, [navigation, params]),
+    }, [navigation, set, count]),
   );
 
-  const startTimer = useCallback(async (set: Set) => {
+  const startTimer = useCallback(async (_set: Set) => {
     if (!settings.alarm) return;
     const milliseconds =
-      Number(set.minutes) * 60 * 1000 + Number(set.seconds) * 1000;
+      Number(_set.minutes) * 60 * 1000 + Number(_set.seconds) * 1000;
     NativeModules.AlarmModule.timer(
       milliseconds,
       !!settings.vibrate,
@@ -45,41 +49,41 @@ export default function EditSet() {
   }, []);
 
   const update = useCallback(
-    async (set: Set) => {
-      console.log(`${EditSet.name}.update`, set);
-      await updateSet(set);
+    async (_set: Set) => {
+      console.log(`${EditSet.name}.update`, _set);
+      await updateSet(_set);
       navigation.goBack();
     },
     [navigation],
   );
 
   const add = useCallback(
-    async (set: Set) => {
-      console.log(`${EditSet.name}.add`, {set});
-      startTimer(set);
-      await addSet(set);
+    async (_set: Set) => {
+      console.log(`${EditSet.name}.add`, {set: _set});
+      startTimer(_set);
+      await addSet(_set);
       if (!settings.notify) return navigation.goBack();
       if (
-        set.weight > params.set.weight ||
-        (set.reps > params.set.reps && set.weight === params.set.weight)
+        _set.weight > set.weight ||
+        (_set.reps > set.reps && _set.weight === set.weight)
       )
         toast("Great work King, that's a new record!", 3000);
       navigation.goBack();
     },
-    [navigation, startTimer, params.set, toast],
+    [navigation, startTimer, set, toast],
   );
 
   const save = useCallback(
-    async (set: Set) => {
-      if (typeof params.set.id === 'number') return update(set);
-      return add(set);
+    async (_set: Set) => {
+      if (typeof set.id === 'number') return update(_set);
+      return add(_set);
     },
-    [update, add, params.set.id],
+    [update, add, set.id],
   );
 
   return (
     <View style={{padding: PADDING}}>
-      <SetForm save={save} set={params.set} workouts={params.workouts} />
+      <SetForm save={save} set={set} workouts={workouts} />
     </View>
   );
 }
