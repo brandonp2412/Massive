@@ -3,8 +3,8 @@ import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
-import {DrawerParamList} from './App';
 import BestList from './BestList';
+import {DrawerParamList} from './drawer-param-list';
 import Set from './set';
 import ViewBest from './ViewBest';
 

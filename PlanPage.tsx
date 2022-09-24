@@ -3,18 +3,12 @@ import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
-import {DrawerParamList} from './App';
+import {DrawerParamList} from './drawer-param-list';
 import EditPlan from './EditPlan';
-import {Plan} from './plan';
+import {PlanPageParams} from './plan-page-params';
 import PlanList from './PlanList';
 
 const Stack = createStackNavigator<PlanPageParams>();
-export type PlanPageParams = {
-  PlanList: {};
-  EditPlan: {
-    plan: Plan;
-  };
-};
 
 export default function PlanPage() {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();

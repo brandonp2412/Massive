@@ -3,7 +3,7 @@ import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
-import {DrawerParamList} from './App';
+import {DrawerParamList} from './drawer-param-list';
 import EditWorkout from './EditWorkout';
 import Set from './set';
 import WorkoutList from './WorkoutList';

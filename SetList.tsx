@@ -8,7 +8,7 @@ import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
 import {getBestSet} from './best.service';
 import DrawerMenu from './DrawerMenu';
-import {HomePageParams} from './HomePage';
+import {HomePageParams} from './home-page-params';
 import Page from './Page';
 import {getTodaysPlan} from './plan.service';
 import Set from './set';

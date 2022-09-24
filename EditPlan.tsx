@@ -8,8 +8,8 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, IconButton} from 'react-native-paper';
-import {DrawerParamList} from './App';
 import {MARGIN, PADDING} from './constants';
+import {DrawerParamList} from './drawer-param-list';
 import MassiveSwitch from './MassiveSwitch';
 import {addPlan, updatePlan} from './plan.service';
 import {PlanPageParams} from './PlanPage';

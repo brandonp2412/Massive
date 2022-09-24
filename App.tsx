@@ -12,18 +12,11 @@ import {
   Provider,
 } from 'react-native-paper';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import {DrawerParamList} from './drawer-param-list';
 import MassiveSnack from './MassiveSnack';
 import Routes from './Routes';
 
 export const Drawer = createDrawerNavigator<DrawerParamList>();
-export type DrawerParamList = {
-  Home: {};
-  Settings: {};
-  Best: {};
-  Plans: {};
-  Workouts: {};
-  Loading: {};
-};
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,

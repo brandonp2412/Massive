@@ -8,7 +8,7 @@ import React, {useCallback, useContext} from 'react';
 import {NativeModules, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {PADDING} from './constants';
-import {HomePageParams} from './HomePage';
+import {HomePageParams} from './home-page-params';
 import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
 import {addSet, updateSet} from './set.service';

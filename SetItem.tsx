@@ -2,7 +2,7 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {Divider, List, Menu, Text} from 'react-native-paper';
-import {HomePageParams} from './HomePage';
+import {HomePageParams} from './home-page-params';
 import Set from './set';
 import {deleteSet} from './set.service';
 

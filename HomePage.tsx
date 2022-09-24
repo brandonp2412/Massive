@@ -3,19 +3,12 @@ import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
-import {DrawerParamList} from './App';
+import {DrawerParamList} from './drawer-param-list';
 import EditSet from './EditSet';
-import Set from './set';
+import {HomePageParams} from './home-page-params';
 import SetList from './SetList';
 
 const Stack = createStackNavigator<HomePageParams>();
-export type HomePageParams = {
-  Sets: {};
-  EditSet: {
-    set: Set;
-    workouts: string[];
-  };
-};
 
 export default function HomePage() {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
