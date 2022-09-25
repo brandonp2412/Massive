@@ -152,6 +152,7 @@ class TimerService() : Service() {
         notificationManager.createNotificationChannel(alarmsChannel)
         val timersChannel =
             NotificationChannel(CHANNEL_ID_PENDING, CHANNEL_ID_PENDING, IMPORTANCE_LOW)
+        timersChannel.setSound(null, null)
         timersChannel.description = "Progress on rest timers."
         notificationManager.createNotificationChannel(timersChannel)
         return notificationManager
