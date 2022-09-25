@@ -1,7 +1,7 @@
 import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {NativeModules, ScrollView, StyleSheet} from 'react-native';
+import {NativeModules, Pressable, ScrollView, StyleSheet} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Text} from 'react-native-paper';
 import {CustomTheme} from './App';
@@ -165,14 +165,21 @@ export default function SettingsPage() {
             input.name.toLowerCase().includes(search.toLowerCase()),
           )
           .map(input => (
-            <React.Fragment key={input.name}>
+            <Pressable
+              onPress={() => input.onChange(!input.value)}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+              key={input.name}>
               <Text style={styles.item}>{input.name}</Text>
               <MassiveSwitch
                 style={styles.item}
                 value={input.value}
                 onValueChange={input.onChange}
               />
-            </React.Fragment>
+            </Pressable>
           ))}
         {'alarm sound'.includes(search.toLowerCase()) && (
           <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
