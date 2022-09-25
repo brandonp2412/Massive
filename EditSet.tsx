@@ -26,7 +26,8 @@ export default function EditSet() {
       console.log(`${EditSet.name}.focus:`, set);
       let title = 'Create set';
       if (typeof set.id === 'number') title = 'Edit set';
-      else if (count > 0) title = `${set.name} (${count + 1} / ${set.sets})`;
+      else if (Number(set.sets) > 0)
+        title = `${set.name} (${count + 1} / ${set.sets})`;
       navigation.getParent()?.setOptions({
         headerLeft: () => (
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
