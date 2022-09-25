@@ -14,7 +14,7 @@ import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './plan-page-params';
 import {addPlan, updatePlan} from './plan.service';
 import {getNames} from './set.service';
-import {DAYS} from './time';
+import {days} from './time';
 
 export default function EditPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>();
@@ -90,7 +90,7 @@ export default function EditPlan() {
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
         <Text style={styles.title}>Days</Text>
-        {DAYS.map(day => (
+        {days.map(day => (
           <View key={day} style={[styles.row, {alignItems: 'center'}]}>
             <MassiveSwitch
               value={days.includes(day)}

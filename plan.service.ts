@@ -1,6 +1,6 @@
 import {db} from './db';
 import {Plan} from './plan';
-import {DAYS} from './time';
+import {days} from './time';
 
 export const getPlans = async (search: string): Promise<Plan[]> => {
   const select = `
@@ -12,7 +12,7 @@ export const getPlans = async (search: string): Promise<Plan[]> => {
 };
 
 export const getTodaysPlan = async (): Promise<Plan[]> => {
-  const today = DAYS[new Date().getDay()];
+  const today = days[new Date().getDay()];
   const [result] = await db.executeSql(
     `SELECT * FROM plans WHERE days LIKE ? LIMIT 1`,
     [`%${today}%`],

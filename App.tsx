@@ -1,4 +1,3 @@
-import {createDrawerNavigator} from '@react-navigation/drawer';
 import {
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
@@ -12,11 +11,8 @@ import {
   Provider,
 } from 'react-native-paper';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import {DrawerParamList} from './drawer-param-list';
 import MassiveSnack from './MassiveSnack';
 import Routes from './Routes';
-
-export const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,

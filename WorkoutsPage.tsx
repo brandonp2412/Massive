@@ -14,6 +14,7 @@ export type WorkoutsPageParams = {
     value: Set;
   };
 };
+
 const Stack = createStackNavigator<WorkoutsPageParams>();
 
 export default function WorkoutsPage() {

@@ -1,15 +1,19 @@
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import React, {useContext, useEffect, useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {CustomTheme, Drawer} from './App';
+import {CustomTheme} from './App';
 import BestPage from './BestPage';
 import {runMigrations} from './db';
+import {DrawerParamList} from './drawer-param-list';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
 import Route from './route';
 import {getSettings, settings} from './settings.service';
 import SettingsPage from './SettingsPage';
 import WorkoutsPage from './WorkoutsPage';
+
+const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export default function Routes() {
   const [migrated, setMigrated] = useState(false);
@@ -19,8 +23,8 @@ export default function Routes() {
   useEffect(() => {
     runMigrations()
       .then(getSettings)
-      .then(() => setMigrated(true))
       .then(() => {
+        setMigrated(true);
         if (settings.color) setColor(settings.color);
       });
   }, [setColor]);
