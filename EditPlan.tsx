@@ -6,15 +6,15 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {Button, IconButton} from 'react-native-paper';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import {Button, IconButton, Text} from 'react-native-paper';
 import {MARGIN, PADDING} from './constants';
 import {DrawerParamList} from './drawer-param-list';
 import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './plan-page-params';
 import {addPlan, updatePlan} from './plan.service';
 import {getNames} from './set.service';
-import {days} from './time';
+import {DAYS} from './time';
 
 export default function EditPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>();
@@ -90,7 +90,7 @@ export default function EditPlan() {
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
         <Text style={styles.title}>Days</Text>
-        {days.map(day => (
+        {DAYS.map(day => (
           <View key={day} style={[styles.row, {alignItems: 'center'}]}>
             <MassiveSwitch
               value={days.includes(day)}
