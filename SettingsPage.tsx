@@ -5,18 +5,14 @@ import {NativeModules, ScrollView, StyleSheet} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Text} from 'react-native-paper';
 import {CustomTheme} from './App';
+import {darkColors, lightColors} from './colors';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
+import Input from './input';
 import {SnackbarContext} from './MassiveSnack';
 import MassiveSwitch from './MassiveSwitch';
 import Page from './Page';
 import {getSettings, settings, updateSettings} from './settings.service';
-
-interface Input<T> {
-  name: string;
-  value?: T;
-  onChange: (value: T) => void;
-}
 
 export default function SettingsPage() {
   const [battery, setBattery] = useState(false);
@@ -192,10 +188,13 @@ export default function SettingsPage() {
             dropdownIconColor={color}
             selectedValue={color}
             onValueChange={value => setColor(value)}>
-            <Picker.Item value="#B3E5fC" label="Cyan theme" color="#B3E5fC" />
-            <Picker.Item value="#8156a7" label="Purple theme" color="#8156a7" />
-            <Picker.Item value="#007AFF" label="Blue theme" color="#007AFF" />
-            <Picker.Item value="#ffc0cb" label="Pink theme" color="#ffc0cb" />
+            {darkColors.concat(lightColors).map(darkColor => (
+              <Picker.Item
+                value={darkColor.hex}
+                label={`${darkColor.name} theme`}
+                color={darkColor.hex}
+              />
+            ))}
           </Picker>
         )}
       </ScrollView>
