@@ -188,11 +188,12 @@ export default function SettingsPage() {
             dropdownIconColor={color}
             selectedValue={color}
             onValueChange={value => setColor(value)}>
-            {darkColors.concat(lightColors).map(darkColor => (
+            {darkColors.concat(lightColors).map(colorOption => (
               <Picker.Item
-                value={darkColor.hex}
-                label={`${darkColor.name} theme`}
-                color={darkColor.hex}
+                key={colorOption.hex}
+                value={colorOption.hex}
+                label={`${colorOption.name} theme`}
+                color={colorOption.hex}
               />
             ))}
           </Picker>
