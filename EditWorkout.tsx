@@ -92,7 +92,12 @@ export default function EditWorkout() {
   return (
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
-        <MassiveInput label="Name" value={name} onChangeText={setName} />
+        <MassiveInput
+          autoFocus
+          label="Name"
+          value={name}
+          onChangeText={setName}
+        />
         {!!settings.steps && (
           <MassiveInput
             selectTextOnFocus={false}
