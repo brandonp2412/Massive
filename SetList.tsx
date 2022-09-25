@@ -57,7 +57,7 @@ export default function SetList() {
   const refresh = useCallback(async () => {
     predict();
     const newSets = await getSets({search: `%${search}%`, limit, offset: 0});
-    console.log(`${SetList.name}.refresh:`, {newSets});
+    console.log(`${SetList.name}.refresh:`, {first: newSets[0]});
     if (newSets.length === 0) return setSets([]);
     setSets(newSets);
     setOffset(0);
