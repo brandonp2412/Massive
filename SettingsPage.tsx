@@ -181,14 +181,6 @@ export default function SettingsPage() {
               />
             </Pressable>
           ))}
-        {'alarm sound'.includes(search.toLowerCase()) && (
-          <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
-            Alarm sound
-            {sound
-              ? ': ' + sound.split('/')[sound.split('/').length - 1]
-              : null}
-          </Button>
-        )}
         {'theme'.includes(search.toLowerCase()) && (
           <Picker
             style={{color}}
@@ -204,6 +196,14 @@ export default function SettingsPage() {
               />
             ))}
           </Picker>
+        )}
+        {'alarm sound'.includes(search.toLowerCase()) && (
+          <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
+            Alarm sound
+            {sound
+              ? ': ' + sound.split('/')[sound.split('/').length - 1]
+              : null}
+          </Button>
         )}
       </ScrollView>
       <ConfirmDialog
