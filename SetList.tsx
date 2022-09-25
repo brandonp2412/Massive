@@ -12,7 +12,7 @@ import {HomePageParams} from './home-page-params';
 import Page from './Page';
 import {getTodaysPlan} from './plan.service';
 import Set from './set';
-import {defaultSet, getSets, getTodaysSets} from './set.service';
+import {countToday, defaultSet, getSets, getToday} from './set.service';
 import SetItem from './SetItem';
 import {settings} from './settings.service';
 
@@ -32,32 +32,24 @@ export default function SetList() {
 
   const predict = useCallback(async () => {
     setCount(0);
-    console.log(`${SetList.name}.predict:`, {settings});
-    if (!settings.predict) return setSet({...defaultSet});
+    setSet({...defaultSet});
+    if (!settings.predict) return;
     const todaysPlan = await getTodaysPlan();
-    console.log(`${SetList.name}.predict:`, {todaysPlan});
-    if (todaysPlan.length === 0) return setSet({...defaultSet});
-    const todaysSets = await getTodaysSets();
+    if (todaysPlan.length === 0) return;
+    const todaysSet = await getToday();
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
     let workout = todaysWorkouts[0];
-    console.log(`${SetList.name}.predict:`, {todaysSet: todaysSets[0]});
-    console.log(`${SetList.name}.predict:`, {todaysWorkouts});
     let best = await getBestSet(workout);
-    if (todaysWorkouts.includes(todaysSets[0]?.name) && todaysSets.length > 0) {
-      const _count = todaysSets.filter(
-        s => s.name === todaysSets[0].name,
-      ).length;
-      workout = todaysSets[0].name;
+    if (todaysSet && todaysWorkouts.includes(todaysSet.name)) {
+      const _count = await countToday(todaysSet.name);
+      workout = todaysSet.name;
       best = await getBestSet(workout);
+      const index = todaysWorkouts.indexOf(todaysSet.name) + 1;
       if (_count >= Number(best.sets))
-        best = await getBestSet(
-          todaysWorkouts[todaysWorkouts.indexOf(todaysSets[0].name!) + 1],
-        );
+        best = await getBestSet(todaysWorkouts[index]);
       if (best.name === '') setCount(0);
       else setCount(_count);
     }
-    console.log(`${SetList.name}.predict:`, {workout});
-    console.log(`${SetList.name}.predict:`, {best});
     setSet({...best});
     setWorkouts(todaysWorkouts);
   }, []);

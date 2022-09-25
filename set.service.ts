@@ -131,6 +131,28 @@ export const getNames = async (): Promise<string[]> => {
   return values.map(value => value.name);
 };
 
+export const getToday = async (): Promise<Set | undefined> => {
+  const select = `
+    SELECT * FROM sets
+    WHERE NOT hidden
+      AND created LIKE strftime('%Y-%m-%d%%', 'now', 'localtime')
+    ORDER BY created DESC
+    LIMIT 1
+  `;
+  const [result] = await db.executeSql(select);
+  return result.rows.item(0);
+};
+
+export const countToday = async (name: string): Promise<number> => {
+  const select = `
+    SELECT COUNT(*) as total FROM sets
+    WHERE created LIKE strftime('%Y-%m-%d%%', 'now', 'localtime')
+      AND name = ?
+  `;
+  const [result] = await db.executeSql(select, [name]);
+  return Number(result.rows.item(0)?.total);
+};
+
 export const getDistinctSets = async ({
   search,
   limit,
