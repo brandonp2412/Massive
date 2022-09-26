@@ -26,7 +26,7 @@ export default function SetList() {
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
   const [end, setEnd] = useState(false);
-  const [dates, setDates] = useState(!!settings.showDate);
+  const [dates, setDates] = useState(false);
   const [images, setImages] = useState(true);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
@@ -75,7 +75,6 @@ export default function SetList() {
         headerRight: () => <DrawerMenu name="Home" />,
       });
       setImages(!!settings.images);
-      setDates(!!settings.showDate);
     }, [refresh, navigation]),
   );
 

@@ -11,5 +11,4 @@ export default interface Settings {
   steps: number;
   nextAlarm?: string;
   date?: string;
-  showDate: number;
 }
