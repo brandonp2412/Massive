@@ -39,17 +39,18 @@ export default function TimerPage() {
 
   const tick = (date: Date) => {
     const remaining = date.getTime() - new Date().getTime();
-    console.log(`${TimerPage.name}.useEffect`, {remaining});
-    if (remaining <= 0) return;
+    console.log(`${TimerPage.name}.tick`, {remaining});
+    if (remaining <= 0) return 0;
     setMs(remaining);
+    return remaining;
   };
 
   useEffect(() => {
     console.log(`${TimerPage.name}.useEffect:`, {next});
     const date = next || new Date();
-    tick(date);
+    if (tick(date) <= 0) return;
     const id = setInterval(() => {
-      tick(date);
+      if (tick(date) <= 0) clearInterval(id);
     }, 1000);
     setIntervalId(oldId => {
       clearInterval(oldId);
@@ -75,6 +76,13 @@ export default function TimerPage() {
     setNext(date);
     NativeModules.AlarmModule.add(ms, !!settings.vibrate, settings.sound);
     tick(date);
+    const id = setInterval(() => {
+      if (tick(date) <= 0) clearInterval(id);
+    }, 1000);
+    setIntervalId(oldId => {
+      clearInterval(oldId);
+      return id;
+    });
   };
 
   return (
