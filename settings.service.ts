@@ -17,3 +17,10 @@ export const updateSettings = async (value: Settings) => {
   const values = keys.map(key => value[key]);
   return db.executeSql(update, values);
 };
+
+export const getNext = async (): Promise<string | undefined> => {
+  const [result] = await db.executeSql(
+    `SELECT nextAlarm FROM settings LIMIT 1`,
+  );
+  return result.rows.item(0)?.nextAlarm;
+};

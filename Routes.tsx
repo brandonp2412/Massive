@@ -11,6 +11,7 @@ import PlanPage from './PlanPage';
 import Route from './route';
 import {getSettings, settings} from './settings.service';
 import SettingsPage from './SettingsPage';
+import TimerPage from './TimerPage';
 import WorkoutsPage from './WorkoutsPage';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -36,6 +37,7 @@ export default function Routes() {
     {name: 'Plans', component: PlanPage, icon: 'calendar'},
     {name: 'Best', component: BestPage, icon: 'stats-chart'},
     {name: 'Workouts', component: WorkoutsPage, icon: 'barbell'},
+    {name: 'Timer', component: TimerPage, icon: 'time'},
     {name: 'Settings', component: SettingsPage, icon: 'settings'},
   ];
 

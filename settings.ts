@@ -9,4 +9,5 @@ export default interface Settings {
   color?: string;
   workouts: number;
   steps: number;
+  nextAlarm?: string;
 }

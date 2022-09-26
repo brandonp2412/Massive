@@ -100,6 +100,9 @@ const migrations = [
   `
     ALTER TABLE settings ADD COLUMN steps BOOLEAN DEFAULT 1
   `,
+  `
+    ALTER TABLE settings ADD COLUMN nextAlarm TEXT NULL
+  `,
 ];
 
 export let db: SQLiteDatabase;

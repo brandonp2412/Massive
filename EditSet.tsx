@@ -13,7 +13,7 @@ import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
 import {addSet, updateSet} from './set.service';
 import SetForm from './SetForm';
-import {settings} from './settings.service';
+import {getSettings, settings, updateSettings} from './settings.service';
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
@@ -47,6 +47,10 @@ export default function EditSet() {
       !!settings.vibrate,
       settings.sound,
     );
+    const next = new Date();
+    next.setTime(next.getTime() + milliseconds);
+    await updateSettings({...settings, nextAlarm: next.toISOString()});
+    await getSettings();
   }, []);
 
   const update = useCallback(

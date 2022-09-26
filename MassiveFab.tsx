@@ -13,7 +13,6 @@ export default function MassiveFab(
 
   return (
     <FAB
-      {...props}
       icon="add"
       color={fabColor}
       style={{
@@ -22,6 +21,7 @@ export default function MassiveFab(
         bottom: 60,
         backgroundColor: color,
       }}
+      {...props}
     />
   );
 }

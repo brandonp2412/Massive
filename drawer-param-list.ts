@@ -4,5 +4,5 @@ export type DrawerParamList = {
   Best: {};
   Plans: {};
   Workouts: {};
-  Loading: {};
+  Timer: {};
 };
