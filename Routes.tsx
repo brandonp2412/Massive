@@ -33,9 +33,9 @@ export default function Routes() {
 
   const routes: Route[] = [
     {name: 'Home', component: HomePage, icon: 'home'},
-    {name: 'Plans', component: PlanPage, icon: 'calendar'},
-    {name: 'Best', component: BestPage, icon: 'stats-chart'},
-    {name: 'Workouts', component: WorkoutsPage, icon: 'barbell'},
+    {name: 'Plans', component: PlanPage, icon: 'event'},
+    {name: 'Best', component: BestPage, icon: 'insights'},
+    {name: 'Workouts', component: WorkoutsPage, icon: 'fitness-center'},
     {name: 'Settings', component: SettingsPage, icon: 'settings'},
   ];
 
@@ -51,11 +51,7 @@ export default function Routes() {
           name={route.name}
           component={route.component}
           options={{
-            drawerIcon: ({focused}) => (
-              <IconButton
-                icon={focused ? route.icon : `${route.icon}-outline`}
-              />
-            ),
+            drawerIcon: () => <IconButton icon={route.icon} />,
           }}
         />
       ))}

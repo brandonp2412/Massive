@@ -126,16 +126,13 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
         visible={showMenu}
         onDismiss={() => setShowMenu(false)}
         anchor={
-          <IconButton
-            onPress={() => setShowMenu(true)}
-            icon="ellipsis-vertical"
-          />
+          <IconButton onPress={() => setShowMenu(true)} icon="more-vert" />
         }>
-        <Menu.Item icon="arrow-down" onPress={download} title="Download" />
-        <Menu.Item icon="arrow-up" onPress={upload} title="Upload" />
+        <Menu.Item icon="arrow-downward" onPress={download} title="Download" />
+        <Menu.Item icon="arrow-upward" onPress={upload} title="Upload" />
         <Divider />
         <Menu.Item
-          icon="trash"
+          icon="delete"
           onPress={() => setShowRemove(true)}
           title="Delete"
         />

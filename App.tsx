@@ -10,7 +10,7 @@ import {
   DefaultTheme as PaperDefaultTheme,
   Provider,
 } from 'react-native-paper';
-import Ionicon from 'react-native-vector-icons/Ionicons';
+import Ionicon from 'react-native-vector-icons/MaterialIcons';
 import {lightColors} from './colors';
 import MassiveSnack from './MassiveSnack';
 import Routes from './Routes';
