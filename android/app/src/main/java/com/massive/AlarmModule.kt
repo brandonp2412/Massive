@@ -11,7 +11,6 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.startActivity
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -41,8 +40,10 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
     @ReactMethod
     fun stop() {
         Log.d("AlarmModule", "Stop alarm.")
-        val intent = Intent(reactApplicationContext, TimerService::class.java)
-        reactApplicationContext.stopService(intent)
+        val timerIntent = Intent(reactApplicationContext, TimerService::class.java)
+        reactApplicationContext.stopService(timerIntent)
+        val alarmIntent = Intent(reactApplicationContext, AlarmService::class.java)
+        reactApplicationContext.stopService(alarmIntent)
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
