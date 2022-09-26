@@ -60,7 +60,7 @@ export default function SetItem({
     <>
       <List.Item
         onPress={() =>
-          navigation.navigate('EditSet', {set: item, workouts: []})
+          navigation.navigate('EditSet', {set: item, workouts: [], count: 0})
         }
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
