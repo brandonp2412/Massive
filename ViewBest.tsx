@@ -49,7 +49,7 @@ export default function ViewBest() {
                 });
               })
             }
-            icon="share-social-outline"
+            icon="share"
           />
         ),
         title: params.best.name,
