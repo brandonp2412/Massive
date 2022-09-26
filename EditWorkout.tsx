@@ -136,7 +136,7 @@ export default function EditWorkout() {
           <Button
             style={{marginBottom: MARGIN}}
             onPress={changeImage}
-            icon="image">
+            icon="add-photo-alternate">
             Image
           </Button>
         )}
