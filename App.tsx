@@ -11,6 +11,7 @@ import {
   Provider,
 } from 'react-native-paper';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import {lightColors} from './colors';
 import MassiveSnack from './MassiveSnack';
 import Routes from './Routes';
 
@@ -28,8 +29,8 @@ export const CombinedDarkTheme = {
   colors: {
     ...NavigationDarkTheme.colors,
     ...PaperDarkTheme.colors,
-    primary: '#B3E5fC',
-    background: '#0e0e0e',
+    primary: lightColors[0].hex,
+    background: '#0E0E0E',
   },
 };
 
@@ -42,8 +43,8 @@ const App = () => {
   const dark = useColorScheme() === 'dark';
   const [color, setColor] = useState(
     dark
-      ? CombinedDarkTheme.colors.primary
-      : CombinedDefaultTheme.colors.primary,
+      ? CombinedDarkTheme.colors.primary.toUpperCase()
+      : CombinedDefaultTheme.colors.primary.toUpperCase(),
   );
   const theme = dark
     ? {
