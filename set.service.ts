@@ -75,15 +75,6 @@ export const getSets = async ({
   return result.rows.raw();
 };
 
-export const getTodaysSets = async (): Promise<Set[]> => {
-  const today = new Date().toISOString().split('T')[0];
-  const [result] = await db.executeSql(
-    `SELECT * FROM sets WHERE created LIKE ? ORDER BY created DESC`,
-    [`${today}%`],
-  );
-  return result.rows.raw();
-};
-
 export const defaultSet: Set = {
   name: '',
   reps: 10,

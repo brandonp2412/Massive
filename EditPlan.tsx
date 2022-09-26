@@ -10,10 +10,10 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import {Button, IconButton, Text} from 'react-native-paper';
 import {MARGIN, PADDING} from './constants';
 import {DrawerParamList} from './drawer-param-list';
-import MassiveSwitch from './MassiveSwitch';
 import {PlanPageParams} from './plan-page-params';
 import {addPlan, updatePlan} from './plan.service';
 import {getNames} from './set.service';
+import Switch from './Switch';
 import {DAYS} from './time';
 
 export default function EditPlan() {
@@ -91,33 +91,28 @@ export default function EditPlan() {
       <ScrollView style={{height: '90%'}}>
         <Text style={styles.title}>Days</Text>
         {DAYS.map(day => (
-          <View key={day} style={[styles.row, {alignItems: 'center'}]}>
-            <MassiveSwitch
-              value={days.includes(day)}
-              onValueChange={value => toggleDay(value, day)}
-            />
-            <Text onPress={() => toggleDay(!days.includes(day), day)}>
-              {day}
-            </Text>
-          </View>
+          <Switch
+            onValueChange={value => toggleDay(value, day)}
+            onPress={() => toggleDay(!days.includes(day), day)}
+            value={days.includes(day)}>
+            {day}
+          </Switch>
         ))}
         <Text style={[styles.title, {marginTop: MARGIN}]}>Workouts</Text>
-        {names.length === 0 && (
+        {names.length === 0 ? (
           <View>
             <Text>No workouts found.</Text>
           </View>
-        )}
-        {names.map(name => (
-          <View key={name} style={[styles.row, {alignItems: 'center'}]}>
-            <MassiveSwitch
-              value={workouts.includes(name)}
+        ) : (
+          names.map(name => (
+            <Switch
               onValueChange={value => toggleWorkout(value, name)}
-            />
-            <Text onPress={() => toggleWorkout(!workouts.includes(name), name)}>
+              value={workouts.includes(name)}
+              onPress={() => toggleWorkout(!workouts.includes(name), name)}>
               {name}
-            </Text>
-          </View>
-        ))}
+            </Switch>
+          ))
+        )}
       </ScrollView>
       {names.length === 0 ? (
         <Button
@@ -150,9 +145,5 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     marginBottom: MARGIN,
-  },
-  row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
   },
 });

@@ -1,18 +1,18 @@
 import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {NativeModules, Pressable, ScrollView, StyleSheet} from 'react-native';
+import {NativeModules, ScrollView} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
-import {Button, Text} from 'react-native-paper';
+import {Button} from 'react-native-paper';
 import {CustomTheme} from './App';
 import {darkColors, lightColors} from './colors';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
 import Input from './input';
 import {SnackbarContext} from './MassiveSnack';
-import MassiveSwitch from './MassiveSwitch';
 import Page from './Page';
 import {getSettings, settings, updateSettings} from './settings.service';
+import Switch from './Switch';
 
 export default function SettingsPage() {
   const [battery, setBattery] = useState(false);
@@ -165,21 +165,13 @@ export default function SettingsPage() {
             input.name.toLowerCase().includes(search.toLowerCase()),
           )
           .map(input => (
-            <Pressable
+            <Switch
               onPress={() => input.onChange(!input.value)}
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-              key={input.name}>
-              <Text style={styles.item}>{input.name}</Text>
-              <MassiveSwitch
-                style={styles.item}
-                value={input.value}
-                onValueChange={input.onChange}
-              />
-            </Pressable>
+              key={input.name}
+              value={input.value}
+              onValueChange={input.onChange}>
+              {input.name}
+            </Switch>
           ))}
         {'theme'.includes(search.toLowerCase()) && (
           <Picker
@@ -219,11 +211,3 @@ export default function SettingsPage() {
     </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  item: {
-    alignSelf: 'flex-start',
-    marginBottom: MARGIN,
-    marginLeft: MARGIN,
-  },
-});
