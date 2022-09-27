@@ -15,10 +15,11 @@ minor=$(
   grep '^\s*versionName "[0-9]*\.[0-9]*"' "$build" \
     | sed 's/"//g' | cut -d '.' -f 2
 )
+minor=$((minor+1))
 sed -i "s/\(^\s*\)versionCode [0-9]*$/\1versionCode $versionCode/" \
   "$build"
-sed -i "s/\(^\s*\)versionName \"[0-9]*.[0-9]*\"$/\1versionName \"$major.$((minor+1))\"/" "$build"
-sed -i "s/\"version\": \"[0-9]*.[0-9]*\"/\"version\": \"$major.$((minor+1))\"/" ../package.json
+sed -i "s/\(^\s*\)versionName \"[0-9]*.[0-9]*\"$/\1versionName \"$major.$minor\"/" "$build"
+sed -i "s/\"version\": \"[0-9]*.[0-9]*\"/\"version\": \"$major.$minor\"/" ../package.json
 [ "$1" != "--nobundle" ] && ./gradlew bundleRelease 
 git add app/build.gradle 
 git commit --no-verify --message "Set versionCode=$versionCode"
