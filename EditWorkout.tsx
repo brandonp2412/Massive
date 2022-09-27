@@ -24,9 +24,13 @@ export default function EditWorkout() {
   const [name, setName] = useState(params.value.name);
   const [steps, setSteps] = useState(params.value.steps);
   const [uri, setUri] = useState(params.value.image);
-  const [minutes, setMinutes] = useState(params.value.minutes?.toString());
-  const [seconds, setSeconds] = useState(params.value.seconds?.toString());
-  const [sets, setSets] = useState(params.value.sets?.toString());
+  const [minutes, setMinutes] = useState(
+    params.value.minutes?.toString() ?? '3',
+  );
+  const [seconds, setSeconds] = useState(
+    params.value.seconds?.toString() ?? '30',
+  );
+  const [sets, setSets] = useState(params.value.sets?.toString() ?? '3');
   const {toast} = useContext(SnackbarContext);
   const navigation = useNavigation();
 
