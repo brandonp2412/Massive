@@ -41,7 +41,7 @@ export default function WorkoutItem({
       <List.Item
         onPress={() => navigation.navigate('EditWorkout', {value: item})}
         title={item.name}
-        description={`${item.sets} sets with ${minutes}:${seconds} rest`}
+        description={`${item.sets} sets ${minutes}:${seconds} rest`}
         onLongPress={longPress}
         left={() =>
           item.image && (

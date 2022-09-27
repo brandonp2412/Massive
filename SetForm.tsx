@@ -1,7 +1,8 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {ScrollView} from 'react-native';
 import {Button} from 'react-native-paper';
 import MassiveInput from './MassiveInput';
+import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
 import {getSets} from './set.service';
 import {settings} from './settings.service';
@@ -24,6 +25,7 @@ export default function SetForm({
     start: 0,
     end: set.reps.toString().length,
   });
+  const {toast} = useContext(SnackbarContext);
   const weightRef = useRef<any>(null);
   const repsRef = useRef<any>(null);
   const unitRef = useRef<any>(null);
@@ -51,13 +53,25 @@ export default function SetForm({
     });
   };
 
+  const handleName = (value: string) => {
+    setName(value.replace(/,|'/g, ''));
+    if (value.match(/,|'/))
+      toast('Commas and single quotes would break CSV exports', 6000);
+  };
+
+  const handleUnit = (value: string) => {
+    setUnit(value.replace(/,|'/g, ''));
+    if (value.match(/,|'/))
+      toast('Commas and single quotes would break CSV exports', 6000);
+  };
+
   return (
     <>
       <ScrollView style={{height: '90%'}}>
         <MassiveInput
           label="Name"
           value={name}
-          onChangeText={setName}
+          onChangeText={handleName}
           autoCorrect={false}
           autoFocus={!name}
           blurOnSubmit={false}
@@ -88,7 +102,7 @@ export default function SetForm({
             autoCapitalize="none"
             label="Unit"
             value={unit}
-            onChangeText={setUnit}
+            onChangeText={handleUnit}
             innerRef={unitRef}
           />
         )}

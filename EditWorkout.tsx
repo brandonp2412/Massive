@@ -4,13 +4,14 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, IconButton, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
+import {SnackbarContext} from './MassiveSnack';
 import {updatePlanWorkouts} from './plan.service';
 import {addSet, updateManySet, updateSetImage} from './set.service';
 import {settings} from './settings.service';
@@ -26,6 +27,7 @@ export default function EditWorkout() {
   const [minutes, setMinutes] = useState(params.value.minutes?.toString());
   const [seconds, setSeconds] = useState(params.value.seconds?.toString());
   const [sets, setSets] = useState(params.value.sets?.toString());
+  const {toast} = useContext(SnackbarContext);
   const navigation = useNavigation();
 
   useFocusEffect(
@@ -89,6 +91,18 @@ export default function EditWorkout() {
     setShowRemove(false);
   }, []);
 
+  const handleName = (value: string) => {
+    setName(value.replace(/,|'/g, ''));
+    if (value.match(/,|'/))
+      toast('Commas and single quotes would break CSV exports', 6000);
+  };
+
+  const handleSteps = (value: string) => {
+    setSteps(value.replace(/,|'/g, ''));
+    if (value.match(/,|'/))
+      toast('Commas and single quotes would break CSV exports', 6000);
+  };
+
   return (
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
@@ -96,13 +110,13 @@ export default function EditWorkout() {
           autoFocus
           label="Name"
           value={name}
-          onChangeText={setName}
+          onChangeText={handleName}
         />
         {!!settings.steps && (
           <MassiveInput
             selectTextOnFocus={false}
             value={steps}
-            onChangeText={setSteps}
+            onChangeText={handleSteps}
             label="Steps"
             multiline
           />
