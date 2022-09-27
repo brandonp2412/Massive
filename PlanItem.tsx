@@ -44,7 +44,7 @@ export default function PlanItem({
         onLongPress={longPress}
         right={() => (
           <Menu anchor={anchor} visible={show} onDismiss={() => setShow(false)}>
-            <Menu.Item icon="trash" onPress={remove} title="Delete" />
+            <Menu.Item icon="delete" onPress={remove} title="Delete" />
           </Menu>
         )}
       />

@@ -85,19 +85,11 @@ export default function SetItem({
               anchor={anchor}
               visible={showMenu}
               onDismiss={() => setShowMenu(false)}>
-              <Menu.Item icon="copy" onPress={copy} title="Copy" />
-              <Menu.Item
-                icon="image-outline"
-                onPress={toggleImages}
-                title="Images"
-              />
-              <Menu.Item
-                icon="calendar-outline"
-                onPress={toggleDates}
-                title="Dates"
-              />
+              <Menu.Item icon="content-copy" onPress={copy} title="Copy" />
+              <Menu.Item icon="image" onPress={toggleImages} title="Images" />
+              <Menu.Item icon="event" onPress={toggleDates} title="Dates" />
               <Divider />
-              <Menu.Item icon="trash" onPress={remove} title="Delete" />
+              <Menu.Item icon="delete" onPress={remove} title="Delete" />
             </Menu>
           </>
         )}
