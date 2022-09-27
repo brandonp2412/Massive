@@ -66,6 +66,7 @@ export default function SetList() {
     setSets(newSets);
     setOffset(0);
     setEnd(false);
+    if (search) setDates(true);
   }, [search, predict]);
 
   useFocusEffect(
