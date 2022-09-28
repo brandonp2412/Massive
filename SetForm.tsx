@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ScrollView} from 'react-native';
-import {Button} from 'react-native-paper';
+import {ScrollView, View} from 'react-native';
+import {Button, Text} from 'react-native-paper';
 import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
@@ -107,11 +107,21 @@ export default function SetForm({
           />
         )}
         {workouts.length > 0 && !!settings.workouts && (
-          <MassiveInput
-            label="Todays workout"
-            value={workouts?.join(', ')}
-            editable={false}
-          />
+          <View style={{flexDirection: 'row'}}>
+            {workouts.map((workout, index) => (
+              <Text>
+                <Text
+                  style={
+                    workout === name
+                      ? {textDecorationLine: 'underline', fontWeight: 'bold'}
+                      : null
+                  }>
+                  {workout}
+                </Text>
+                {index === workouts.length - 1 ? '' : ', '}
+              </Text>
+            ))}
+          </View>
         )}
       </ScrollView>
       <Button
