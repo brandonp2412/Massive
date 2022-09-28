@@ -63,7 +63,7 @@ buck-out/
 /vendor/bundle/
 
 README.pdf
-build
+massive-build
 
 # Yarn
 .pnp.*
