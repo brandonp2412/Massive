@@ -17,7 +17,12 @@ export default function Page({
 }) {
   return (
     <View style={styles.container}>
-      <Searchbar placeholder="Search" value={search} onChangeText={setSearch} />
+      <Searchbar
+        placeholder="Search"
+        value={search}
+        onChangeText={setSearch}
+        icon="search"
+      />
       {children}
       {onAdd && <MassiveFab onPress={onAdd} />}
     </View>
