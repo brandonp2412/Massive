@@ -22,6 +22,7 @@ export default function Page({
         value={search}
         onChangeText={setSearch}
         icon="search"
+        clearIcon="clear"
       />
       {children}
       {onAdd && <MassiveFab onPress={onAdd} />}
