@@ -1,5 +1,5 @@
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {useNavigation} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useContext, useEffect, useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {IconButton} from 'react-native-paper';
@@ -25,7 +25,7 @@ export default function Routes() {
   const [migrated, setMigrated] = useState(false);
   const dark = useColorScheme() === 'dark';
   const {setColor} = useContext(CustomTheme);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   useEffect(() => {
     runMigrations()
@@ -77,12 +77,6 @@ export default function Routes() {
           component={route.component}
           options={{
             drawerItemStyle: {height: 0},
-            headerLeft: () => (
-              <IconButton
-                icon="arrow-back"
-                onPress={() => navigation.goBack()}
-              />
-            ),
           }}
         />
       ))}

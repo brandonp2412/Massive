@@ -6,7 +6,7 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {BackHandler, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, IconButton, Text} from 'react-native-paper';
 import {MARGIN, PADDING} from './constants';
 import {DrawerParamList} from './drawer-param-list';
@@ -30,13 +30,22 @@ export default function EditPlan() {
   useFocusEffect(
     useCallback(() => {
       console.log(`${EditPlan.name}.focus:`, {plan});
-      navigation.getParent()?.setOptions({
+      navigation.setOptions({
         headerLeft: () => (
-          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
+          <IconButton
+            icon="arrow-back"
+            onPress={() => navigation.navigate('Plans', {})}
+          />
         ),
         headerRight: () => null,
         title: plan.id ? 'Edit plan' : 'Create plan',
       });
+      const onBack = () => {
+        navigation.navigate('Plans', {});
+        return true;
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBack);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBack);
     }, [navigation, plan]),
   );
 

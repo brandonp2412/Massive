@@ -1,11 +1,12 @@
 import {
+  NavigationProp,
   RouteProp,
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useContext, useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import {BackHandler, ScrollView, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, IconButton, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
@@ -32,19 +33,27 @@ export default function EditWorkout() {
   );
   const [sets, setSets] = useState(params.value.sets?.toString() ?? '3');
   const {toast} = useContext(SnackbarContext);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   useFocusEffect(
     useCallback(() => {
-      navigation.getParent()?.setOptions({
+      navigation.setOptions({
         headerLeft: () => (
-          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
+          <IconButton
+            icon="arrow-back"
+            onPress={() => navigation.navigate('Workouts', {})}
+          />
         ),
         headerRight: null,
         title: params.value.name || 'New workout',
       });
-      if (!name) return;
-    }, [navigation, name, params.value.name]),
+      const onBack = () => {
+        navigation.navigate('Workouts', {});
+        return true;
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBack);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBack);
+    }, [navigation, params.value.name]),
   );
 
   const update = async () => {

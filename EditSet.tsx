@@ -1,11 +1,13 @@
 import {
+  NavigationProp,
   RouteProp,
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useContext} from 'react';
-import {NativeModules, View} from 'react-native';
+import {BackHandler, NativeModules, View} from 'react-native';
+import {IconButton} from 'react-native-paper';
 import {PADDING} from './constants';
 import {DrawerParamList} from './drawer-param-list';
 import {SnackbarContext} from './MassiveSnack';
@@ -17,7 +19,7 @@ import {getSettings, settings, updateSettings} from './settings.service';
 export default function EditSet() {
   const {params} = useRoute<RouteProp<DrawerParamList, 'Edit set'>>();
   const {set, count, workouts} = params;
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
   const {toast} = useContext(SnackbarContext);
 
   useFocusEffect(
@@ -29,7 +31,19 @@ export default function EditSet() {
         title = `${set.name} (${count + 1} / ${set.sets})`;
       navigation.setOptions({
         title,
+        headerLeft: () => (
+          <IconButton
+            icon="arrow-back"
+            onPress={() => navigation.navigate('Home', {})}
+          />
+        ),
       });
+      const onBack = () => {
+        navigation.navigate('Home', {});
+        return true;
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBack);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBack);
     }, [navigation, set, count]),
   );
 
