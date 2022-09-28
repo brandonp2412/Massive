@@ -36,26 +36,24 @@ export default function SetList() {
     if (!settings.predict) return;
     const todaysPlan = await getTodaysPlan();
     if (todaysPlan.length === 0) return;
-    const todaysSet = await getToday();
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
     setWorkouts(todaysWorkouts);
     let workout = todaysWorkouts[0];
     let best = await getBestSet(workout);
-    console.log({todaysSet, todaysWorkouts, todaysPlan});
-    if (todaysSet && todaysWorkouts.includes(todaysSet.name)) {
-      let _count = await countToday(todaysSet.name);
-      workout = todaysSet.name;
-      best = await getBestSet(workout);
-      const index = todaysWorkouts.indexOf(todaysSet.name) + 1;
-      if (_count >= Number(best.sets)) {
-        best = await getBestSet(todaysWorkouts[index]);
-        _count = 0;
-      }
-      if (best.name === '') setCount(0);
-      else setCount(_count);
+    const todaysSet = await getToday();
+    if (!todaysSet || !todaysWorkouts.includes(todaysSet.name))
+      return setSet(best);
+    let _count = await countToday(todaysSet.name);
+    workout = todaysSet.name;
+    best = await getBestSet(workout);
+    const index = todaysWorkouts.indexOf(todaysSet.name) + 1;
+    if (_count >= Number(best.sets)) {
+      best = await getBestSet(todaysWorkouts[index]);
+      _count = 0;
     }
-    console.log({best});
-    setSet({...best});
+    if (best.name === '') setCount(0);
+    else setCount(_count);
+    setSet(best);
   }, []);
 
   const refresh = useCallback(async () => {
