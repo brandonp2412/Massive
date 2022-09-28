@@ -12,9 +12,9 @@ import {IconButton} from 'react-native-paper';
 import Share from 'react-native-share';
 import {captureScreen} from 'react-native-view-shot';
 import {getVolumes, getWeightsBy} from './best.service';
-import {BestPageParams} from './BestPage';
 import Chart from './Chart';
 import {PADDING} from './constants';
+import {DrawerParamList} from './drawer-param-list';
 import {Metrics} from './metrics';
 import {Periods} from './periods';
 import Set from './set';
@@ -22,7 +22,7 @@ import {formatMonth} from './time';
 import Volume from './volume';
 
 export default function ViewBest() {
-  const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>();
+  const {params} = useRoute<RouteProp<DrawerParamList, 'View best'>>();
   const dark = useColorScheme() === 'dark';
   const [weights, setWeights] = useState<Set[]>([]);
   const [volumes, setVolumes] = useState<Volume[]>([]);

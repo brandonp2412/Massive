@@ -10,15 +10,15 @@ import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, IconButton, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
+import {DrawerParamList} from './drawer-param-list';
 import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
 import {updatePlanWorkouts} from './plan.service';
 import {addSet, updateManySet, updateSetImage} from './set.service';
 import {settings} from './settings.service';
-import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
-  const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
+  const {params} = useRoute<RouteProp<DrawerParamList, 'Edit workout'>>();
   const [removeImage, setRemoveImage] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
   const [name, setName] = useState(params.value.name);

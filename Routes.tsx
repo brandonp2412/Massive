@@ -1,4 +1,5 @@
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import {useNavigation} from '@react-navigation/native';
 import React, {useContext, useEffect, useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {IconButton} from 'react-native-paper';
@@ -6,11 +7,16 @@ import {CustomTheme} from './App';
 import BestPage from './BestPage';
 import {runMigrations} from './db';
 import {DrawerParamList} from './drawer-param-list';
+import DrawerMenu from './DrawerMenu';
+import EditPlan from './EditPlan';
+import EditSet from './EditSet';
+import EditWorkout from './EditWorkout';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
 import Route from './route';
 import {getSettings, settings} from './settings.service';
 import SettingsPage from './SettingsPage';
+import ViewBest from './ViewBest';
 import WorkoutsPage from './WorkoutsPage';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -19,6 +25,7 @@ export default function Routes() {
   const [migrated, setMigrated] = useState(false);
   const dark = useColorScheme() === 'dark';
   const {setColor} = useContext(CustomTheme);
+  const navigation = useNavigation();
 
   useEffect(() => {
     runMigrations()
@@ -39,6 +46,13 @@ export default function Routes() {
     {name: 'Settings', component: SettingsPage, icon: 'settings'},
   ];
 
+  const hiddenRoutes: Route[] = [
+    {name: 'Edit set', component: EditSet},
+    {name: 'Edit plan', component: EditPlan},
+    {name: 'Edit workout', component: EditWorkout},
+    {name: 'View best', component: ViewBest},
+  ];
+
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -51,7 +65,24 @@ export default function Routes() {
           name={route.name}
           component={route.component}
           options={{
-            drawerIcon: () => <IconButton icon={route.icon} />,
+            drawerIcon: () => <IconButton icon={route.icon || ''} />,
+            headerRight: () => <DrawerMenu name={route.name} />,
+          }}
+        />
+      ))}
+      {hiddenRoutes.map(route => (
+        <Drawer.Screen
+          key={route.name}
+          name={route.name}
+          component={route.component}
+          options={{
+            drawerItemStyle: {height: 0},
+            headerLeft: () => (
+              <IconButton
+                icon="arrow-back"
+                onPress={() => navigation.goBack()}
+              />
+            ),
           }}
         />
       ))}

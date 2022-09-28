@@ -31,12 +31,16 @@ export default function SetForm({
   const unitRef = useRef<any>(null);
 
   useEffect(() => {
-    console.log('SetForm.useEffect:', {uri, name: set.name});
+    console.log('SetForm.useEffect:', {uri, set, name, reps, unit});
+    setName(set.name);
+    setReps(set.reps.toString());
+    setWeight(set.weight.toString());
+    setUnit(set.unit);
     if (!uri)
       getSets({search: set.name, limit: 1, offset: 0}).then(([s]) =>
         setUri(s?.image),
       );
-  }, [uri, set.name]);
+  }, [uri, set, name, reps, unit]);
 
   const handleSubmit = () => {
     if (!name) return;
@@ -109,7 +113,7 @@ export default function SetForm({
         {workouts.length > 0 && !!settings.workouts && (
           <View style={{flexDirection: 'row'}}>
             {workouts.map((workout, index) => (
-              <Text>
+              <Text key={workout}>
                 <Text
                   style={
                     workout === name

@@ -3,9 +3,9 @@ import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
+import {DrawerParamList} from './drawer-param-list';
 import Set from './set';
 import {deleteSetsBy} from './set.service';
-import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function WorkoutItem({
   item,
@@ -17,7 +17,7 @@ export default function WorkoutItem({
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const [showRemove, setShowRemove] = useState('');
-  const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   const remove = useCallback(async () => {
     await deleteSetsBy(item.name);
@@ -39,7 +39,7 @@ export default function WorkoutItem({
   return (
     <>
       <List.Item
-        onPress={() => navigation.navigate('EditWorkout', {value: item})}
+        onPress={() => navigation.navigate('Edit workout', {value: item})}
         title={item.name}
         description={`${item.sets} sets ${minutes}:${seconds} rest`}
         onLongPress={longPress}

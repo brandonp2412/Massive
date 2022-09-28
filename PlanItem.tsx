@@ -2,8 +2,8 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {List, Menu} from 'react-native-paper';
+import {DrawerParamList} from './drawer-param-list';
 import {Plan} from './plan';
-import {PlanPageParams} from './plan-page-params';
 import {deletePlan} from './plan.service';
 
 export default function PlanItem({
@@ -15,7 +15,7 @@ export default function PlanItem({
 }) {
   const [show, setShow] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
-  const navigation = useNavigation<NavigationProp<PlanPageParams>>();
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   const remove = useCallback(async () => {
     if (typeof item.id === 'number') await deletePlan(item.id);
@@ -34,7 +34,7 @@ export default function PlanItem({
   return (
     <>
       <List.Item
-        onPress={() => navigation.navigate('EditPlan', {plan: item})}
+        onPress={() => navigation.navigate('Edit plan', {plan: item})}
         title={
           item.days
             ? item.days.replace(/,/g, ', ')

@@ -1,36 +1,135 @@
-import {DrawerNavigationProp} from '@react-navigation/drawer';
-import {useNavigation} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
-import {IconButton} from 'react-native-paper';
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
+import {default as React, useCallback, useEffect, useState} from 'react';
+import {FlatList} from 'react-native';
+import {List} from 'react-native-paper';
+import {getBestSet} from './best.service';
 import {DrawerParamList} from './drawer-param-list';
-import EditSet from './EditSet';
-import {HomePageParams} from './home-page-params';
-import SetList from './SetList';
+import Page from './Page';
+import {getTodaysPlan} from './plan.service';
+import Set from './set';
+import {countToday, defaultSet, getSets, getToday} from './set.service';
+import SetItem from './SetItem';
+import {settings} from './settings.service';
 
-const Stack = createStackNavigator<HomePageParams>();
+const limit = 15;
 
 export default function HomePage() {
-  const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
+  const [sets, setSets] = useState<Set[]>();
+  const [set, setSet] = useState<Set>();
+  const [count, setCount] = useState(0);
+  const [workouts, setWorkouts] = useState<string[]>([]);
+  const [offset, setOffset] = useState(0);
+  const [search, setSearch] = useState('');
+  const [end, setEnd] = useState(false);
+  const [dates, setDates] = useState(false);
+  const [images, setImages] = useState(true);
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
+
+  const predict = useCallback(async () => {
+    setCount(0);
+    setSet({...defaultSet});
+    if (!settings.predict) return;
+    const todaysPlan = await getTodaysPlan();
+    console.log(`${HomePage.name}.predict:`, {todaysPlan});
+    if (todaysPlan.length === 0) return;
+    const todaysWorkouts = todaysPlan[0].workouts.split(',');
+    setWorkouts(todaysWorkouts);
+    let best = await getBestSet(todaysWorkouts[0]);
+    const todaysSet = await getToday();
+    if (!todaysSet || !todaysWorkouts.includes(todaysSet.name))
+      return setSet({...best});
+    let _count = await countToday(todaysSet.name);
+    best = await getBestSet(todaysSet.name);
+    const index = todaysWorkouts.indexOf(todaysSet.name) + 1;
+    if (_count >= Number(best.sets)) {
+      best = await getBestSet(todaysWorkouts[index]);
+      _count = 0;
+    }
+    if (best.name === '') setCount(0);
+    else setCount(_count);
+    setSet({...best});
+  }, []);
+
+  const refresh = useCallback(async () => {
+    predict();
+    const newSets = await getSets({search: `%${search}%`, limit, offset: 0});
+    console.log(`${HomePage.name}.refresh:`, {first: newSets[0]});
+    if (newSets.length === 0) return setSets([]);
+    setSets(newSets);
+    setOffset(0);
+    setEnd(false);
+  }, [search, predict]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+      setImages(!!settings.images);
+    }, [refresh]),
+  );
+
+  useEffect(() => {
+    refresh();
+  }, [search, refresh]);
+
+  const renderItem = useCallback(
+    ({item}: {item: Set}) => (
+      <SetItem
+        dates={dates}
+        setDates={setDates}
+        images={images}
+        setImages={setImages}
+        item={item}
+        key={item.id}
+        onRemove={refresh}
+      />
+    ),
+    [refresh, dates, setDates, images, setImages],
+  );
+
+  const next = useCallback(async () => {
+    if (end) return;
+    const newOffset = offset + limit;
+    console.log(`${HomePage.name}.next:`, {offset, newOffset, search});
+    const newSets = await getSets({
+      search: `%${search}%`,
+      limit,
+      offset: newOffset,
+    });
+    if (newSets.length === 0) return setEnd(true);
+    if (!sets) return;
+    setSets([...sets, ...newSets]);
+    if (newSets.length < limit) return setEnd(true);
+    setOffset(newOffset);
+  }, [search, end, offset, sets]);
+
+  const onAdd = useCallback(async () => {
+    console.log(`${HomePage.name}.onAdd`, {set, workouts});
+    navigation.navigate('Edit set', {
+      set: set || {...defaultSet},
+      workouts,
+      count,
+    });
+  }, [navigation, set, workouts, count]);
 
   return (
-    <Stack.Navigator
-      screenOptions={{headerShown: false, animationEnabled: false}}>
-      <Stack.Screen name="Sets" component={SetList} />
-      <Stack.Screen
-        name="EditSet"
-        component={EditSet}
-        listeners={{
-          beforeRemove: () => {
-            navigation.setOptions({
-              headerLeft: () => (
-                <IconButton icon="menu" onPress={navigation.openDrawer} />
-              ),
-              title: 'Home',
-            });
-          },
-        }}
+    <Page onAdd={onAdd} search={search} setSearch={setSearch}>
+      <FlatList
+        data={sets}
+        style={{height: '99%'}}
+        ListEmptyComponent={
+          <List.Item
+            title="No sets yet"
+            description="A set is a group of repetitions. E.g. 8 reps of Squats."
+          />
+        }
+        renderItem={renderItem}
+        keyExtractor={s => s.id!.toString()}
+        onEndReached={next}
       />
-    </Stack.Navigator>
+    </Page>
   );
 }

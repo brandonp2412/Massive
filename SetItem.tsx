@@ -2,7 +2,7 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {Divider, List, Menu, Text} from 'react-native-paper';
-import {HomePageParams} from './home-page-params';
+import {DrawerParamList} from './drawer-param-list';
 import Set from './set';
 import {deleteSet} from './set.service';
 
@@ -23,7 +23,7 @@ export default function SetItem({
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
-  const navigation = useNavigation<NavigationProp<HomePageParams>>();
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   const remove = useCallback(async () => {
     if (typeof item.id === 'number') await deleteSet(item.id);
@@ -35,7 +35,7 @@ export default function SetItem({
     const set: Set = {...item};
     delete set.id;
     setShowMenu(false);
-    navigation.navigate('EditSet', {set, workouts: [], count: 0});
+    navigation.navigate('Edit set', {set, workouts: [], count: 0});
   }, [navigation, item]);
 
   const longPress = useCallback(
@@ -60,7 +60,7 @@ export default function SetItem({
     <>
       <List.Item
         onPress={() =>
-          navigation.navigate('EditSet', {set: item, workouts: [], count: 0})
+          navigation.navigate('Edit set', {set: item, workouts: [], count: 0})
         }
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}

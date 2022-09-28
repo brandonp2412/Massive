@@ -1,36 +1,64 @@
-import {DrawerNavigationProp} from '@react-navigation/drawer';
-import {useNavigation} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
-import {IconButton} from 'react-native-paper';
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
+import {default as React, useCallback, useEffect, useState} from 'react';
+import {FlatList} from 'react-native';
+import {List} from 'react-native-paper';
 import {DrawerParamList} from './drawer-param-list';
-import EditPlan from './EditPlan';
-import {PlanPageParams} from './plan-page-params';
-import PlanList from './PlanList';
-
-const Stack = createStackNavigator<PlanPageParams>();
+import DrawerMenu from './DrawerMenu';
+import Page from './Page';
+import {Plan} from './plan';
+import {getPlans} from './plan.service';
+import PlanItem from './PlanItem';
 
 export default function PlanPage() {
-  const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
+  const [search, setSearch] = useState('');
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
+
+  const refresh = useCallback(async () => {
+    getPlans(search).then(setPlans);
+  }, [search]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+      navigation.getParent()?.setOptions({
+        headerRight: () => <DrawerMenu name="Plans" />,
+      });
+    }, [refresh, navigation]),
+  );
+
+  useEffect(() => {
+    refresh();
+  }, [search, refresh]);
+
+  const renderItem = useCallback(
+    ({item}: {item: Plan}) => (
+      <PlanItem item={item} key={item.id} onRemove={refresh} />
+    ),
+    [refresh],
+  );
+
+  const onAdd = () =>
+    navigation.navigate('Edit plan', {plan: {days: '', workouts: ''}});
 
   return (
-    <Stack.Navigator
-      screenOptions={{headerShown: false, animationEnabled: false}}>
-      <Stack.Screen name="PlanList" component={PlanList} />
-      <Stack.Screen
-        name="EditPlan"
-        component={EditPlan}
-        listeners={{
-          beforeRemove: () => {
-            navigation.setOptions({
-              headerLeft: () => (
-                <IconButton icon="menu" onPress={navigation.openDrawer} />
-              ),
-              title: 'Plans',
-            });
-          },
-        }}
+    <Page onAdd={onAdd} search={search} setSearch={setSearch}>
+      <FlatList
+        style={{height: '99%'}}
+        data={plans}
+        renderItem={renderItem}
+        keyExtractor={set => set.id?.toString() || ''}
+        ListEmptyComponent={
+          <List.Item
+            title="No plans yet"
+            description="A plan is a list of workouts for certain days."
+          />
+        }
       />
-    </Stack.Navigator>
+    </Page>
   );
 }

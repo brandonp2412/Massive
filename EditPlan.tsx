@@ -10,14 +10,13 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import {Button, IconButton, Text} from 'react-native-paper';
 import {MARGIN, PADDING} from './constants';
 import {DrawerParamList} from './drawer-param-list';
-import {PlanPageParams} from './plan-page-params';
 import {addPlan, updatePlan} from './plan.service';
 import {getNames} from './set.service';
 import Switch from './Switch';
 import {DAYS} from './time';
 
 export default function EditPlan() {
-  const {params} = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>();
+  const {params} = useRoute<RouteProp<DrawerParamList, 'Edit plan'>>();
   const {plan} = params;
   const [days, setDays] = useState<string[]>(
     plan.days ? plan.days.split(',') : [],

@@ -6,9 +6,8 @@ import {
 } from '@react-navigation/native';
 import React, {useCallback, useContext} from 'react';
 import {NativeModules, View} from 'react-native';
-import {IconButton} from 'react-native-paper';
 import {PADDING} from './constants';
-import {HomePageParams} from './home-page-params';
+import {DrawerParamList} from './drawer-param-list';
 import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
 import {addSet, updateSet} from './set.service';
@@ -16,7 +15,7 @@ import SetForm from './SetForm';
 import {getSettings, settings, updateSettings} from './settings.service';
 
 export default function EditSet() {
-  const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
+  const {params} = useRoute<RouteProp<DrawerParamList, 'Edit set'>>();
   const {set, count, workouts} = params;
   const navigation = useNavigation();
   const {toast} = useContext(SnackbarContext);
@@ -28,11 +27,7 @@ export default function EditSet() {
       if (typeof set.id === 'number') title = 'Edit set';
       else if (Number(set.sets) > 0)
         title = `${set.name} (${count + 1} / ${set.sets})`;
-      navigation.getParent()?.setOptions({
-        headerLeft: () => (
-          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
-        ),
-        headerRight: null,
+      navigation.setOptions({
         title,
       });
     }, [navigation, set, count]),
