@@ -21,7 +21,7 @@ sed -i "s/\(^\s*\)versionCode [0-9]*$/\1versionCode $versionCode/" \
 sed -i "s/\(^\s*\)versionName \"[0-9]*.[0-9]*\"$/\1versionName \"$major.$minor\"/" "$build"
 sed -i "s/\"version\": \"[0-9]*.[0-9]*\"/\"version\": \"$major.$minor\"/" ../package.json
 [ "$1" != "--nobundle" ] && ./gradlew bundleRelease 
-git add app/build.gradle package.json
+git add app/build.gradle ../package.json
 git commit --no-verify --message "Set versionCode=$versionCode"
 git tag "$major.$minor"
 git push origin HEAD & git push --tags
