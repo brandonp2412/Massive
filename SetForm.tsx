@@ -109,7 +109,7 @@ export default function SetForm({
         {workouts.length > 0 && !!settings.workouts && (
           <View style={{flexDirection: 'row'}}>
             {workouts.map((workout, index) => (
-              <Text>
+              <Text key={workout}>
                 <Text
                   style={
                     workout === name
