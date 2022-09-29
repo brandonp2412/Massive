@@ -1,5 +1,4 @@
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useContext, useEffect, useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {IconButton} from 'react-native-paper';
@@ -25,7 +24,6 @@ export default function Routes() {
   const [migrated, setMigrated] = useState(false);
   const dark = useColorScheme() === 'dark';
   const {setColor} = useContext(CustomTheme);
-  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   useEffect(() => {
     runMigrations()

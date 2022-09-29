@@ -10,4 +10,5 @@ export default interface Settings {
   workouts: number;
   steps: number;
   nextAlarm?: string;
+  focus?: 'name' | 'reps' | 'weight';
 }

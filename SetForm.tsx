@@ -1,4 +1,11 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {ScrollView, View} from 'react-native';
 import {Button, Text} from 'react-native-paper';
 import MassiveInput from './MassiveInput';
@@ -30,17 +37,25 @@ export default function SetForm({
   const repsRef = useRef<any>(null);
   const unitRef = useRef<any>(null);
 
+  useFocusEffect(
+    useCallback(() => {
+      repsRef?.current.focus();
+    }, []),
+  );
+
   useEffect(() => {
-    console.log('SetForm.useEffect:', {uri, set, name, reps, unit});
+    console.log('SetForm.useEffect:', {uri, set});
     setName(set.name);
     setReps(set.reps.toString());
     setWeight(set.weight.toString());
     setUnit(set.unit);
-    if (!uri)
+    if (!set.image)
       getSets({search: set.name, limit: 1, offset: 0}).then(([s]) =>
         setUri(s?.image),
       );
-  }, [uri, set, name, reps, unit]);
+    else setUri(set.image);
+    repsRef?.current.focus();
+  }, [uri, set]);
 
   const handleSubmit = () => {
     if (!name) return;
@@ -77,7 +92,6 @@ export default function SetForm({
           value={name}
           onChangeText={handleName}
           autoCorrect={false}
-          autoFocus={!name}
           blurOnSubmit={false}
           onSubmitEditing={() => repsRef.current?.focus()}
         />
@@ -89,7 +103,6 @@ export default function SetForm({
           onSubmitEditing={() => weightRef.current?.focus()}
           selection={selection}
           onSelectionChange={e => setSelection(e.nativeEvent.selection)}
-          autoFocus={!!name}
           blurOnSubmit={false}
           innerRef={repsRef}
         />

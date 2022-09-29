@@ -27,6 +27,7 @@ export default function SettingsPage() {
   const [showUnit, setShowUnit] = useState(!!settings.showUnit);
   const [workouts, setWorkouts] = useState(!!settings.workouts);
   const [steps, setSteps] = useState(!!settings.steps);
+  const [focus, setFocus] = useState(settings.focus);
   const {color, setColor} = useContext(CustomTheme);
   const {toast} = useContext(SnackbarContext);
 
@@ -48,6 +49,7 @@ export default function SettingsPage() {
       color,
       workouts: +workouts,
       steps: +steps,
+      focus,
     });
     getSettings();
   }, [
@@ -61,6 +63,7 @@ export default function SettingsPage() {
     color,
     workouts,
     steps,
+    focus,
   ]);
 
   const changeAlarmEnabled = useCallback(
@@ -173,6 +176,18 @@ export default function SettingsPage() {
               {input.name}
             </Switch>
           ))}
+        {'focus'.includes(search.toLowerCase()) && (
+          <Picker
+            style={{color}}
+            dropdownIconColor={color}
+            selectedValue={focus}
+            onValueChange={value => setFocus(value)}>
+            <Picker.Item value="" label="Don't auto focus" />
+            <Picker.Item value="name" label="Auto focus Name" />
+            <Picker.Item value="reps" label="Auto focus Reps" />
+            <Picker.Item value="weight" label="Auto focus Weight" />
+          </Picker>
+        )}
         {'theme'.includes(search.toLowerCase()) && (
           <Picker
             style={{color}}
@@ -190,7 +205,9 @@ export default function SettingsPage() {
           </Picker>
         )}
         {'alarm sound'.includes(search.toLowerCase()) && (
-          <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
+          <Button
+            style={{alignSelf: 'flex-start', marginTop: MARGIN}}
+            onPress={changeSound}>
             Alarm sound
             {sound
               ? ': ' + sound.split('/')[sound.split('/').length - 1]
