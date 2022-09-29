@@ -165,7 +165,7 @@ export default function SettingsPage() {
           ))}
         {'new set'.includes(search.toLowerCase()) && (
           <Picker
-            style={{color}}
+            style={{color, marginTop: 0}}
             dropdownIconColor={color}
             selectedValue={newSet}
             onValueChange={value => setNewSet(value)}>
@@ -176,7 +176,7 @@ export default function SettingsPage() {
         )}
         {'theme'.includes(search.toLowerCase()) && (
           <Picker
-            style={{color}}
+            style={{color, marginTop: -10}}
             dropdownIconColor={color}
             selectedValue={color}
             onValueChange={value => setColor(value)}>
@@ -191,9 +191,7 @@ export default function SettingsPage() {
           </Picker>
         )}
         {'alarm sound'.includes(search.toLowerCase()) && (
-          <Button
-            style={{alignSelf: 'flex-start', marginTop: MARGIN}}
-            onPress={changeSound}>
+          <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
             Alarm sound
             {sound
               ? ': ' + sound.split('/')[sound.split('/').length - 1]
