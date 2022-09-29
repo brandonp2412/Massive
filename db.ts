@@ -103,6 +103,9 @@ const migrations = [
   `
     ALTER TABLE settings ADD COLUMN nextAlarm TEXT NULL
   `,
+  `
+    ALTER TABLE settings ADD COLUMN newSet TEXT NULL
+  `,
 ];
 
 export let db: SQLiteDatabase;

@@ -20,7 +20,7 @@ export default function SettingsPage() {
   const [search, setSearch] = useState('');
   const [vibrate, setVibrate] = useState(!!settings.vibrate);
   const [alarm, setAlarm] = useState(!!settings.alarm);
-  const [predict, setPredict] = useState(!!settings.predict);
+  const [newSet, setNewSet] = useState(settings.newSet);
   const [sound, setSound] = useState(settings.sound);
   const [notify, setNotify] = useState(!!settings.notify);
   const [images, setImages] = useState(!!settings.images);
@@ -40,7 +40,7 @@ export default function SettingsPage() {
     updateSettings({
       vibrate: +vibrate,
       alarm: +alarm,
-      predict: +predict,
+      newSet,
       sound,
       notify: +notify,
       images: +images,
@@ -53,7 +53,7 @@ export default function SettingsPage() {
   }, [
     vibrate,
     alarm,
-    predict,
+    newSet,
     sound,
     notify,
     images,
@@ -71,15 +71,6 @@ export default function SettingsPage() {
       if (enabled && !ignoring) setBattery(true);
     },
     [setBattery, ignoring, toast],
-  );
-
-  const changePredict = useCallback(
-    (enabled: boolean) => {
-      setPredict(enabled);
-      if (enabled) toast('Predict your next set based on todays plan.', 4000);
-      else toast('New sets will always be empty.', 4000);
-    },
-    [setPredict, toast],
   );
 
   const changeVibrate = useCallback(
@@ -149,7 +140,6 @@ export default function SettingsPage() {
   const switches: Input<boolean>[] = [
     {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
     {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
-    {name: 'Predict sets', value: predict, onChange: changePredict},
     {name: 'Record notifications', value: notify, onChange: changeNotify},
     {name: 'Show images', value: images, onChange: changeImages},
     {name: 'Show unit', value: showUnit, onChange: changeUnit},
@@ -173,6 +163,17 @@ export default function SettingsPage() {
               {input.name}
             </Switch>
           ))}
+        {'new set'.includes(search.toLowerCase()) && (
+          <Picker
+            style={{color}}
+            dropdownIconColor={color}
+            selectedValue={newSet}
+            onValueChange={value => setNewSet(value)}>
+            <Picker.Item value="" label="Copy new sets" />
+            <Picker.Item value="predict" label="Predict new sets" />
+            <Picker.Item value="empty" label="New sets are empty" />
+          </Picker>
+        )}
         {'theme'.includes(search.toLowerCase()) && (
           <Picker
             style={{color}}
@@ -190,7 +191,9 @@ export default function SettingsPage() {
           </Picker>
         )}
         {'alarm sound'.includes(search.toLowerCase()) && (
-          <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
+          <Button
+            style={{alignSelf: 'flex-start', marginTop: MARGIN}}
+            onPress={changeSound}>
             Alarm sound
             {sound
               ? ': ' + sound.split('/')[sound.split('/').length - 1]

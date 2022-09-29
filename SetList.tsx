@@ -33,14 +33,15 @@ export default function SetList() {
   const predict = useCallback(async () => {
     setCount(0);
     setSet({...defaultSet});
-    if (!settings.predict) return;
+    if (settings.newSet === 'empty') return;
+    const todaysSet = await getToday();
+    if (!settings.newSet && todaysSet) return setSet({...todaysSet});
     const todaysPlan = await getTodaysPlan();
     if (todaysPlan.length === 0) return;
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
     setWorkouts(todaysWorkouts);
     let workout = todaysWorkouts[0];
     let best = await getBestSet(workout);
-    const todaysSet = await getToday();
     if (!todaysSet || !todaysWorkouts.includes(todaysSet.name))
       return setSet(best);
     let _count = await countToday(todaysSet.name);
