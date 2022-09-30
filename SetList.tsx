@@ -33,6 +33,7 @@ export default function SetList() {
   const predict = useCallback(async () => {
     setCount(0);
     setSet({...defaultSet});
+    setWorkouts([]);
     if (settings.newSet === 'empty') return;
     const todaysSet = await getToday();
     console.log(`${SetList.name}.predict:`, {todaysSet});
