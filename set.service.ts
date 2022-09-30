@@ -124,7 +124,7 @@ export const getNames = async (): Promise<string[]> => {
 
 export const getToday = async (): Promise<Set | undefined> => {
   const select = `
-    SELECT * FROM sets
+    SELECT name, reps, weight, sets, minutes, seconds, unit, image FROM sets
     WHERE NOT hidden
       AND created LIKE strftime('%Y-%m-%d%%', 'now', 'localtime')
     ORDER BY created DESC
@@ -138,7 +138,7 @@ export const countToday = async (name: string): Promise<number> => {
   const select = `
     SELECT COUNT(*) as total FROM sets
     WHERE created LIKE strftime('%Y-%m-%d%%', 'now', 'localtime')
-      AND name = ?
+      AND name = ? AND NOT hidden
   `;
   const [result] = await db.executeSql(select, [name]);
   return Number(result.rows.item(0)?.total);

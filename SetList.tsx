@@ -35,16 +35,20 @@ export default function SetList() {
     setSet({...defaultSet});
     if (settings.newSet === 'empty') return;
     const todaysSet = await getToday();
+    console.log(`${SetList.name}.predict:`, {todaysSet});
     if (!settings.newSet && todaysSet) return setSet({...todaysSet});
     const todaysPlan = await getTodaysPlan();
+    console.log(`${SetList.name}.predict:`, {todaysPlan});
     if (todaysPlan.length === 0) return;
     const todaysWorkouts = todaysPlan[0].workouts.split(',');
     setWorkouts(todaysWorkouts);
     let workout = todaysWorkouts[0];
     let best = await getBestSet(workout);
+    console.log(`${SetList.name}.predict:`, {workout, best});
     if (!todaysSet || !todaysWorkouts.includes(todaysSet.name))
       return setSet(best);
     let _count = await countToday(todaysSet.name);
+    console.log(`${SetList.name}.predict:`, {_count});
     workout = todaysSet.name;
     best = await getBestSet(workout);
     const index = todaysWorkouts.indexOf(todaysSet.name) + 1;
@@ -113,7 +117,7 @@ export default function SetList() {
   }, [search, end, offset, sets]);
 
   const onAdd = useCallback(async () => {
-    console.log(`${SetList.name}.onAdd`, {set, defaultSet, workouts});
+    console.log(`${SetList.name}.onAdd`, {set, workouts});
     navigation.navigate('EditSet', {
       set: set || {...defaultSet},
       workouts,

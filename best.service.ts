@@ -8,13 +8,13 @@ export const getBestSet = async (name: string): Promise<Set> => {
   const bestWeight = `
     SELECT name, reps, unit, MAX(weight) AS weight 
     FROM sets
-    WHERE name = ? AND NOT hidden
+    WHERE name = ?
     GROUP BY name;
   `;
   const bestReps = `
     SELECT name, MAX(reps) as reps, unit, weight, sets, minutes, seconds
     FROM sets
-    WHERE name = ? AND weight = ? AND NOT hidden
+    WHERE name = ? AND weight = ?
     GROUP BY name;
   `;
   const [weightResult] = await db.executeSql(bestWeight, [name]);
