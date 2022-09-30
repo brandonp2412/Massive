@@ -18,6 +18,7 @@ export default function MassiveInput(
       style={{marginBottom: MARGIN, minWidth: 100}}
       selectTextOnFocus
       ref={props.innerRef}
+      blurOnSubmit={false}
       {...props}
     />
   );

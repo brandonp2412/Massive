@@ -4,8 +4,8 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import React, {useCallback, useContext, useRef, useState} from 'react';
+import {ScrollView, TextInput, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, IconButton, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
@@ -33,6 +33,10 @@ export default function EditWorkout() {
   const [sets, setSets] = useState(params.value.sets?.toString() ?? '3');
   const {toast} = useContext(SnackbarContext);
   const navigation = useNavigation();
+  const setsRef = useRef<TextInput>(null);
+  const stepsRef = useRef<TextInput>(null);
+  const minutesRef = useRef<TextInput>(null);
+  const secondsRef = useRef<TextInput>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -107,6 +111,11 @@ export default function EditWorkout() {
       toast('Commas and single quotes would break CSV exports', 6000);
   };
 
+  const submitName = () => {
+    if (settings.steps) stepsRef.current?.focus();
+    else setsRef.current?.focus();
+  };
+
   return (
     <View style={{padding: PADDING}}>
       <ScrollView style={{height: '90%'}}>
@@ -115,33 +124,42 @@ export default function EditWorkout() {
           label="Name"
           value={name}
           onChangeText={handleName}
+          onSubmitEditing={submitName}
         />
         {!!settings.steps && (
           <MassiveInput
+            innerRef={stepsRef}
             selectTextOnFocus={false}
             value={steps}
             onChangeText={handleSteps}
             label="Steps"
             multiline
+            onSubmitEditing={setsRef.current?.focus}
           />
         )}
         <MassiveInput
+          innerRef={setsRef}
           value={sets}
           onChangeText={setSets}
           label="Sets per workout"
           keyboardType="numeric"
+          onSubmitEditing={minutesRef.current?.focus}
         />
         <MassiveInput
+          innerRef={minutesRef}
+          onSubmitEditing={secondsRef.current?.focus}
           value={minutes}
           onChangeText={setMinutes}
           label="Rest minutes"
           keyboardType="numeric"
         />
         <MassiveInput
+          innerRef={secondsRef}
           value={seconds}
           onChangeText={setSeconds}
           label="Rest seconds"
           keyboardType="numeric"
+          blurOnSubmit
         />
         {uri ? (
           <TouchableRipple

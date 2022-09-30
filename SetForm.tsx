@@ -1,5 +1,5 @@
 import React, {useContext, useRef, useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import {ScrollView, TextInput, View} from 'react-native';
 import {Button, Text} from 'react-native-paper';
 import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
@@ -25,9 +25,9 @@ export default function SetForm({
     end: set.reps.toString().length,
   });
   const {toast} = useContext(SnackbarContext);
-  const weightRef = useRef<any>(null);
-  const repsRef = useRef<any>(null);
-  const unitRef = useRef<any>(null);
+  const weightRef = useRef<TextInput>(null);
+  const repsRef = useRef<TextInput>(null);
+  const unitRef = useRef<TextInput>(null);
 
   const handleSubmit = async () => {
     console.log(`${SetForm.name}.handleSubmit:`, {set});
@@ -72,7 +72,6 @@ export default function SetForm({
           onChangeText={handleName}
           autoCorrect={false}
           autoFocus={!name}
-          blurOnSubmit={false}
           onSubmitEditing={() => repsRef.current?.focus()}
         />
         <MassiveInput
@@ -84,7 +83,6 @@ export default function SetForm({
           selection={selection}
           onSelectionChange={e => setSelection(e.nativeEvent.selection)}
           autoFocus={!!name}
-          blurOnSubmit={false}
           innerRef={repsRef}
         />
         <MassiveInput
