@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import {Button, Text} from 'react-native-paper';
 import MassiveInput from './MassiveInput';
@@ -20,7 +20,6 @@ export default function SetForm({
   const [reps, setReps] = useState(set.reps.toString());
   const [weight, setWeight] = useState(set.weight.toString());
   const [unit, setUnit] = useState(set.unit);
-  const [uri, setUri] = useState(set.image);
   const [selection, setSelection] = useState({
     start: 0,
     end: set.reps.toString().length,
@@ -30,23 +29,22 @@ export default function SetForm({
   const repsRef = useRef<any>(null);
   const unitRef = useRef<any>(null);
 
-  useEffect(() => {
-    console.log('SetForm.useEffect:', {uri, name: set.name});
-    if (!uri)
-      getSets({search: set.name, limit: 1, offset: 0}).then(([s]) =>
-        setUri(s?.image),
-      );
-  }, [uri, set.name]);
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    console.log(`${SetForm.name}.handleSubmit:`, {set});
     if (!name) return;
+    let saveImage = set.image;
+    if (!set.image)
+      saveImage = await getSets({search: name, limit: 1, offset: 0}).then(
+        ([s]) => s?.image,
+      );
+    console.log(`${SetForm.name}.handleSubmit:`, {saveImage});
     save({
       name,
       reps: Number(reps),
       weight: Number(weight),
       id: set.id,
       unit,
-      image: uri,
+      image: saveImage,
       minutes: Number(set.minutes ?? 3),
       seconds: Number(set.seconds ?? 30),
       sets: set.sets ?? 3,
