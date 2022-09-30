@@ -134,7 +134,7 @@ export default function EditWorkout() {
             onChangeText={handleSteps}
             label="Steps"
             multiline
-            onSubmitEditing={setsRef.current?.focus}
+            onSubmitEditing={() => setsRef.current?.focus()}
           />
         )}
         <MassiveInput
@@ -143,11 +143,11 @@ export default function EditWorkout() {
           onChangeText={setSets}
           label="Sets per workout"
           keyboardType="numeric"
-          onSubmitEditing={minutesRef.current?.focus}
+          onSubmitEditing={() => minutesRef.current?.focus()}
         />
         <MassiveInput
           innerRef={minutesRef}
-          onSubmitEditing={secondsRef.current?.focus}
+          onSubmitEditing={() => secondsRef.current?.focus()}
           value={minutes}
           onChangeText={setMinutes}
           label="Rest minutes"
