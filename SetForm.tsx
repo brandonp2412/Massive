@@ -37,7 +37,7 @@ export default function SetForm({
       saveImage = await getSets({search: name, limit: 1, offset: 0}).then(
         ([s]) => s?.image,
       );
-    console.log(`${SetForm.name}.handleSubmit:`, {saveImage});
+    console.log(`${SetForm.name}.handleSubmit:`, {saveImage, name});
     save({
       name,
       reps: Number(reps),

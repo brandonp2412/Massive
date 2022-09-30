@@ -12,7 +12,7 @@ export const getBestSet = async (name: string): Promise<Set> => {
     GROUP BY name;
   `;
   const bestReps = `
-    SELECT name, MAX(reps) as reps, unit, weight, sets, minutes, seconds
+    SELECT name, MAX(reps) as reps, unit, weight, sets, minutes, seconds, image
     FROM sets
     WHERE name = ? AND weight = ?
     GROUP BY name;
