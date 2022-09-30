@@ -23,7 +23,6 @@ sed -i "s/\"version\": \"[0-9]*.[0-9]*\"/\"version\": \"$major.$minor\"/" ../pac
 [ "$1" != "--nobundle" ] && ./gradlew bundleRelease 
 git add app/build.gradle ../package.json
 git commit --no-verify --message "Set versionCode=$versionCode"
-git tag "$major.$minor"
 git tag "$versionCode"
 git push origin HEAD & git push --tags
 cd ..
