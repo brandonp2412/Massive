@@ -162,14 +162,15 @@ export default function EditWorkout() {
           keyboardType="numeric"
           blurOnSubmit
         />
-        {uri ? (
+        {!!settings.images && uri && (
           <TouchableRipple
             style={{marginBottom: MARGIN}}
             onPress={changeImage}
             onLongPress={() => setShowRemove(true)}>
             <Card.Cover source={{uri}} />
           </TouchableRipple>
-        ) : (
+        )}
+        {!!settings.images && !uri && (
           <Button
             style={{marginBottom: MARGIN}}
             onPress={changeImage}
