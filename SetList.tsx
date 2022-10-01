@@ -45,9 +45,10 @@ export default function SetList() {
     setWorkouts(todaysWorkouts);
     let workout = todaysWorkouts[0];
     let best = await getBestSet(workout);
+    let [{image}] = await getSets({search: best.name, limit: 1, offset: 0});
     console.log(`${SetList.name}.predict:`, {workout, best});
     if (!todaysSet || !todaysWorkouts.includes(todaysSet.name))
-      return setSet(best);
+      return setSet({...best, image});
     let _count = await countToday(todaysSet.name);
     console.log(`${SetList.name}.predict:`, {_count});
     workout = todaysSet.name;
@@ -55,11 +56,12 @@ export default function SetList() {
     const index = todaysWorkouts.indexOf(todaysSet.name) + 1;
     if (_count >= Number(best.sets)) {
       best = await getBestSet(todaysWorkouts[index]);
+      [{image}] = await getSets({search: best.name, limit: 1, offset: 0});
       _count = 0;
     }
     if (best.name === '') setCount(0);
     else setCount(_count);
-    setSet(best);
+    setSet({...best, image});
   }, []);
 
   const refresh = useCallback(async () => {
