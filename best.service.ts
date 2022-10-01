@@ -36,12 +36,14 @@ export const getWeightsBy = async (
     FROM sets
     WHERE name = ? AND NOT hidden
     AND DATE(created) >= DATE('now', 'weekday 0', ?)
-    GROUP BY name, STRFTIME('%Y-%m-%d', created)
+    GROUP BY name, STRFTIME(?, created)
   `;
   let difference = '-7 days';
   if (period === Periods.Monthly) difference = '-1 months';
   else if (period === Periods.Yearly) difference = '-1 years';
-  const [result] = await db.executeSql(select, [name, difference]);
+  let group = '%Y-%m-%d';
+  if (period === Periods.Yearly) group = '%Y-%m';
+  const [result] = await db.executeSql(select, [name, difference, group]);
   return result.rows.raw();
 };
 
