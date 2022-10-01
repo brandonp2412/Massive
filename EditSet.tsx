@@ -38,10 +38,10 @@ export default function EditSet() {
     }, [navigation, set, count]),
   );
 
-  const startTimer = useCallback(async (_set: Set) => {
+  const startTimer = useCallback(async (value: Set) => {
     if (!settings.alarm) return;
     const milliseconds =
-      Number(_set.minutes) * 60 * 1000 + Number(_set.seconds) * 1000;
+      Number(value.minutes) * 60 * 1000 + Number(value.seconds) * 1000;
     NativeModules.AlarmModule.timer(
       milliseconds,
       !!settings.vibrate,
@@ -54,23 +54,23 @@ export default function EditSet() {
   }, []);
 
   const update = useCallback(
-    async (_set: Set) => {
-      console.log(`${EditSet.name}.update`, _set);
-      await updateSet(_set);
+    async (value: Set) => {
+      console.log(`${EditSet.name}.update`, value);
+      await updateSet(value);
       navigation.goBack();
     },
     [navigation],
   );
 
   const add = useCallback(
-    async (_set: Set) => {
-      console.log(`${EditSet.name}.add`, {set: _set});
-      startTimer(_set);
-      await addSet(_set);
+    async (value: Set) => {
+      console.log(`${EditSet.name}.add`, {set: value});
+      startTimer(value);
+      await addSet(value);
       if (!settings.notify) return navigation.goBack();
       if (
-        _set.weight > set.weight ||
-        (_set.reps > set.reps && _set.weight === set.weight)
+        value.weight > set.weight ||
+        (value.reps > set.reps && value.weight === set.weight)
       )
         toast("Great work King, that's a new record!", 3000);
       navigation.goBack();
@@ -79,9 +79,9 @@ export default function EditSet() {
   );
 
   const save = useCallback(
-    async (_set: Set) => {
-      if (typeof set.id === 'number') return update(_set);
-      return add(_set);
+    async (value: Set) => {
+      if (typeof set.id === 'number') return update(value);
+      return add(value);
     },
     [update, add, set.id],
   );
