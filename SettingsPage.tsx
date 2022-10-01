@@ -11,13 +11,15 @@ import {MARGIN} from './constants';
 import Input from './input';
 import {SnackbarContext} from './MassiveSnack';
 import Page from './Page';
-import {getSettings, settings, updateSettings} from './settings.service';
+import {getSettings, updateSettings} from './settings.service';
 import Switch from './Switch';
+import {useSettings} from './use-settings';
 
 export default function SettingsPage() {
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
+  const {settings, setSettings} = useSettings();
   const [vibrate, setVibrate] = useState(!!settings.vibrate);
   const [alarm, setAlarm] = useState(!!settings.alarm);
   const [newSet, setNewSet] = useState(settings.newSet);
@@ -49,7 +51,7 @@ export default function SettingsPage() {
       workouts: +workouts,
       steps: +steps,
     });
-    getSettings();
+    getSettings().then(setSettings);
   }, [
     vibrate,
     alarm,
@@ -61,6 +63,7 @@ export default function SettingsPage() {
     color,
     workouts,
     steps,
+    setSettings,
   ]);
 
   const changeAlarmEnabled = useCallback(

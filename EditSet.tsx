@@ -13,13 +13,15 @@ import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
 import {addSet, updateSet} from './set.service';
 import SetForm from './SetForm';
-import {getSettings, settings, updateSettings} from './settings.service';
+import {getSettings, updateSettings} from './settings.service';
+import {useSettings} from './use-settings';
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
   const {set, count, workouts} = params;
   const navigation = useNavigation();
   const {toast} = useContext(SnackbarContext);
+  const {settings, setSettings} = useSettings();
 
   useFocusEffect(
     useCallback(() => {
@@ -35,23 +37,26 @@ export default function EditSet() {
         headerRight: null,
         title,
       });
-    }, [navigation, set, count]),
+    }, [navigation, set, count, settings.newSet]),
   );
 
-  const startTimer = useCallback(async (value: Set) => {
-    if (!settings.alarm) return;
-    const milliseconds =
-      Number(value.minutes) * 60 * 1000 + Number(value.seconds) * 1000;
-    NativeModules.AlarmModule.timer(
-      milliseconds,
-      !!settings.vibrate,
-      settings.sound,
-    );
-    const next = new Date();
-    next.setTime(next.getTime() + milliseconds);
-    await updateSettings({...settings, nextAlarm: next.toISOString()});
-    await getSettings();
-  }, []);
+  const startTimer = useCallback(
+    async (value: Set) => {
+      if (!settings.alarm) return;
+      const milliseconds =
+        Number(value.minutes) * 60 * 1000 + Number(value.seconds) * 1000;
+      NativeModules.AlarmModule.timer(
+        milliseconds,
+        !!settings.vibrate,
+        settings.sound,
+      );
+      const next = new Date();
+      next.setTime(next.getTime() + milliseconds);
+      await updateSettings({...settings, nextAlarm: next.toISOString()});
+      setSettings(await getSettings());
+    },
+    [settings, setSettings],
+  );
 
   const update = useCallback(
     async (value: Set) => {
@@ -75,7 +80,7 @@ export default function EditSet() {
         toast("Great work King, that's a new record!", 3000);
       navigation.goBack();
     },
-    [navigation, startTimer, set, toast],
+    [navigation, startTimer, set, toast, settings],
   );
 
   const save = useCallback(

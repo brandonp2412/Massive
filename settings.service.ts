@@ -1,12 +1,9 @@
 import {db} from './db';
 import Settings from './settings';
 
-export let settings: Settings;
-
-export const getSettings = async () => {
+export const getSettings = async (): Promise<Settings> => {
   const [result] = await db.executeSql(`SELECT * FROM settings LIMIT 1`);
-  settings = result.rows.item(0);
-  return settings;
+  return result.rows.item(0);
 };
 
 export const updateSettings = async (value: Settings) => {

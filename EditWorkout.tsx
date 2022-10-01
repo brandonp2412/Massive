@@ -14,7 +14,7 @@ import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
 import {updatePlanWorkouts} from './plan.service';
 import {addSet, updateManySet, updateSetImage} from './set.service';
-import {settings} from './settings.service';
+import {useSettings} from './use-settings';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function EditWorkout() {
@@ -37,6 +37,7 @@ export default function EditWorkout() {
   const stepsRef = useRef<TextInput>(null);
   const minutesRef = useRef<TextInput>(null);
   const secondsRef = useRef<TextInput>(null);
+  const {settings} = useSettings();
 
   useFocusEffect(
     useCallback(() => {

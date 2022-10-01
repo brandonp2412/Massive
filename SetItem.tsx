@@ -5,24 +5,22 @@ import {Divider, List, Menu, Text} from 'react-native-paper';
 import {HomePageParams} from './home-page-params';
 import Set from './set';
 import {deleteSet} from './set.service';
+import {useSettings} from './use-settings';
 
 export default function SetItem({
   item,
   onRemove,
   dates,
   setDates,
-  images,
-  setImages,
 }: {
   item: Set;
   onRemove: () => void;
   dates: boolean;
   setDates: (value: boolean) => void;
-  images: boolean;
-  setImages: (value: boolean) => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
+  const {settings} = useSettings();
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const remove = useCallback(async () => {
@@ -51,11 +49,6 @@ export default function SetItem({
     setShowMenu(false);
   }, [dates, setDates]);
 
-  const toggleImages = useCallback(() => {
-    setImages(!images);
-    setShowMenu(false);
-  }, [images, setImages]);
-
   return (
     <>
       <List.Item
@@ -66,7 +59,7 @@ export default function SetItem({
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}
         left={() =>
-          images &&
+          !!settings.images &&
           item.image && (
             <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
           )
@@ -86,7 +79,6 @@ export default function SetItem({
               visible={showMenu}
               onDismiss={() => setShowMenu(false)}>
               <Menu.Item icon="content-copy" onPress={copy} title="Copy" />
-              <Menu.Item icon="image" onPress={toggleImages} title="Images" />
               <Menu.Item icon="event" onPress={toggleDates} title="Dates" />
               <Divider />
               <Menu.Item icon="delete" onPress={remove} title="Delete" />

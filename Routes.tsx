@@ -9,27 +9,28 @@ import {DrawerParamList} from './drawer-param-list';
 import HomePage from './HomePage';
 import PlanPage from './PlanPage';
 import Route from './route';
-import {getSettings, settings} from './settings.service';
+import Settings from './settings';
+import {getSettings} from './settings.service';
 import SettingsPage from './SettingsPage';
+import {SettingsContext} from './use-settings';
 import WorkoutsPage from './WorkoutsPage';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export default function Routes() {
-  const [migrated, setMigrated] = useState(false);
+  const [settings, setSettings] = useState<Settings>();
   const dark = useColorScheme() === 'dark';
   const {setColor} = useContext(CustomTheme);
 
   useEffect(() => {
-    runMigrations()
-      .then(getSettings)
-      .then(() => {
-        setMigrated(true);
-        if (settings.color) setColor(settings.color);
-      });
+    runMigrations().then(async () => {
+      const gotSettings = await getSettings();
+      setSettings(gotSettings);
+      if (gotSettings.color) setColor(gotSettings.color);
+    });
   }, [setColor]);
 
-  if (!migrated) return null;
+  if (!settings) return null;
 
   const routes: Route[] = [
     {name: 'Home', component: HomePage, icon: 'home'},
@@ -40,21 +41,23 @@ export default function Routes() {
   ];
 
   return (
-    <Drawer.Navigator
-      screenOptions={{
-        headerTintColor: dark ? 'white' : 'black',
-        swipeEdgeWidth: 1000,
-      }}>
-      {routes.map(route => (
-        <Drawer.Screen
-          key={route.name}
-          name={route.name}
-          component={route.component}
-          options={{
-            drawerIcon: () => <IconButton icon={route.icon} />,
-          }}
-        />
-      ))}
-    </Drawer.Navigator>
+    <SettingsContext.Provider value={{settings, setSettings}}>
+      <Drawer.Navigator
+        screenOptions={{
+          headerTintColor: dark ? 'white' : 'black',
+          swipeEdgeWidth: 1000,
+        }}>
+        {routes.map(route => (
+          <Drawer.Screen
+            key={route.name}
+            name={route.name}
+            component={route.component}
+            options={{
+              drawerIcon: () => <IconButton icon={route.icon} />,
+            }}
+          />
+        ))}
+      </Drawer.Navigator>
+    </SettingsContext.Provider>
   );
 }

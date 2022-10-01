@@ -14,7 +14,7 @@ import {getTodaysPlan} from './plan.service';
 import Set from './set';
 import {countToday, defaultSet, getSets, getToday} from './set.service';
 import SetItem from './SetItem';
-import {settings} from './settings.service';
+import {useSettings} from './use-settings';
 
 const limit = 15;
 
@@ -27,7 +27,7 @@ export default function SetList() {
   const [search, setSearch] = useState('');
   const [end, setEnd] = useState(false);
   const [dates, setDates] = useState(false);
-  const [images, setImages] = useState(true);
+  const {settings} = useSettings();
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const predict = useCallback(async () => {
@@ -62,7 +62,7 @@ export default function SetList() {
     if (best.name === '') setCount(0);
     else setCount(_count);
     setSet({...best, image});
-  }, []);
+  }, [settings]);
 
   const refresh = useCallback(async () => {
     predict();
@@ -80,7 +80,6 @@ export default function SetList() {
       navigation.getParent()?.setOptions({
         headerRight: () => <DrawerMenu name="Home" />,
       });
-      setImages(!!settings.images);
     }, [refresh, navigation]),
   );
 
@@ -93,14 +92,12 @@ export default function SetList() {
       <SetItem
         dates={dates}
         setDates={setDates}
-        images={images}
-        setImages={setImages}
         item={item}
         key={item.id}
         onRemove={refresh}
       />
     ),
-    [refresh, dates, setDates, images, setImages],
+    [refresh, dates, setDates],
   );
 
   const next = useCallback(async () => {

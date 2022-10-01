@@ -5,6 +5,7 @@ import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import Set from './set';
 import {deleteSetsBy} from './set.service';
+import {useSettings} from './use-settings';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function WorkoutItem({
@@ -17,6 +18,7 @@ export default function WorkoutItem({
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const [showRemove, setShowRemove] = useState('');
+  const {settings} = useSettings();
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
   const remove = useCallback(async () => {
@@ -44,6 +46,7 @@ export default function WorkoutItem({
         description={`${item.sets} sets ${minutes}:${seconds} rest`}
         onLongPress={longPress}
         left={() =>
+          !!settings.images &&
           item.image && (
             <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
           )

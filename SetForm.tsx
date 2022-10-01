@@ -8,7 +8,7 @@ import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
 import {getSets} from './set.service';
-import {settings} from './settings.service';
+import {useSettings} from './use-settings';
 
 export default function SetForm({
   save,
@@ -31,6 +31,7 @@ export default function SetForm({
   });
   const [removeImage, setRemoveImage] = useState(false);
   const {toast} = useContext(SnackbarContext);
+  const {settings} = useSettings();
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);

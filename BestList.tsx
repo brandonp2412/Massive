@@ -10,12 +10,13 @@ import {getBestReps, getBestWeights} from './best.service';
 import {BestPageParams} from './BestPage';
 import Page from './Page';
 import Set from './set';
-import {settings} from './settings.service';
+import {useSettings} from './use-settings';
 
 export default function BestList() {
   const [bests, setBests] = useState<Set[]>([]);
   const [search, setSearch] = useState('');
   const navigation = useNavigation<NavigationProp<BestPageParams>>();
+  const {settings} = useSettings();
 
   const refresh = useCallback(async () => {
     const weights = await getBestWeights(search);
