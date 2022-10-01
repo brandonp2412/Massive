@@ -4,7 +4,7 @@ import Set from './set';
 export const updateSet = async (value: Set) => {
   const update = `
     UPDATE sets 
-    SET name = ?, reps = ?, weight = ?, unit = ? 
+    SET name = ?, reps = ?, weight = ?, unit = ?, image = ?
     WHERE id = ?
   `;
   return db.executeSql(update, [
@@ -12,6 +12,7 @@ export const updateSet = async (value: Set) => {
     value.reps,
     value.weight,
     value.unit,
+    value.image,
     value.id,
   ]);
 };

@@ -1,6 +1,9 @@
-import React, {useContext, useRef, useState} from 'react';
+import React, {useCallback, useContext, useRef, useState} from 'react';
 import {ScrollView, TextInput, View} from 'react-native';
-import {Button, Text} from 'react-native-paper';
+import DocumentPicker from 'react-native-document-picker';
+import {Button, Card, Text, TouchableRipple} from 'react-native-paper';
+import ConfirmDialog from './ConfirmDialog';
+import {MARGIN} from './constants';
 import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
 import Set from './set';
@@ -19,32 +22,35 @@ export default function SetForm({
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
   const [weight, setWeight] = useState(set.weight.toString());
+  const [uri, setUri] = useState(set.image);
   const [unit, setUnit] = useState(set.unit);
+  const [showRemove, setShowRemove] = useState(false);
   const [selection, setSelection] = useState({
     start: 0,
     end: set.reps.toString().length,
   });
+  const [removeImage, setRemoveImage] = useState(false);
   const {toast} = useContext(SnackbarContext);
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
 
   const handleSubmit = async () => {
-    console.log(`${SetForm.name}.handleSubmit:`, {set});
+    console.log(`${SetForm.name}.handleSubmit:`, {set, uri, name});
     if (!name) return;
-    let saveImage = set.image;
-    if (!set.image)
-      saveImage = await getSets({search: name, limit: 1, offset: 0}).then(
+    let image = uri;
+    if (!uri && !set.image && !removeImage)
+      image = await getSets({search: name, limit: 1, offset: 0}).then(
         ([s]) => s?.image,
       );
-    console.log(`${SetForm.name}.handleSubmit:`, {saveImage, name});
+    console.log(`${SetForm.name}.handleSubmit:`, {image});
     save({
       name,
       reps: Number(reps),
       weight: Number(weight),
       id: set.id,
       unit,
-      image: saveImage,
+      image,
       minutes: Number(set.minutes ?? 3),
       seconds: Number(set.seconds ?? 30),
       sets: set.sets ?? 3,
@@ -62,6 +68,20 @@ export default function SetForm({
     if (value.match(/,|'/))
       toast('Commas and single quotes would break CSV exports', 6000);
   };
+
+  const changeImage = useCallback(async () => {
+    const {fileCopyUri} = await DocumentPicker.pickSingle({
+      type: 'image/*',
+      copyTo: 'documentDirectory',
+    });
+    if (fileCopyUri) setUri(fileCopyUri);
+  }, []);
+
+  const handleRemove = useCallback(async () => {
+    setUri('');
+    setRemoveImage(true);
+    setShowRemove(false);
+  }, []);
 
   return (
     <>
@@ -103,7 +123,7 @@ export default function SetForm({
           />
         )}
         {workouts.length > 0 && !!settings.workouts && (
-          <View style={{flexDirection: 'row'}}>
+          <View style={{flexDirection: 'row', marginBottom: MARGIN}}>
             {workouts.map((workout, index) => (
               <Text key={workout}>
                 <Text
@@ -119,6 +139,22 @@ export default function SetForm({
             ))}
           </View>
         )}
+        {!!settings.images && uri && (
+          <TouchableRipple
+            style={{marginBottom: MARGIN}}
+            onPress={changeImage}
+            onLongPress={() => setShowRemove(true)}>
+            <Card.Cover source={{uri}} />
+          </TouchableRipple>
+        )}
+        {!!settings.images && !uri && (
+          <Button
+            style={{marginBottom: MARGIN}}
+            onPress={changeImage}
+            icon="add-photo-alternate">
+            Image
+          </Button>
+        )}
       </ScrollView>
       <Button
         disabled={!name}
@@ -127,6 +163,13 @@ export default function SetForm({
         onPress={handleSubmit}>
         Save
       </Button>
+      <ConfirmDialog
+        title="Remove image"
+        onOk={handleRemove}
+        show={showRemove}
+        setShow={setShowRemove}>
+        Are you sure you want to remove the image?
+      </ConfirmDialog>
     </>
   );
 }
