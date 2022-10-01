@@ -26,7 +26,7 @@ export default function EditSet() {
       console.log(`${EditSet.name}.focus:`, set);
       let title = 'Create set';
       if (typeof set.id === 'number') title = 'Edit set';
-      else if (Number(set.sets) > 0)
+      else if (Number(set.sets) > 0 && settings.newSet === 'predict')
         title = `${set.name} (${count + 1} / ${set.sets})`;
       navigation.getParent()?.setOptions({
         headerLeft: () => (
