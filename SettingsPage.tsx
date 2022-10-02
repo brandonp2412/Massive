@@ -30,6 +30,7 @@ export default function SettingsPage() {
   const [workouts, setWorkouts] = useState(!!settings.workouts);
   const [steps, setSteps] = useState(!!settings.steps);
   const [date, setDate] = useState('%Y-%m-%d %H:%M');
+  const [showDate, setShowDate] = useState(false);
   const {color, setColor} = useContext(CustomTheme);
   const {toast} = useContext(SnackbarContext);
 
@@ -52,6 +53,7 @@ export default function SettingsPage() {
       workouts: +workouts,
       steps: +steps,
       date,
+      showDate: +showDate,
     });
     getSettings().then(setSettings);
   }, [
@@ -67,6 +69,7 @@ export default function SettingsPage() {
     steps,
     setSettings,
     date,
+    showDate,
   ]);
 
   const changeAlarmEnabled = useCallback(
@@ -143,6 +146,15 @@ export default function SettingsPage() {
     [toast],
   );
 
+  const changeShowDate = useCallback(
+    (enabled: boolean) => {
+      setShowDate(enabled);
+      if (enabled) toast('Show date for sets by default.', 4000);
+      else toast('Stopped showing date for sets by default.', 4000);
+    },
+    [toast],
+  );
+
   const switches: Input<boolean>[] = [
     {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
     {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
@@ -151,6 +163,7 @@ export default function SettingsPage() {
     {name: 'Show unit', value: showUnit, onChange: changeUnit},
     {name: 'Show workouts', value: workouts, onChange: changeWorkouts},
     {name: 'Show steps', value: steps, onChange: changeSteps},
+    {name: 'Show date', value: showDate, onChange: changeShowDate},
   ];
 
   return (

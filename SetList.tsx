@@ -26,8 +26,8 @@ export default function SetList() {
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState('');
   const [end, setEnd] = useState(false);
-  const [dates, setDates] = useState(false);
   const {settings} = useSettings();
+  const [dates, setDates] = useState(!!settings.showDate);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const predict = useCallback(async () => {
@@ -80,7 +80,8 @@ export default function SetList() {
       navigation.getParent()?.setOptions({
         headerRight: () => <DrawerMenu name="Home" />,
       });
-    }, [refresh, navigation]),
+      setDates(!!settings.showDate);
+    }, [refresh, navigation, settings.showDate]),
   );
 
   useEffect(() => {
