@@ -106,6 +106,9 @@ const migrations = [
   `
     ALTER TABLE settings ADD COLUMN newSet TEXT NULL
   `,
+  `
+    ALTER TABLE settings ADD COLUMN date TEXT NULL
+  `,
 ];
 
 export let db: SQLiteDatabase;

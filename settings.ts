@@ -10,4 +10,5 @@ export default interface Settings {
   workouts: number;
   nextAlarm?: string;
   steps?: number;
+  date?: string;
 }
