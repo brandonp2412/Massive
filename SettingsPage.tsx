@@ -224,6 +224,7 @@ export default function SettingsPage() {
               label="Format date as 1990-12-24 (YYYY-MM-dd)"
             />
             <Picker.Item value="%d/%m" label="Format date as 24/12 (dd/MM)" />
+            <Picker.Item value="%H:%M" label="Format date as 15:05 (HH:MM)" />
           </Picker>
         )}
         {'alarm sound'.includes(search.toLowerCase()) && (
