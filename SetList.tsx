@@ -116,13 +116,14 @@ export default function SetList() {
       search: `%${search}%`,
       limit,
       offset: newOffset,
+      format: settings.date || '%Y-%m-%d %H:%M',
     });
     if (newSets.length === 0) return setEnd(true);
     if (!sets) return;
     setSets([...sets, ...newSets]);
     if (newSets.length < limit) return setEnd(true);
     setOffset(newOffset);
-  }, [search, end, offset, sets]);
+  }, [search, end, offset, sets, settings.date]);
 
   const onAdd = useCallback(async () => {
     console.log(`${SetList.name}.onAdd`, {set, workouts});
