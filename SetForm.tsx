@@ -22,7 +22,7 @@ export default function SetForm({
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
   const [weight, setWeight] = useState(set.weight.toString());
-  const [uri, setUri] = useState(set.image);
+  const [newImage, setNewImage] = useState(set.image);
   const [unit, setUnit] = useState(set.unit);
   const [showRemove, setShowRemove] = useState(false);
   const [selection, setSelection] = useState({
@@ -37,12 +37,12 @@ export default function SetForm({
   const unitRef = useRef<TextInput>(null);
 
   const handleSubmit = async () => {
-    console.log(`${SetForm.name}.handleSubmit:`, {set, uri, name});
+    console.log(`${SetForm.name}.handleSubmit:`, {set, uri: newImage, name});
     if (!name) return;
-    let image = uri;
-    if (!uri && !set.image && !removeImage)
+    let image = newImage;
+    if (!newImage && !removeImage)
       image = await getSets({search: name, limit: 1, offset: 0}).then(
-        ([s]) => s?.image,
+        ([gotSet]) => gotSet?.image,
       );
     console.log(`${SetForm.name}.handleSubmit:`, {image});
     save({
@@ -75,11 +75,11 @@ export default function SetForm({
       type: 'image/*',
       copyTo: 'documentDirectory',
     });
-    if (fileCopyUri) setUri(fileCopyUri);
+    if (fileCopyUri) setNewImage(fileCopyUri);
   }, []);
 
   const handleRemove = useCallback(async () => {
-    setUri('');
+    setNewImage('');
     setRemoveImage(true);
     setShowRemove(false);
   }, []);
@@ -140,15 +140,15 @@ export default function SetForm({
             ))}
           </View>
         )}
-        {!!settings.images && uri && (
+        {!!settings.images && newImage && (
           <TouchableRipple
             style={{marginBottom: MARGIN}}
             onPress={changeImage}
             onLongPress={() => setShowRemove(true)}>
-            <Card.Cover source={{uri}} />
+            <Card.Cover source={{uri: newImage}} />
           </TouchableRipple>
         )}
-        {!!settings.images && !uri && (
+        {!!settings.images && !newImage && (
           <Button
             style={{marginBottom: MARGIN}}
             onPress={changeImage}
