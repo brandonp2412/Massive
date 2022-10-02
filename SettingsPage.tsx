@@ -29,8 +29,8 @@ export default function SettingsPage() {
   const [showUnit, setShowUnit] = useState(!!settings.showUnit);
   const [workouts, setWorkouts] = useState(!!settings.workouts);
   const [steps, setSteps] = useState(!!settings.steps);
-  const [date, setDate] = useState('%Y-%m-%d %H:%M');
-  const [showDate, setShowDate] = useState(false);
+  const [date, setDate] = useState(settings.date || '%Y-%m-%d %H:%M');
+  const [showDate, setShowDate] = useState(!!settings.showDate);
   const {color, setColor} = useContext(CustomTheme);
   const {toast} = useContext(SnackbarContext);
 
@@ -211,7 +211,7 @@ export default function SettingsPage() {
         )}
         {'date format'.includes(search.toLowerCase()) && (
           <Picker
-            style={{color}}
+            style={{color, marginTop: -10}}
             dropdownIconColor={color}
             selectedValue={date}
             onValueChange={value => setDate(value)}>
@@ -223,7 +223,7 @@ export default function SettingsPage() {
               value="%Y-%m-%d"
               label="Format date as 1990-12-24 (YYYY-MM-dd)"
             />
-            <Picker.Item value="%m-%d" label="Format date as 12-24 (MM-dd)" />
+            <Picker.Item value="%d/%m" label="Format date as 24/12 (dd/MM)" />
           </Picker>
         )}
         {'alarm sound'.includes(search.toLowerCase()) && (

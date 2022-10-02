@@ -1,6 +1,5 @@
 import {db} from './db';
 import Set from './set';
-import {settings} from './settings.service';
 
 export const updateSet = async (value: Set) => {
   const update = `
@@ -60,20 +59,21 @@ interface PageParams {
   search: string;
   limit: number;
   offset: number;
+  format?: string;
 }
 
 export const getSets = async ({
   search,
   limit,
   offset,
+  format,
 }: PageParams): Promise<Set[]> => {
-  const format = settings.date || '%Y-%m-%d %H:%M';
   const select = `
     SELECT id, name, reps, weight, sets, minutes, seconds, 
       STRFTIME(?, created) as created, unit, image, steps 
     FROM sets 
     WHERE name LIKE ? AND NOT hidden
-    ORDER BY created DESC 
+    ORDER BY STRFTIME('%Y-%m-%d %H:%M', created) DESC 
     LIMIT ? OFFSET ?
   `;
   const [result] = await db.executeSql(select, [

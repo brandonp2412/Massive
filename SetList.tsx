@@ -46,13 +46,15 @@ export default function SetList() {
     let workout = todaysWorkouts[0];
     let best = await getBestSet(workout);
     let [{image}] = await getSets({search: best.name, limit: 1, offset: 0});
-    console.log(`${SetList.name}.predict:`, {workout, best});
+    console.log(`${SetList.name}.predict:`, {workout, best, image});
     if (!todaysSet || !todaysWorkouts.includes(todaysSet.name))
       return setSet({...best, image});
     let _count = await countToday(todaysSet.name);
     console.log(`${SetList.name}.predict:`, {_count});
     workout = todaysSet.name;
     best = await getBestSet(workout);
+    [{image}] = await getSets({search: best.name, limit: 1, offset: 0});
+    console.log(`${SetList.name}.predict:`, {workout, best, image});
     const index = todaysWorkouts.indexOf(todaysSet.name) + 1;
     if (_count >= Number(best.sets)) {
       best = await getBestSet(todaysWorkouts[index]);
@@ -66,13 +68,18 @@ export default function SetList() {
 
   const refresh = useCallback(async () => {
     predict();
-    const newSets = await getSets({search: `%${search}%`, limit, offset: 0});
+    const newSets = await getSets({
+      search: `%${search}%`,
+      limit,
+      offset: 0,
+      format: settings.date || '%Y-%m-%d %H:%M',
+    });
     console.log(`${SetList.name}.refresh:`, {first: newSets[0]});
     if (newSets.length === 0) return setSets([]);
     setSets(newSets);
     setOffset(0);
     setEnd(false);
-  }, [search, predict]);
+  }, [search, predict, settings.date]);
 
   useFocusEffect(
     useCallback(() => {
