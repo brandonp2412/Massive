@@ -30,6 +30,7 @@ export default function SettingsPage() {
   const [workouts, setWorkouts] = useState(!!settings.workouts);
   const [steps, setSteps] = useState(!!settings.steps);
   const [date, setDate] = useState(settings.date || '%Y-%m-%d %H:%M');
+  const [theme, setTheme] = useState(settings.theme || 'system');
   const [showDate, setShowDate] = useState(!!settings.showDate);
   const {color, setColor} = useContext(CustomTheme);
   const {toast} = useContext(SnackbarContext);
@@ -54,6 +55,7 @@ export default function SettingsPage() {
       steps: +steps,
       date,
       showDate: +showDate,
+      theme,
     });
     getSettings().then(setSettings);
   }, [
@@ -70,6 +72,7 @@ export default function SettingsPage() {
     setSettings,
     date,
     showDate,
+    theme,
   ]);
 
   const changeAlarmEnabled = useCallback(
@@ -182,31 +185,42 @@ export default function SettingsPage() {
               {input.name}
             </Switch>
           ))}
+        {'theme'.includes(search.toLowerCase()) && (
+          <Picker
+            style={{color}}
+            dropdownIconColor={color}
+            selectedValue={theme}
+            onValueChange={value => setTheme(value)}>
+            <Picker.Item value="system" label="Follow system theme" />
+            <Picker.Item value="dark" label="Dark theme" />
+            <Picker.Item value="light" label="Light theme" />
+          </Picker>
+        )}
+        {'color'.includes(search.toLowerCase()) && (
+          <Picker
+            style={{color, marginTop: -10}}
+            dropdownIconColor={color}
+            selectedValue={color}
+            onValueChange={value => setColor(value)}>
+            {lightColors.concat(darkColors).map(colorOption => (
+              <Picker.Item
+                key={colorOption.hex}
+                value={colorOption.hex}
+                label="Primary color"
+                color={colorOption.hex}
+              />
+            ))}
+          </Picker>
+        )}
         {'new set'.includes(search.toLowerCase()) && (
           <Picker
-            style={{color, marginTop: 0}}
+            style={{color, marginTop: -10}}
             dropdownIconColor={color}
             selectedValue={newSet}
             onValueChange={value => setNewSet(value)}>
             <Picker.Item value="" label="Copy new sets" />
             <Picker.Item value="predict" label="Predict new sets" />
             <Picker.Item value="empty" label="New sets are empty" />
-          </Picker>
-        )}
-        {'theme'.includes(search.toLowerCase()) && (
-          <Picker
-            style={{color, marginTop: -10}}
-            dropdownIconColor={color}
-            selectedValue={color}
-            onValueChange={value => setColor(value)}>
-            {darkColors.concat(lightColors).map(colorOption => (
-              <Picker.Item
-                key={colorOption.hex}
-                value={colorOption.hex}
-                label={`${colorOption.name} theme`}
-                color={colorOption.hex}
-              />
-            ))}
           </Picker>
         )}
         {'date format'.includes(search.toLowerCase()) && (

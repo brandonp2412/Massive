@@ -12,4 +12,5 @@ export default interface Settings {
   steps?: number;
   date?: string;
   showDate: number;
+  theme?: 'system' | 'dark' | 'light';
 }

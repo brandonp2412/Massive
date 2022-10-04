@@ -3,7 +3,7 @@ import {
   DefaultTheme as NavigationDefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native';
-import React, {useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {
   DarkTheme as PaperDarkTheme,
@@ -12,8 +12,12 @@ import {
 } from 'react-native-paper';
 import Ionicon from 'react-native-vector-icons/MaterialIcons';
 import {lightColors} from './colors';
+import {runMigrations} from './db';
 import MassiveSnack from './MassiveSnack';
 import Routes from './Routes';
+import Settings from './settings';
+import {getSettings} from './settings.service';
+import {SettingsContext} from './use-settings';
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -40,21 +44,36 @@ export const CustomTheme = React.createContext({
 });
 
 const App = () => {
-  const dark = useColorScheme() === 'dark';
+  const isDark = useColorScheme() === 'dark';
+  const [settings, setSettings] = useState<Settings>();
   const [color, setColor] = useState(
-    dark
+    isDark
       ? CombinedDarkTheme.colors.primary.toUpperCase()
       : CombinedDefaultTheme.colors.primary.toUpperCase(),
   );
-  const theme = dark
-    ? {
-        ...CombinedDarkTheme,
-        colors: {...CombinedDarkTheme.colors, primary: color},
-      }
-    : {
-        ...CombinedDefaultTheme,
-        colors: {...CombinedDefaultTheme.colors, primary: color},
-      };
+
+  useEffect(() => {
+    runMigrations().then(async () => {
+      const gotSettings = await getSettings();
+      setSettings(gotSettings);
+      if (gotSettings.color) setColor(gotSettings.color);
+    });
+  }, [setColor]);
+
+  const theme = useMemo(() => {
+    const darkTheme = {
+      ...CombinedDarkTheme,
+      colors: {...CombinedDarkTheme.colors, primary: color},
+    };
+    const lightTheme = {
+      ...CombinedDefaultTheme,
+      colors: {...CombinedDefaultTheme.colors, primary: color},
+    };
+    let value = isDark ? darkTheme : lightTheme;
+    if (settings?.theme === 'dark') value = darkTheme;
+    else if (settings?.theme === 'light') value = lightTheme;
+    return value;
+  }, [color, isDark, settings]);
 
   return (
     <CustomTheme.Provider value={{color, setColor}}>
@@ -63,7 +82,11 @@ const App = () => {
         settings={{icon: props => <Ionicon {...props} />}}>
         <NavigationContainer theme={theme}>
           <MassiveSnack>
-            <Routes />
+            {settings && (
+              <SettingsContext.Provider value={{settings, setSettings}}>
+                <Routes />
+              </SettingsContext.Provider>
+            )}
           </MassiveSnack>
         </NavigationContainer>
       </Provider>

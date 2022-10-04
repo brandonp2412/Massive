@@ -112,6 +112,9 @@ const migrations = [
   `
     ALTER TABLE settings ADD COLUMN showDate BOOLEAN DEFAULT 0
   `,
+  `
+    ALTER TABLE settings ADD COLUMN theme TEXT
+  `,
 ];
 
 export let db: SQLiteDatabase;

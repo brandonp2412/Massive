@@ -6,7 +6,7 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {useColorScheme, View} from 'react-native';
+import {View} from 'react-native';
 import {FileSystem} from 'react-native-file-access';
 import {IconButton} from 'react-native-paper';
 import Share from 'react-native-share';
@@ -19,11 +19,12 @@ import {Metrics} from './metrics';
 import {Periods} from './periods';
 import Set from './set';
 import {formatMonth} from './time';
+import useDark from './use-dark';
 import Volume from './volume';
 
 export default function ViewBest() {
   const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>();
-  const dark = useColorScheme() === 'dark';
+  const dark = useDark();
   const [weights, setWeights] = useState<Set[]>([]);
   const [volumes, setVolumes] = useState<Volume[]>([]);
   const [metric, setMetric] = useState(Metrics.Weight);

@@ -26,3 +26,4 @@ git commit --no-verify --message "Set versionCode=$versionCode"
 git tag "$versionCode"
 git push origin HEAD & git push --tags
 cd ..
+./install.sh
