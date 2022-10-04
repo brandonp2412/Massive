@@ -146,22 +146,26 @@ export default function EditWorkout() {
           keyboardType="numeric"
           onSubmitEditing={() => minutesRef.current?.focus()}
         />
-        <MassiveInput
-          innerRef={minutesRef}
-          onSubmitEditing={() => secondsRef.current?.focus()}
-          value={minutes}
-          onChangeText={setMinutes}
-          label="Rest minutes"
-          keyboardType="numeric"
-        />
-        <MassiveInput
-          innerRef={secondsRef}
-          value={seconds}
-          onChangeText={setSeconds}
-          label="Rest seconds"
-          keyboardType="numeric"
-          blurOnSubmit
-        />
+        {!!settings.alarm && (
+          <>
+            <MassiveInput
+              innerRef={minutesRef}
+              onSubmitEditing={() => secondsRef.current?.focus()}
+              value={minutes}
+              onChangeText={setMinutes}
+              label="Rest minutes"
+              keyboardType="numeric"
+            />
+            <MassiveInput
+              innerRef={secondsRef}
+              value={seconds}
+              onChangeText={setSeconds}
+              label="Rest seconds"
+              keyboardType="numeric"
+              blurOnSubmit
+            />
+          </>
+        )}
         {!!settings.images && uri && (
           <TouchableRipple
             style={{marginBottom: MARGIN}}
