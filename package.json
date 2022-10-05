@@ -1,6 +1,6 @@
 {
   "name": "massive",
-  "version": "1.20",
+  "version": "1.21",
   "private": true,
   "license": "GPL-3.0-only",
   "scripts": {
