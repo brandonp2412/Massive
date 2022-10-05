@@ -80,10 +80,10 @@ class TimerService() : Service() {
                         PendingIntent.FLAG_IMMUTABLE
                     )
                 builder.setContentText("Timer finished.")
-                    .setAutoCancel(true)
                     .setProgress(0, 0, false)
-                    .setOngoing(false)
-                    .setContentIntent(finishPending)
+                    .setAutoCancel(true)
+                    .setOngoing(true)
+                    .setFullScreenIntent(finishPending, true)
                     .setChannelId(CHANNEL_ID_DONE)
                     .setCategory(NotificationCompat.CATEGORY_ALARM)
                     .setDeleteIntent(pendingStop)
