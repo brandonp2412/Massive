@@ -131,7 +131,7 @@ export default function StartSession() {
           <Chip
             key={workout}
             selected={workout === name}
-            icon={workout === name ? 'fitness-center' : 'hotel'}
+            icon="fitness-center"
             onPress={() => select(index)}
             style={{marginBottom: MARGIN, marginRight: MARGIN}}>
             {workout} x
