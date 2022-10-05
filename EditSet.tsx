@@ -18,7 +18,7 @@ import {useSettings} from './use-settings';
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
-  const {set, count, workouts} = params;
+  const {set} = params;
   const navigation = useNavigation();
   const {toast} = useContext(SnackbarContext);
   const {settings, setSettings} = useSettings();
@@ -28,8 +28,6 @@ export default function EditSet() {
       console.log(`${EditSet.name}.focus:`, set);
       let title = 'Create set';
       if (typeof set.id === 'number') title = 'Edit set';
-      else if (Number(set.sets) > 0 && settings.newSet === 'predict')
-        title = `${set.name} (${count + 1} / ${set.sets})`;
       navigation.getParent()?.setOptions({
         headerLeft: () => (
           <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
@@ -37,7 +35,7 @@ export default function EditSet() {
         headerRight: null,
         title,
       });
-    }, [navigation, set, count, settings.newSet]),
+    }, [navigation, set]),
   );
 
   const startTimer = useCallback(
@@ -93,7 +91,7 @@ export default function EditSet() {
 
   return (
     <View style={{padding: PADDING}}>
-      <SetForm save={save} set={set} workouts={workouts} />
+      <SetForm save={save} set={set} />
     </View>
   );
 }

@@ -8,7 +8,7 @@ export const SettingsContext = React.createContext<{
   settings: {
     alarm: 0,
     vibrate: 1,
-    workouts: 0,
+    showDate: 0,
   },
   setSettings: () => null,
 });

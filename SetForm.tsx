@@ -1,7 +1,7 @@
 import React, {useCallback, useContext, useRef, useState} from 'react';
-import {ScrollView, TextInput, View} from 'react-native';
+import {TextInput} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
-import {Button, Card, Text, TouchableRipple} from 'react-native-paper';
+import {Button, Card, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
 import MassiveInput from './MassiveInput';
@@ -13,11 +13,11 @@ import {useSettings} from './use-settings';
 export default function SetForm({
   save,
   set,
-  workouts,
+  next,
 }: {
   set: Set;
   save: (set: Set) => void;
-  workouts: string[];
+  next?: () => void;
 }) {
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
@@ -86,77 +86,59 @@ export default function SetForm({
 
   return (
     <>
-      <ScrollView style={{height: '90%'}}>
+      <MassiveInput
+        label="Name"
+        value={name}
+        onChangeText={handleName}
+        autoCorrect={false}
+        autoFocus={!name}
+        onSubmitEditing={() => repsRef.current?.focus()}
+      />
+      <MassiveInput
+        label="Reps"
+        keyboardType="numeric"
+        value={reps}
+        onChangeText={setReps}
+        onSubmitEditing={() => weightRef.current?.focus()}
+        selection={selection}
+        onSelectionChange={e => setSelection(e.nativeEvent.selection)}
+        autoFocus={!!name}
+        innerRef={repsRef}
+      />
+      <MassiveInput
+        label="Weight"
+        keyboardType="numeric"
+        value={weight}
+        onChangeText={setWeight}
+        onSubmitEditing={handleSubmit}
+        innerRef={weightRef}
+      />
+      {!!settings.showUnit && (
         <MassiveInput
-          label="Name"
-          value={name}
-          onChangeText={handleName}
-          autoCorrect={false}
-          autoFocus={!name}
-          onSubmitEditing={() => repsRef.current?.focus()}
+          autoCapitalize="none"
+          label="Unit"
+          value={unit}
+          onChangeText={handleUnit}
+          innerRef={unitRef}
         />
-        <MassiveInput
-          label="Reps"
-          keyboardType="numeric"
-          value={reps}
-          onChangeText={setReps}
-          onSubmitEditing={() => weightRef.current?.focus()}
-          selection={selection}
-          onSelectionChange={e => setSelection(e.nativeEvent.selection)}
-          autoFocus={!!name}
-          innerRef={repsRef}
-        />
-        <MassiveInput
-          label="Weight"
-          keyboardType="numeric"
-          value={weight}
-          onChangeText={setWeight}
-          onSubmitEditing={handleSubmit}
-          innerRef={weightRef}
-        />
-        {!!settings.showUnit && (
-          <MassiveInput
-            autoCapitalize="none"
-            label="Unit"
-            value={unit}
-            onChangeText={handleUnit}
-            innerRef={unitRef}
-          />
-        )}
-        {workouts.length > 0 && !!settings.workouts && (
-          <View style={{flexDirection: 'row', marginBottom: MARGIN}}>
-            {workouts.map((workout, index) => (
-              <Text key={workout}>
-                <Text
-                  style={
-                    workout === name
-                      ? {textDecorationLine: 'underline', fontWeight: 'bold'}
-                      : null
-                  }>
-                  {workout}
-                </Text>
-                {index === workouts.length - 1 ? '' : ', '}
-              </Text>
-            ))}
-          </View>
-        )}
-        {!!settings.images && newImage && (
-          <TouchableRipple
-            style={{marginBottom: MARGIN}}
-            onPress={changeImage}
-            onLongPress={() => setShowRemove(true)}>
-            <Card.Cover source={{uri: newImage}} />
-          </TouchableRipple>
-        )}
-        {!!settings.images && !newImage && (
-          <Button
-            style={{marginBottom: MARGIN}}
-            onPress={changeImage}
-            icon="add-photo-alternate">
-            Image
-          </Button>
-        )}
-      </ScrollView>
+      )}
+      {!!settings.images && newImage && (
+        <TouchableRipple
+          style={{marginBottom: MARGIN}}
+          onPress={changeImage}
+          onLongPress={() => setShowRemove(true)}>
+          <Card.Cover source={{uri: newImage}} />
+        </TouchableRipple>
+      )}
+      {!!settings.images && !newImage && (
+        <Button
+          style={{marginBottom: MARGIN}}
+          onPress={changeImage}
+          icon="add-photo-alternate">
+          Image
+        </Button>
+      )}
+      {next && <Button icon="navigate-next">Next</Button>}
       <Button
         disabled={!name}
         mode="contained"

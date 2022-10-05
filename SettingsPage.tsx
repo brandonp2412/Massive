@@ -22,12 +22,10 @@ export default function SettingsPage() {
   const {settings, setSettings} = useSettings();
   const [vibrate, setVibrate] = useState(!!settings.vibrate);
   const [alarm, setAlarm] = useState(!!settings.alarm);
-  const [newSet, setNewSet] = useState(settings.newSet);
   const [sound, setSound] = useState(settings.sound);
   const [notify, setNotify] = useState(!!settings.notify);
   const [images, setImages] = useState(!!settings.images);
   const [showUnit, setShowUnit] = useState(!!settings.showUnit);
-  const [workouts, setWorkouts] = useState(!!settings.workouts);
   const [steps, setSteps] = useState(!!settings.steps);
   const [date, setDate] = useState(settings.date || '%Y-%m-%d %H:%M');
   const [theme, setTheme] = useState(settings.theme || 'system');
@@ -45,13 +43,11 @@ export default function SettingsPage() {
     updateSettings({
       vibrate: +vibrate,
       alarm: +alarm,
-      newSet,
       sound,
       notify: +notify,
       images: +images,
       showUnit: +showUnit,
       color,
-      workouts: +workouts,
       steps: +steps,
       date,
       showDate: +showDate,
@@ -61,13 +57,11 @@ export default function SettingsPage() {
   }, [
     vibrate,
     alarm,
-    newSet,
     sound,
     notify,
     images,
     showUnit,
     color,
-    workouts,
     steps,
     setSettings,
     date,
@@ -131,15 +125,6 @@ export default function SettingsPage() {
     [toast],
   );
 
-  const changeWorkouts = useCallback(
-    (enabled: boolean) => {
-      setWorkouts(enabled);
-      if (enabled) toast('Show workout for sets.', 4000);
-      else toast('Stopped showing workout for sets.', 4000);
-    },
-    [toast],
-  );
-
   const changeSteps = useCallback(
     (enabled: boolean) => {
       setSteps(enabled);
@@ -164,7 +149,6 @@ export default function SettingsPage() {
     {name: 'Record notifications', value: notify, onChange: changeNotify},
     {name: 'Show images', value: images, onChange: changeImages},
     {name: 'Show unit', value: showUnit, onChange: changeUnit},
-    {name: 'Show workouts', value: workouts, onChange: changeWorkouts},
     {name: 'Show steps', value: steps, onChange: changeSteps},
     {name: 'Show date', value: showDate, onChange: changeShowDate},
   ];
@@ -210,17 +194,6 @@ export default function SettingsPage() {
                 color={colorOption.hex}
               />
             ))}
-          </Picker>
-        )}
-        {'new set'.includes(search.toLowerCase()) && (
-          <Picker
-            style={{color, marginTop: -10}}
-            dropdownIconColor={color}
-            selectedValue={newSet}
-            onValueChange={value => setNewSet(value)}>
-            <Picker.Item value="" label="Copy new sets" />
-            <Picker.Item value="predict" label="Predict new sets" />
-            <Picker.Item value="empty" label="New sets are empty" />
           </Picker>
         )}
         {'date format'.includes(search.toLowerCase()) && (

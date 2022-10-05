@@ -1,3 +1,4 @@
+import CountMany from './count-many';
 import {db} from './db';
 import Set from './set';
 
@@ -152,6 +153,17 @@ export const countToday = async (name: string): Promise<number> => {
   `;
   const [result] = await db.executeSql(select, [name]);
   return Number(result.rows.item(0)?.total);
+};
+
+export const countManyToday = async (): Promise<CountMany[]> => {
+  const select = `
+    SELECT COUNT(*) as total, name FROM sets
+    WHERE created LIKE strftime('%Y-%m-%d%%', 'now', 'localtime')
+      AND NOT hidden
+    GROUP BY name
+  `;
+  const [result] = await db.executeSql(select);
+  return result.rows.raw();
 };
 
 export const getDistinctSets = async ({
