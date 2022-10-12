@@ -1,7 +1,7 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useMemo, useState} from 'react';
 import {GestureResponderEvent, Text} from 'react-native';
-import {List, Menu} from 'react-native-paper';
+import {Divider, List, Menu} from 'react-native-paper';
 import {getBestSet} from './best.service';
 import {Plan} from './plan';
 import {PlanPageParams} from './plan-page-params';
@@ -70,6 +70,7 @@ export default function PlanItem({
         right={() => (
           <Menu anchor={anchor} visible={show} onDismiss={() => setShow(false)}>
             <Menu.Item icon="edit" onPress={edit} title="Edit" />
+            <Divider />
             <Menu.Item icon="delete" onPress={remove} title="Delete" />
           </Menu>
         )}
