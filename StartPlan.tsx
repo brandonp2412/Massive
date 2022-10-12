@@ -66,6 +66,7 @@ export default function StartPlan() {
       minutes: set.minutes,
       seconds: set.seconds,
       steps: set.steps,
+      image: set.image,
       unit,
     });
     countManyToday().then(setCounts);
