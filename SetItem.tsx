@@ -10,13 +10,9 @@ import {useSettings} from './use-settings';
 export default function SetItem({
   item,
   onRemove,
-  dates,
-  setDates,
 }: {
   item: Set;
   onRemove: () => void;
-  dates: boolean;
-  setDates: (value: boolean) => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
@@ -44,11 +40,6 @@ export default function SetItem({
     [setShowMenu, setAnchor],
   );
 
-  const toggleDates = useCallback(() => {
-    setDates(!dates);
-    setShowMenu(false);
-  }, [dates, setDates]);
-
   return (
     <>
       <List.Item
@@ -64,7 +55,7 @@ export default function SetItem({
         }
         right={() => (
           <>
-            {dates && (
+            {!!settings.showDate && (
               <Text
                 style={{
                   alignSelf: 'center',
@@ -77,7 +68,6 @@ export default function SetItem({
               visible={showMenu}
               onDismiss={() => setShowMenu(false)}>
               <Menu.Item icon="content-copy" onPress={copy} title="Copy" />
-              <Menu.Item icon="event" onPress={toggleDates} title="Dates" />
               <Divider />
               <Menu.Item icon="delete" onPress={remove} title="Delete" />
             </Menu>

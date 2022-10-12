@@ -23,7 +23,6 @@ export default function SetList() {
   const [search, setSearch] = useState('');
   const [end, setEnd] = useState(false);
   const {settings} = useSettings();
-  const [dates, setDates] = useState(!!settings.showDate);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const refresh = useCallback(async () => {
@@ -48,8 +47,7 @@ export default function SetList() {
       navigation.getParent()?.setOptions({
         headerRight: () => <DrawerMenu name="Home" />,
       });
-      setDates(!!settings.showDate);
-    }, [refresh, navigation, settings.showDate]),
+    }, [refresh, navigation]),
   );
 
   useEffect(() => {
@@ -58,15 +56,9 @@ export default function SetList() {
 
   const renderItem = useCallback(
     ({item}: {item: Set}) => (
-      <SetItem
-        dates={dates}
-        setDates={setDates}
-        item={item}
-        key={item.id}
-        onRemove={refresh}
-      />
+      <SetItem item={item} key={item.id} onRemove={refresh} />
     ),
-    [refresh, dates, setDates],
+    [refresh],
   );
 
   const next = useCallback(async () => {
