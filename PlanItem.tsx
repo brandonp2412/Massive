@@ -1,4 +1,8 @@
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import React, {useCallback, useMemo, useState} from 'react';
 import {GestureResponderEvent, Text} from 'react-native';
 import {Divider, List, Menu} from 'react-native-paper';
@@ -17,9 +21,16 @@ export default function PlanItem({
 }) {
   const [show, setShow] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
+  const [today, setToday] = useState<string>();
   const days = useMemo(() => item.days.split(','), [item.days]);
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
-  const today = useMemo(() => DAYS[new Date().getDay()], []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const newToday = DAYS[new Date().getDay()];
+      setToday(newToday);
+    }, []),
+  );
 
   const remove = useCallback(async () => {
     if (typeof item.id === 'number') await deletePlan(item.id);
@@ -48,24 +59,34 @@ export default function PlanItem({
     navigation.navigate('EditPlan', {plan: item});
   }, [navigation, item]);
 
+  const title = useMemo(
+    () =>
+      days.map((day, index) => (
+        <Text key={day}>
+          {day === today ? (
+            <Text style={{fontWeight: 'bold', textDecorationLine: 'underline'}}>
+              {day}
+            </Text>
+          ) : (
+            day
+          )}
+          {index === days.length - 1 ? '' : ', '}
+        </Text>
+      )),
+    [days, today],
+  );
+
+  const description = useMemo(
+    () => item.workouts.replace(/,/g, ', '),
+    [item.workouts],
+  );
+
   return (
     <>
       <List.Item
         onPress={start}
-        title={days.map((day, index) => (
-          <Text key={day}>
-            {day === today ? (
-              <Text
-                style={{fontWeight: 'bold', textDecorationLine: 'underline'}}>
-                {day}
-              </Text>
-            ) : (
-              day
-            )}
-            {index === days.length - 1 ? '' : ', '}
-          </Text>
-        ))}
-        description={item.days ? item.workouts.replace(/,/g, ', ') : null}
+        title={title}
+        description={description}
         onLongPress={longPress}
         right={() => (
           <Menu anchor={anchor} visible={show} onDismiss={() => setShow(false)}>
