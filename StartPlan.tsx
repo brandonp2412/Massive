@@ -6,20 +6,23 @@ import {
 } from '@react-navigation/native';
 import React, {useCallback, useContext, useMemo, useRef, useState} from 'react';
 import {NativeModules, TextInput, View} from 'react-native';
-import {Button, Chip, IconButton} from 'react-native-paper';
+import {FlatList} from 'react-native-gesture-handler';
+import {Button, IconButton, List} from 'react-native-paper';
 import {getBestSet} from './best.service';
-import {MARGIN, PADDING} from './constants';
+import {PADDING} from './constants';
 import CountMany from './count-many';
 import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
 import {PlanPageParams} from './plan-page-params';
 import {addSet, countManyToday} from './set.service';
 import SetForm from './SetForm';
+import useDark from './use-dark';
 import {useSettings} from './use-settings';
 
 export default function StartPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>();
   const {set} = params;
+  const dark = useDark();
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
   const [weight, setWeight] = useState(set.weight.toString());
@@ -27,17 +30,19 @@ export default function StartPlan() {
   const {toast} = useContext(SnackbarContext);
   const [minutes, setMinutes] = useState(set.minutes);
   const [seconds, setSeconds] = useState(set.seconds);
+  const [selected, setSelected] = useState<number>();
   const {settings} = useSettings();
   const [counts, setCounts] = useState<CountMany[]>();
-  const [selection, setSelection] = useState({
-    start: 0,
-    end: set.reps.toString().length,
-  });
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
   const navigation = useNavigation();
   const workouts = useMemo(() => params.plan.workouts.split(','), [params]);
+
+  const [selection, setSelection] = useState({
+    start: 0,
+    end: set.reps.toString().length,
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -64,7 +69,7 @@ export default function StartPlan() {
       unit,
     });
     countManyToday().then(setCounts);
-    toast('Saved workout', 3000);
+    toast('Added set', 3000);
     if (!settings.alarm) return;
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
     const args = [milliseconds, !!settings.vibrate, settings.sound];
@@ -82,6 +87,7 @@ export default function StartPlan() {
 
   const select = useCallback(
     async (index: number) => {
+      setSelected(index);
       console.log(`${StartPlan.name}.next:`, {name, workouts});
       const workout = workouts[index];
       console.log(`${StartPlan.name}.next:`, {workout});
@@ -95,6 +101,22 @@ export default function StartPlan() {
       setUnit(best.unit);
     },
     [name, workouts],
+  );
+
+  const getTotal = useCallback(
+    (countName: string) =>
+      counts?.find(count => count.name === countName)?.total || 0,
+    [counts],
+  );
+
+  const getBackground = useCallback(
+    (index: number) => {
+      if (typeof selected === 'undefined') return;
+      if (selected !== index) return;
+      if (dark) return '#414141';
+      else return '#C2C2C2C2';
+    },
+    [selected, dark],
   );
 
   return (
@@ -129,19 +151,17 @@ export default function StartPlan() {
             innerRef={unitRef}
           />
         )}
-        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-          {workouts.map((workout, index) => (
-            <Chip
-              key={workout}
-              selected={workout === name}
-              icon="fitness-center"
+        <FlatList
+          data={workouts}
+          renderItem={({item, index}) => (
+            <List.Item
+              title={item}
+              style={{backgroundColor: getBackground(index)}}
+              description={getTotal(item) + `/${set.sets}`}
               onPress={() => select(index)}
-              style={{marginBottom: MARGIN, marginRight: MARGIN}}>
-              {workout} x
-              {counts?.find(count => count.name === workout)?.total || 0}
-            </Chip>
-          ))}
-        </View>
+            />
+          )}
+        />
       </View>
       <Button mode="contained" icon="save" onPress={handleSubmit}>
         Save
