@@ -83,6 +83,7 @@ class TimerService() : Service() {
                     .setProgress(0, 0, false)
                     .setAutoCancel(true)
                     .setOngoing(true)
+                    .setContentIntent(finishPending)
                     .setFullScreenIntent(finishPending, true)
                     .setChannelId(CHANNEL_ID_DONE)
                     .setCategory(NotificationCompat.CATEGORY_ALARM)

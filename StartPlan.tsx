@@ -12,13 +12,13 @@ import {MARGIN, PADDING} from './constants';
 import CountMany from './count-many';
 import MassiveInput from './MassiveInput';
 import {SnackbarContext} from './MassiveSnack';
-import {SessionPageParams} from './session-page-params';
+import {PlanPageParams} from './plan-page-params';
 import {addSet, countManyToday} from './set.service';
 import SetForm from './SetForm';
 import {useSettings} from './use-settings';
 
-export default function StartSession() {
-  const {params} = useRoute<RouteProp<SessionPageParams, 'StartSession'>>();
+export default function StartPlan() {
+  const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>();
   const {set} = params;
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
@@ -64,6 +64,7 @@ export default function StartSession() {
       unit,
     });
     countManyToday().then(setCounts);
+    toast('Saved workout', 3000);
     if (!settings.alarm) return;
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
     const args = [milliseconds, !!settings.vibrate, settings.sound];
@@ -81,11 +82,11 @@ export default function StartSession() {
 
   const select = useCallback(
     async (index: number) => {
-      console.log(`${StartSession.name}.next:`, {name, workouts});
+      console.log(`${StartPlan.name}.next:`, {name, workouts});
       const workout = workouts[index];
-      console.log(`${StartSession.name}.next:`, {workout});
+      console.log(`${StartPlan.name}.next:`, {workout});
       const best = await getBestSet(workout);
-      console.log(`${StartSession.name}.next:`, {best});
+      console.log(`${StartPlan.name}.next:`, {best});
       setMinutes(best.minutes);
       setSeconds(best.seconds);
       setName(best.name);
@@ -97,47 +98,50 @@ export default function StartSession() {
   );
 
   return (
-    <View style={{padding: PADDING}}>
-      <MassiveInput
-        label="Reps"
-        keyboardType="numeric"
-        value={reps}
-        onChangeText={setReps}
-        onSubmitEditing={() => weightRef.current?.focus()}
-        selection={selection}
-        onSelectionChange={e => setSelection(e.nativeEvent.selection)}
-        autoFocus
-        innerRef={repsRef}
-      />
-      <MassiveInput
-        label="Weight"
-        keyboardType="numeric"
-        value={weight}
-        onChangeText={setWeight}
-        onSubmitEditing={handleSubmit}
-        innerRef={weightRef}
-      />
-      {!!settings.showUnit && (
+    <View style={{padding: PADDING, flex: 1, flexDirection: 'column'}}>
+      <View style={{flex: 1}}>
         <MassiveInput
-          autoCapitalize="none"
-          label="Unit"
-          value={unit}
-          onChangeText={handleUnit}
-          innerRef={unitRef}
+          label="Reps"
+          keyboardType="numeric"
+          value={reps}
+          onChangeText={setReps}
+          onSubmitEditing={() => weightRef.current?.focus()}
+          selection={selection}
+          onSelectionChange={e => setSelection(e.nativeEvent.selection)}
+          autoFocus
+          innerRef={repsRef}
         />
-      )}
-      <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-        {workouts.map((workout, index) => (
-          <Chip
-            key={workout}
-            selected={workout === name}
-            icon="fitness-center"
-            onPress={() => select(index)}
-            style={{marginBottom: MARGIN, marginRight: MARGIN}}>
-            {workout} x
-            {counts?.find(count => count.name === workout)?.total || 0}
-          </Chip>
-        ))}
+        <MassiveInput
+          label="Weight"
+          keyboardType="numeric"
+          value={weight}
+          onChangeText={setWeight}
+          onSubmitEditing={handleSubmit}
+          innerRef={weightRef}
+          blurOnSubmit
+        />
+        {!!settings.showUnit && (
+          <MassiveInput
+            autoCapitalize="none"
+            label="Unit"
+            value={unit}
+            onChangeText={handleUnit}
+            innerRef={unitRef}
+          />
+        )}
+        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+          {workouts.map((workout, index) => (
+            <Chip
+              key={workout}
+              selected={workout === name}
+              icon="fitness-center"
+              onPress={() => select(index)}
+              style={{marginBottom: MARGIN, marginRight: MARGIN}}>
+              {workout} x
+              {counts?.find(count => count.name === workout)?.total || 0}
+            </Chip>
+          ))}
+        </View>
       </View>
       <Button mode="contained" icon="save" onPress={handleSubmit}>
         Save

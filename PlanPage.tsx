@@ -7,6 +7,7 @@ import {DrawerParamList} from './drawer-param-list';
 import EditPlan from './EditPlan';
 import {PlanPageParams} from './plan-page-params';
 import PlanList from './PlanList';
+import StartPlan from './StartPlan';
 
 const Stack = createStackNavigator<PlanPageParams>();
 
@@ -20,6 +21,20 @@ export default function PlanPage() {
       <Stack.Screen
         name="EditPlan"
         component={EditPlan}
+        listeners={{
+          beforeRemove: () => {
+            navigation.setOptions({
+              headerLeft: () => (
+                <IconButton icon="menu" onPress={navigation.openDrawer} />
+              ),
+              title: 'Plans',
+            });
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StartPlan"
+        component={StartPlan}
         listeners={{
           beforeRemove: () => {
             navigation.setOptions({
