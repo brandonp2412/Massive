@@ -1,6 +1,7 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Snackbar} from 'react-native-paper';
-import {CustomTheme} from './App';
+import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
+import useDark from './use-dark';
 
 export const SnackbarContext = React.createContext<{
   toast: (value: string, timeout: number) => void;
@@ -13,7 +14,7 @@ export default function MassiveSnack({
 }) {
   const [snackbar, setSnackbar] = useState('');
   const [timeoutId, setTimeoutId] = useState(0);
-  const {color} = useContext(CustomTheme);
+  const dark = useDark();
 
   const toast = (value: string, timeout: number) => {
     setSnackbar(value);
@@ -33,7 +34,9 @@ export default function MassiveSnack({
         action={{
           label: 'Close',
           onPress: () => setSnackbar(''),
-          color,
+          color: dark
+            ? CombinedDarkTheme.colors.background
+            : CombinedDefaultTheme.colors.background,
         }}>
         {snackbar}
       </Snackbar>
