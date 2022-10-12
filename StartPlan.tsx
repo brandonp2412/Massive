@@ -30,7 +30,7 @@ export default function StartPlan() {
   const {toast} = useContext(SnackbarContext);
   const [minutes, setMinutes] = useState(set.minutes);
   const [seconds, setSeconds] = useState(set.seconds);
-  const [selected, setSelected] = useState<number>();
+  const [selected, setSelected] = useState(0);
   const {settings} = useSettings();
   const [counts, setCounts] = useState<CountMany[]>();
   const weightRef = useRef<TextInput>(null);
