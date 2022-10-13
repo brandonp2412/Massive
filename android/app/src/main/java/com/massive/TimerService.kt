@@ -25,15 +25,15 @@ class TimerService() : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        vibrate = intent!!.extras!!.getBoolean("vibrate")
-        sound = intent.extras?.getString("sound")
+        vibrate = intent?.extras?.getBoolean("vibrate") == true
+        sound = intent?.extras?.getString("sound")
         manager?.cancel(NOTIFICATION_ID_DONE)
         applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
-        if (intent.action == "add") {
+        if (intent?.action == "add") {
             endMs = currentMs.toInt().plus(60000)
             applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
         } else {
-            endMs = intent.extras!!.getInt("milliseconds")
+            endMs = intent?.extras!!.getInt("milliseconds")
         }
         Log.d("TimerService", "endMs=$endMs,currentMs=$currentMs,vibrate=$vibrate,sound=$sound")
         manager = getManager(applicationContext)
