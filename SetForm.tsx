@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useRef, useState} from 'react';
-import {TextInput} from 'react-native';
+import {TextInput, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
@@ -13,11 +13,9 @@ import {useSettings} from './use-settings';
 export default function SetForm({
   save,
   set,
-  next,
 }: {
   set: Set;
   save: (set: Set) => void;
-  next?: () => void;
 }) {
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
@@ -86,59 +84,60 @@ export default function SetForm({
 
   return (
     <>
-      <MassiveInput
-        label="Name"
-        value={name}
-        onChangeText={handleName}
-        autoCorrect={false}
-        autoFocus={!name}
-        onSubmitEditing={() => repsRef.current?.focus()}
-      />
-      <MassiveInput
-        label="Reps"
-        keyboardType="numeric"
-        value={reps}
-        onChangeText={setReps}
-        onSubmitEditing={() => weightRef.current?.focus()}
-        selection={selection}
-        onSelectionChange={e => setSelection(e.nativeEvent.selection)}
-        autoFocus={!!name}
-        innerRef={repsRef}
-      />
-      <MassiveInput
-        label="Weight"
-        keyboardType="numeric"
-        value={weight}
-        onChangeText={setWeight}
-        onSubmitEditing={handleSubmit}
-        innerRef={weightRef}
-      />
-      {!!settings.showUnit && (
+      <View style={{flex: 1}}>
         <MassiveInput
-          autoCapitalize="none"
-          label="Unit"
-          value={unit}
-          onChangeText={handleUnit}
-          innerRef={unitRef}
+          label="Name"
+          value={name}
+          onChangeText={handleName}
+          autoCorrect={false}
+          autoFocus={!name}
+          onSubmitEditing={() => repsRef.current?.focus()}
         />
-      )}
-      {!!settings.images && newImage && (
-        <TouchableRipple
-          style={{marginBottom: MARGIN}}
-          onPress={changeImage}
-          onLongPress={() => setShowRemove(true)}>
-          <Card.Cover source={{uri: newImage}} />
-        </TouchableRipple>
-      )}
-      {!!settings.images && !newImage && (
-        <Button
-          style={{marginBottom: MARGIN}}
-          onPress={changeImage}
-          icon="add-photo-alternate">
-          Image
-        </Button>
-      )}
-      {next && <Button icon="navigate-next">Next</Button>}
+        <MassiveInput
+          label="Reps"
+          keyboardType="numeric"
+          value={reps}
+          onChangeText={setReps}
+          onSubmitEditing={() => weightRef.current?.focus()}
+          selection={selection}
+          onSelectionChange={e => setSelection(e.nativeEvent.selection)}
+          autoFocus={!!name}
+          innerRef={repsRef}
+        />
+        <MassiveInput
+          label="Weight"
+          keyboardType="numeric"
+          value={weight}
+          onChangeText={setWeight}
+          onSubmitEditing={handleSubmit}
+          innerRef={weightRef}
+        />
+        {!!settings.showUnit && (
+          <MassiveInput
+            autoCapitalize="none"
+            label="Unit"
+            value={unit}
+            onChangeText={handleUnit}
+            innerRef={unitRef}
+          />
+        )}
+        {!!settings.images && newImage && (
+          <TouchableRipple
+            style={{marginBottom: MARGIN}}
+            onPress={changeImage}
+            onLongPress={() => setShowRemove(true)}>
+            <Card.Cover source={{uri: newImage}} />
+          </TouchableRipple>
+        )}
+        {!!settings.images && !newImage && (
+          <Button
+            style={{marginBottom: MARGIN}}
+            onPress={changeImage}
+            icon="add-photo-alternate">
+            Image
+          </Button>
+        )}
+      </View>
       <Button
         disabled={!name}
         mode="contained"

@@ -90,7 +90,7 @@ export default function EditSet() {
   );
 
   return (
-    <View style={{padding: PADDING}}>
+    <View style={{padding: PADDING, flex: 1}}>
       <SetForm save={save} set={set} />
     </View>
   );
