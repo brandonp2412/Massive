@@ -87,19 +87,20 @@ export default function SetList() {
 
   return (
     <Page onAdd={onAdd} search={search} setSearch={setSearch}>
-      <FlatList
-        data={sets}
-        style={{height: '99%'}}
-        ListEmptyComponent={
-          <List.Item
-            title="No sets yet"
-            description="A set is a group of repetitions. E.g. 8 reps of Squats."
-          />
-        }
-        renderItem={renderItem}
-        keyExtractor={s => s.id!.toString()}
-        onEndReached={next}
-      />
+      {sets?.length === 0 ? (
+        <List.Item
+          title="No sets yet"
+          description="A set is a group of repetitions. E.g. 8 reps of Squats."
+        />
+      ) : (
+        <FlatList
+          data={sets}
+          style={{height: '99%'}}
+          renderItem={renderItem}
+          keyExtractor={s => s.id!.toString()}
+          onEndReached={next}
+        />
+      )}
     </Page>
   );
 }

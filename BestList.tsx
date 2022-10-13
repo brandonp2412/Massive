@@ -13,7 +13,7 @@ import Set from './set';
 import {useSettings} from './use-settings';
 
 export default function BestList() {
-  const [bests, setBests] = useState<Set[]>([]);
+  const [bests, setBests] = useState<Set[]>();
   const [search, setSearch] = useState('');
   const navigation = useNavigation<NavigationProp<BestPageParams>>();
   const {settings} = useSettings();
@@ -59,17 +59,18 @@ export default function BestList() {
 
   return (
     <Page search={search} setSearch={setSearch}>
-      <FlatList
-        style={{height: '99%'}}
-        ListEmptyComponent={
-          <List.Item
-            title="No exercises yet"
-            description="Once sets have been added, this will highlight your personal bests."
-          />
-        }
-        renderItem={renderItem}
-        data={bests}
-      />
+      {bests?.length === 0 ? (
+        <List.Item
+          title="No exercises yet"
+          description="Once sets have been added, this will highlight your personal bests."
+        />
+      ) : (
+        <FlatList
+          style={{height: '99%'}}
+          renderItem={renderItem}
+          data={bests}
+        />
+      )}
     </Page>
   );
 }

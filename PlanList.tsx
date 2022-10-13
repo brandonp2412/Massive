@@ -15,7 +15,7 @@ import PlanItem from './PlanItem';
 
 export default function PlanList() {
   const [search, setSearch] = useState('');
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [plans, setPlans] = useState<Plan[]>();
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const refresh = useCallback(async () => {
@@ -47,18 +47,19 @@ export default function PlanList() {
 
   return (
     <Page onAdd={onAdd} search={search} setSearch={setSearch}>
-      <FlatList
-        style={{height: '99%'}}
-        data={plans}
-        renderItem={renderItem}
-        keyExtractor={set => set.id?.toString() || ''}
-        ListEmptyComponent={
-          <List.Item
-            title="No plans yet"
-            description="A plan is a list of workouts for certain days."
-          />
-        }
-      />
+      {plans?.length === 0 ? (
+        <List.Item
+          title="No plans yet"
+          description="A plan is a list of workouts for certain days."
+        />
+      ) : (
+        <FlatList
+          style={{height: '99%'}}
+          data={plans}
+          renderItem={renderItem}
+          keyExtractor={set => set.id?.toString() || ''}
+        />
+      )}
     </Page>
   );
 }

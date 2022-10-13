@@ -80,19 +80,20 @@ export default function WorkoutList() {
 
   return (
     <Page onAdd={onAdd} search={search} setSearch={setSearch}>
-      <FlatList
-        data={workouts}
-        style={{height: '99%'}}
-        ListEmptyComponent={
-          <List.Item
-            title="No workouts yet."
-            description="A workout is something you do at the gym. For example Deadlifts are a workout."
-          />
-        }
-        renderItem={renderItem}
-        keyExtractor={w => w.name}
-        onEndReached={next}
-      />
+      {workouts?.length === 0 ? (
+        <List.Item
+          title="No workouts yet."
+          description="A workout is something you do at the gym. For example Deadlifts are a workout."
+        />
+      ) : (
+        <FlatList
+          data={workouts}
+          style={{height: '99%'}}
+          renderItem={renderItem}
+          keyExtractor={w => w.name}
+          onEndReached={next}
+        />
+      )}
     </Page>
   );
 }
