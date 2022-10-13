@@ -4,6 +4,15 @@ import Set from './set';
 import {defaultSet} from './set.service';
 import Volume from './volume';
 
+export const getMaxWeights = async (): Promise<Set[]> => {
+  const select = `
+    SELECT MAX(weight) AS weight, name, STRFTIME('%Y-%m', created) AS created 
+    FROM sets GROUP BY name, STRFTIME('%Y-%m', created);
+  `;
+  const [result] = await db.executeSql(select, []);
+  return result.rows.raw();
+};
+
 export const getBestSet = async (name: string): Promise<Set> => {
   const bestWeight = `
     SELECT name, reps, unit, MAX(weight) AS weight 

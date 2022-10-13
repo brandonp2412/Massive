@@ -11,11 +11,13 @@ export default function Chart({
   xFormat,
   xData,
   yFormat,
+  height,
 }: {
   yData: number[];
   xData: Set[];
-  xFormat: (value: any, index: number) => string;
-  yFormat: (value: any) => string;
+  xFormat?: (value: any, index: number) => string;
+  yFormat?: (value: any) => string;
+  height?: number;
 }) {
   const {color} = useContext(CustomTheme);
   const axesSvg = {fontSize: 10, fill: 'grey'};
@@ -24,14 +26,17 @@ export default function Chart({
 
   return (
     <>
-      <View style={{height: 300, padding: PADDING, flexDirection: 'row'}}>
-        <YAxis
-          data={yData}
-          style={{marginBottom: xAxisHeight}}
-          contentInset={verticalContentInset}
-          svg={axesSvg}
-          formatLabel={yFormat}
-        />
+      <View
+        style={{height: height || 300, padding: PADDING, flexDirection: 'row'}}>
+        {yFormat && (
+          <YAxis
+            data={yData}
+            style={{marginBottom: xAxisHeight}}
+            contentInset={verticalContentInset}
+            svg={axesSvg}
+            formatLabel={yFormat}
+          />
+        )}
         <View style={{flex: 1, marginLeft: MARGIN}}>
           <LineChart
             style={{flex: 1}}
@@ -43,13 +48,15 @@ export default function Chart({
             }}>
             <Grid />
           </LineChart>
-          <XAxis
-            style={{marginHorizontal: -10, height: xAxisHeight}}
-            data={xData}
-            formatLabel={xFormat}
-            contentInset={{left: 10, right: 10}}
-            svg={axesSvg}
-          />
+          {xFormat && (
+            <XAxis
+              style={{marginHorizontal: -10, height: xAxisHeight}}
+              data={xData}
+              formatLabel={xFormat}
+              contentInset={{left: 10, right: 10}}
+              svg={axesSvg}
+            />
+          )}
         </View>
       </View>
     </>
