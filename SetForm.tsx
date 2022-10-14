@@ -121,6 +121,9 @@ export default function SetForm({
             innerRef={unitRef}
           />
         )}
+        {typeof set.id === 'number' && !!settings.showDate && (
+          <MassiveInput label="Created" disabled value={set.created} />
+        )}
         {!!settings.images && newImage && (
           <TouchableRipple
             style={{marginBottom: MARGIN}}
