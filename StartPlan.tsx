@@ -121,7 +121,6 @@ export default function StartPlan() {
           onSubmitEditing={() => weightRef.current?.focus()}
           selection={selection}
           onSelectionChange={e => setSelection(e.nativeEvent.selection)}
-          autoFocus
           innerRef={repsRef}
         />
         <MassiveInput
