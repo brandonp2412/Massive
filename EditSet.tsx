@@ -4,12 +4,12 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useContext} from 'react';
+import React, {useCallback} from 'react';
 import {NativeModules, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {PADDING} from './constants';
 import {HomePageParams} from './home-page-params';
-import {SnackbarContext} from './MassiveSnack';
+import {useSnackbar} from './MassiveSnack';
 import Set from './set';
 import {addSet, updateSet} from './set.service';
 import SetForm from './SetForm';
@@ -20,7 +20,7 @@ export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>();
   const {set} = params;
   const navigation = useNavigation();
-  const {toast} = useContext(SnackbarContext);
+  const {toast} = useSnackbar();
   const {settings, setSettings} = useSettings();
 
   useFocusEffect(

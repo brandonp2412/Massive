@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Snackbar} from 'react-native-paper';
 import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
 import useDark from './use-dark';
@@ -6,6 +6,10 @@ import useDark from './use-dark';
 export const SnackbarContext = React.createContext<{
   toast: (value: string, timeout: number) => void;
 }>({toast: () => null});
+
+export const useSnackbar = () => {
+  return useContext(SnackbarContext);
+};
 
 export default function MassiveSnack({
   children,

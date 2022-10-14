@@ -1,11 +1,11 @@
-import React, {useCallback, useContext, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {TextInput, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
 import MassiveInput from './MassiveInput';
-import {SnackbarContext} from './MassiveSnack';
+import {useSnackbar} from './MassiveSnack';
 import Set from './set';
 import {getSets} from './set.service';
 import {useSettings} from './use-settings';
@@ -28,7 +28,7 @@ export default function SetForm({
     end: set.reps.toString().length,
   });
   const [removeImage, setRemoveImage] = useState(false);
-  const {toast} = useContext(SnackbarContext);
+  const {toast} = useSnackbar();
   const {settings} = useSettings();
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);

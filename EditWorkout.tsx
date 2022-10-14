@@ -4,14 +4,14 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {ScrollView, TextInput, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, IconButton, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
-import {SnackbarContext} from './MassiveSnack';
+import {useSnackbar} from './MassiveSnack';
 import {updatePlanWorkouts} from './plan.service';
 import {addSet, updateManySet, updateSetImage} from './set.service';
 import {useSettings} from './use-settings';
@@ -31,7 +31,7 @@ export default function EditWorkout() {
     params.value.seconds?.toString() ?? '30',
   );
   const [sets, setSets] = useState(params.value.sets?.toString() ?? '3');
-  const {toast} = useContext(SnackbarContext);
+  const {toast} = useSnackbar();
   const navigation = useNavigation();
   const setsRef = useRef<TextInput>(null);
   const stepsRef = useRef<TextInput>(null);

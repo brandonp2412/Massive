@@ -4,7 +4,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useContext, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {NativeModules, TextInput, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Button, IconButton, List, RadioButton} from 'react-native-paper';
@@ -13,7 +13,7 @@ import {useColor} from './color';
 import {PADDING} from './constants';
 import CountMany from './count-many';
 import MassiveInput from './MassiveInput';
-import {SnackbarContext} from './MassiveSnack';
+import {useSnackbar} from './MassiveSnack';
 import {PlanPageParams} from './plan-page-params';
 import {addSet, countManyToday} from './set.service';
 import SetForm from './SetForm';
@@ -26,7 +26,7 @@ export default function StartPlan() {
   const [reps, setReps] = useState(set.reps.toString());
   const [weight, setWeight] = useState(set.weight.toString());
   const [unit, setUnit] = useState<string>();
-  const {toast} = useContext(SnackbarContext);
+  const {toast} = useSnackbar();
   const [minutes, setMinutes] = useState(set.minutes);
   const [seconds, setSeconds] = useState(set.seconds);
   const [selected, setSelected] = useState(0);

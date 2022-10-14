@@ -1,11 +1,11 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import {FileSystem} from 'react-native-file-access';
 import {Divider, IconButton, Menu} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {DrawerParamList} from './drawer-param-list';
-import {SnackbarContext} from './MassiveSnack';
+import {useSnackbar} from './MassiveSnack';
 import {Plan} from './plan';
 import {addPlans, deletePlans, getAllPlans} from './plan.service';
 import {addSets, deleteSets, getAllSets} from './set.service';
@@ -18,7 +18,7 @@ const planFields = 'id,days,workouts';
 export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const [showMenu, setShowMenu] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
-  const {toast} = useContext(SnackbarContext);
+  const {toast} = useSnackbar();
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>();
 
   const exportSets = useCallback(async () => {

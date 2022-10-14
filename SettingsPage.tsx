@@ -1,6 +1,6 @@
 import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {NativeModules, ScrollView} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button} from 'react-native-paper';
@@ -9,7 +9,7 @@ import {darkColors, lightColors} from './colors';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
 import Input from './input';
-import {SnackbarContext} from './MassiveSnack';
+import {useSnackbar} from './MassiveSnack';
 import Page from './Page';
 import {getSettings, updateSettings} from './settings.service';
 import Switch from './Switch';
@@ -31,7 +31,7 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState(settings.theme || 'system');
   const [showDate, setShowDate] = useState(!!settings.showDate);
   const {color, setColor} = useColor();
-  const {toast} = useContext(SnackbarContext);
+  const {toast} = useSnackbar();
 
   useFocusEffect(
     useCallback(() => {
