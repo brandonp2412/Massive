@@ -118,8 +118,8 @@ export default function EditWorkout() {
   };
 
   return (
-    <View style={{padding: PADDING}}>
-      <ScrollView style={{height: '90%'}}>
+    <View style={{padding: PADDING, flex: 1}}>
+      <ScrollView style={{flex: 1}}>
         <MassiveInput
           autoFocus
           label="Name"

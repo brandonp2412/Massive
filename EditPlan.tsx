@@ -87,8 +87,8 @@ export default function EditPlan() {
   );
 
   return (
-    <View style={{padding: PADDING}}>
-      <ScrollView style={{height: '90%'}}>
+    <View style={{padding: PADDING, flex: 1}}>
+      <ScrollView style={{flex: 1}}>
         <Text style={styles.title}>Days</Text>
         {DAYS.map(day => (
           <Switch

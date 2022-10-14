@@ -54,7 +54,7 @@ export default function PlanList() {
         />
       ) : (
         <FlatList
-          style={{height: '99%'}}
+          style={{flex: 1}}
           data={plans}
           renderItem={renderItem}
           keyExtractor={set => set.id?.toString() || ''}

@@ -65,11 +65,7 @@ export default function BestList() {
           description="Once sets have been added, this will highlight your personal bests."
         />
       ) : (
-        <FlatList
-          style={{height: '99%'}}
-          renderItem={renderItem}
-          data={bests}
-        />
+        <FlatList style={{flex: 1}} renderItem={renderItem} data={bests} />
       )}
     </Page>
   );

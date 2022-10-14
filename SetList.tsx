@@ -95,7 +95,7 @@ export default function SetList() {
       ) : (
         <FlatList
           data={sets}
-          style={{height: '99%'}}
+          style={{flex: 1}}
           renderItem={renderItem}
           keyExtractor={s => s.id!.toString()}
           onEndReached={next}

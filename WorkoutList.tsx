@@ -88,7 +88,7 @@ export default function WorkoutList() {
       ) : (
         <FlatList
           data={workouts}
-          style={{height: '99%'}}
+          style={{flex: 1}}
           renderItem={renderItem}
           keyExtractor={w => w.name}
           onEndReached={next}

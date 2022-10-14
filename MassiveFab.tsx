@@ -18,7 +18,7 @@ export default function MassiveFab(
       style={{
         position: 'absolute',
         right: 10,
-        bottom: 60,
+        bottom: 10,
         backgroundColor: color,
       }}
       {...props}
