@@ -7,7 +7,7 @@ import {
 import React, {useCallback, useContext, useMemo, useRef, useState} from 'react';
 import {NativeModules, TextInput, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import {Button, IconButton, List} from 'react-native-paper';
+import {Button, IconButton, List, RadioButton} from 'react-native-paper';
 import {getBestSet} from './best.service';
 import {PADDING} from './constants';
 import CountMany from './count-many';
@@ -16,13 +16,11 @@ import {SnackbarContext} from './MassiveSnack';
 import {PlanPageParams} from './plan-page-params';
 import {addSet, countManyToday} from './set.service';
 import SetForm from './SetForm';
-import useDark from './use-dark';
 import {useSettings} from './use-settings';
 
 export default function StartPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>();
   const {set} = params;
-  const dark = useDark();
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
   const [weight, setWeight] = useState(set.weight.toString());
@@ -110,16 +108,6 @@ export default function StartPlan() {
     [counts],
   );
 
-  const getBackground = useCallback(
-    (index: number) => {
-      if (typeof selected === 'undefined') return;
-      if (selected !== index) return;
-      if (dark) return '#414141';
-      else return '#C2C2C2C2';
-    },
-    [selected, dark],
-  );
-
   return (
     <View style={{padding: PADDING, flex: 1, flexDirection: 'column'}}>
       <View style={{flex: 1}}>
@@ -157,9 +145,16 @@ export default function StartPlan() {
           renderItem={({item, index}) => (
             <List.Item
               title={item}
-              style={{backgroundColor: getBackground(index)}}
               description={getTotal(item) + `/${set.sets}`}
               onPress={() => select(index)}
+              left={() => (
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  <RadioButton
+                    value={index.toString()}
+                    status={selected === index ? 'checked' : 'unchecked'}
+                  />
+                </View>
+              )}
             />
           )}
         />
