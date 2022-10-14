@@ -36,9 +36,8 @@ export default function WorkoutItem({
   );
 
   const description = useMemo(() => {
-    const minutes = item.minutes?.toString().padStart(2, '0');
     const seconds = item.seconds?.toString().padStart(2, '0');
-    if (settings.alarm) return `${item.sets} x ${minutes}:${seconds}`;
+    if (settings.alarm) return `${item.sets} x ${item.minutes || 0}:${seconds}`;
     return `${item.sets}`;
   }, [item, settings.alarm]);
 
