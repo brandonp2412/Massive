@@ -4,7 +4,7 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {NativeModules, ScrollView} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button} from 'react-native-paper';
-import {CustomTheme} from './App';
+import {useColor} from './color';
 import {darkColors, lightColors} from './colors';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
@@ -30,7 +30,7 @@ export default function SettingsPage() {
   const [date, setDate] = useState(settings.date || '%Y-%m-%d %H:%M');
   const [theme, setTheme] = useState(settings.theme || 'system');
   const [showDate, setShowDate] = useState(!!settings.showDate);
-  const {color, setColor} = useContext(CustomTheme);
+  const {color, setColor} = useColor();
   const {toast} = useContext(SnackbarContext);
 
   useFocusEffect(

@@ -11,6 +11,7 @@ import {
   Provider,
 } from 'react-native-paper';
 import Ionicon from 'react-native-vector-icons/MaterialIcons';
+import {Color} from './color';
 import {lightColors} from './colors';
 import {runMigrations} from './db';
 import MassiveSnack from './MassiveSnack';
@@ -27,6 +28,7 @@ export const CombinedDefaultTheme = {
     ...PaperDefaultTheme.colors,
   },
 };
+
 export const CombinedDarkTheme = {
   ...NavigationDarkTheme,
   ...PaperDarkTheme,
@@ -37,11 +39,6 @@ export const CombinedDarkTheme = {
     background: '#0E0E0E',
   },
 };
-
-export const CustomTheme = React.createContext({
-  color: '',
-  setColor: (_value: string) => {},
-});
 
 const App = () => {
   const isDark = useColorScheme() === 'dark';
@@ -76,7 +73,7 @@ const App = () => {
   }, [color, isDark, settings]);
 
   return (
-    <CustomTheme.Provider value={{color, setColor}}>
+    <Color.Provider value={{color, setColor}}>
       <Provider
         theme={theme}
         settings={{icon: props => <Ionicon {...props} />}}>
@@ -90,7 +87,7 @@ const App = () => {
           </MassiveSnack>
         </NavigationContainer>
       </Provider>
-    </CustomTheme.Provider>
+    </Color.Provider>
   );
 };
 

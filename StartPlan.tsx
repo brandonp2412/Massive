@@ -8,8 +8,8 @@ import React, {useCallback, useContext, useMemo, useRef, useState} from 'react';
 import {NativeModules, TextInput, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Button, IconButton, List, RadioButton} from 'react-native-paper';
-import {CustomTheme} from './App';
 import {getBestSet} from './best.service';
+import {useColor} from './color';
 import {PADDING} from './constants';
 import CountMany from './count-many';
 import MassiveInput from './MassiveInput';
@@ -37,7 +37,7 @@ export default function StartPlan() {
   const unitRef = useRef<TextInput>(null);
   const navigation = useNavigation();
   const workouts = useMemo(() => params.plan.workouts.split(','), [params]);
-  const {color} = useContext(CustomTheme);
+  const {color} = useColor();
 
   const [selection, setSelection] = useState({
     start: 0,

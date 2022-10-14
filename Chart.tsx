@@ -1,8 +1,8 @@
 import * as shape from 'd3-shape';
-import React, {useContext} from 'react';
+import React from 'react';
 import {View} from 'react-native';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
-import {CustomTheme} from './App';
+import {useColor} from './color';
 import {MARGIN, PADDING} from './constants';
 import Set from './set';
 
@@ -17,7 +17,7 @@ export default function Chart({
   xFormat: (value: any, index: number) => string;
   yFormat: (value: any) => string;
 }) {
-  const {color} = useContext(CustomTheme);
+  const {color} = useColor();
   const axesSvg = {fontSize: 10, fill: 'grey'};
   const verticalContentInset = {top: 10, bottom: 10};
   const xAxisHeight = 30;

@@ -1,7 +1,8 @@
-import React, {useContext, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import {Pressable} from 'react-native';
 import {Switch as PaperSwitch, Text} from 'react-native-paper';
-import {CombinedDarkTheme, CombinedDefaultTheme, CustomTheme} from './App';
+import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
+import {useColor} from './color';
 import {colorShade} from './colors';
 import {MARGIN} from './constants';
 import useDark from './use-dark';
@@ -17,7 +18,7 @@ export default function Switch({
   onPress: () => void;
   children: string;
 }) {
-  const {color} = useContext(CustomTheme);
+  const {color} = useColor();
   const dark = useDark();
 
   const track = useMemo(() => {
