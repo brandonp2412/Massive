@@ -11,4 +11,5 @@ export default interface Settings {
   date?: string;
   showDate: number;
   theme?: 'system' | 'dark' | 'light';
+  showSets?: number;
 }

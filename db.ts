@@ -28,9 +28,9 @@ const migrations = [
     CREATE TABLE IF NOT EXISTS settings (
       minutes INTEGER NOT NULL DEFAULT 3,
       seconds INTEGER NOT NULL DEFAULT 30,
-      alarm BOOLEAN NOT NULL DEFAULT false,
-      vibrate BOOLEAN NOT NULL DEFAULT true,
-      predict BOOLEAN NOT NULL DEFAULT true,
+      alarm BOOLEAN NOT NULL DEFAULT 0,
+      vibrate BOOLEAN NOT NULL DEFAULT 1,
+      predict BOOLEAN NOT NULL DEFAULT 1,
       sets INTEGER NOT NULL DEFAULT 3
     )
 `,
@@ -42,16 +42,16 @@ const migrations = [
     )
   `,
   `
-    ALTER TABLE sets ADD COLUMN hidden DEFAULT false
+    ALTER TABLE sets ADD COLUMN hidden DEFAULT 0
   `,
   `
-    ALTER TABLE settings ADD COLUMN notify DEFAULT false
+    ALTER TABLE settings ADD COLUMN notify DEFAULT 0
   `,
   `
     ALTER TABLE sets ADD COLUMN image TEXT NULL
   `,
   `
-    ALTER TABLE settings ADD COLUMN images BOOLEAN DEFAULT false
+    ALTER TABLE settings ADD COLUMN images BOOLEAN DEFAULT 0
   `,
   `
     SELECT * FROM settings LIMIT 1
@@ -75,7 +75,7 @@ const migrations = [
     ALTER TABLE sets ADD COLUMN seconds INTEGER NOT NULL DEFAULT 30
   `,
   `
-    ALTER TABLE settings ADD COLUMN showUnit BOOLEAN DEFAULT true
+    ALTER TABLE settings ADD COLUMN showUnit BOOLEAN DEFAULT 1
   `,
   `
     ALTER TABLE sets ADD COLUMN steps TEXT NULL
@@ -114,6 +114,9 @@ const migrations = [
   `,
   `
     ALTER TABLE settings ADD COLUMN theme TEXT
+  `,
+  `
+    ALTER TABLE settings ADD COLUMN showSets BOOLEAN DEFAULT 1
   `,
 ];
 

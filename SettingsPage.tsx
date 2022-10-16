@@ -30,6 +30,7 @@ export default function SettingsPage() {
   const [date, setDate] = useState(settings.date || '%Y-%m-%d %H:%M');
   const [theme, setTheme] = useState(settings.theme || 'system');
   const [showDate, setShowDate] = useState(!!settings.showDate);
+  const [showSets, setShowSets] = useState(!!settings.showSets);
   const {color, setColor} = useColor();
   const {toast} = useSnackbar();
 
@@ -52,6 +53,7 @@ export default function SettingsPage() {
       date,
       showDate: +showDate,
       theme,
+      showSets: +showSets,
     });
     getSettings().then(setSettings);
   }, [
@@ -67,6 +69,7 @@ export default function SettingsPage() {
     date,
     showDate,
     theme,
+    showSets,
   ]);
 
   const changeAlarmEnabled = useCallback(
@@ -143,6 +146,15 @@ export default function SettingsPage() {
     [toast],
   );
 
+  const changeShowSets = useCallback(
+    (enabled: boolean) => {
+      setShowSets(enabled);
+      if (enabled) toast('Show maximum sets for workouts.', 4000);
+      else toast('Stopped showing maximum sets for workouts.', 4000);
+    },
+    [toast],
+  );
+
   const switches: Input<boolean>[] = [
     {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
     {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
@@ -151,6 +163,7 @@ export default function SettingsPage() {
     {name: 'Show unit', value: showUnit, onChange: changeUnit},
     {name: 'Show steps', value: steps, onChange: changeSteps},
     {name: 'Show date', value: showDate, onChange: changeShowDate},
+    {name: 'Show sets', value: showSets, onChange: changeShowSets},
   ];
 
   return (

@@ -125,11 +125,14 @@ export default function StartPlan() {
   const getDescription = useCallback(
     (countName: string) => {
       const count = counts?.find(c => c.name === countName);
+      console.log(`${StartPlan.name}:`, {count, countName});
       if (!distinctSets) return;
       const distinct = distinctSets.find(d => d.name === countName);
-      return `${count?.total || 0} / ${distinct?.sets}`;
+      console.log(`${StartPlan.name}:`, {distinct});
+      if (settings.showSets) return `${count?.total || 0} / ${distinct?.sets}`;
+      return count?.total || '0';
     },
-    [counts, distinctSets],
+    [counts, distinctSets, settings.showSets],
   );
 
   return (

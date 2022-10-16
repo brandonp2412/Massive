@@ -138,14 +138,16 @@ export default function EditWorkout() {
             onSubmitEditing={() => setsRef.current?.focus()}
           />
         )}
-        <MassiveInput
-          innerRef={setsRef}
-          value={sets}
-          onChangeText={setSets}
-          label="Sets per workout"
-          keyboardType="numeric"
-          onSubmitEditing={() => minutesRef.current?.focus()}
-        />
+        {!!settings.showSets && (
+          <MassiveInput
+            innerRef={setsRef}
+            value={sets}
+            onChangeText={setSets}
+            label="Sets per workout"
+            keyboardType="numeric"
+            onSubmitEditing={() => minutesRef.current?.focus()}
+          />
+        )}
         {!!settings.alarm && (
           <>
             <MassiveInput
