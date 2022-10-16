@@ -1,5 +1,5 @@
 export enum Metrics {
-  Weight = 'Best weight per day',
-  Volume = 'Volume per day',
+  Weight = 'Best weight',
+  Volume = 'Volume',
   OneRepMax = 'One rep max',
 }
