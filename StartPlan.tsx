@@ -15,6 +15,7 @@ import CountMany from './count-many';
 import MassiveInput from './MassiveInput';
 import {useSnackbar} from './MassiveSnack';
 import {PlanPageParams} from './plan-page-params';
+import Set from './set';
 import {addSet, countManyToday} from './set.service';
 import SetForm from './SetForm';
 import {useSettings} from './use-settings';
@@ -29,6 +30,7 @@ export default function StartPlan() {
   const {toast} = useSnackbar();
   const [minutes, setMinutes] = useState(set.minutes);
   const [seconds, setSeconds] = useState(set.seconds);
+  const [best, setBest] = useState<Set>();
   const [selected, setSelected] = useState(0);
   const {settings} = useSettings();
   const [counts, setCounts] = useState<CountMany[]>();
@@ -54,11 +56,12 @@ export default function StartPlan() {
         title: params.plan.days.replace(/,/g, ', '),
       });
       countManyToday().then(setCounts);
-    }, [navigation, params]),
+      getBestSet(workouts[0]).then(setBest);
+    }, [navigation, params, workouts]),
   );
 
   const handleSubmit = async () => {
-    console.log(`${SetForm.name}.handleSubmit:`, {reps, weight, unit});
+    console.log(`${SetForm.name}.handleSubmit:`, {reps, weight, unit, best});
     await addSet({
       name,
       weight: +weight,
@@ -70,7 +73,14 @@ export default function StartPlan() {
       unit,
     });
     countManyToday().then(setCounts);
-    toast('Added set', 3000);
+    if (!best) toast('Added set', 3000);
+    else if (
+      settings.notify &&
+      (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
+    )
+      toast("Great work King! That's a new record.", 3000);
+    else if (settings.alarm) toast('Resting...', 3000);
+    else toast('Added set', 3000);
     if (!settings.alarm) return;
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
     const args = [milliseconds, !!settings.vibrate, settings.sound];
@@ -92,14 +102,14 @@ export default function StartPlan() {
       console.log(`${StartPlan.name}.next:`, {name, workouts});
       const workout = workouts[index];
       console.log(`${StartPlan.name}.next:`, {workout});
-      const best = await getBestSet(workout);
-      console.log(`${StartPlan.name}.next:`, {best});
-      setMinutes(best.minutes);
-      setSeconds(best.seconds);
-      setName(best.name);
-      setReps(best.reps.toString());
-      setWeight(best.weight.toString());
-      setUnit(best.unit);
+      const newBest = await getBestSet(workout);
+      setMinutes(newBest.minutes);
+      setSeconds(newBest.seconds);
+      setName(newBest.name);
+      setReps(newBest.reps.toString());
+      setWeight(newBest.weight.toString());
+      setUnit(newBest.unit);
+      setBest(newBest);
     },
     [name, workouts],
   );
