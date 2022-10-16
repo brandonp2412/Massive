@@ -11,7 +11,7 @@ import {FileSystem} from 'react-native-file-access';
 import {IconButton} from 'react-native-paper';
 import Share from 'react-native-share';
 import {captureScreen} from 'react-native-view-shot';
-import {getVolumes, getWeightsBy} from './best.service';
+import {getOneRepMax, getVolumes, getWeightsBy} from './best.service';
 import {BestPageParams} from './BestPage';
 import Chart from './Chart';
 import {PADDING} from './constants';
@@ -59,12 +59,18 @@ export default function ViewBest() {
   );
 
   useEffect(() => {
-    if (metric === Metrics.Weight)
-      getWeightsBy(params.best.name, period).then(setWeights);
-    else if (metric === Metrics.Volume)
-      getVolumes(params.best.name, period).then(setVolumes);
     console.log(`${ViewBest.name}.useEffect`, {metric});
     console.log(`${ViewBest.name}.useEffect`, {period});
+    switch (metric) {
+      case Metrics.Weight:
+        getWeightsBy(params.best.name, period).then(setWeights);
+        break;
+      case Metrics.Volume:
+        getVolumes(params.best.name, period).then(setVolumes);
+        break;
+      default:
+        getOneRepMax({name: params.best.name, period}).then(setWeights);
+    }
   }, [params.best.name, metric, period]);
 
   return (
@@ -76,6 +82,7 @@ export default function ViewBest() {
         onValueChange={value => setMetric(value)}>
         <Picker.Item value={Metrics.Volume} label={Metrics.Volume} />
         <Picker.Item value={Metrics.Weight} label={Metrics.Weight} />
+        <Picker.Item value={Metrics.OneRepMax} label={Metrics.OneRepMax} />
       </Picker>
       <Picker
         style={{color: dark ? 'white' : 'black'}}
@@ -86,7 +93,7 @@ export default function ViewBest() {
         <Picker.Item value={Periods.Monthly} label={Periods.Monthly} />
         <Picker.Item value={Periods.Yearly} label={Periods.Yearly} />
       </Picker>
-      {metric === Metrics.Volume && (
+      {metric === Metrics.Volume ? (
         <Chart
           yData={volumes.map(v => v.value)}
           yFormat={(value: number) =>
@@ -97,8 +104,7 @@ export default function ViewBest() {
           xData={weights}
           xFormat={(_value, index) => formatMonth(weights[index].created!)}
         />
-      )}
-      {metric === Metrics.Weight && (
+      ) : (
         <Chart
           yData={weights.map(set => set.weight)}
           yFormat={value => `${value}${weights[0].unit}`}
