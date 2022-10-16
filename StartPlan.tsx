@@ -166,26 +166,29 @@ export default function StartPlan() {
             innerRef={unitRef}
           />
         )}
-        <FlatList
-          data={workouts}
-          renderItem={({item, index}) => (
-            <List.Item
-              title={item}
-              description={getDescription(item)}
-              onPress={() => select(index)}
-              left={() => (
-                <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                  <RadioButton
-                    onPress={() => select(index)}
-                    value={index.toString()}
-                    status={selected === index ? 'checked' : 'unchecked'}
-                    color={color}
-                  />
-                </View>
-              )}
-            />
-          )}
-        />
+        {counts && distinctSets && (
+          <FlatList
+            data={workouts}
+            renderItem={({item, index}) => (
+              <List.Item
+                title={item}
+                description={getDescription(item)}
+                onPress={() => select(index)}
+                left={() => (
+                  <View
+                    style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <RadioButton
+                      onPress={() => select(index)}
+                      value={index.toString()}
+                      status={selected === index ? 'checked' : 'unchecked'}
+                      color={color}
+                    />
+                  </View>
+                )}
+              />
+            )}
+          />
+        )}
       </View>
       <Button mode="contained" icon="save" onPress={handleSubmit}>
         Save
