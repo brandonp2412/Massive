@@ -75,7 +75,7 @@ export default function EditSet() {
         value.weight > set.weight ||
         (value.reps > set.reps && value.weight === set.weight)
       )
-        toast("Great work King, that's a new record!", 3000);
+        toast("Great work King! That's a new record.", 3000);
       navigation.goBack();
     },
     [navigation, startTimer, set, toast, settings],
