@@ -73,14 +73,6 @@ class TimerService : Service() {
                         finishIntent,
                         PendingIntent.FLAG_IMMUTABLE
                     )
-                val stopIntent = Intent(applicationContext, StopTimer::class.java)
-                val pendingStop =
-                    PendingIntent.getService(
-                        applicationContext,
-                        0,
-                        stopIntent,
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
                 builder.setContentText("Timer finished.")
                     .setProgress(0, 0, false)
                     .setAutoCancel(true)
@@ -89,7 +81,6 @@ class TimerService : Service() {
                     .setFullScreenIntent(finishPending, true)
                     .setChannelId(CHANNEL_ID_DONE)
                     .setCategory(NotificationCompat.CATEGORY_ALARM)
-                    .setDeleteIntent(pendingStop)
                     .priority = NotificationCompat.PRIORITY_HIGH
                 val manager = getManager()
                 manager.notify(NOTIFICATION_ID_DONE, builder.build())
@@ -141,6 +132,7 @@ class TimerService : Service() {
             .setContentIntent(pendingContent)
             .addAction(R.drawable.ic_baseline_stop_24, "Stop", pendingStop)
             .addAction(R.drawable.ic_baseline_stop_24, "Add 1 min", pendingAdd)
+            .setDeleteIntent(pendingStop)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
