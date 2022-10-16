@@ -30,7 +30,7 @@ export default function StartPlan() {
   const {toast} = useSnackbar();
   const [minutes, setMinutes] = useState(set.minutes);
   const [seconds, setSeconds] = useState(set.seconds);
-  const [best, setBest] = useState<Set>();
+  const [best, setBest] = useState<Set>(set);
   const [selected, setSelected] = useState(0);
   const {settings} = useSettings();
   const [counts, setCounts] = useState<CountMany[]>();
@@ -56,8 +56,7 @@ export default function StartPlan() {
         title: params.plan.days.replace(/,/g, ', '),
       });
       countManyToday().then(setCounts);
-      getBestSet(workouts[0]).then(setBest);
-    }, [navigation, params, workouts]),
+    }, [navigation, params]),
   );
 
   const handleSubmit = async () => {
@@ -73,12 +72,11 @@ export default function StartPlan() {
       unit,
     });
     countManyToday().then(setCounts);
-    if (!best) toast('Added set', 3000);
-    else if (
+    if (
       settings.notify &&
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
     )
-      toast("Great work King! That's a new record.", 3000);
+      toast("Great work King! That's a new record.", 5000);
     else if (settings.alarm) toast('Resting...', 3000);
     else toast('Added set', 3000);
     if (!settings.alarm) return;
@@ -114,9 +112,12 @@ export default function StartPlan() {
     [name, workouts],
   );
 
-  const getTotal = useCallback(
-    (countName: string) =>
-      counts?.find(count => count.name === countName)?.total || 0,
+  const getDescription = useCallback(
+    (countName: string) => {
+      const count = counts?.find(c => c.name === countName);
+      if (!count) return;
+      return `${count.total} / ${count.sets}`;
+    },
     [counts],
   );
 
@@ -156,7 +157,7 @@ export default function StartPlan() {
           renderItem={({item, index}) => (
             <List.Item
               title={item}
-              description={getTotal(item) + `/${set.sets}`}
+              description={getDescription(item)}
               onPress={() => select(index)}
               left={() => (
                 <View style={{alignItems: 'center', justifyContent: 'center'}}>

@@ -157,7 +157,7 @@ export const countToday = async (name: string): Promise<number> => {
 
 export const countManyToday = async (): Promise<CountMany[]> => {
   const select = `
-    SELECT COUNT(*) as total, name FROM sets
+    SELECT COUNT(*) as total, name, sets FROM sets
     WHERE created LIKE strftime('%Y-%m-%d%%', 'now', 'localtime')
       AND NOT hidden
     GROUP BY name
