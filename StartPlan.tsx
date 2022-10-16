@@ -176,6 +176,7 @@ export default function StartPlan() {
               left={() => (
                 <View style={{alignItems: 'center', justifyContent: 'center'}}>
                   <RadioButton
+                    onPress={() => select(index)}
                     value={index.toString()}
                     status={selected === index ? 'checked' : 'unchecked'}
                     color={color}
