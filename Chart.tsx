@@ -2,9 +2,11 @@ import * as shape from 'd3-shape';
 import React from 'react';
 import {View} from 'react-native';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
+import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
 import {useColor} from './color';
 import {MARGIN, PADDING} from './constants';
 import Set from './set';
+import useDark from './use-dark';
 
 export default function Chart({
   yData,
@@ -18,7 +20,13 @@ export default function Chart({
   yFormat: (value: any) => string;
 }) {
   const {color} = useColor();
-  const axesSvg = {fontSize: 10, fill: 'grey'};
+  const dark = useDark();
+  const axesSvg = {
+    fontSize: 10,
+    fill: dark
+      ? CombinedDarkTheme.colors.text
+      : CombinedDefaultTheme.colors.text,
+  };
   const verticalContentInset = {top: 10, bottom: 10};
   const xAxisHeight = 30;
 
