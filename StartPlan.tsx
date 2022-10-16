@@ -16,7 +16,7 @@ import MassiveInput from './MassiveInput';
 import {useSnackbar} from './MassiveSnack';
 import {PlanPageParams} from './plan-page-params';
 import Set from './set';
-import {addSet, countManyToday} from './set.service';
+import {addSet, countManyToday, getDistinctSets} from './set.service';
 import SetForm from './SetForm';
 import {useSettings} from './use-settings';
 
@@ -34,6 +34,7 @@ export default function StartPlan() {
   const [selected, setSelected] = useState(0);
   const {settings} = useSettings();
   const [counts, setCounts] = useState<CountMany[]>();
+  const [distinctSets, setDistinctSets] = useState<Set[]>();
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
@@ -55,7 +56,16 @@ export default function StartPlan() {
         headerRight: null,
         title: params.plan.days.replace(/,/g, ', '),
       });
-      countManyToday().then(setCounts);
+      countManyToday().then(newCounts => {
+        setCounts(newCounts);
+        console.log(`${StartPlan.name}.focus:`, {newCounts});
+      });
+      getDistinctSets({limit: 100, offset: 0, search: '%'}).then(
+        newDistinct => {
+          setDistinctSets(newDistinct);
+          console.log(`${StartPlan.name}.focus:`, {newDistinct});
+        },
+      );
     }, [navigation, params]),
   );
 
@@ -115,10 +125,11 @@ export default function StartPlan() {
   const getDescription = useCallback(
     (countName: string) => {
       const count = counts?.find(c => c.name === countName);
-      if (!count) return;
-      return `${count.total} / ${count.sets}`;
+      if (!distinctSets) return;
+      const distinct = distinctSets.find(d => d.name === countName);
+      return `${count?.total || 0} / ${distinct?.sets}`;
     },
-    [counts],
+    [counts, distinctSets],
   );
 
   return (
