@@ -5,6 +5,7 @@ import {Divider, List, Menu, Text} from 'react-native-paper';
 import {HomePageParams} from './home-page-params';
 import Set from './set';
 import {deleteSet} from './set.service';
+import useDark from './use-dark';
 import {useSettings} from './use-settings';
 
 export default function SetItem({
@@ -17,6 +18,7 @@ export default function SetItem({
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
   const {settings} = useSettings();
+  const dark = useDark();
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const remove = useCallback(async () => {
@@ -59,6 +61,7 @@ export default function SetItem({
               <Text
                 style={{
                   alignSelf: 'center',
+                  color: dark ? '#909090ff' : '#717171ff',
                 }}>
                 {item.created?.replace('T', ' ')}
               </Text>
