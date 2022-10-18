@@ -30,7 +30,6 @@ const migrations = [
       seconds INTEGER NOT NULL DEFAULT 30,
       alarm BOOLEAN NOT NULL DEFAULT 0,
       vibrate BOOLEAN NOT NULL DEFAULT 1,
-      predict BOOLEAN NOT NULL DEFAULT 1,
       sets INTEGER NOT NULL DEFAULT 3
     )
 `,
@@ -51,7 +50,7 @@ const migrations = [
     ALTER TABLE sets ADD COLUMN image TEXT NULL
   `,
   `
-    ALTER TABLE settings ADD COLUMN images BOOLEAN DEFAULT 0
+    ALTER TABLE settings ADD COLUMN images BOOLEAN DEFAULT 1
   `,
   `
     SELECT * FROM settings LIMIT 1

@@ -11,7 +11,8 @@ import {MARGIN} from './constants';
 import Input from './input';
 import {useSnackbar} from './MassiveSnack';
 import Page from './Page';
-import {getSettings, updateSettings} from './settings.service';
+import Settings from './settings';
+import {updateSettings} from './settings.service';
 import Switch from './Switch';
 import {useSettings} from './use-settings';
 
@@ -20,19 +21,24 @@ export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false);
   const [search, setSearch] = useState('');
   const {settings, setSettings} = useSettings();
-  const [vibrate, setVibrate] = useState(!!settings.vibrate);
-  const [alarm, setAlarm] = useState(!!settings.alarm);
-  const [sound, setSound] = useState(settings.sound);
-  const [notify, setNotify] = useState(!!settings.notify);
-  const [images, setImages] = useState(!!settings.images);
-  const [showUnit, setShowUnit] = useState(!!settings.showUnit);
-  const [steps, setSteps] = useState(!!settings.steps);
-  const [date, setDate] = useState(settings.date || '%Y-%m-%d %H:%M');
-  const [theme, setTheme] = useState(settings.theme || 'system');
-  const [showDate, setShowDate] = useState(!!settings.showDate);
-  const [showSets, setShowSets] = useState(!!settings.showSets);
+  const {
+    vibrate,
+    sound,
+    notify,
+    images,
+    showUnit,
+    steps,
+    showDate,
+    showSets,
+    theme,
+    alarm,
+  } = settings;
   const {color, setColor} = useColor();
   const {toast} = useSnackbar();
+
+  useEffect(() => {
+    console.log(`${SettingsPage.name}.useEffect:`, {settings});
+  }, [settings]);
 
   useFocusEffect(
     useCallback(() => {
@@ -40,55 +46,31 @@ export default function SettingsPage() {
     }, []),
   );
 
-  useEffect(() => {
-    updateSettings({
-      vibrate: +vibrate,
-      alarm: +alarm,
-      sound,
-      notify: +notify,
-      images: +images,
-      showUnit: +showUnit,
-      color,
-      steps: +steps,
-      date,
-      showDate: +showDate,
-      theme,
-      showSets: +showSets,
-    });
-    getSettings().then(setSettings);
-  }, [
-    vibrate,
-    alarm,
-    sound,
-    notify,
-    images,
-    showUnit,
-    color,
-    steps,
-    setSettings,
-    date,
-    showDate,
-    theme,
-    showSets,
-  ]);
+  const update = useCallback(
+    (value: boolean, field: keyof Settings) => {
+      updateSettings({...settings, [field]: +value});
+      setSettings({...settings, [field]: +value});
+    },
+    [settings, setSettings],
+  );
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
-      setAlarm(enabled);
       if (enabled) toast('Timers will now run after each set.', 4000);
       else toast('Stopped timers running after each set.', 4000);
       if (enabled && !ignoring) setBattery(true);
+      update(enabled, 'alarm');
     },
-    [setBattery, ignoring, toast],
+    [setBattery, ignoring, toast, update],
   );
 
   const changeVibrate = useCallback(
     (enabled: boolean) => {
-      setVibrate(enabled);
       if (enabled) toast('When a timer completes, vibrate your phone.', 4000);
       else toast('Stop vibrating at the end of timers.', 4000);
+      update(enabled, 'vibrate');
     },
-    [setVibrate, toast],
+    [toast, update],
   );
 
   const changeSound = useCallback(async () => {
@@ -97,74 +79,91 @@ export default function SettingsPage() {
       copyTo: 'documentDirectory',
     });
     if (!fileCopyUri) return;
-    setSound(fileCopyUri);
+    updateSettings({sound: fileCopyUri} as Settings);
+    setSettings({...settings, sound: fileCopyUri});
     toast('This song will now play after rest timers complete.', 4000);
-  }, [toast]);
+  }, [toast, setSettings, settings]);
 
   const changeNotify = useCallback(
     (enabled: boolean) => {
-      setNotify(enabled);
+      update(enabled, 'notify');
       if (enabled) toast('Show when a set is a new record.', 4000);
       else toast('Stopped showing notifications for new records.', 4000);
     },
-    [toast],
+    [toast, update],
   );
 
   const changeImages = useCallback(
     (enabled: boolean) => {
-      setImages(enabled);
+      update(enabled, 'images');
       if (enabled) toast('Show images for sets.', 4000);
       else toast('Stopped showing images for sets.', 4000);
     },
-    [toast],
+    [toast, update],
   );
 
   const changeUnit = useCallback(
     (enabled: boolean) => {
-      setShowUnit(enabled);
+      update(enabled, 'showUnit');
       if (enabled) toast('Show option to select unit for sets.', 4000);
       else toast('Hid unit option for sets.', 4000);
     },
-    [toast],
+    [toast, update],
   );
 
   const changeSteps = useCallback(
     (enabled: boolean) => {
-      setSteps(enabled);
+      update(enabled, 'steps');
       if (enabled) toast('Show steps for a workout.', 4000);
       else toast('Stopped showing steps for workouts.', 4000);
     },
-    [toast],
+    [toast, update],
   );
 
   const changeShowDate = useCallback(
     (enabled: boolean) => {
-      setShowDate(enabled);
+      update(enabled, 'showDate');
       if (enabled) toast('Show date for sets by default.', 4000);
       else toast('Stopped showing date for sets by default.', 4000);
     },
-    [toast],
+    [toast, update],
   );
 
   const changeShowSets = useCallback(
     (enabled: boolean) => {
-      setShowSets(enabled);
+      update(enabled, 'showSets');
       if (enabled) toast('Show maximum sets for workouts.', 4000);
       else toast('Stopped showing maximum sets for workouts.', 4000);
     },
-    [toast],
+    [toast, update],
   );
 
   const switches: Input<boolean>[] = [
-    {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
-    {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
-    {name: 'Record notifications', value: notify, onChange: changeNotify},
-    {name: 'Show images', value: images, onChange: changeImages},
-    {name: 'Show unit', value: showUnit, onChange: changeUnit},
-    {name: 'Show steps', value: steps, onChange: changeSteps},
-    {name: 'Show date', value: showDate, onChange: changeShowDate},
-    {name: 'Show sets', value: showSets, onChange: changeShowSets},
+    {name: 'Rest timers', value: !!alarm, onChange: changeAlarmEnabled},
+    {name: 'Vibrate', value: !!vibrate, onChange: changeVibrate},
+    {name: 'Record notifications', value: !!notify, onChange: changeNotify},
+    {name: 'Show images', value: !!images, onChange: changeImages},
+    {name: 'Show unit', value: !!showUnit, onChange: changeUnit},
+    {name: 'Show steps', value: !!steps, onChange: changeSteps},
+    {name: 'Show date', value: !!showDate, onChange: changeShowDate},
+    {name: 'Show sets', value: !!showSets, onChange: changeShowSets},
   ];
+
+  const changeTheme = useCallback(
+    (value: string) => {
+      updateSettings({...settings, theme: value as any});
+      setSettings({...settings, theme: value as any});
+    },
+    [settings, setSettings],
+  );
+
+  const changeDate = useCallback(
+    (value: string) => {
+      updateSettings({...settings, date: value as any});
+      setSettings({...settings, date: value as any});
+    },
+    [settings, setSettings],
+  );
 
   return (
     <Page search={search} setSearch={setSearch}>
@@ -187,7 +186,7 @@ export default function SettingsPage() {
             style={{color}}
             dropdownIconColor={color}
             selectedValue={theme}
-            onValueChange={value => setTheme(value)}>
+            onValueChange={changeTheme}>
             <Picker.Item value="system" label="Follow system theme" />
             <Picker.Item value="dark" label="Dark theme" />
             <Picker.Item value="light" label="Light theme" />
@@ -213,8 +212,8 @@ export default function SettingsPage() {
           <Picker
             style={{color, marginTop: -10}}
             dropdownIconColor={color}
-            selectedValue={date}
-            onValueChange={value => setDate(value)}>
+            selectedValue={settings.date}
+            onValueChange={changeDate}>
             <Picker.Item
               value="%Y-%m-%d %H:%M"
               label="Format date as 1990-12-24 15:05"

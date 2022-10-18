@@ -52,6 +52,7 @@ const App = () => {
   useEffect(() => {
     runMigrations().then(async () => {
       const gotSettings = await getSettings();
+      console.log(`${App.name}.runMigrations:`, {gotSettings});
       setSettings(gotSettings);
       if (gotSettings.color) setColor(gotSettings.color);
     });
