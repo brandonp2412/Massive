@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Massive</string>
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="rest_timer_up">Rest timer up</string>
+    <string name="stop">STOP</string>
 </resources>

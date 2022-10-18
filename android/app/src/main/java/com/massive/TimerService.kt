@@ -73,12 +73,20 @@ class TimerService : Service() {
                         finishIntent,
                         PendingIntent.FLAG_IMMUTABLE
                     )
+                val fullIntent = Intent(applicationContext, Fullscreen::class.java)
+                val fullPending =
+                    PendingIntent.getActivity(
+                        applicationContext,
+                        0,
+                        fullIntent,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
                 builder.setContentText("Timer finished.")
                     .setProgress(0, 0, false)
                     .setAutoCancel(true)
                     .setOngoing(true)
+                    .setFullScreenIntent(fullPending, true)
                     .setContentIntent(finishPending)
-                    .setFullScreenIntent(finishPending, true)
                     .setChannelId(CHANNEL_ID_DONE)
                     .setCategory(NotificationCompat.CATEGORY_ALARM)
                     .priority = NotificationCompat.PRIORITY_HIGH

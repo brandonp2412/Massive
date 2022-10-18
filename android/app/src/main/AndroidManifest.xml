@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.massive">
@@ -7,16 +8,30 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-    <uses-permission tools:node="remove" android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE"
+        tools:node="remove" />
 
     <application
         android:name=".MainApplication"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/AppTheme"
-        android:dataExtractionRules="@xml/data_extraction_rules">
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".Fullscreen"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:label="@string/title_activity_fullscreen"
+            android:theme="@style/AppTheme.Fullscreen" />
+        <activity
+            android:name=".FullscreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:label="@string/title_activity_fullscreen"
+            android:theme="@style/AppTheme.Fullscreen" />
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
@@ -25,12 +40,25 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:exported="true" android:process=":remote" android:name=".StopAlarm" />
-        <service android:name=".StopTimer" android:exported="true" android:process=":remote" />
-        <service android:name=".AlarmService" android:exported="true" />
-        <service android:name=".TimerService" android:exported="true" />
+        <activity
+            android:name=".StopAlarm"
+            android:exported="true"
+            android:process=":remote" />
+
+        <service
+            android:name=".StopTimer"
+            android:exported="true"
+            android:process=":remote" />
+        <service
+            android:name=".AlarmService"
+            android:exported="true" />
+        <service
+            android:name=".TimerService"
+            android:exported="true" />
     </application>
+
 </manifest>
