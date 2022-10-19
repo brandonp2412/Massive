@@ -73,7 +73,7 @@ class TimerService : Service() {
                         finishIntent,
                         PendingIntent.FLAG_IMMUTABLE
                     )
-                val fullIntent = Intent(applicationContext, Fullscreen::class.java)
+                val fullIntent = Intent(applicationContext, TimerDone::class.java)
                 val fullPending =
                     PendingIntent.getActivity(
                         applicationContext,

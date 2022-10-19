@@ -21,17 +21,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Fullscreen"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="false"
-            android:label="@string/title_activity_fullscreen"
-            android:theme="@style/AppTheme.Fullscreen" />
-        <activity
-            android:name=".FullscreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="false"
-            android:label="@string/title_activity_fullscreen"
-            android:theme="@style/AppTheme.Fullscreen" />
+            android:name=".TimerDone"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
@@ -51,14 +46,14 @@
 
         <service
             android:name=".StopTimer"
-            android:exported="true"
+            android:exported="false"
             android:process=":remote" />
         <service
             android:name=".AlarmService"
-            android:exported="true" />
+            android:exported="false" />
         <service
             android:name=".TimerService"
-            android:exported="true" />
+            android:exported="false" />
     </application>
 
 </manifest>
