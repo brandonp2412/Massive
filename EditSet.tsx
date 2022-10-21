@@ -11,9 +11,8 @@ import {PADDING} from './constants';
 import {HomePageParams} from './home-page-params';
 import {useSnackbar} from './MassiveSnack';
 import Set from './set';
-import {addSet, updateSet} from './set.service';
+import {addSet, getSet, updateSet} from './set.service';
 import SetForm from './SetForm';
-import {getSettings, updateSettings} from './settings.service';
 import {useSettings} from './use-settings';
 
 export default function EditSet() {
@@ -21,7 +20,7 @@ export default function EditSet() {
   const {set} = params;
   const navigation = useNavigation();
   const {toast} = useSnackbar();
-  const {settings, setSettings} = useSettings();
+  const {settings} = useSettings();
 
   useFocusEffect(
     useCallback(() => {
@@ -39,21 +38,17 @@ export default function EditSet() {
   );
 
   const startTimer = useCallback(
-    async (value: Set) => {
+    async (name: string) => {
       if (!settings.alarm) return;
-      const milliseconds =
-        Number(value.minutes) * 60 * 1000 + Number(value.seconds) * 1000;
+      const {minutes, seconds} = await getSet(name);
+      const milliseconds = (minutes ?? 3) * 60 * 1000 + (seconds ?? 0) * 1000;
       NativeModules.AlarmModule.timer(
         milliseconds,
         !!settings.vibrate,
         settings.sound,
       );
-      const next = new Date();
-      next.setTime(next.getTime() + milliseconds);
-      await updateSettings({...settings, nextAlarm: next.toISOString()});
-      setSettings(await getSettings());
     },
-    [settings, setSettings],
+    [settings],
   );
 
   const update = useCallback(
@@ -68,7 +63,7 @@ export default function EditSet() {
   const add = useCallback(
     async (value: Set) => {
       console.log(`${EditSet.name}.add`, {set: value});
-      startTimer(value);
+      startTimer(value.name);
       await addSet(value);
       if (!settings.notify) return navigation.goBack();
       if (

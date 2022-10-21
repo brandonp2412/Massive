@@ -63,6 +63,17 @@ interface PageParams {
   format?: string;
 }
 
+export const getSet = async (name: string): Promise<Set> => {
+  const select = `
+    SELECT * 
+    FROM sets 
+    WHERE name = ?
+    LIMIT 1
+  `;
+  const [result] = await db.executeSql(select, [name]);
+  return result.rows.item(0);
+};
+
 export const getSets = async ({
   search,
   limit,
