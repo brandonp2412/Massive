@@ -8,7 +8,6 @@ import {FlatList, Image} from 'react-native';
 import {List} from 'react-native-paper';
 import {getBestReps, getBestWeights} from './best.service';
 import {BestPageParams} from './BestPage';
-import Header from './Header';
 import Page from './Page';
 import Set from './set';
 import {useSettings} from './use-settings';
@@ -59,18 +58,15 @@ export default function BestList() {
   );
 
   return (
-    <>
-      <Header name="Best" />
-      <Page search={search} setSearch={setSearch}>
-        {bests?.length === 0 ? (
-          <List.Item
-            title="No exercises yet"
-            description="Once sets have been added, this will highlight your personal bests."
-          />
-        ) : (
-          <FlatList style={{flex: 1}} renderItem={renderItem} data={bests} />
-        )}
-      </Page>
-    </>
+    <Page search={search} setSearch={setSearch}>
+      {bests?.length === 0 ? (
+        <List.Item
+          title="No exercises yet"
+          description="Once sets have been added, this will highlight your personal bests."
+        />
+      ) : (
+        <FlatList style={{flex: 1}} renderItem={renderItem} data={bests} />
+      )}
+    </Page>
   );
 }

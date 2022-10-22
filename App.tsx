@@ -10,7 +10,7 @@ import {
   DefaultTheme as PaperDefaultTheme,
   Provider,
 } from 'react-native-paper';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import Ionicon from 'react-native-vector-icons/MaterialIcons';
 import {Color} from './color';
 import {lightColors} from './colors';
 import {runMigrations} from './db';
@@ -77,7 +77,7 @@ const App = () => {
     <Color.Provider value={{color, setColor}}>
       <Provider
         theme={theme}
-        settings={{icon: props => <MaterialIcon {...props} />}}>
+        settings={{icon: props => <Ionicon {...props} />}}>
         <NavigationContainer theme={theme}>
           <MassiveSnack>
             {settings && (

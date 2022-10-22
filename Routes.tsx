@@ -28,7 +28,6 @@ export default function Routes() {
       screenOptions={{
         headerTintColor: dark ? 'white' : 'black',
         swipeEdgeWidth: 1000,
-        headerShown: false,
       }}>
       {routes.map(route => (
         <Drawer.Screen

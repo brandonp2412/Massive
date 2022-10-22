@@ -8,7 +8,6 @@ import {useColor} from './color';
 import {darkColors, lightColors} from './colors';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
-import Header from './Header';
 import Input from './input';
 import {useSnackbar} from './MassiveSnack';
 import Page from './Page';
@@ -167,88 +166,85 @@ export default function SettingsPage() {
   );
 
   return (
-    <>
-      <Header name="Settings" />
-      <Page search={search} setSearch={setSearch}>
-        <ScrollView style={{marginTop: MARGIN}}>
-          {switches
-            .filter(input =>
-              input.name.toLowerCase().includes(search.toLowerCase()),
-            )
-            .map(input => (
-              <Switch
-                onPress={() => input.onChange(!input.value)}
-                key={input.name}
-                value={input.value}
-                onValueChange={input.onChange}>
-                {input.name}
-              </Switch>
+    <Page search={search} setSearch={setSearch}>
+      <ScrollView style={{marginTop: MARGIN}}>
+        {switches
+          .filter(input =>
+            input.name.toLowerCase().includes(search.toLowerCase()),
+          )
+          .map(input => (
+            <Switch
+              onPress={() => input.onChange(!input.value)}
+              key={input.name}
+              value={input.value}
+              onValueChange={input.onChange}>
+              {input.name}
+            </Switch>
+          ))}
+        {'theme'.includes(search.toLowerCase()) && (
+          <Picker
+            style={{color}}
+            dropdownIconColor={color}
+            selectedValue={theme}
+            onValueChange={changeTheme}>
+            <Picker.Item value="system" label="Follow system theme" />
+            <Picker.Item value="dark" label="Dark theme" />
+            <Picker.Item value="light" label="Light theme" />
+          </Picker>
+        )}
+        {'color'.includes(search.toLowerCase()) && (
+          <Picker
+            style={{color, marginTop: -10}}
+            dropdownIconColor={color}
+            selectedValue={color}
+            onValueChange={value => setColor(value)}>
+            {lightColors.concat(darkColors).map(colorOption => (
+              <Picker.Item
+                key={colorOption.hex}
+                value={colorOption.hex}
+                label="Primary color"
+                color={colorOption.hex}
+              />
             ))}
-          {'theme'.includes(search.toLowerCase()) && (
-            <Picker
-              style={{color}}
-              dropdownIconColor={color}
-              selectedValue={theme}
-              onValueChange={changeTheme}>
-              <Picker.Item value="system" label="Follow system theme" />
-              <Picker.Item value="dark" label="Dark theme" />
-              <Picker.Item value="light" label="Light theme" />
-            </Picker>
-          )}
-          {'color'.includes(search.toLowerCase()) && (
-            <Picker
-              style={{color, marginTop: -10}}
-              dropdownIconColor={color}
-              selectedValue={color}
-              onValueChange={value => setColor(value)}>
-              {lightColors.concat(darkColors).map(colorOption => (
-                <Picker.Item
-                  key={colorOption.hex}
-                  value={colorOption.hex}
-                  label="Primary color"
-                  color={colorOption.hex}
-                />
-              ))}
-            </Picker>
-          )}
-          {'date format'.includes(search.toLowerCase()) && (
-            <Picker
-              style={{color, marginTop: -10}}
-              dropdownIconColor={color}
-              selectedValue={settings.date}
-              onValueChange={changeDate}>
-              <Picker.Item
-                value="%Y-%m-%d %H:%M"
-                label="Format date as 1990-12-24 15:05"
-              />
-              <Picker.Item
-                value="%Y-%m-%d"
-                label="Format date as 1990-12-24 (YYYY-MM-dd)"
-              />
-              <Picker.Item value="%d/%m" label="Format date as 24/12 (dd/MM)" />
-              <Picker.Item value="%H:%M" label="Format date as 15:05 (HH:MM)" />
-            </Picker>
-          )}
-          {'alarm sound'.includes(search.toLowerCase()) && (
-            <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
-              Alarm sound
-              {sound
-                ? ': ' + sound.split('/')[sound.split('/').length - 1]
-                : null}
-            </Button>
-          )}
-        </ScrollView>
-        <ConfirmDialog
-          title="Battery optimizations"
-          show={battery}
-          setShow={setBattery}
-          onOk={() => {
-            NativeModules.AlarmModule.ignoreBattery();
-            setBattery(false);
-          }}>
-          Disable battery optimizations for Massive to use rest timers.
-        </ConfirmDialog>
-      </Page>
-    </>
+          </Picker>
+        )}
+        {'date format'.includes(search.toLowerCase()) && (
+          <Picker
+            style={{color, marginTop: -10}}
+            dropdownIconColor={color}
+            selectedValue={settings.date}
+            onValueChange={changeDate}>
+            <Picker.Item
+              value="%Y-%m-%d %H:%M"
+              label="Format date as 1990-12-24 15:05"
+            />
+            <Picker.Item
+              value="%Y-%m-%d"
+              label="Format date as 1990-12-24 (YYYY-MM-dd)"
+            />
+            <Picker.Item value="%d/%m" label="Format date as 24/12 (dd/MM)" />
+            <Picker.Item value="%H:%M" label="Format date as 15:05 (HH:MM)" />
+          </Picker>
+        )}
+        {'alarm sound'.includes(search.toLowerCase()) && (
+          <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
+            Alarm sound
+            {sound
+              ? ': ' + sound.split('/')[sound.split('/').length - 1]
+              : null}
+          </Button>
+        )}
+      </ScrollView>
+      <ConfirmDialog
+        title="Battery optimizations"
+        show={battery}
+        setShow={setBattery}
+        onOk={() => {
+          NativeModules.AlarmModule.ignoreBattery();
+          setBattery(false);
+        }}>
+        Disable battery optimizations for Massive to use rest timers.
+      </ConfirmDialog>
+    </Page>
   );
 }

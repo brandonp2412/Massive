@@ -6,7 +6,7 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
-import Header from './Header';
+import DrawerMenu from './DrawerMenu';
 import {HomePageParams} from './home-page-params';
 import Page from './Page';
 import Set from './set';
@@ -44,7 +44,10 @@ export default function SetList() {
   useFocusEffect(
     useCallback(() => {
       refresh();
-    }, [refresh]),
+      navigation.getParent()?.setOptions({
+        headerRight: () => <DrawerMenu name="Home" />,
+      });
+    }, [refresh, navigation]),
   );
 
   useEffect(() => {
@@ -83,24 +86,21 @@ export default function SetList() {
   }, [navigation, set]);
 
   return (
-    <>
-      <Header name="Home" />
-      <Page onAdd={onAdd} search={search} setSearch={setSearch}>
-        {sets?.length === 0 ? (
-          <List.Item
-            title="No sets yet"
-            description="A set is a group of repetitions. E.g. 8 reps of Squats."
-          />
-        ) : (
-          <FlatList
-            data={sets}
-            style={{flex: 1}}
-            renderItem={renderItem}
-            keyExtractor={s => s.id!.toString()}
-            onEndReached={next}
-          />
-        )}
-      </Page>
-    </>
+    <Page onAdd={onAdd} search={search} setSearch={setSearch}>
+      {sets?.length === 0 ? (
+        <List.Item
+          title="No sets yet"
+          description="A set is a group of repetitions. E.g. 8 reps of Squats."
+        />
+      ) : (
+        <FlatList
+          data={sets}
+          style={{flex: 1}}
+          renderItem={renderItem}
+          keyExtractor={s => s.id!.toString()}
+          onEndReached={next}
+        />
+      )}
+    </Page>
   );
 }

@@ -7,7 +7,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
 import DrawerMenu from './DrawerMenu';
-import Header from './Header';
 import Page from './Page';
 import {Plan} from './plan';
 import {PlanPageParams} from './plan-page-params';
@@ -47,23 +46,20 @@ export default function PlanList() {
     navigation.navigate('EditPlan', {plan: {days: '', workouts: ''}});
 
   return (
-    <>
-      <Header name="Plans" />
-      <Page onAdd={onAdd} search={search} setSearch={setSearch}>
-        {plans?.length === 0 ? (
-          <List.Item
-            title="No plans yet"
-            description="A plan is a list of workouts for certain days."
-          />
-        ) : (
-          <FlatList
-            style={{flex: 1}}
-            data={plans}
-            renderItem={renderItem}
-            keyExtractor={set => set.id?.toString() || ''}
-          />
-        )}
-      </Page>
-    </>
+    <Page onAdd={onAdd} search={search} setSearch={setSearch}>
+      {plans?.length === 0 ? (
+        <List.Item
+          title="No plans yet"
+          description="A plan is a list of workouts for certain days."
+        />
+      ) : (
+        <FlatList
+          style={{flex: 1}}
+          data={plans}
+          renderItem={renderItem}
+          keyExtractor={set => set.id?.toString() || ''}
+        />
+      )}
+    </Page>
   );
 }
