@@ -6,6 +6,7 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
+import Header from './Header';
 import Page from './Page';
 import Set from './set';
 import {getDistinctSets} from './set.service';
@@ -79,21 +80,24 @@ export default function WorkoutList() {
   }, [navigation]);
 
   return (
-    <Page onAdd={onAdd} search={search} setSearch={setSearch}>
-      {workouts?.length === 0 ? (
-        <List.Item
-          title="No workouts yet."
-          description="A workout is something you do at the gym. For example Deadlifts are a workout."
-        />
-      ) : (
-        <FlatList
-          data={workouts}
-          style={{flex: 1}}
-          renderItem={renderItem}
-          keyExtractor={w => w.name}
-          onEndReached={next}
-        />
-      )}
-    </Page>
+    <>
+      <Header name="Workouts" />
+      <Page onAdd={onAdd} search={search} setSearch={setSearch}>
+        {workouts?.length === 0 ? (
+          <List.Item
+            title="No workouts yet."
+            description="A workout is something you do at the gym. For example Deadlifts are a workout."
+          />
+        ) : (
+          <FlatList
+            data={workouts}
+            style={{flex: 1}}
+            renderItem={renderItem}
+            keyExtractor={w => w.name}
+            onEndReached={next}
+          />
+        )}
+      </Page>
+    </>
   );
 }
