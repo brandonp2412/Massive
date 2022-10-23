@@ -1,13 +1,8 @@
-import {
-  RouteProp,
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native';
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {NativeModules, TextInput, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import {Button, IconButton, List, RadioButton} from 'react-native-paper';
+import {Button, List, RadioButton} from 'react-native-paper';
 import {getBestSet} from './best.service';
 import {useColor} from './color';
 import {PADDING} from './constants';
@@ -18,6 +13,7 @@ import {PlanPageParams} from './plan-page-params';
 import Set from './set';
 import {addSet, countManyToday, getDistinctSets} from './set.service';
 import SetForm from './SetForm';
+import StackHeader from './StackHeader';
 import {useSettings} from './use-settings';
 
 export default function StartPlan() {
@@ -38,7 +34,6 @@ export default function StartPlan() {
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
-  const navigation = useNavigation();
   const workouts = useMemo(() => params.plan.workouts.split(','), [params]);
   const {color} = useColor();
 
@@ -49,13 +44,6 @@ export default function StartPlan() {
 
   useFocusEffect(
     useCallback(() => {
-      navigation.getParent()?.setOptions({
-        headerLeft: () => (
-          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
-        ),
-        headerRight: null,
-        title: params.plan.days.replace(/,/g, ', '),
-      });
       countManyToday().then(newCounts => {
         setCounts(newCounts);
         console.log(`${StartPlan.name}.focus:`, {newCounts});
@@ -66,7 +54,7 @@ export default function StartPlan() {
           console.log(`${StartPlan.name}.focus:`, {newDistinct});
         },
       );
-    }, [navigation, params]),
+    }, [params]),
   );
 
   const handleSubmit = async () => {
@@ -129,70 +117,74 @@ export default function StartPlan() {
       if (!distinctSets) return;
       const distinct = distinctSets.find(d => d.name === countName);
       console.log(`${StartPlan.name}:`, {distinct});
-      if (settings.showSets) return `${count?.total || 0} / ${distinct?.sets}`;
+      if (settings.showSets)
+        return `${count?.total || 0} / ${distinct?.sets || 3}`;
       return count?.total || '0';
     },
     [counts, distinctSets, settings.showSets],
   );
 
   return (
-    <View style={{padding: PADDING, flex: 1, flexDirection: 'column'}}>
-      <View style={{flex: 1}}>
-        <MassiveInput
-          label="Reps"
-          keyboardType="numeric"
-          value={reps}
-          onChangeText={setReps}
-          onSubmitEditing={() => weightRef.current?.focus()}
-          selection={selection}
-          onSelectionChange={e => setSelection(e.nativeEvent.selection)}
-          innerRef={repsRef}
-        />
-        <MassiveInput
-          label="Weight"
-          keyboardType="numeric"
-          value={weight}
-          onChangeText={setWeight}
-          onSubmitEditing={handleSubmit}
-          innerRef={weightRef}
-          blurOnSubmit
-        />
-        {!!settings.showUnit && (
+    <>
+      <StackHeader title={params.plan.days.replace(/,/g, ', ')} />
+      <View style={{padding: PADDING, flex: 1, flexDirection: 'column'}}>
+        <View style={{flex: 1}}>
           <MassiveInput
-            autoCapitalize="none"
-            label="Unit"
-            value={unit}
-            onChangeText={handleUnit}
-            innerRef={unitRef}
+            label="Reps"
+            keyboardType="numeric"
+            value={reps}
+            onChangeText={setReps}
+            onSubmitEditing={() => weightRef.current?.focus()}
+            selection={selection}
+            onSelectionChange={e => setSelection(e.nativeEvent.selection)}
+            innerRef={repsRef}
           />
-        )}
-        {counts && distinctSets && (
-          <FlatList
-            data={workouts}
-            renderItem={({item, index}) => (
-              <List.Item
-                title={item}
-                description={getDescription(item)}
-                onPress={() => select(index)}
-                left={() => (
-                  <View
-                    style={{alignItems: 'center', justifyContent: 'center'}}>
-                    <RadioButton
-                      onPress={() => select(index)}
-                      value={index.toString()}
-                      status={selected === index ? 'checked' : 'unchecked'}
-                      color={color}
-                    />
-                  </View>
-                )}
-              />
-            )}
+          <MassiveInput
+            label="Weight"
+            keyboardType="numeric"
+            value={weight}
+            onChangeText={setWeight}
+            onSubmitEditing={handleSubmit}
+            innerRef={weightRef}
+            blurOnSubmit
           />
-        )}
+          {!!settings.showUnit && (
+            <MassiveInput
+              autoCapitalize="none"
+              label="Unit"
+              value={unit}
+              onChangeText={handleUnit}
+              innerRef={unitRef}
+            />
+          )}
+          {counts && distinctSets && (
+            <FlatList
+              data={workouts}
+              renderItem={({item, index}) => (
+                <List.Item
+                  title={item}
+                  description={getDescription(item)}
+                  onPress={() => select(index)}
+                  left={() => (
+                    <View
+                      style={{alignItems: 'center', justifyContent: 'center'}}>
+                      <RadioButton
+                        onPress={() => select(index)}
+                        value={index.toString()}
+                        status={selected === index ? 'checked' : 'unchecked'}
+                        color={color}
+                      />
+                    </View>
+                  )}
+                />
+              )}
+            />
+          )}
+        </View>
+        <Button mode="contained" icon="save" onPress={handleSubmit}>
+          Save
+        </Button>
       </View>
-      <Button mode="contained" icon="save" onPress={handleSubmit}>
-        Save
-      </Button>
-    </View>
+    </>
   );
 }

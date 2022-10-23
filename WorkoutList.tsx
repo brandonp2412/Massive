@@ -6,7 +6,7 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
-import Header from './Header';
+import DrawerHeader from './DrawerHeader';
 import Page from './Page';
 import Set from './set';
 import {getDistinctSets} from './set.service';
@@ -81,7 +81,7 @@ export default function WorkoutList() {
 
   return (
     <>
-      <Header name="Workouts" />
+      <DrawerHeader name="Workouts" />
       <Page onAdd={onAdd} search={search} setSearch={setSearch}>
         {workouts?.length === 0 ? (
           <List.Item

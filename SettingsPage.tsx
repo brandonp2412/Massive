@@ -8,7 +8,7 @@ import {useColor} from './color';
 import {darkColors, lightColors} from './colors';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
-import Header from './Header';
+import DrawerHeader from './DrawerHeader';
 import Input from './input';
 import {useSnackbar} from './MassiveSnack';
 import Page from './Page';
@@ -168,7 +168,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <Header name="Settings" />
+      <DrawerHeader name="Settings" />
       <Page search={search} setSearch={setSearch}>
         <ScrollView style={{marginTop: MARGIN}}>
           {switches

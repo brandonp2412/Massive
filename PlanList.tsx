@@ -6,8 +6,7 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
-import DrawerMenu from './DrawerMenu';
-import Header from './Header';
+import DrawerHeader from './DrawerHeader';
 import Page from './Page';
 import {Plan} from './plan';
 import {PlanPageParams} from './plan-page-params';
@@ -26,10 +25,7 @@ export default function PlanList() {
   useFocusEffect(
     useCallback(() => {
       refresh();
-      navigation.getParent()?.setOptions({
-        headerRight: () => <DrawerMenu name="Plans" />,
-      });
-    }, [refresh, navigation]),
+    }, [refresh]),
   );
 
   useEffect(() => {
@@ -48,7 +44,7 @@ export default function PlanList() {
 
   return (
     <>
-      <Header name="Plans" />
+      <DrawerHeader name="Plans" />
       <Page onAdd={onAdd} search={search} setSearch={setSearch}>
         {plans?.length === 0 ? (
           <List.Item

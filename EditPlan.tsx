@@ -1,18 +1,18 @@
 import {
   NavigationProp,
   RouteProp,
-  useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import {Button, IconButton, Text} from 'react-native-paper';
+import {Button, Text} from 'react-native-paper';
 import {MARGIN, PADDING} from './constants';
 import {DrawerParamList} from './drawer-param-list';
 import {PlanPageParams} from './plan-page-params';
 import {addPlan, updatePlan} from './plan.service';
 import {getNames} from './set.service';
+import StackHeader from './StackHeader';
 import Switch from './Switch';
 import {DAYS} from './time';
 
@@ -27,19 +27,6 @@ export default function EditPlan() {
   );
   const [names, setNames] = useState<string[]>([]);
   const navigation = useNavigation<NavigationProp<DrawerParamList>>();
-
-  useFocusEffect(
-    useCallback(() => {
-      console.log(`${EditPlan.name}.focus:`, {plan});
-      navigation.getParent()?.setOptions({
-        headerLeft: () => (
-          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
-        ),
-        headerRight: () => null,
-        title: plan.id ? 'Edit plan' : 'Create plan',
-      });
-    }, [navigation, plan]),
-  );
 
   useEffect(() => {
     getNames().then(n => {
@@ -87,59 +74,62 @@ export default function EditPlan() {
   );
 
   return (
-    <View style={{padding: PADDING, flex: 1}}>
-      <ScrollView style={{flex: 1}}>
-        <Text style={styles.title}>Days</Text>
-        {DAYS.map(day => (
-          <Switch
-            key={day}
-            onValueChange={value => toggleDay(value, day)}
-            onPress={() => toggleDay(!days.includes(day), day)}
-            value={days.includes(day)}>
-            {day}
-          </Switch>
-        ))}
-        <Text style={[styles.title, {marginTop: MARGIN}]}>Workouts</Text>
-        {names.length === 0 ? (
-          <View>
-            <Text>No workouts found.</Text>
-          </View>
-        ) : (
-          names.map(name => (
+    <>
+      <StackHeader title="Edit plan" />
+      <View style={{padding: PADDING, flex: 1}}>
+        <ScrollView style={{flex: 1}}>
+          <Text style={styles.title}>Days</Text>
+          {DAYS.map(day => (
             <Switch
-              key={name}
-              onValueChange={value => toggleWorkout(value, name)}
-              value={workouts.includes(name)}
-              onPress={() => toggleWorkout(!workouts.includes(name), name)}>
-              {name}
+              key={day}
+              onValueChange={value => toggleDay(value, day)}
+              onPress={() => toggleDay(!days.includes(day), day)}
+              value={days.includes(day)}>
+              {day}
             </Switch>
-          ))
+          ))}
+          <Text style={[styles.title, {marginTop: MARGIN}]}>Workouts</Text>
+          {names.length === 0 ? (
+            <View>
+              <Text>No workouts found.</Text>
+            </View>
+          ) : (
+            names.map(name => (
+              <Switch
+                key={name}
+                onValueChange={value => toggleWorkout(value, name)}
+                value={workouts.includes(name)}
+                onPress={() => toggleWorkout(!workouts.includes(name), name)}>
+                {name}
+              </Switch>
+            ))
+          )}
+        </ScrollView>
+        {names.length === 0 ? (
+          <Button
+            disabled={workouts.length === 0 && days.length === 0}
+            mode="contained"
+            onPress={() => {
+              navigation.goBack();
+              navigation.navigate('Workouts', {
+                screen: 'EditWorkout',
+                params: {value: {name: ''}},
+              });
+            }}>
+            Add workout
+          </Button>
+        ) : (
+          <Button
+            disabled={workouts.length === 0 && days.length === 0}
+            style={{marginTop: MARGIN}}
+            mode="contained"
+            icon="save"
+            onPress={save}>
+            Save
+          </Button>
         )}
-      </ScrollView>
-      {names.length === 0 ? (
-        <Button
-          disabled={workouts.length === 0 && days.length === 0}
-          mode="contained"
-          onPress={() => {
-            navigation.goBack();
-            navigation.navigate('Workouts', {
-              screen: 'EditWorkout',
-              params: {value: {name: ''}},
-            });
-          }}>
-          Add workout
-        </Button>
-      ) : (
-        <Button
-          disabled={workouts.length === 0 && days.length === 0}
-          style={{marginTop: MARGIN}}
-          mode="contained"
-          icon="save"
-          onPress={save}>
-          Save
-        </Button>
-      )}
-    </View>
+      </View>
+    </>
   );
 }
 

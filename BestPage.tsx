@@ -1,10 +1,6 @@
-import {DrawerNavigationProp} from '@react-navigation/drawer';
-import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {IconButton} from 'react-native-paper';
 import BestList from './BestList';
-import {DrawerParamList} from './drawer-param-list';
 import Set from './set';
 import ViewBest from './ViewBest';
 
@@ -17,26 +13,11 @@ export type BestPageParams = {
 };
 
 export default function BestPage() {
-  const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
-
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false, animationEnabled: false}}>
       <Stack.Screen name="BestList" component={BestList} />
-      <Stack.Screen
-        name="ViewBest"
-        component={ViewBest}
-        listeners={{
-          beforeRemove: () => {
-            navigation.setOptions({
-              headerLeft: () => (
-                <IconButton icon="menu" onPress={navigation.openDrawer} />
-              ),
-              title: 'Best',
-            });
-          },
-        }}
-      />
+      <Stack.Screen name="ViewBest" component={ViewBest} />
     </Stack.Navigator>
   );
 }

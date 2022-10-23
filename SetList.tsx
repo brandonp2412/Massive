@@ -6,7 +6,7 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
-import Header from './Header';
+import DrawerHeader from './DrawerHeader';
 import {HomePageParams} from './home-page-params';
 import Page from './Page';
 import Set from './set';
@@ -84,7 +84,7 @@ export default function SetList() {
 
   return (
     <>
-      <Header name="Home" />
+      <DrawerHeader name="Home" />
       <Page onAdd={onAdd} search={search} setSearch={setSearch}>
         {sets?.length === 0 ? (
           <List.Item

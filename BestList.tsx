@@ -8,7 +8,7 @@ import {FlatList, Image} from 'react-native';
 import {List} from 'react-native-paper';
 import {getBestReps, getBestWeights} from './best.service';
 import {BestPageParams} from './BestPage';
-import Header from './Header';
+import DrawerHeader from './DrawerHeader';
 import Page from './Page';
 import Set from './set';
 import {useSettings} from './use-settings';
@@ -33,10 +33,7 @@ export default function BestList() {
   useFocusEffect(
     useCallback(() => {
       refresh();
-      navigation.getParent()?.setOptions({
-        headerRight: () => null,
-      });
-    }, [refresh, navigation]),
+    }, [refresh]),
   );
 
   useEffect(() => {
@@ -60,7 +57,7 @@ export default function BestList() {
 
   return (
     <>
-      <Header name="Best" />
+      <DrawerHeader name="Best" />
       <Page search={search} setSearch={setSearch}>
         {bests?.length === 0 ? (
           <List.Item

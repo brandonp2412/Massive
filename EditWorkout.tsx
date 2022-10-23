@@ -1,19 +1,15 @@
-import {
-  RouteProp,
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import React, {useCallback, useRef, useState} from 'react';
 import {ScrollView, TextInput, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
-import {Button, Card, IconButton, TouchableRipple} from 'react-native-paper';
+import {Button, Card, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
 import MassiveInput from './MassiveInput';
 import {useSnackbar} from './MassiveSnack';
 import {updatePlanWorkouts} from './plan.service';
 import {addSet, updateManySet, updateSetImage} from './set.service';
+import StackHeader from './StackHeader';
 import {useSettings} from './use-settings';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
@@ -38,19 +34,6 @@ export default function EditWorkout() {
   const minutesRef = useRef<TextInput>(null);
   const secondsRef = useRef<TextInput>(null);
   const {settings} = useSettings();
-
-  useFocusEffect(
-    useCallback(() => {
-      navigation.getParent()?.setOptions({
-        headerLeft: () => (
-          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
-        ),
-        headerRight: null,
-        title: params.value.name || 'New workout',
-      });
-      if (!name) return;
-    }, [navigation, name, params.value.name]),
-  );
 
   const update = async () => {
     await updateManySet({
@@ -118,83 +101,86 @@ export default function EditWorkout() {
   };
 
   return (
-    <View style={{padding: PADDING, flex: 1}}>
-      <ScrollView style={{flex: 1}}>
-        <MassiveInput
-          autoFocus
-          label="Name"
-          value={name}
-          onChangeText={handleName}
-          onSubmitEditing={submitName}
-        />
-        {!!settings.steps && (
+    <>
+      <StackHeader title="Edit workout" />
+      <View style={{padding: PADDING, flex: 1}}>
+        <ScrollView style={{flex: 1}}>
           <MassiveInput
-            innerRef={stepsRef}
-            selectTextOnFocus={false}
-            value={steps}
-            onChangeText={handleSteps}
-            label="Steps"
-            multiline
-            onSubmitEditing={() => setsRef.current?.focus()}
+            autoFocus
+            label="Name"
+            value={name}
+            onChangeText={handleName}
+            onSubmitEditing={submitName}
           />
-        )}
-        {!!settings.showSets && (
-          <MassiveInput
-            innerRef={setsRef}
-            value={sets}
-            onChangeText={setSets}
-            label="Sets per workout"
-            keyboardType="numeric"
-            onSubmitEditing={() => minutesRef.current?.focus()}
-          />
-        )}
-        {!!settings.alarm && (
-          <>
+          {!!settings.steps && (
             <MassiveInput
-              innerRef={minutesRef}
-              onSubmitEditing={() => secondsRef.current?.focus()}
-              value={minutes}
-              onChangeText={setMinutes}
-              label="Rest minutes"
-              keyboardType="numeric"
+              innerRef={stepsRef}
+              selectTextOnFocus={false}
+              value={steps}
+              onChangeText={handleSteps}
+              label="Steps"
+              multiline
+              onSubmitEditing={() => setsRef.current?.focus()}
             />
+          )}
+          {!!settings.showSets && (
             <MassiveInput
-              innerRef={secondsRef}
-              value={seconds}
-              onChangeText={setSeconds}
-              label="Rest seconds"
+              innerRef={setsRef}
+              value={sets}
+              onChangeText={setSets}
+              label="Sets per workout"
               keyboardType="numeric"
-              blurOnSubmit
+              onSubmitEditing={() => minutesRef.current?.focus()}
             />
-          </>
-        )}
-        {!!settings.images && uri && (
-          <TouchableRipple
-            style={{marginBottom: MARGIN}}
-            onPress={changeImage}
-            onLongPress={() => setShowRemove(true)}>
-            <Card.Cover source={{uri}} />
-          </TouchableRipple>
-        )}
-        {!!settings.images && !uri && (
-          <Button
-            style={{marginBottom: MARGIN}}
-            onPress={changeImage}
-            icon="add-photo-alternate">
-            Image
-          </Button>
-        )}
-      </ScrollView>
-      <Button disabled={!name} mode="contained" icon="save" onPress={save}>
-        Save
-      </Button>
-      <ConfirmDialog
-        title="Remove image"
-        onOk={handleRemove}
-        show={showRemove}
-        setShow={setShowRemove}>
-        Are you sure you want to remove the image?
-      </ConfirmDialog>
-    </View>
+          )}
+          {!!settings.alarm && (
+            <>
+              <MassiveInput
+                innerRef={minutesRef}
+                onSubmitEditing={() => secondsRef.current?.focus()}
+                value={minutes}
+                onChangeText={setMinutes}
+                label="Rest minutes"
+                keyboardType="numeric"
+              />
+              <MassiveInput
+                innerRef={secondsRef}
+                value={seconds}
+                onChangeText={setSeconds}
+                label="Rest seconds"
+                keyboardType="numeric"
+                blurOnSubmit
+              />
+            </>
+          )}
+          {!!settings.images && uri && (
+            <TouchableRipple
+              style={{marginBottom: MARGIN}}
+              onPress={changeImage}
+              onLongPress={() => setShowRemove(true)}>
+              <Card.Cover source={{uri}} />
+            </TouchableRipple>
+          )}
+          {!!settings.images && !uri && (
+            <Button
+              style={{marginBottom: MARGIN}}
+              onPress={changeImage}
+              icon="add-photo-alternate">
+              Image
+            </Button>
+          )}
+        </ScrollView>
+        <Button disabled={!name} mode="contained" icon="save" onPress={save}>
+          Save
+        </Button>
+        <ConfirmDialog
+          title="Remove image"
+          onOk={handleRemove}
+          show={showRemove}
+          setShow={setShowRemove}>
+          Are you sure you want to remove the image?
+        </ConfirmDialog>
+      </View>
+    </>
   );
 }

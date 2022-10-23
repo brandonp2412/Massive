@@ -1,18 +1,13 @@
-import {
-  RouteProp,
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import React, {useCallback} from 'react';
 import {NativeModules, View} from 'react-native';
-import {IconButton} from 'react-native-paper';
 import {PADDING} from './constants';
 import {HomePageParams} from './home-page-params';
 import {useSnackbar} from './MassiveSnack';
 import Set from './set';
 import {addSet, getSet, updateSet} from './set.service';
 import SetForm from './SetForm';
+import StackHeader from './StackHeader';
 import {useSettings} from './use-settings';
 
 export default function EditSet() {
@@ -21,21 +16,6 @@ export default function EditSet() {
   const navigation = useNavigation();
   const {toast} = useSnackbar();
   const {settings} = useSettings();
-
-  useFocusEffect(
-    useCallback(() => {
-      console.log(`${EditSet.name}.focus:`, set);
-      let title = 'Create set';
-      if (typeof set.id === 'number') title = 'Edit set';
-      navigation.getParent()?.setOptions({
-        headerLeft: () => (
-          <IconButton icon="arrow-back" onPress={() => navigation.goBack()} />
-        ),
-        headerRight: null,
-        title,
-      });
-    }, [navigation, set]),
-  );
 
   const startTimer = useCallback(
     async (name: string) => {
@@ -85,8 +65,11 @@ export default function EditSet() {
   );
 
   return (
-    <View style={{padding: PADDING, flex: 1}}>
-      <SetForm save={save} set={set} />
-    </View>
+    <>
+      <StackHeader title="Edit set" />
+      <View style={{padding: PADDING, flex: 1}}>
+        <SetForm save={save} set={set} />
+      </View>
+    </>
   );
 }
