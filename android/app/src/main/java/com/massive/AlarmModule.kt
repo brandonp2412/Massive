@@ -1,27 +1,53 @@
 package com.massive
 
 import android.annotation.SuppressLint
+import android.app.*
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.CountDownTimer
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import com.facebook.react.bridge.ActivityEventListener
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BaseActivityEventListener
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
+import kotlin.math.floor
 
 
 class AlarmModule internal constructor(context: ReactApplicationContext?) :
     ReactContextBaseJavaModule(context) {
 
+    var countdownTimer: CountDownTimer? = null
+
     override fun getName(): String {
         return "AlarmModule"
+    }
+
+    private val mActivityEventListener: ActivityEventListener =
+        object : BaseActivityEventListener() {
+            override fun onActivityResult(
+                activity: Activity?,
+                requestCode: Int,
+                resultCode: Int,
+                data: Intent?
+            ) {
+                Log.d("AlarmModule", "onActivityResult")
+            }
+        }
+
+    init {
+        reactApplicationContext.addActivityEventListener(mActivityEventListener)
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -50,11 +76,19 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
     @ReactMethod
     fun timer(milliseconds: Int, vibrate: Boolean, sound: String?) {
         Log.d("AlarmModule", "Queue alarm for $milliseconds delay")
-        val intent = Intent(reactApplicationContext, TimerService::class.java)
-        intent.putExtra("milliseconds", milliseconds)
-        intent.putExtra("vibrate", vibrate)
-        intent.putExtra("sound", sound)
-        reactApplicationContext.startService(intent)
+        val intent = Intent(reactApplicationContext, AlarmModule::class.java)
+        currentActivity?.startActivityForResult(intent, 0)
+        val manager = getManager()
+        manager.cancel(NOTIFICATION_ID_DONE)
+        reactApplicationContext.stopService(
+            Intent(
+                reactApplicationContext,
+                AlarmService::class.java
+            )
+        )
+        countdownTimer?.cancel()
+        countdownTimer = getTimer(milliseconds, vibrate, sound)
+        countdownTimer?.start()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -86,5 +120,114 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun getTimer(endMs: Int, vibrate: Boolean, sound: String?): CountDownTimer {
+        val builder = getBuilder()
+        return object : CountDownTimer(endMs.toLong(), 1000) {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onTick(current: Long) {
+                val seconds = floor((current / 1000).toDouble() % 60)
+                    .toInt().toString().padStart(2, '0')
+                val minutes = floor((current / 1000).toDouble() / 60)
+                    .toInt().toString().padStart(2, '0')
+                builder.setContentText("$minutes:$seconds")
+                    .setAutoCancel(false)
+                    .setDefaults(0)
+                    .setProgress(endMs, current.toInt(), false)
+                    .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+                    .priority = NotificationCompat.PRIORITY_LOW
+                val manager = getManager()
+                manager.notify(NOTIFICATION_ID_PENDING, builder.build())
+            }
+
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onFinish() {
+                val context = reactApplicationContext
+                val finishIntent = Intent(context, StopAlarm::class.java)
+                val finishPending =
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        finishIntent,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                val fullIntent = Intent(context, TimerDone::class.java)
+                val fullPending =
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        fullIntent,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                builder.setContentText("Timer finished.")
+                    .setProgress(0, 0, false)
+                    .setAutoCancel(true)
+                    .setOngoing(true)
+                    .setFullScreenIntent(fullPending, true)
+                    .setContentIntent(finishPending)
+                    .setChannelId(CHANNEL_ID_DONE)
+                    .setCategory(NotificationCompat.CATEGORY_ALARM)
+                    .priority = NotificationCompat.PRIORITY_HIGH
+                val manager = getManager()
+                manager.notify(NOTIFICATION_ID_DONE, builder.build())
+                manager.cancel(NOTIFICATION_ID_PENDING)
+                val alarmIntent = Intent(context, AlarmService::class.java)
+                alarmIntent.putExtra("vibrate", vibrate)
+                alarmIntent.putExtra("sound", sound)
+                context.startService(alarmIntent)
+            }
+        }
+    }
+
+    @SuppressLint("UnspecifiedImmutableFlag")
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun getBuilder(): NotificationCompat.Builder {
+        val context = reactApplicationContext
+        val contentIntent = Intent(context, MainActivity::class.java)
+        val pendingContent =
+            PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
+        val stopIntent = Intent(context, StopTimer::class.java)
+        val pendingStop =
+            PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
+        return NotificationCompat.Builder(context, CHANNEL_ID_PENDING)
+            .setSmallIcon(R.drawable.ic_baseline_hourglass_bottom_24)
+            .setContentTitle("Resting")
+            .setContentIntent(pendingContent)
+            .addAction(R.drawable.ic_baseline_stop_24, "Stop", pendingStop)
+            .setDeleteIntent(pendingStop)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getManager(): NotificationManager {
+        val alarmsChannel = NotificationChannel(
+            CHANNEL_ID_DONE,
+            CHANNEL_ID_DONE,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        alarmsChannel.description = "Alarms for rest timers."
+        alarmsChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        val notificationManager = reactApplicationContext.getSystemService(
+            NotificationManager::class.java
+        )
+        notificationManager.createNotificationChannel(alarmsChannel)
+        val timersChannel =
+            NotificationChannel(
+                CHANNEL_ID_PENDING,
+                CHANNEL_ID_PENDING,
+                NotificationManager.IMPORTANCE_LOW
+            )
+        timersChannel.setSound(null, null)
+        timersChannel.description = "Progress on rest timers."
+        notificationManager.createNotificationChannel(timersChannel)
+        return notificationManager
+    }
+
+    companion object {
+        const val CHANNEL_ID_PENDING = "Timer"
+        const val CHANNEL_ID_DONE = "Alarm"
+        const val NOTIFICATION_ID_PENDING = 1
+        const val NOTIFICATION_ID_DONE = 2
     }
 }

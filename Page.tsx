@@ -12,18 +12,20 @@ export default function Page({
 }: {
   children: JSX.Element | JSX.Element[];
   onAdd?: () => void;
-  search: string;
-  setSearch: (value: string) => void;
+  search?: string;
+  setSearch?: (value: string) => void;
 }) {
   return (
     <View style={styles.container}>
-      <Searchbar
-        placeholder="Search"
-        value={search}
-        onChangeText={setSearch}
-        icon="search"
-        clearIcon="clear"
-      />
+      {typeof search === 'string' && setSearch && (
+        <Searchbar
+          placeholder="Search"
+          value={search}
+          onChangeText={setSearch}
+          icon="search"
+          clearIcon="clear"
+        />
+      )}
       {children}
       {onAdd && <MassiveFab onPress={onAdd} />}
     </View>

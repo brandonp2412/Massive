@@ -7,6 +7,7 @@ import {useSnackbar} from './MassiveSnack';
 import Set from './set';
 import {addSet, getSet, updateSet} from './set.service';
 import SetForm from './SetForm';
+import {updateSettings} from './settings.service';
 import StackHeader from './StackHeader';
 import {useSettings} from './use-settings';
 
@@ -22,11 +23,15 @@ export default function EditSet() {
       if (!settings.alarm) return;
       const {minutes, seconds} = await getSet(name);
       const milliseconds = (minutes ?? 3) * 60 * 1000 + (seconds ?? 0) * 1000;
+      console.log(`startTimer:`, `Starting timer in ${minutes}:${seconds}`);
       NativeModules.AlarmModule.timer(
         milliseconds,
         !!settings.vibrate,
         settings.sound,
       );
+      const nextAlarm = new Date();
+      nextAlarm.setTime(nextAlarm.getTime() + milliseconds);
+      updateSettings({...settings, nextAlarm: nextAlarm.toISOString()});
     },
     [settings],
   );
