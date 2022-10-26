@@ -117,6 +117,9 @@ const migrations = [
   `
     ALTER TABLE settings ADD COLUMN showSets BOOLEAN DEFAULT 1
   `,
+  `
+    CREATE INDEX sets_created ON sets(created)
+  `,
 ];
 
 export let db: SQLiteDatabase;
