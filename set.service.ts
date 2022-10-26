@@ -170,14 +170,14 @@ export const countMany = async (names: string[]): Promise<CountMany[]> => {
   const questions = names.map(_ => '?').join(',');
   console.log({questions, names});
   const select = `
-    SELECT workouts.name, COUNT(sets.id) as total, sets.sets
+    SELECT workouts.name, COUNT(sets.id) as total, workouts.sets
     FROM (
-      SELECT distinct name FROM sets
+      SELECT distinct name, sets FROM sets
       WHERE name IN (${questions})
     ) workouts 
     LEFT JOIN sets ON sets.name = workouts.name 
       AND sets.created LIKE STRFTIME('%Y-%m-%d%%', 'now', 'localtime')
-      AND NOT hidden
+      AND NOT sets.hidden
     GROUP BY workouts.name;
   `;
   const [result] = await db.executeSql(select, names);
