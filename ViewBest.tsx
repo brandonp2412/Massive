@@ -64,7 +64,7 @@ export default function ViewBest() {
             yData={volumes.map(v => v.value)}
             yFormat={(value: number) =>
               `${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${
-                volumes[0].unit
+                volumes[0].unit || 'kg'
               }`
             }
             xData={weights}
