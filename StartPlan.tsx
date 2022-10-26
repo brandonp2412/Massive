@@ -88,10 +88,11 @@ export default function StartPlan() {
   const select = useCallback(
     async (index: number) => {
       setSelected(index);
-      console.log(`${StartPlan.name}.next:`, {name, workouts});
-      const workout = workouts[index];
+      console.log(`${StartPlan.name}.next:`, {name});
+      if (!counts) return;
+      const workout = counts[index];
       console.log(`${StartPlan.name}.next:`, {workout});
-      const newBest = await getBestSet(workout);
+      const newBest = await getBestSet(workout.name);
       setMinutes(newBest.minutes);
       setSeconds(newBest.seconds);
       setName(newBest.name);
