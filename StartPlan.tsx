@@ -145,7 +145,7 @@ export default function StartPlan() {
                   description={
                     settings.showSets
                       ? `${item.total} / ${item.sets ?? 3}`
-                      : item.total
+                      : item.total.toString()
                   }
                   onPress={() => select(index)}
                   left={() => (
