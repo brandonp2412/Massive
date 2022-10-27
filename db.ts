@@ -41,16 +41,16 @@ const migrations = [
     )
   `,
   `
-    ALTER TABLE sets ADD COLUMN hidden DEFAULT 0
+    ALTER TABLE sets ADD COLUMN hidden DEFAULT false
   `,
   `
-    ALTER TABLE settings ADD COLUMN notify DEFAULT 0
+    ALTER TABLE settings ADD COLUMN notify DEFAULT false
   `,
   `
     ALTER TABLE sets ADD COLUMN image TEXT NULL
   `,
   `
-    ALTER TABLE settings ADD COLUMN images BOOLEAN DEFAULT 1
+    ALTER TABLE settings ADD COLUMN images BOOLEAN DEFAULT true
   `,
   `
     SELECT * FROM settings LIMIT 1
@@ -74,7 +74,7 @@ const migrations = [
     ALTER TABLE sets ADD COLUMN seconds INTEGER NOT NULL DEFAULT 30
   `,
   `
-    ALTER TABLE settings ADD COLUMN showUnit BOOLEAN DEFAULT 1
+    ALTER TABLE settings ADD COLUMN showUnit BOOLEAN DEFAULT true
   `,
   `
     ALTER TABLE sets ADD COLUMN steps TEXT NULL
@@ -94,10 +94,10 @@ const migrations = [
     UPDATE settings SET showUnit = 1
   `,
   `
-    ALTER TABLE settings ADD COLUMN workouts BOOLEAN DEFAULT 1
+    ALTER TABLE settings ADD COLUMN workouts BOOLEAN DEFAULT true
   `,
   `
-    ALTER TABLE settings ADD COLUMN steps BOOLEAN DEFAULT 1
+    ALTER TABLE settings ADD COLUMN steps BOOLEAN DEFAULT true
   `,
   `
     ALTER TABLE settings ADD COLUMN nextAlarm TEXT NULL
@@ -109,16 +109,19 @@ const migrations = [
     ALTER TABLE settings ADD COLUMN date TEXT NULL
   `,
   `
-    ALTER TABLE settings ADD COLUMN showDate BOOLEAN DEFAULT 0
+    ALTER TABLE settings ADD COLUMN showDate BOOLEAN DEFAULT false
   `,
   `
     ALTER TABLE settings ADD COLUMN theme TEXT
   `,
   `
-    ALTER TABLE settings ADD COLUMN showSets BOOLEAN DEFAULT 1
+    ALTER TABLE settings ADD COLUMN showSets BOOLEAN DEFAULT true
   `,
   `
     CREATE INDEX sets_created ON sets(created)
+  `,
+  `
+    ALTER TABLE settings ADD COLUMN noSound BOOLEAN DEFAULT false
   `,
 ];
 

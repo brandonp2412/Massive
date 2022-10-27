@@ -21,11 +21,13 @@ class AlarmService : Service(), OnPreparedListener {
             return START_STICKY
         }
         val sound = intent.extras?.getString("sound")
-        if (sound == null) {
+        val noSound = intent.extras?.getBoolean("noSound") == true
+
+        if (sound == null && !noSound) {
             mediaPlayer = MediaPlayer.create(applicationContext, R.raw.argon)
             mediaPlayer?.start()
             mediaPlayer?.setOnCompletionListener { vibrator?.cancel() }
-        } else {
+        } else if (sound != null && !noSound) {
             mediaPlayer = MediaPlayer().apply {
                 setAudioAttributes(
                     AudioAttributes.Builder()
@@ -39,6 +41,7 @@ class AlarmService : Service(), OnPreparedListener {
                 setOnCompletionListener { vibrator?.cancel() }
             }
         }
+
         val pattern = longArrayOf(0, 300, 1300, 300, 1300, 300)
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =

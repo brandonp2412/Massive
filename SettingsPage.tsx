@@ -33,6 +33,7 @@ export default function SettingsPage() {
     showSets,
     theme,
     alarm,
+    noSound,
   } = settings;
   const {color, setColor} = useColor();
   const {toast} = useSnackbar();
@@ -139,9 +140,19 @@ export default function SettingsPage() {
     [toast, update],
   );
 
+  const changeNoSound = useCallback(
+    (enabled: boolean) => {
+      update(enabled, 'noSound');
+      if (enabled) toast('Disable sound on rest timer alarms.', 4000);
+      else toast('Enabled sound for rest timer alarms.', 4000);
+    },
+    [toast, update],
+  );
+
   const switches: Input<boolean>[] = [
     {name: 'Rest timers', value: !!alarm, onChange: changeAlarmEnabled},
     {name: 'Vibrate', value: !!vibrate, onChange: changeVibrate},
+    {name: 'Disable sound', value: !!noSound, onChange: changeNoSound},
     {name: 'Record notifications', value: !!notify, onChange: changeNotify},
     {name: 'Show images', value: !!images, onChange: changeImages},
     {name: 'Show unit', value: !!showUnit, onChange: changeUnit},

@@ -20,11 +20,13 @@ class TimerService : Service() {
     private var endMs: Int = 0
     private var currentMs: Long = 0
     private var vibrate: Boolean = true
+    private var noSound: Boolean = false
     private var sound: String? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         vibrate = intent?.extras?.getBoolean("vibrate") == true
+        noSound = intent?.extras?.getBoolean("noSound") == true
         sound = intent?.extras?.getString("sound")
         val manager = getManager()
         manager.cancel(NOTIFICATION_ID_DONE)
@@ -93,9 +95,11 @@ class TimerService : Service() {
                 val manager = getManager()
                 manager.notify(NOTIFICATION_ID_DONE, builder.build())
                 manager.cancel(NOTIFICATION_ID_PENDING)
-                val alarmIntent = Intent(applicationContext, AlarmService::class.java)
-                alarmIntent.putExtra("vibrate", vibrate)
-                alarmIntent.putExtra("sound", sound)
+                val alarmIntent = Intent(applicationContext, AlarmService::class.java).apply {
+                    putExtra("vibrate", vibrate)
+                    putExtra("sound", sound)
+                    putExtra("noSound", noSound)
+                }
                 applicationContext.startService(alarmIntent)
             }
         }
@@ -124,11 +128,13 @@ class TimerService : Service() {
         val stopIntent = Intent(context, StopTimer::class.java)
         val pendingStop =
             PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
-        val addIntent = Intent(context, TimerService::class.java)
-        addIntent.action = "add"
-        addIntent.putExtra("vibrate", vibrate)
-        addIntent.putExtra("sound", sound)
-        addIntent.data = Uri.parse("$currentMs")
+        val addIntent = Intent(context, TimerService::class.java).apply {
+            action = "add"
+            putExtra("vibrate", vibrate)
+            putExtra("sound", sound)
+            putExtra("noSound", noSound)
+            data = Uri.parse("$currentMs")
+        }
         val pendingAdd = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getService(context, 0, addIntent, PendingIntent.FLAG_MUTABLE)
         } else {

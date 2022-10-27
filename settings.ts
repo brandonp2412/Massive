@@ -11,4 +11,5 @@ export default interface Settings {
   showDate: number;
   theme: 'system' | 'dark' | 'light';
   showSets: number;
+  noSound: number;
 }

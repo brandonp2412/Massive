@@ -26,6 +26,7 @@ export default function EditSet() {
         milliseconds,
         !!settings.vibrate,
         settings.sound,
+        !!settings.noSound,
       );
     },
     [settings],
