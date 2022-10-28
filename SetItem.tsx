@@ -5,6 +5,7 @@ import {Divider, List, Menu, Text} from 'react-native-paper';
 import {HomePageParams} from './home-page-params';
 import Set from './set';
 import {deleteSet} from './set.service';
+import {format} from './time';
 import useDark from './use-dark';
 import {useSettings} from './use-settings';
 
@@ -63,7 +64,7 @@ export default function SetItem({
                   alignSelf: 'center',
                   color: dark ? '#909090ff' : '#717171ff',
                 }}>
-                {item.created?.replace('T', ' ')}
+                {format(item.created || '', settings.date)}
               </Text>
             )}
             <Menu

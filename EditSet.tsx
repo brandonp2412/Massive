@@ -28,6 +28,7 @@ export default function EditSet() {
         milliseconds,
         !!settings.vibrate,
         settings.sound,
+        !!settings.noSound,
       );
       const nextAlarm = new Date();
       nextAlarm.setTime(nextAlarm.getTime() + milliseconds);

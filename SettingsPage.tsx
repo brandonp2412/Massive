@@ -33,6 +33,7 @@ export default function SettingsPage() {
     showSets,
     theme,
     alarm,
+    noSound,
   } = settings;
   const {color, setColor} = useColor();
   const {toast} = useSnackbar();
@@ -139,9 +140,19 @@ export default function SettingsPage() {
     [toast, update],
   );
 
+  const changeNoSound = useCallback(
+    (enabled: boolean) => {
+      update(enabled, 'noSound');
+      if (enabled) toast('Disable sound on rest timer alarms.', 4000);
+      else toast('Enabled sound for rest timer alarms.', 4000);
+    },
+    [toast, update],
+  );
+
   const switches: Input<boolean>[] = [
     {name: 'Rest timers', value: !!alarm, onChange: changeAlarmEnabled},
     {name: 'Vibrate', value: !!vibrate, onChange: changeVibrate},
+    {name: 'Disable sound', value: !!noSound, onChange: changeNoSound},
     {name: 'Record notifications', value: !!notify, onChange: changeNotify},
     {name: 'Show images', value: !!images, onChange: changeImages},
     {name: 'Show unit', value: !!showUnit, onChange: changeUnit},
@@ -217,16 +228,18 @@ export default function SettingsPage() {
               dropdownIconColor={color}
               selectedValue={settings.date}
               onValueChange={changeDate}>
+              <Picker.Item value="%Y-%m-%d %H:%M" label="1990-12-24 15:05" />
+              <Picker.Item value="%Y-%m-%d" label="1990-12-24" />
+              <Picker.Item value="%d/%m" label="24/12 (dd/MM)" />
+              <Picker.Item value="%H:%M" label="15:05 (24-hour time)" />
+              <Picker.Item value="%h:%M %p" label="3:05 PM (12-hour time)" />
+              <Picker.Item value="%d/%m/%y" label="24/12/1996" />
+              <Picker.Item value="%A %h:%M %p" label="Monday 3:05 PM" />
               <Picker.Item
-                value="%Y-%m-%d %H:%M"
-                label="Format date as 1990-12-24 15:05"
+                value="%d/%m/%y %h:%M %p"
+                label="24/12/1990 3:05 PM"
               />
-              <Picker.Item
-                value="%Y-%m-%d"
-                label="Format date as 1990-12-24 (YYYY-MM-dd)"
-              />
-              <Picker.Item value="%d/%m" label="Format date as 24/12 (dd/MM)" />
-              <Picker.Item value="%H:%M" label="Format date as 15:05 (HH:MM)" />
+              <Picker.Item value="%d/%m %h:%M %p" label="24/12 3:05 PM" />
             </Picker>
           )}
           {'alarm sound'.includes(search.toLowerCase()) && (
