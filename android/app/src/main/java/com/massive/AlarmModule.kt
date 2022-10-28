@@ -66,7 +66,6 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     @ReactMethod
     fun timer(milliseconds: Int, vibrate: Boolean, sound: String?, noSound: Boolean = false) {
         Log.d("AlarmModule", "Queue alarm for $milliseconds delay")
-        reactApplicationContext.registerReceiver(receiver, IntentFilter(STOP_BROADCAST))
         val manager = getManager()
         manager.cancel(NOTIFICATION_ID_DONE)
         reactApplicationContext.stopService(
@@ -161,6 +160,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         val contentIntent = Intent(context, MainActivity::class.java)
         val pendingContent =
             PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
+        reactApplicationContext.registerReceiver(receiver, IntentFilter(STOP_BROADCAST))
         val stopIntent = Intent(STOP_BROADCAST)
         stopIntent.flags =Intent.FLAG_ACTIVITY_NEW_TASK
         val pendingStop =
