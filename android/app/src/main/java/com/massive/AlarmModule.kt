@@ -23,7 +23,7 @@ import com.facebook.react.bridge.ReactMethod
 import kotlin.math.floor
 
 
-class AlarmModule internal constructor(context: ReactApplicationContext?) :
+class AlarmModule constructor(context: ReactApplicationContext?) :
     ReactContextBaseJavaModule(context) {
 
     var countdownTimer: CountDownTimer? = null
@@ -32,15 +32,12 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
         return "AlarmModule"
     }
 
-    private val broadcastReceiver = object : BroadcastReceiver() {
+    private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d("AlarmModule", "Received broadcast intent")
             Toast.makeText(reactApplicationContext, "called from test receiver", Toast.LENGTH_SHORT)
                 .show()
         }
-    }
-
-    init {
-        reactApplicationContext.registerReceiver(broadcastReceiver, IntentFilter(STOP_BROADCAST))
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -69,8 +66,7 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
     @ReactMethod
     fun timer(milliseconds: Int, vibrate: Boolean, sound: String?, noSound: Boolean = false) {
         Log.d("AlarmModule", "Queue alarm for $milliseconds delay")
-        val intent = Intent(reactApplicationContext, AlarmModule::class.java)
-        currentActivity?.startActivityForResult(intent, 0)
+        reactApplicationContext.registerReceiver(receiver, IntentFilter(STOP_BROADCAST))
         val manager = getManager()
         manager.cancel(NOTIFICATION_ID_DONE)
         reactApplicationContext.stopService(
@@ -166,8 +162,9 @@ class AlarmModule internal constructor(context: ReactApplicationContext?) :
         val pendingContent =
             PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
         val stopIntent = Intent(STOP_BROADCAST)
+        stopIntent.flags =Intent.FLAG_ACTIVITY_NEW_TASK
         val pendingStop =
-            PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_MUTABLE)
         return NotificationCompat.Builder(context, CHANNEL_ID_PENDING)
             .setSmallIcon(R.drawable.ic_baseline_hourglass_bottom_24).setContentTitle("Resting")
             .setContentIntent(pendingContent)
