@@ -1,5 +1,5 @@
 import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native';
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import {useCallback, useMemo, useRef, useState} from 'react';
 import {NativeModules, TextInput, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Button, List, RadioButton} from 'react-native-paper';

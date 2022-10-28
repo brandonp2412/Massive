@@ -1,5 +1,4 @@
 import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
 import EditPlan from './EditPlan';
 import {PlanPageParams} from './plan-page-params';
 import PlanList from './PlanList';

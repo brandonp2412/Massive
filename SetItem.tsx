@@ -1,5 +1,5 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {Divider, List, Menu, Text} from 'react-native-paper';
 import {HomePageParams} from './home-page-params';

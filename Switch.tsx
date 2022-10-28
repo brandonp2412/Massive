@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import {useMemo} from 'react';
 import {Pressable} from 'react-native';
 import {Switch as PaperSwitch, Text} from 'react-native-paper';
 import {CombinedDarkTheme, CombinedDefaultTheme} from './App';

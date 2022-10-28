@@ -1,5 +1,4 @@
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import React from 'react';
 import {IconButton} from 'react-native-paper';
 import BestPage from './BestPage';
 import {DrawerParamList} from './drawer-param-list';

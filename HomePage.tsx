@@ -1,5 +1,4 @@
 import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
 import EditSet from './EditSet';
 import {HomePageParams} from './home-page-params';
 import SetList from './SetList';

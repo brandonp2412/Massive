@@ -4,7 +4,7 @@ apply plugin: "kotlin-android"
 import com.android.build.OutputFile
 
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
+    enableHermes: true,  // clean and rebuild if changing
 ]
 
 project.ext.vectoricons = [
@@ -17,7 +17,7 @@ apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 def enableSeparateBuildPerCPUArchitecture = true
 def enableProguardInReleaseBuilds = true
 def jscFlavor = 'org.webkit:android-jsc:+'
-def enableHermes = project.ext.react.get("enableHermes", false);
+def enableHermes = project.ext.react.get("enableHermes", true);
 
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")

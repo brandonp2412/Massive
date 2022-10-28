@@ -1,6 +1,5 @@
 import {DrawerNavigationProp} from '@react-navigation/drawer';
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
 import {Appbar, IconButton} from 'react-native-paper';
 import {DrawerParamList} from './drawer-param-list';
 import DrawerMenu from './DrawerMenu';

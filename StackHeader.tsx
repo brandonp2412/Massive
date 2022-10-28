@@ -1,5 +1,4 @@
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
 import Share from 'react-native-share';
 import {FileSystem} from 'react-native-file-access';
 import {Appbar, IconButton} from 'react-native-paper';

@@ -1,6 +1,6 @@
 import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {NativeModules, ScrollView} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button} from 'react-native-paper';

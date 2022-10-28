@@ -1,5 +1,5 @@
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import React, {useCallback, useRef, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {ScrollView, TextInput, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, TouchableRipple} from 'react-native-paper';

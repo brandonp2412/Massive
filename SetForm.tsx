@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {TextInput, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, TouchableRipple} from 'react-native-paper';

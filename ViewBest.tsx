@@ -1,6 +1,6 @@
 import {Picker} from '@react-native-picker/picker';
 import {RouteProp, useRoute} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {getOneRepMax, getVolumes, getWeightsBy} from './best.service';
 import {BestPageParams} from './BestPage';

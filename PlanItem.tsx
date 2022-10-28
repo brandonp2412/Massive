@@ -3,7 +3,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import React, {useCallback, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {GestureResponderEvent, Text} from 'react-native';
 import {Divider, List, Menu} from 'react-native-paper';
 import {getBestSet} from './best.service';

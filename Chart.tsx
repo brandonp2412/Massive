@@ -1,5 +1,4 @@
 import * as shape from 'd3-shape';
-import React from 'react';
 import {View} from 'react-native';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import {CombinedDarkTheme, CombinedDefaultTheme} from './App';

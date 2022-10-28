@@ -1,9 +1,9 @@
-import React, {useContext, useState} from 'react';
+import {createContext, useContext, useState} from 'react';
 import {Snackbar} from 'react-native-paper';
 import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
 import useDark from './use-dark';
 
-export const SnackbarContext = React.createContext<{
+export const SnackbarContext = createContext<{
   toast: (value: string, timeout: number) => void;
 }>({toast: () => null});
 

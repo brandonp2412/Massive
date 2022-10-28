@@ -1,5 +1,4 @@
 import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
 import EditWorkout from './EditWorkout';
 import Set from './set';
 import WorkoutList from './WorkoutList';

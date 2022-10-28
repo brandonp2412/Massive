@@ -1,5 +1,5 @@
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import React, {useCallback} from 'react';
+import {useCallback} from 'react';
 import {NativeModules, View} from 'react-native';
 import {PADDING} from './constants';
 import {HomePageParams} from './home-page-params';

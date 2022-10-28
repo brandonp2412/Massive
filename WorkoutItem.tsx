@@ -1,5 +1,5 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';

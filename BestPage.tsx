@@ -1,5 +1,4 @@
 import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
 import BestList from './BestList';
 import Set from './set';
 import ViewBest from './ViewBest';
