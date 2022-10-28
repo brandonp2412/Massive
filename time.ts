@@ -24,7 +24,7 @@ function twelveHour(twentyFourHour: string) {
 function dayOfWeek(iso: string) {
   const date = new Date(iso);
   const day = date.getDay();
-  const target = DAYS[day === 0 ? 0 : day - 1];
+  const target = DAYS[day];
   return target.slice(0, 3);
 }
 
