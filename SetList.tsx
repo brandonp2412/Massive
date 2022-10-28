@@ -3,7 +3,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
 import DrawerHeader from './DrawerHeader';
@@ -25,37 +25,36 @@ export default function SetList() {
   const {settings} = useSettings();
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
-  const refresh = useCallback(async () => {
-    const todaysSet = await getToday();
-    if (todaysSet) setSet({...todaysSet});
-    const newSets = await getSets({
-      search: `%${search}%`,
-      limit,
-      offset: 0,
-      format: settings.date || '%Y-%m-%d %H:%M',
-    });
-    console.log(`${SetList.name}.refresh:`, {first: newSets[0]});
-    if (newSets.length === 0) return setSets([]);
-    setSets(newSets);
-    setOffset(0);
-    setEnd(false);
-  }, [search, settings.date]);
+  const refresh = useCallback(
+    async (term: string) => {
+      const todaysSet = await getToday();
+      if (todaysSet) setSet({...todaysSet});
+      const newSets = await getSets({
+        search: `%${term}%`,
+        limit,
+        offset: 0,
+        format: settings.date || '%Y-%m-%d %H:%M',
+      });
+      console.log(`${SetList.name}.refresh:`, {first: newSets[0]});
+      if (newSets.length === 0) return setSets([]);
+      setSets(newSets);
+      setOffset(0);
+      setEnd(false);
+    },
+    [settings.date],
+  );
 
   useFocusEffect(
     useCallback(() => {
-      refresh();
-    }, [refresh]),
+      refresh(search);
+    }, [refresh, search]),
   );
-
-  useEffect(() => {
-    refresh();
-  }, [search, refresh]);
 
   const renderItem = useCallback(
     ({item}: {item: Set}) => (
-      <SetItem item={item} key={item.id} onRemove={refresh} />
+      <SetItem item={item} key={item.id} onRemove={() => refresh(search)} />
     ),
-    [refresh],
+    [refresh, search],
   );
 
   const next = useCallback(async () => {
@@ -82,10 +81,18 @@ export default function SetList() {
     });
   }, [navigation, set]);
 
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearch(value);
+      refresh(value);
+    },
+    [refresh],
+  );
+
   return (
     <>
       <DrawerHeader name="Home" />
-      <Page onAdd={onAdd} search={search} setSearch={setSearch}>
+      <Page onAdd={onAdd} search={search} setSearch={handleSearch}>
         {sets?.length === 0 ? (
           <List.Item
             title="No sets yet"
