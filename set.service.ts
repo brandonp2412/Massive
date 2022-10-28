@@ -82,18 +82,13 @@ export const getSets = async ({
 }: PageParams): Promise<Set[]> => {
   const select = `
     SELECT id, name, reps, weight, sets, minutes, seconds, 
-      STRFTIME(?, created) as created, unit, image, steps 
+      created, unit, image, steps 
     FROM sets 
     WHERE name LIKE ? AND NOT hidden
     ORDER BY STRFTIME('%Y-%m-%d %H:%M', created) DESC 
     LIMIT ? OFFSET ?
   `;
-  const [result] = await db.executeSql(select, [
-    format,
-    `%${search}%`,
-    limit,
-    offset,
-  ]);
+  const [result] = await db.executeSql(select, [`%${search}%`, limit, offset]);
   return result.rows.raw();
 };
 
