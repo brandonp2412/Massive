@@ -3,7 +3,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
 import DrawerHeader from './DrawerHeader';
@@ -14,29 +14,33 @@ import {getPlans} from './plan.service';
 import PlanItem from './PlanItem';
 
 export default function PlanList() {
-  const [search, setSearch] = useState('');
+  const [term, setTerm] = useState('');
   const [plans, setPlans] = useState<Plan[]>();
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
-  const refresh = useCallback(async () => {
-    getPlans(search).then(setPlans);
-  }, [search]);
+  const refresh = useCallback(async (value: string) => {
+    getPlans(value).then(setPlans);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      refresh();
-    }, [refresh]),
+      refresh(term);
+    }, [refresh, term]),
   );
 
-  useEffect(() => {
-    refresh();
-  }, [search, refresh]);
+  const search = useCallback(
+    (value: string) => {
+      setTerm(value);
+      refresh(value);
+    },
+    [refresh],
+  );
 
   const renderItem = useCallback(
     ({item}: {item: Plan}) => (
-      <PlanItem item={item} key={item.id} onRemove={refresh} />
+      <PlanItem item={item} key={item.id} onRemove={() => refresh(term)} />
     ),
-    [refresh],
+    [refresh, term],
   );
 
   const onAdd = () =>
@@ -45,7 +49,7 @@ export default function PlanList() {
   return (
     <>
       <DrawerHeader name="Plans" />
-      <Page onAdd={onAdd} search={search} setSearch={setSearch}>
+      <Page onAdd={onAdd} term={term} search={search}>
         {plans?.length === 0 ? (
           <List.Item
             title="No plans yet"

@@ -39,7 +39,7 @@ export default function SetForm({
     if (!name) return;
     let image = newImage;
     if (!newImage && !removeImage)
-      image = await getSets({search: name, limit: 1, offset: 0}).then(
+      image = await getSets({term: name, limit: 1, offset: 0}).then(
         ([gotSet]) => gotSet?.image,
       );
     console.log(`${SetForm.name}.handleSubmit:`, {image});

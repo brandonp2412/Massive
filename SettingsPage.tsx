@@ -20,7 +20,7 @@ import {useSettings} from './use-settings';
 export default function SettingsPage() {
   const [battery, setBattery] = useState(false);
   const [ignoring, setIgnoring] = useState(false);
-  const [search, setSearch] = useState('');
+  const [term, setTerm] = useState('');
   const {settings, setSettings} = useSettings();
   const {
     vibrate,
@@ -180,11 +180,11 @@ export default function SettingsPage() {
   return (
     <>
       <DrawerHeader name="Settings" />
-      <Page search={search} setSearch={setSearch}>
+      <Page term={term} search={setTerm}>
         <ScrollView style={{marginTop: MARGIN}}>
           {switches
             .filter(input =>
-              input.name.toLowerCase().includes(search.toLowerCase()),
+              input.name.toLowerCase().includes(term.toLowerCase()),
             )
             .map(input => (
               <Switch
@@ -195,7 +195,7 @@ export default function SettingsPage() {
                 {input.name}
               </Switch>
             ))}
-          {'theme'.includes(search.toLowerCase()) && (
+          {'theme'.includes(term.toLowerCase()) && (
             <Picker
               style={{color}}
               dropdownIconColor={color}
@@ -206,7 +206,7 @@ export default function SettingsPage() {
               <Picker.Item value="light" label="Light theme" />
             </Picker>
           )}
-          {'color'.includes(search.toLowerCase()) && (
+          {'color'.includes(term.toLowerCase()) && (
             <Picker
               style={{color, marginTop: -10}}
               dropdownIconColor={color}
@@ -222,7 +222,7 @@ export default function SettingsPage() {
               ))}
             </Picker>
           )}
-          {'date format'.includes(search.toLowerCase()) && (
+          {'date format'.includes(term.toLowerCase()) && (
             <Picker
               style={{color, marginTop: -10}}
               dropdownIconColor={color}
@@ -242,7 +242,7 @@ export default function SettingsPage() {
               <Picker.Item value="%d/%m %h:%M %p" label="24/12 3:05 PM" />
             </Picker>
           )}
-          {'alarm sound'.includes(search.toLowerCase()) && (
+          {'alarm sound'.includes(term.toLowerCase()) && (
             <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
               Alarm sound
               {sound

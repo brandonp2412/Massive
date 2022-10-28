@@ -57,10 +57,9 @@ export const getAllSets = async (): Promise<Set[]> => {
 };
 
 interface PageParams {
-  search: string;
+  term: string;
   limit: number;
   offset: number;
-  format?: string;
 }
 
 export const getSet = async (name: string): Promise<Set> => {
@@ -75,10 +74,9 @@ export const getSet = async (name: string): Promise<Set> => {
 };
 
 export const getSets = async ({
-  search,
+  term,
   limit,
   offset,
-  format,
 }: PageParams): Promise<Set[]> => {
   const select = `
     SELECT id, name, reps, weight, sets, minutes, seconds, 
@@ -88,7 +86,7 @@ export const getSets = async ({
     ORDER BY STRFTIME('%Y-%m-%d %H:%M', created) DESC 
     LIMIT ? OFFSET ?
   `;
-  const [result] = await db.executeSql(select, [`%${search}%`, limit, offset]);
+  const [result] = await db.executeSql(select, [`%${term}%`, limit, offset]);
   return result.rows.raw();
 };
 
@@ -180,7 +178,7 @@ export const countMany = async (names: string[]): Promise<CountMany[]> => {
 };
 
 export const getDistinctSets = async ({
-  search,
+  term,
   limit,
   offset,
 }: PageParams): Promise<Set[]> => {
@@ -192,6 +190,6 @@ export const getDistinctSets = async ({
     ORDER BY sets.name
     LIMIT ? OFFSET ?
   `;
-  const [result] = await db.executeSql(select, [search, limit, offset]);
+  const [result] = await db.executeSql(select, [term, limit, offset]);
   return result.rows.raw();
 };

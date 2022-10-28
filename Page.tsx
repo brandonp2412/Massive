@@ -6,20 +6,20 @@ import MassiveFab from './MassiveFab';
 export default function Page({
   onAdd,
   children,
+  term,
   search,
-  setSearch,
 }: {
   children: JSX.Element | JSX.Element[];
   onAdd?: () => void;
-  search: string;
-  setSearch: (value: string) => void;
+  term: string;
+  search: (value: string) => void;
 }) {
   return (
     <View style={styles.container}>
       <Searchbar
         placeholder="Search"
-        value={search}
-        onChangeText={setSearch}
+        value={term}
+        onChangeText={search}
         icon="search"
         clearIcon="clear"
       />

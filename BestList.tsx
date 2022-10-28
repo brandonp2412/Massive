@@ -3,7 +3,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {FlatList, Image} from 'react-native';
 import {List} from 'react-native-paper';
 import {getBestReps, getBestWeights} from './best.service';
@@ -15,12 +15,12 @@ import {useSettings} from './use-settings';
 
 export default function BestList() {
   const [bests, setBests] = useState<Set[]>();
-  const [search, setSearch] = useState('');
+  const [term, setTerm] = useState('');
   const navigation = useNavigation<NavigationProp<BestPageParams>>();
   const {settings} = useSettings();
 
-  const refresh = useCallback(async () => {
-    const weights = await getBestWeights(search);
+  const refresh = useCallback(async (value: string) => {
+    const weights = await getBestWeights(value);
     console.log(`${BestList.name}.refresh:`, {length: weights.length});
     let newBest: Set[] = [];
     for (const set of weights) {
@@ -28,17 +28,21 @@ export default function BestList() {
       newBest.push(...reps);
     }
     setBests(newBest);
-  }, [search]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      refresh();
-    }, [refresh]),
+      refresh(term);
+    }, [refresh, term]),
   );
 
-  useEffect(() => {
-    refresh();
-  }, [search, refresh]);
+  const search = useCallback(
+    (value: string) => {
+      setTerm(value);
+      refresh(value);
+    },
+    [refresh],
+  );
 
   const renderItem = ({item}: {item: Set}) => (
     <List.Item
@@ -58,7 +62,7 @@ export default function BestList() {
   return (
     <>
       <DrawerHeader name="Best" />
-      <Page search={search} setSearch={setSearch}>
+      <Page term={term} search={search}>
         {bests?.length === 0 ? (
           <List.Item
             title="No exercises yet"

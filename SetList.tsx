@@ -20,17 +20,17 @@ export default function SetList() {
   const [sets, setSets] = useState<Set[]>();
   const [set, setSet] = useState<Set>();
   const [offset, setOffset] = useState(0);
-  const [search, setSearch] = useState('');
+  const [term, setTerm] = useState('');
   const [end, setEnd] = useState(false);
   const {settings} = useSettings();
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const refresh = useCallback(
-    async (term: string) => {
+    async (value: string) => {
       const todaysSet = await getToday();
       if (todaysSet) setSet({...todaysSet});
       const newSets = await getSets({
-        search: `%${term}%`,
+        term: `%${value}%`,
         limit,
         offset: 0,
         format: settings.date || '%Y-%m-%d %H:%M',
@@ -46,33 +46,32 @@ export default function SetList() {
 
   useFocusEffect(
     useCallback(() => {
-      refresh(search);
-    }, [refresh, search]),
+      refresh(term);
+    }, [refresh, term]),
   );
 
   const renderItem = useCallback(
     ({item}: {item: Set}) => (
-      <SetItem item={item} key={item.id} onRemove={() => refresh(search)} />
+      <SetItem item={item} key={item.id} onRemove={() => refresh(term)} />
     ),
-    [refresh, search],
+    [refresh, term],
   );
 
   const next = useCallback(async () => {
     if (end) return;
     const newOffset = offset + limit;
-    console.log(`${SetList.name}.next:`, {offset, newOffset, search});
+    console.log(`${SetList.name}.next:`, {offset, newOffset, term});
     const newSets = await getSets({
-      search: `%${search}%`,
+      term: `%${term}%`,
       limit,
       offset: newOffset,
-      format: settings.date || '%Y-%m-%d %H:%M',
     });
     if (newSets.length === 0) return setEnd(true);
     if (!sets) return;
     setSets([...sets, ...newSets]);
     if (newSets.length < limit) return setEnd(true);
     setOffset(newOffset);
-  }, [search, end, offset, sets, settings.date]);
+  }, [term, end, offset, sets]);
 
   const onAdd = useCallback(async () => {
     console.log(`${SetList.name}.onAdd`, {set});
@@ -81,9 +80,9 @@ export default function SetList() {
     });
   }, [navigation, set]);
 
-  const handleSearch = useCallback(
+  const search = useCallback(
     (value: string) => {
-      setSearch(value);
+      setTerm(value);
       refresh(value);
     },
     [refresh],
@@ -92,7 +91,7 @@ export default function SetList() {
   return (
     <>
       <DrawerHeader name="Home" />
-      <Page onAdd={onAdd} search={search} setSearch={handleSearch}>
+      <Page onAdd={onAdd} term={term} search={search}>
         {sets?.length === 0 ? (
           <List.Item
             title="No sets yet"

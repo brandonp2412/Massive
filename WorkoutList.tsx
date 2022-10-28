@@ -3,7 +3,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
 import DrawerHeader from './DrawerHeader';
@@ -19,13 +19,13 @@ const limit = 15;
 export default function WorkoutList() {
   const [workouts, setWorkouts] = useState<Set[]>();
   const [offset, setOffset] = useState(0);
-  const [search, setSearch] = useState('');
+  const [term, setTerm] = useState('');
   const [end, setEnd] = useState(false);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (value: string) => {
     const newWorkouts = await getDistinctSets({
-      search: `%${search}%`,
+      term: `%${value}%`,
       limit,
       offset: 0,
     });
@@ -33,23 +33,23 @@ export default function WorkoutList() {
     setWorkouts(newWorkouts);
     setOffset(0);
     setEnd(false);
-  }, [search]);
-
-  useEffect(() => {
-    refresh();
-  }, [search, refresh]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      refresh();
-    }, [refresh]),
+      refresh(term);
+    }, [refresh, term]),
   );
 
   const renderItem = useCallback(
     ({item}: {item: Set}) => (
-      <WorkoutItem item={item} key={item.name} onRemoved={refresh} />
+      <WorkoutItem
+        item={item}
+        key={item.name}
+        onRemoved={() => refresh(term)}
+      />
     ),
-    [refresh],
+    [refresh, term],
   );
 
   const next = useCallback(async () => {
@@ -59,10 +59,10 @@ export default function WorkoutList() {
       offset,
       limit,
       newOffset,
-      search,
+      term,
     });
     const newWorkouts = await getDistinctSets({
-      search: `%${search}%`,
+      term: `%${term}%`,
       limit,
       offset: newOffset,
     });
@@ -71,7 +71,7 @@ export default function WorkoutList() {
     setWorkouts([...workouts, ...newWorkouts]);
     if (newWorkouts.length < limit) return setEnd(true);
     setOffset(newOffset);
-  }, [search, end, offset, workouts]);
+  }, [term, end, offset, workouts]);
 
   const onAdd = useCallback(async () => {
     navigation.navigate('EditWorkout', {
@@ -79,10 +79,18 @@ export default function WorkoutList() {
     });
   }, [navigation]);
 
+  const search = useCallback(
+    (value: string) => {
+      setTerm(value);
+      refresh(value);
+    },
+    [refresh],
+  );
+
   return (
     <>
       <DrawerHeader name="Workouts" />
-      <Page onAdd={onAdd} search={search} setSearch={setSearch}>
+      <Page onAdd={onAdd} term={term} search={search}>
         {workouts?.length === 0 ? (
           <List.Item
             title="No workouts yet."
