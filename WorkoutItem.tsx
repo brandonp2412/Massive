@@ -10,10 +10,10 @@ import {WorkoutsPageParams} from './WorkoutsPage';
 
 export default function WorkoutItem({
   item,
-  onRemoved,
+  onRemove,
 }: {
   item: Set;
-  onRemoved: () => void;
+  onRemove: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [anchor, setAnchor] = useState({x: 0, y: 0});
@@ -24,8 +24,8 @@ export default function WorkoutItem({
   const remove = useCallback(async () => {
     await deleteSetsBy(item.name);
     setShowMenu(false);
-    onRemoved();
-  }, [setShowMenu, onRemoved, item.name]);
+    onRemove();
+  }, [setShowMenu, onRemove, item.name]);
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {

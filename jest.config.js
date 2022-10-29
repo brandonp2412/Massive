@@ -7,5 +7,8 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(jest-)?@?react-native|@react-native-community|@react-navigation)',
   ],
-  setupFiles: ['./jestSetup.ts'],
+  setupFiles: [
+    './node_modules/react-native-gesture-handler/jestSetup',
+    './jestSetup.ts',
+  ],
 };

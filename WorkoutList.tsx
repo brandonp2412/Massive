@@ -43,11 +43,7 @@ export default function WorkoutList() {
 
   const renderItem = useCallback(
     ({item}: {item: Set}) => (
-      <WorkoutItem
-        item={item}
-        key={item.name}
-        onRemoved={() => refresh(term)}
-      />
+      <WorkoutItem item={item} key={item.name} onRemove={() => refresh(term)} />
     ),
     [refresh, term],
   );

@@ -12,7 +12,6 @@ import Page from './Page';
 import Set from './set';
 import {defaultSet, getSets, getToday} from './set.service';
 import SetItem from './SetItem';
-import {useSettings} from './use-settings';
 
 const limit = 15;
 
@@ -22,27 +21,22 @@ export default function SetList() {
   const [offset, setOffset] = useState(0);
   const [term, setTerm] = useState('');
   const [end, setEnd] = useState(false);
-  const {settings} = useSettings();
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
-  const refresh = useCallback(
-    async (value: string) => {
-      const todaysSet = await getToday();
-      if (todaysSet) setSet({...todaysSet});
-      const newSets = await getSets({
-        term: `%${value}%`,
-        limit,
-        offset: 0,
-        format: settings.date || '%Y-%m-%d %H:%M',
-      });
-      console.log(`${SetList.name}.refresh:`, {first: newSets[0]});
-      if (newSets.length === 0) return setSets([]);
-      setSets(newSets);
-      setOffset(0);
-      setEnd(false);
-    },
-    [settings.date],
-  );
+  const refresh = useCallback(async (value: string) => {
+    const todaysSet = await getToday();
+    if (todaysSet) setSet({...todaysSet});
+    const newSets = await getSets({
+      term: `%${value}%`,
+      limit,
+      offset: 0,
+    });
+    console.log(`${SetList.name}.refresh:`, {first: newSets[0]});
+    if (newSets.length === 0) return setSets([]);
+    setSets(newSets);
+    setOffset(0);
+    setEnd(false);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

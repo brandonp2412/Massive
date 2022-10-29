@@ -8,7 +8,7 @@ import {useColorScheme} from 'react-native';
 import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
-  Provider,
+  Provider as PaperProvider,
 } from 'react-native-paper';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {Color} from './color';
@@ -75,7 +75,7 @@ const App = () => {
 
   return (
     <Color.Provider value={{color, setColor}}>
-      <Provider
+      <PaperProvider
         theme={theme}
         settings={{icon: props => <MaterialIcon {...props} />}}>
         <NavigationContainer theme={theme}>
@@ -87,7 +87,7 @@ const App = () => {
             )}
           </MassiveSnack>
         </NavigationContainer>
-      </Provider>
+      </PaperProvider>
     </Color.Provider>
   );
 };

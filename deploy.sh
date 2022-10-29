@@ -1,6 +1,9 @@
 #!/bin/sh
 
 set -ex
+yarn tsc
+yarn lint
+yarn test
 git push origin HEAD > /dev/null &
 cd android || exit 1
 build=app/build.gradle 
