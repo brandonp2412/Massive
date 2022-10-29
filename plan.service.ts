@@ -2,6 +2,24 @@ import {db} from './db';
 import {Plan} from './plan';
 import {DAYS} from './time';
 
+export const addPlanSets = async (planId: number, setNames: string[]) => {
+  const values = setNames.map(setName => `(${planId}, '${setName}')`).join(',');
+  const insert = `
+    INSERT INTO plansSets(planId, setName)
+    VALUES ${values}
+  `;
+  return db.executeSql(insert);
+};
+
+export const addPlanDays = async (planId: number, dayIds: number[]) => {
+  const values = dayIds.map(dayId => `(${planId}, ${dayId})`).join(',');
+  const insert = `
+    INSERT INTO plansDays(planId, dayId)
+    VALUES ${values}
+  `;
+  return db.executeSql(insert);
+};
+
 export const getPlans = async (search: string): Promise<Plan[]> => {
   const select = `
     SELECT * from plans

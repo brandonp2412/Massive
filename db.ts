@@ -3,10 +3,12 @@ import {
   openDatabase,
   SQLiteDatabase,
 } from 'react-native-sqlite-storage';
+import {addPlanDays, addPlanSets, getPlans} from './plan.service';
+import {DAYS} from './time';
 
 enablePromise(true);
 
-const migrations = [
+const migrations: (string | Function)[] = [
   `
     CREATE TABLE IF NOT EXISTS sets (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -123,12 +125,56 @@ const migrations = [
   `
     ALTER TABLE settings ADD COLUMN noSound BOOLEAN DEFAULT false
   `,
+  `
+    CREATE TABLE days(
+      id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL
+    )
+  `,
+  `
+    INSERT INTO days(name, id) VALUES
+      ('Sunday', 0),
+      ('Monday', 1),
+      ('Tuesday', 2),
+      ('Wednesday', 3),
+      ('Thursday', 4),
+      ('Friday', 5),
+      ('Saturday', 6)
+  `,
+  `
+    CREATE TABLE plansDays(
+      planId INTEGER,
+      dayId INTEGER,
+      FOREIGN KEY(planId) REFERENCES plans(id)
+      FOREIGN KEY(dayId) REFERENCES days(id)
+    )
+  `,
+  `
+    CREATE TABLE plansSets(
+      setName TEXT,
+      planId INTEGER,
+      FOREIGN KEY(planId) REFERENCES plans(id)
+      FOREIGN KEY(setName) REFERENCES sets(name)
+    )
+  `,
+  async () => {
+    const plans = await getPlans('');
+    for (const plan of plans) {
+      const dayIds = plan.days.split(',').map(day => DAYS.indexOf(day));
+      await addPlanDays(plan.id, dayIds);
+      const setNames = plan.workouts.split(',');
+      await addPlanSets(plan.id, setNames);
+    }
+  },
 ];
 
 export let db: SQLiteDatabase;
 
 export const runMigrations = async () => {
   db = await openDatabase({name: 'massive.db'});
+  await db.executeSql('DROP TABLE migrations');
+  await db.executeSql('DROP TABLE plansSets');
+  await db.executeSql('DROP TABLE plansDays');
   await db.executeSql(`
     CREATE TABLE IF NOT EXISTS migrations(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -138,11 +184,13 @@ export const runMigrations = async () => {
   const [result] = await db.executeSql(`SELECT * FROM migrations`);
   const missing = migrations.slice(result.rows.length);
   for (const command of missing) {
-    await db.executeSql(command).catch(console.error);
+    if (typeof command === 'string')
+      await db.executeSql(command).catch(console.error);
+    else await command(db);
     const insert = `
       INSERT INTO migrations    (command) 
       VALUES (?)
     `;
-    await db.executeSql(insert, [command]);
+    await db.executeSql(insert, [command.toString()]);
   }
 };
