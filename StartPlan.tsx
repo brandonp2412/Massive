@@ -47,7 +47,7 @@ export default function StartPlan() {
         setCounts(newCounts);
         console.log(`${StartPlan.name}.focus:`, {newCounts});
       });
-    }, [params]),
+    }, [workouts]),
   );
 
   const handleSubmit = async () => {
@@ -101,7 +101,7 @@ export default function StartPlan() {
       setUnit(newBest.unit);
       setBest(newBest);
     },
-    [name, workouts],
+    [name, counts],
   );
 
   return (
