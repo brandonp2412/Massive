@@ -31,7 +31,7 @@ export default function SetList() {
       limit,
       offset: 0,
     });
-    console.log(`${SetList.name}.refresh:`, {first: newSets[0]});
+    console.log(`${SetList.name}.refresh:`, {newSets});
     if (newSets.length === 0) return setSets([]);
     setSets(newSets);
     setOffset(0);

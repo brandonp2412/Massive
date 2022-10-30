@@ -8,6 +8,7 @@ import {DrawerParamList} from './drawer-param-list';
 import {useSnackbar} from './MassiveSnack';
 import {Plan} from './plan';
 import {addPlans, deletePlans, getAllPlans} from './plan.service';
+import Set from './set';
 import {addSets, deleteSets, getAllSets} from './set.service';
 import {write} from './write';
 
@@ -25,9 +26,15 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
     const sets = await getAllSets();
     const data = [setFields]
       .concat(
-        sets.map(
-          set =>
-            `${set.id},${set.name},${set.reps},${set.weight},${set.created},${set.unit},${set.hidden},${set.sets},${set.minutes},${set.seconds}`,
+        sets.map(set =>
+          setFields
+            .split(',')
+            .map(fieldString => {
+              const field = fieldString as keyof Set;
+              if (field === 'unit') return set[field] || 'kg';
+              return set[field];
+            })
+            .join(','),
         ),
       )
       .join('\n');
@@ -61,7 +68,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
       .slice(1)
       .filter(line => line)
       .map(set => {
-        const [
+        let [
           ,
           setName,
           reps,
@@ -73,6 +80,8 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
           minutes,
           seconds,
         ] = set.split(',');
+        unit = unit || 'kg';
+        hidden = hidden || '0';
         return `('${setName}',${reps},${weight},'${created}','${unit}',${hidden},${
           sets ?? 3
         },${minutes ?? 3},${seconds ?? 30})`;
