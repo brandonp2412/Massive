@@ -72,7 +72,8 @@ export default function StartPlan() {
     else toast('Added set', 3000);
     if (!settings.alarm) return;
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
-    const args = [milliseconds, !!settings.vibrate, settings.sound];
+    const {vibrate, sound, noSound} = settings;
+    const args = [milliseconds, !!vibrate, sound, !!noSound];
     NativeModules.AlarmModule.timer(...args);
   };
 

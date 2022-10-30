@@ -163,9 +163,9 @@ export const countMany = async (names: string[]): Promise<CountMany[]> => {
   const questions = names.map(_ => '?').join(',');
   console.log({questions, names});
   const select = `
-    SELECT workouts.name, COUNT(sets.id) as total, workouts.sets
+    SELECT workouts.name, COUNT(sets.id) as total
     FROM (
-      SELECT distinct name, sets FROM sets
+      SELECT distinct name FROM sets
       WHERE name IN (${questions})
     ) workouts 
     LEFT JOIN sets ON sets.name = workouts.name 
