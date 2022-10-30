@@ -2,11 +2,14 @@
 
 set -ex
 
-tsp yarn tsc
-tsp yarn lint
-tsp yarn test
-tsp -w
-tsp git push origin HEAD
+yarn tsc &
+tsc=$!
+yarn lint
+lint=$!
+yarn test
+units=$1
+wait $tsc $lint $units
+git push origin HEAD &
 
 cd android || exit 1
 build=app/build.gradle 

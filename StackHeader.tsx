@@ -3,15 +3,22 @@ import Share from 'react-native-share';
 import {FileSystem} from 'react-native-file-access';
 import {Appbar, IconButton} from 'react-native-paper';
 import {captureScreen} from 'react-native-view-shot';
+import useDark from './use-dark';
 
 export default function StackHeader({title}: {title: string}) {
   const navigation = useNavigation();
+  const dark = useDark();
 
   return (
     <Appbar.Header>
-      <IconButton icon="arrow-back" onPress={navigation.goBack} />
+      <IconButton
+        color={dark ? 'white' : 'white'}
+        icon="arrow-back"
+        onPress={navigation.goBack}
+      />
       <Appbar.Content title={title} />
       <IconButton
+        color={dark ? 'white' : 'white'}
         onPress={() =>
           captureScreen().then(async uri => {
             const base64 = await FileSystem.readFile(uri, 'base64');

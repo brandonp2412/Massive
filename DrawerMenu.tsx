@@ -10,6 +10,7 @@ import {Plan} from './plan';
 import {addPlans, deletePlans, getAllPlans} from './plan.service';
 import Set from './set';
 import {addSets, deleteSets, getAllSets} from './set.service';
+import useDark from './use-dark';
 import {write} from './write';
 
 const setFields =
@@ -21,6 +22,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const [showRemove, setShowRemove] = useState(false);
   const {toast} = useSnackbar();
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>();
+  const dark = useDark();
 
   const exportSets = useCallback(async () => {
     const sets = await getAllSets();
@@ -135,7 +137,11 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
         visible={showMenu}
         onDismiss={() => setShowMenu(false)}
         anchor={
-          <IconButton onPress={() => setShowMenu(true)} icon="more-vert" />
+          <IconButton
+            color={dark ? 'white' : 'white'}
+            onPress={() => setShowMenu(true)}
+            icon="more-vert"
+          />
         }>
         <Menu.Item icon="arrow-downward" onPress={download} title="Download" />
         <Menu.Item icon="arrow-upward" onPress={upload} title="Upload" />
