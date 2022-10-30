@@ -4,9 +4,9 @@ set -ex
 
 yarn tsc &
 tsc=$!
-yarn lint
+yarn lint &
 lint=$!
-yarn test
+yarn test &
 units=$1
 wait $tsc $lint $units
 git push origin HEAD &
