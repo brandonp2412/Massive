@@ -159,14 +159,21 @@ export const countToday = async (name: string): Promise<number> => {
   return Number(result.rows.item(0)?.total);
 };
 
-export const countManyToday = async (): Promise<CountMany[]> => {
+export const countMany = async (names: string[]): Promise<CountMany[]> => {
+  const questions = names.map(_ => '?').join(',');
+  console.log({questions, names});
   const select = `
-    SELECT COUNT(*) as total, name FROM sets
-    WHERE created LIKE strftime('%Y-%m-%d%%', 'now', 'localtime')
-      AND NOT hidden
-    GROUP BY name
+    SELECT workouts.name, COUNT(sets.id) as total
+    FROM (
+      SELECT distinct name FROM sets
+      WHERE name IN (${questions})
+    ) workouts 
+    LEFT JOIN sets ON sets.name = workouts.name 
+      AND sets.created LIKE STRFTIME('%Y-%m-%d%%', 'now', 'localtime')
+      AND NOT sets.hidden
+    GROUP BY workouts.name;
   `;
-  const [result] = await db.executeSql(select);
+  const [result] = await db.executeSql(select, names);
   return result.rows.raw();
 };
 
