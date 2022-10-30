@@ -144,11 +144,7 @@ export default function StartPlan() {
               renderItem={({item, index}) => (
                 <List.Item
                   title={item.name}
-                  description={
-                    settings.showSets
-                      ? `${item.total} / ${item.sets ?? 3}`
-                      : item.total.toString()
-                  }
+                  description={item.total.toString()}
                   onPress={() => select(index)}
                   left={() => (
                     <View
