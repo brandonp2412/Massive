@@ -2,9 +2,8 @@ import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native';
 import {useCallback, useMemo, useRef, useState} from 'react';
 import {NativeModules, TextInput, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import {Button, List, RadioButton} from 'react-native-paper';
+import {Button} from 'react-native-paper';
 import {getBestSet} from './best.service';
-import {useColor} from './color';
 import {PADDING} from './constants';
 import CountMany from './count-many';
 import MassiveInput from './MassiveInput';
@@ -14,6 +13,7 @@ import Set from './set';
 import {addSet, countMany} from './set.service';
 import SetForm from './SetForm';
 import StackHeader from './StackHeader';
+import StartPlanItem from './StartPlanItem';
 import {useSettings} from './use-settings';
 
 export default function StartPlan() {
@@ -34,7 +34,6 @@ export default function StartPlan() {
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
   const workouts = useMemo(() => params.plan.workouts.split(','), [params]);
-  const {color} = useColor();
 
   const [selection, setSelection] = useState({
     start: 0,
@@ -90,10 +89,10 @@ export default function StartPlan() {
     async (index: number) => {
       setSelected(index);
       console.log(`${StartPlan.name}.next:`, {name});
-      if (!workouts) return;
-      const workout = workouts[index];
+      if (!counts) return;
+      const workout = counts[index];
       console.log(`${StartPlan.name}.next:`, {workout});
-      const newBest = await getBestSet(workout);
+      const newBest = await getBestSet(workout.name);
       setMinutes(newBest.minutes);
       setSeconds(newBest.seconds);
       setName(newBest.name);
@@ -102,7 +101,7 @@ export default function StartPlan() {
       setUnit(newBest.unit);
       setBest(newBest);
     },
-    [name, workouts],
+    [name, counts],
   );
 
   return (
@@ -141,22 +140,11 @@ export default function StartPlan() {
           {counts && (
             <FlatList
               data={counts}
-              renderItem={({item, index}) => (
-                <List.Item
-                  title={item.name}
-                  description={item.total.toString()}
-                  onPress={() => select(index)}
-                  left={() => (
-                    <View
-                      style={{alignItems: 'center', justifyContent: 'center'}}>
-                      <RadioButton
-                        onPress={() => select(index)}
-                        value={index.toString()}
-                        status={selected === index ? 'checked' : 'unchecked'}
-                        color={color}
-                      />
-                    </View>
-                  )}
+              renderItem={props => (
+                <StartPlanItem
+                  {...props}
+                  onSelect={select}
+                  selected={selected}
                 />
               )}
             />
