@@ -40,13 +40,17 @@ export default function StartPlan() {
     end: set.reps.toString().length,
   });
 
+  const refresh = useCallback(() => {
+    return countMany(workouts).then(newCounts => {
+      setCounts(newCounts);
+      console.log(`${StartPlan.name}.focus:`, {newCounts});
+    });
+  }, [workouts]);
+
   useFocusEffect(
     useCallback(() => {
-      countMany(workouts).then(newCounts => {
-        setCounts(newCounts);
-        console.log(`${StartPlan.name}.focus:`, {newCounts});
-      });
-    }, [workouts]),
+      refresh();
+    }, [refresh]),
   );
 
   const handleSubmit = async () => {
@@ -61,7 +65,7 @@ export default function StartPlan() {
       image: set.image,
       unit,
     });
-    countMany(workouts).then(setCounts);
+    await refresh();
     if (
       settings.notify &&
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
@@ -143,6 +147,7 @@ export default function StartPlan() {
               renderItem={props => (
                 <StartPlanItem
                   {...props}
+                  onUndo={refresh}
                   onSelect={select}
                   selected={selected}
                 />

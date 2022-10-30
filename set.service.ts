@@ -192,3 +192,15 @@ export const getDistinctSets = async ({
   const [result] = await db.executeSql(select, [term, limit, offset]);
   return result.rows.raw();
 };
+
+export const deleteFirst = async (name: string) => {
+  const remove = `
+    DELETE FROM sets WHERE id IN (
+      SELECT id FROM sets
+      WHERE name = ?
+      ORDER BY created DESC
+      LIMIT 1
+    )
+  `;
+  return db.executeSql(remove, [name]);
+};
