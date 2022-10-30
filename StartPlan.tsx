@@ -95,10 +95,10 @@ export default function StartPlan() {
     async (index: number) => {
       setSelected(index);
       console.log(`${StartPlan.name}.next:`, {name});
-      if (!counts) return;
-      const workout = counts[index];
+      if (!workouts) return;
+      const workout = workouts[index];
       console.log(`${StartPlan.name}.next:`, {workout});
-      const newBest = await getBestSet(workout.name);
+      const newBest = await getBestSet(workout);
       setMinutes(newBest.minutes);
       setSeconds(newBest.seconds);
       setName(newBest.name);
@@ -107,7 +107,7 @@ export default function StartPlan() {
       setUnit(newBest.unit);
       setBest(newBest);
     },
-    [name, counts],
+    [name, workouts],
   );
 
   const getDescription = useCallback(

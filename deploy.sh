@@ -1,10 +1,13 @@
 #!/bin/sh
 
 set -ex
-yarn tsc
-yarn lint
-yarn test
-git push origin HEAD > /dev/null &
+
+tsp yarn tsc
+tsp yarn lint
+tsp yarn test
+tsp -w
+tsp git push origin HEAD
+
 cd android || exit 1
 build=app/build.gradle 
 versionCode=$(
