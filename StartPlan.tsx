@@ -11,7 +11,7 @@ import MassiveInput from './MassiveInput';
 import {useSnackbar} from './MassiveSnack';
 import {PlanPageParams} from './plan-page-params';
 import Set from './set';
-import {addSet, countMany} from './set.service';
+import {addSet, countManyToday, getDistinctSets} from './set.service';
 import SetForm from './SetForm';
 import StackHeader from './StackHeader';
 import {useSettings} from './use-settings';
@@ -30,6 +30,7 @@ export default function StartPlan() {
   const [selected, setSelected] = useState(0);
   const {settings} = useSettings();
   const [counts, setCounts] = useState<CountMany[]>();
+  const [distinctSets, setDistinctSets] = useState<Set[]>();
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
@@ -43,11 +44,15 @@ export default function StartPlan() {
 
   useFocusEffect(
     useCallback(() => {
-      countMany(workouts).then(newCounts => {
+      countManyToday().then(newCounts => {
         setCounts(newCounts);
         console.log(`${StartPlan.name}.focus:`, {newCounts});
       });
-    }, [workouts]),
+      getDistinctSets({limit: 100, offset: 0, term: '%'}).then(newDistinct => {
+        setDistinctSets(newDistinct);
+        console.log(`${StartPlan.name}.focus:`, {newDistinct});
+      });
+    }, []),
   );
 
   const handleSubmit = async () => {
@@ -62,7 +67,7 @@ export default function StartPlan() {
       image: set.image,
       unit,
     });
-    countMany(workouts).then(setCounts);
+    countManyToday().then(setCounts);
     if (
       settings.notify &&
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
@@ -105,6 +110,20 @@ export default function StartPlan() {
     [name, counts],
   );
 
+  const getDescription = useCallback(
+    (countName: string) => {
+      const count = counts?.find(c => c.name === countName);
+      console.log(`${StartPlan.name}:`, {count, countName});
+      if (!distinctSets) return;
+      const distinct = distinctSets.find(d => d.name === countName);
+      console.log(`${StartPlan.name}:`, {distinct});
+      if (settings.showSets)
+        return `${count?.total || 0} / ${distinct?.sets || 3}`;
+      return count?.total || '0';
+    },
+    [counts, distinctSets, settings.showSets],
+  );
+
   return (
     <>
       <StackHeader title={params.plan.days.replace(/,/g, ', ')} />
@@ -138,17 +157,13 @@ export default function StartPlan() {
               innerRef={unitRef}
             />
           )}
-          {counts && (
+          {counts && distinctSets && (
             <FlatList
-              data={counts}
+              data={workouts}
               renderItem={({item, index}) => (
                 <List.Item
-                  title={item.name}
-                  description={
-                    settings.showSets
-                      ? `${item.total} / ${item.sets ?? 3}`
-                      : item.total.toString()
-                  }
+                  title={item}
+                  description={getDescription(item)}
                   onPress={() => select(index)}
                   left={() => (
                     <View
