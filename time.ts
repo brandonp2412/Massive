@@ -6,26 +6,26 @@ export const DAYS = [
   'Thursday',
   'Friday',
   'Saturday',
-];
+]
 
 export function formatMonth(iso: string) {
-  const date = new Date(iso);
-  const dd = date.getDate().toString();
-  const mm = (date.getMonth() + 1).toString();
-  return `${dd}/${mm}`;
+  const date = new Date(iso)
+  const dd = date.getDate().toString()
+  const mm = (date.getMonth() + 1).toString()
+  return `${dd}/${mm}`
 }
 
 function twelveHour(twentyFourHour: string) {
-  const [hourString, minute] = twentyFourHour.split(':');
-  const hour = +hourString % 24;
-  return (hour % 12 || 12) + ':' + minute + (hour < 12 ? ' AM' : ' PM');
+  const [hourString, minute] = twentyFourHour.split(':')
+  const hour = +hourString % 24
+  return (hour % 12 || 12) + ':' + minute + (hour < 12 ? ' AM' : ' PM')
 }
 
 function dayOfWeek(iso: string) {
-  const date = new Date(iso);
-  const day = date.getDay();
-  const target = DAYS[day];
-  return target.slice(0, 3);
+  const date = new Date(iso)
+  const day = date.getDay()
+  const target = DAYS[day]
+  return target.slice(0, 3)
 }
 
 /**
@@ -33,29 +33,29 @@ function dayOfWeek(iso: string) {
  * @param kind Intended format for the date, e.g. '%Y-%m-%d %H:%M'
  */
 export function format(iso: string, kind: string) {
-  const split = iso.split('T');
-  const [year, month, day] = split[0].split('-');
-  const time = twelveHour(split[1]);
+  const split = iso.split('T')
+  const [year, month, day] = split[0].split('-')
+  const time = twelveHour(split[1])
   switch (kind) {
     case '%Y-%m-%d %H:%M':
-      return iso.replace('T', ' ').replace(/:\d{2}/, '');
+      return iso.replace('T', ' ').replace(/:\d{2}/, '')
     case '%Y-%m-%d':
-      return split[0];
+      return split[0]
     case '%H:%M':
-      return split[1].replace(/:\d{2}/, '');
+      return split[1].replace(/:\d{2}/, '')
     case '%d/%m/%y %h:%M %p':
-      return `${day}/${month}/${year} ${time}`;
+      return `${day}/${month}/${year} ${time}`
     case '%d/%m %h:%M %p':
-      return `${day}/${month} ${time}`;
+      return `${day}/${month} ${time}`
     case '%d/%m/%y':
-      return `${day}/${month}/${year}`;
+      return `${day}/${month}/${year}`
     case '%d/%m':
-      return `${day}/${month}`;
+      return `${day}/${month}`
     case '%h:%M %p':
-      return time;
+      return time
     case '%A %h:%M %p':
-      return dayOfWeek(iso) + ' ' + time;
+      return dayOfWeek(iso) + ' ' + time
     default:
-      return iso;
+      return iso
   }
 }

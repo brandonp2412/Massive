@@ -2,54 +2,54 @@ import {
   NavigationProp,
   useFocusEffect,
   useNavigation,
-} from '@react-navigation/native';
-import {useCallback, useState} from 'react';
-import {FlatList} from 'react-native';
-import {List} from 'react-native-paper';
-import {Like} from 'typeorm';
-import {planRepo} from './db';
-import DrawerHeader from './DrawerHeader';
-import Page from './Page';
-import {Plan} from './plan';
-import {PlanPageParams} from './plan-page-params';
-import PlanItem from './PlanItem';
+} from '@react-navigation/native'
+import {useCallback, useState} from 'react'
+import {FlatList} from 'react-native'
+import {List} from 'react-native-paper'
+import {Like} from 'typeorm'
+import {planRepo} from './db'
+import DrawerHeader from './DrawerHeader'
+import Page from './Page'
+import {Plan} from './plan'
+import {PlanPageParams} from './plan-page-params'
+import PlanItem from './PlanItem'
 
 export default function PlanList() {
-  const [term, setTerm] = useState('');
-  const [plans, setPlans] = useState<Plan[]>();
-  const navigation = useNavigation<NavigationProp<PlanPageParams>>();
+  const [term, setTerm] = useState('')
+  const [plans, setPlans] = useState<Plan[]>()
+  const navigation = useNavigation<NavigationProp<PlanPageParams>>()
 
   const refresh = useCallback(async (value: string) => {
     planRepo
       .find({
         where: [{days: Like(`%${value}%`)}, {workouts: Like(`%${value}%`)}],
       })
-      .then(setPlans);
-  }, []);
+      .then(setPlans)
+  }, [])
 
   useFocusEffect(
     useCallback(() => {
-      refresh(term);
+      refresh(term)
     }, [refresh, term]),
-  );
+  )
 
   const search = useCallback(
     (value: string) => {
-      setTerm(value);
-      refresh(value);
+      setTerm(value)
+      refresh(value)
     },
     [refresh],
-  );
+  )
 
   const renderItem = useCallback(
     ({item}: {item: Plan}) => (
       <PlanItem item={item} key={item.id} onRemove={() => refresh(term)} />
     ),
     [refresh, term],
-  );
+  )
 
   const onAdd = () =>
-    navigation.navigate('EditPlan', {plan: {days: '', workouts: ''}});
+    navigation.navigate('EditPlan', {plan: {days: '', workouts: ''}})
 
   return (
     <>
@@ -70,5 +70,5 @@ export default function PlanList() {
         )}
       </Page>
     </>
-  );
+  )
 }

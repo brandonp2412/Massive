@@ -1,39 +1,39 @@
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {useCallback, useRef, useState} from 'react';
-import {ScrollView, TextInput, View} from 'react-native';
-import DocumentPicker from 'react-native-document-picker';
-import {Button, Card, TouchableRipple} from 'react-native-paper';
-import {Like} from 'typeorm';
-import ConfirmDialog from './ConfirmDialog';
-import {MARGIN, PADDING} from './constants';
-import {getNow, planRepo, setRepo} from './db';
-import MassiveInput from './MassiveInput';
-import {useSnackbar} from './MassiveSnack';
-import StackHeader from './StackHeader';
-import {useSettings} from './use-settings';
-import {WorkoutsPageParams} from './WorkoutsPage';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native'
+import {useCallback, useRef, useState} from 'react'
+import {ScrollView, TextInput, View} from 'react-native'
+import DocumentPicker from 'react-native-document-picker'
+import {Button, Card, TouchableRipple} from 'react-native-paper'
+import {Like} from 'typeorm'
+import ConfirmDialog from './ConfirmDialog'
+import {MARGIN, PADDING} from './constants'
+import {getNow, planRepo, setRepo} from './db'
+import MassiveInput from './MassiveInput'
+import {useSnackbar} from './MassiveSnack'
+import StackHeader from './StackHeader'
+import {useSettings} from './use-settings'
+import {WorkoutsPageParams} from './WorkoutsPage'
 
 export default function EditWorkout() {
-  const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
-  const [removeImage, setRemoveImage] = useState(false);
-  const [showRemove, setShowRemove] = useState(false);
-  const [name, setName] = useState(params.value.name);
-  const [steps, setSteps] = useState(params.value.steps);
-  const [uri, setUri] = useState(params.value.image);
+  const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>()
+  const [removeImage, setRemoveImage] = useState(false)
+  const [showRemove, setShowRemove] = useState(false)
+  const [name, setName] = useState(params.value.name)
+  const [steps, setSteps] = useState(params.value.steps)
+  const [uri, setUri] = useState(params.value.image)
   const [minutes, setMinutes] = useState(
     params.value.minutes?.toString() ?? '3',
-  );
+  )
   const [seconds, setSeconds] = useState(
     params.value.seconds?.toString() ?? '30',
-  );
-  const [sets, setSets] = useState(params.value.sets?.toString() ?? '3');
-  const {toast} = useSnackbar();
-  const navigation = useNavigation();
-  const setsRef = useRef<TextInput>(null);
-  const stepsRef = useRef<TextInput>(null);
-  const minutesRef = useRef<TextInput>(null);
-  const secondsRef = useRef<TextInput>(null);
-  const {settings} = useSettings();
+  )
+  const [sets, setSets] = useState(params.value.sets?.toString() ?? '3')
+  const {toast} = useSnackbar()
+  const navigation = useNavigation()
+  const setsRef = useRef<TextInput>(null)
+  const stepsRef = useRef<TextInput>(null)
+  const minutesRef = useRef<TextInput>(null)
+  const secondsRef = useRef<TextInput>(null)
+  const {settings} = useSettings()
 
   const update = async () => {
     await setRepo.update(
@@ -46,18 +46,18 @@ export default function EditWorkout() {
         steps,
         image: removeImage ? '' : uri,
       },
-    );
+    )
     await planRepo.query(
       `UPDATE plans 
        SET workouts = REPLACE(workouts, $1, $2) 
        WHERE workouts LIKE $3`,
       [params.value.name, name, `%${params.value.name}%`],
-    );
-    navigation.goBack();
-  };
+    )
+    navigation.goBack()
+  }
 
   const add = async () => {
-    const [{now}] = await getNow();
+    const [{now}] = await getNow()
     await setRepo.save({
       name,
       reps: 0,
@@ -69,45 +69,45 @@ export default function EditWorkout() {
       sets: sets ? +sets : 3,
       steps,
       created: now,
-    });
-    navigation.goBack();
-  };
+    })
+    navigation.goBack()
+  }
 
   const save = async () => {
-    if (params.value.name) return update();
-    return add();
-  };
+    if (params.value.name) return update()
+    return add()
+  }
 
   const changeImage = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
       type: 'image/*',
       copyTo: 'documentDirectory',
-    });
-    if (fileCopyUri) setUri(fileCopyUri);
-  }, []);
+    })
+    if (fileCopyUri) setUri(fileCopyUri)
+  }, [])
 
   const handleRemove = useCallback(async () => {
-    setUri('');
-    setRemoveImage(true);
-    setShowRemove(false);
-  }, []);
+    setUri('')
+    setRemoveImage(true)
+    setShowRemove(false)
+  }, [])
 
   const handleName = (value: string) => {
-    setName(value.replace(/,|'/g, ''));
+    setName(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000);
-  };
+      toast('Commas and single quotes would break CSV exports', 6000)
+  }
 
   const handleSteps = (value: string) => {
-    setSteps(value.replace(/,|'/g, ''));
+    setSteps(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000);
-  };
+      toast('Commas and single quotes would break CSV exports', 6000)
+  }
 
   const submitName = () => {
-    if (settings.steps) stepsRef.current?.focus();
-    else setsRef.current?.focus();
-  };
+    if (settings.steps) stepsRef.current?.focus()
+    else setsRef.current?.focus()
+  }
 
   return (
     <>
@@ -191,5 +191,5 @@ export default function EditWorkout() {
         </ConfirmDialog>
       </View>
     </>
-  );
+  )
 }

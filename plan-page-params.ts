@@ -1,11 +1,11 @@
-import {Plan} from './plan';
+import {Plan} from './plan'
 
 export type PlanPageParams = {
-  PlanList: {};
+  PlanList: {}
   EditPlan: {
-    plan: Plan;
-  };
+    plan: Plan
+  }
   StartPlan: {
-    plan: Plan;
-  };
-};
+    plan: Plan
+  }
+}

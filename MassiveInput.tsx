@@ -1,15 +1,15 @@
-import {ComponentProps, Ref} from 'react';
-import {TextInput} from 'react-native-paper';
-import {CombinedDefaultTheme} from './App';
-import {MARGIN} from './constants';
-import useDark from './use-dark';
+import {ComponentProps, Ref} from 'react'
+import {TextInput} from 'react-native-paper'
+import {CombinedDefaultTheme} from './App'
+import {MARGIN} from './constants'
+import useDark from './use-dark'
 
 export default function MassiveInput(
   props: Partial<ComponentProps<typeof TextInput>> & {
-    innerRef?: Ref<any>;
+    innerRef?: Ref<any>
   },
 ) {
-  const dark = useDark();
+  const dark = useDark()
 
   return (
     <TextInput
@@ -21,5 +21,5 @@ export default function MassiveInput(
       blurOnSubmit={false}
       {...props}
     />
-  );
+  )
 }

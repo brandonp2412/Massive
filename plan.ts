@@ -1,13 +1,13 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm'
 
 @Entity('plans')
 export class Plan {
   @PrimaryGeneratedColumn()
-  id?: number;
+  id?: number
 
   @Column('text')
-  days: string;
+  days: string
 
   @Column('text')
-  workouts: string;
+  workouts: string
 }

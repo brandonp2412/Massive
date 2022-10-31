@@ -1,35 +1,35 @@
-import {Picker} from '@react-native-picker/picker';
-import {RouteProp, useRoute} from '@react-navigation/native';
-import {useEffect, useState} from 'react';
-import {View} from 'react-native';
-import {BestPageParams} from './BestPage';
-import Chart from './Chart';
-import {PADDING} from './constants';
-import {setRepo} from './db';
-import GymSet from './gym-set';
-import {Metrics} from './metrics';
-import {Periods} from './periods';
-import StackHeader from './StackHeader';
-import {formatMonth} from './time';
-import useDark from './use-dark';
-import Volume from './volume';
+import {Picker} from '@react-native-picker/picker'
+import {RouteProp, useRoute} from '@react-navigation/native'
+import {useEffect, useState} from 'react'
+import {View} from 'react-native'
+import {BestPageParams} from './BestPage'
+import Chart from './Chart'
+import {PADDING} from './constants'
+import {setRepo} from './db'
+import GymSet from './gym-set'
+import {Metrics} from './metrics'
+import {Periods} from './periods'
+import StackHeader from './StackHeader'
+import {formatMonth} from './time'
+import useDark from './use-dark'
+import Volume from './volume'
 
 export default function ViewBest() {
-  const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>();
-  const dark = useDark();
-  const [weights, setWeights] = useState<GymSet[]>([]);
-  const [volumes, setVolumes] = useState<Volume[]>([]);
-  const [metric, setMetric] = useState(Metrics.Weight);
-  const [period, setPeriod] = useState(Periods.Monthly);
+  const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>()
+  const dark = useDark()
+  const [weights, setWeights] = useState<GymSet[]>([])
+  const [volumes, setVolumes] = useState<Volume[]>([])
+  const [metric, setMetric] = useState(Metrics.Weight)
+  const [period, setPeriod] = useState(Periods.Monthly)
 
   useEffect(() => {
-    console.log(`${ViewBest.name}.useEffect`, {metric});
-    console.log(`${ViewBest.name}.useEffect`, {period});
-    let difference = '-7 days';
-    if (period === Periods.Monthly) difference = '-1 months';
-    else if (period === Periods.Yearly) difference = '-1 years';
-    let group = '%Y-%m-%d';
-    if (period === Periods.Yearly) group = '%Y-%m';
+    console.log(`${ViewBest.name}.useEffect`, {metric})
+    console.log(`${ViewBest.name}.useEffect`, {period})
+    let difference = '-7 days'
+    if (period === Periods.Monthly) difference = '-1 months'
+    else if (period === Periods.Yearly) difference = '-1 years'
+    let group = '%Y-%m-%d'
+    if (period === Periods.Yearly) group = '%Y-%m'
     const builder = setRepo
       .createQueryBuilder()
       .select("STRFTIME('%Y-%m-%d', created)", 'created')
@@ -40,31 +40,28 @@ export default function ViewBest() {
         difference,
       })
       .groupBy('name')
-      .addGroupBy(`STRFTIME('${group}', created)`);
+      .addGroupBy(`STRFTIME('${group}', created)`)
     switch (metric) {
       case Metrics.Weight:
-        builder
-          .addSelect('MAX(weight)', 'weight')
-          .getRawMany()
-          .then(setWeights);
-        break;
+        builder.addSelect('MAX(weight)', 'weight').getRawMany().then(setWeights)
+        break
       case Metrics.Volume:
         builder
           .addSelect('SUM(weight * reps)', 'value')
           .getRawMany()
-          .then(setVolumes);
-        break;
+          .then(setVolumes)
+        break
       default:
         // Brzycki formula https://en.wikipedia.org/wiki/One-repetition_maximum#Brzycki
         builder
           .addSelect('MAX(weight / (1.0278 - 0.0278 * reps))', 'weight')
           .getRawMany()
           .then(weights => {
-            console.log({weights});
-            setWeights(weights);
-          });
+            console.log({weights})
+            setWeights(weights)
+          })
     }
-  }, [params.best.name, metric, period]);
+  }, [params.best.name, metric, period])
 
   return (
     <>
@@ -109,5 +106,5 @@ export default function ViewBest() {
         )}
       </View>
     </>
-  );
+  )
 }

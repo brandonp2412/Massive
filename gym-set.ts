@@ -1,40 +1,40 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm'
 
 @Entity('sets')
 export default class GymSet {
   @PrimaryGeneratedColumn()
-  id?: number;
+  id?: number
 
   @Column('text')
-  name: string;
+  name: string
 
   @Column('int')
-  reps: number;
+  reps: number
 
   @Column('int')
-  weight: number;
+  weight: number
 
   @Column('int')
-  sets = 3;
+  sets = 3
 
   @Column('int')
-  minutes = 3;
+  minutes = 3
 
   @Column('int')
-  seconds = 30;
+  seconds = 30
 
   @Column('boolean')
-  hidden = false;
+  hidden = false
 
   @Column('text')
-  created: string;
+  created: string
 
   @Column('text')
-  unit: string;
+  unit: string
 
   @Column('text')
-  image: string;
+  image: string
 
   @Column('text')
-  steps?: string;
+  steps?: string
 }

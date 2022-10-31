@@ -1,5 +1,5 @@
-import {setRepo} from './db';
-import GymSet from './gym-set';
+import {setRepo} from './db'
+import GymSet from './gym-set'
 
 export const getBestSet = async (name: string): Promise<GymSet> => {
   return setRepo
@@ -11,5 +11,5 @@ export const getBestSet = async (name: string): Promise<GymSet> => {
     .addGroupBy('reps')
     .orderBy('weight', 'DESC')
     .addOrderBy('reps', 'DESC')
-    .getOne();
-};
+    .getOne()
+}

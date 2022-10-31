@@ -1,7 +1,7 @@
 export type DrawerParamList = {
-  Home: {};
-  Settings: {};
-  Best: {};
-  Plans: {};
-  Workouts: {};
-};
+  Home: {}
+  Settings: {}
+  Best: {}
+  Plans: {}
+  Workouts: {}
+}

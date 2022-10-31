@@ -1,47 +1,47 @@
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {useCallback, useState} from 'react';
-import {GestureResponderEvent, Image} from 'react-native';
-import {Divider, List, Menu, Text} from 'react-native-paper';
-import {setRepo} from './db';
-import GymSet from './gym-set';
-import {HomePageParams} from './home-page-params';
-import {format} from './time';
-import useDark from './use-dark';
-import {useSettings} from './use-settings';
+import {NavigationProp, useNavigation} from '@react-navigation/native'
+import {useCallback, useState} from 'react'
+import {GestureResponderEvent, Image} from 'react-native'
+import {Divider, List, Menu, Text} from 'react-native-paper'
+import {setRepo} from './db'
+import GymSet from './gym-set'
+import {HomePageParams} from './home-page-params'
+import {format} from './time'
+import useDark from './use-dark'
+import {useSettings} from './use-settings'
 
 export default function SetItem({
   item,
   onRemove,
 }: {
-  item: GymSet;
-  onRemove: () => void;
+  item: GymSet
+  onRemove: () => void
 }) {
-  const [showMenu, setShowMenu] = useState(false);
-  const [anchor, setAnchor] = useState({x: 0, y: 0});
-  const {settings} = useSettings();
-  const dark = useDark();
-  const navigation = useNavigation<NavigationProp<HomePageParams>>();
+  const [showMenu, setShowMenu] = useState(false)
+  const [anchor, setAnchor] = useState({x: 0, y: 0})
+  const {settings} = useSettings()
+  const dark = useDark()
+  const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
   const remove = useCallback(async () => {
-    if (typeof item.id === 'number') await setRepo.delete(item.id);
-    setShowMenu(false);
-    onRemove();
-  }, [setShowMenu, onRemove, item.id]);
+    if (typeof item.id === 'number') await setRepo.delete(item.id)
+    setShowMenu(false)
+    onRemove()
+  }, [setShowMenu, onRemove, item.id])
 
   const copy = useCallback(() => {
-    const set: GymSet = {...item};
-    delete set.id;
-    setShowMenu(false);
-    navigation.navigate('EditSet', {set});
-  }, [navigation, item]);
+    const set: GymSet = {...item}
+    delete set.id
+    setShowMenu(false)
+    navigation.navigate('EditSet', {set})
+  }, [navigation, item])
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {
-      setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY});
-      setShowMenu(true);
+      setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY})
+      setShowMenu(true)
     },
     [setShowMenu, setAnchor],
-  );
+  )
 
   return (
     <>
@@ -79,5 +79,5 @@ export default function SetItem({
         )}
       />
     </>
-  );
+  )
 }

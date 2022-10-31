@@ -1,47 +1,47 @@
-import {useCallback, useRef, useState} from 'react';
-import {TextInput, View} from 'react-native';
-import DocumentPicker from 'react-native-document-picker';
-import {Button, Card, TouchableRipple} from 'react-native-paper';
-import ConfirmDialog from './ConfirmDialog';
-import {MARGIN} from './constants';
-import {setRepo} from './db';
-import GymSet from './gym-set';
-import MassiveInput from './MassiveInput';
-import {useSnackbar} from './MassiveSnack';
-import {useSettings} from './use-settings';
+import {useCallback, useRef, useState} from 'react'
+import {TextInput, View} from 'react-native'
+import DocumentPicker from 'react-native-document-picker'
+import {Button, Card, TouchableRipple} from 'react-native-paper'
+import ConfirmDialog from './ConfirmDialog'
+import {MARGIN} from './constants'
+import {setRepo} from './db'
+import GymSet from './gym-set'
+import MassiveInput from './MassiveInput'
+import {useSnackbar} from './MassiveSnack'
+import {useSettings} from './use-settings'
 
 export default function SetForm({
   save,
   set,
 }: {
-  set: GymSet;
-  save: (set: GymSet) => void;
+  set: GymSet
+  save: (set: GymSet) => void
 }) {
-  const [name, setName] = useState(set.name);
-  const [reps, setReps] = useState(set.reps.toString());
-  const [weight, setWeight] = useState(set.weight.toString());
-  const [newImage, setNewImage] = useState(set.image);
-  const [unit, setUnit] = useState(set.unit);
-  const [showRemove, setShowRemove] = useState(false);
+  const [name, setName] = useState(set.name)
+  const [reps, setReps] = useState(set.reps.toString())
+  const [weight, setWeight] = useState(set.weight.toString())
+  const [newImage, setNewImage] = useState(set.image)
+  const [unit, setUnit] = useState(set.unit)
+  const [showRemove, setShowRemove] = useState(false)
   const [selection, setSelection] = useState({
     start: 0,
     end: set.reps.toString().length,
-  });
-  const [removeImage, setRemoveImage] = useState(false);
-  const {toast} = useSnackbar();
-  const {settings} = useSettings();
-  const weightRef = useRef<TextInput>(null);
-  const repsRef = useRef<TextInput>(null);
-  const unitRef = useRef<TextInput>(null);
+  })
+  const [removeImage, setRemoveImage] = useState(false)
+  const {toast} = useSnackbar()
+  const {settings} = useSettings()
+  const weightRef = useRef<TextInput>(null)
+  const repsRef = useRef<TextInput>(null)
+  const unitRef = useRef<TextInput>(null)
 
   const handleSubmit = async () => {
-    console.log(`${SetForm.name}.handleSubmit:`, {set, uri: newImage, name});
-    if (!name) return;
-    let image = newImage;
+    console.log(`${SetForm.name}.handleSubmit:`, {set, uri: newImage, name})
+    if (!name) return
+    let image = newImage
     if (!newImage && !removeImage)
-      image = await setRepo.findOne({where: {name}}).then(s => s?.image);
+      image = await setRepo.findOne({where: {name}}).then(s => s?.image)
 
-    console.log(`${SetForm.name}.handleSubmit:`, {image});
+    console.log(`${SetForm.name}.handleSubmit:`, {image})
     save({
       name,
       reps: Number(reps),
@@ -53,34 +53,34 @@ export default function SetForm({
       seconds: Number(set.seconds ?? 30),
       sets: set.sets ?? 3,
       hidden: false,
-    });
-  };
+    })
+  }
 
   const handleName = (value: string) => {
-    setName(value.replace(/,|'/g, ''));
+    setName(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000);
-  };
+      toast('Commas and single quotes would break CSV exports', 6000)
+  }
 
   const handleUnit = (value: string) => {
-    setUnit(value.replace(/,|'/g, ''));
+    setUnit(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000);
-  };
+      toast('Commas and single quotes would break CSV exports', 6000)
+  }
 
   const changeImage = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
       type: 'image/*',
       copyTo: 'documentDirectory',
-    });
-    if (fileCopyUri) setNewImage(fileCopyUri);
-  }, []);
+    })
+    if (fileCopyUri) setNewImage(fileCopyUri)
+  }, [])
 
   const handleRemove = useCallback(async () => {
-    setNewImage('');
-    setRemoveImage(true);
-    setShowRemove(false);
-  }, []);
+    setNewImage('')
+    setRemoveImage(true)
+    setShowRemove(false)
+  }, [])
 
   return (
     <>
@@ -156,5 +156,5 @@ export default function SetForm({
         Are you sure you want to remove the image?
       </ConfirmDialog>
     </>
-  );
+  )
 }

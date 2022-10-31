@@ -2,22 +2,22 @@ import {
   NavigationProp,
   useFocusEffect,
   useNavigation,
-} from '@react-navigation/native';
-import {useCallback, useState} from 'react';
-import {FlatList, Image} from 'react-native';
-import {List} from 'react-native-paper';
-import {BestPageParams} from './BestPage';
-import {setRepo} from './db';
-import DrawerHeader from './DrawerHeader';
-import GymSet from './gym-set';
-import Page from './Page';
-import {useSettings} from './use-settings';
+} from '@react-navigation/native'
+import {useCallback, useState} from 'react'
+import {FlatList, Image} from 'react-native'
+import {List} from 'react-native-paper'
+import {BestPageParams} from './BestPage'
+import {setRepo} from './db'
+import DrawerHeader from './DrawerHeader'
+import GymSet from './gym-set'
+import Page from './Page'
+import {useSettings} from './use-settings'
 
 export default function BestList() {
-  const [bests, setBests] = useState<GymSet[]>();
-  const [term, setTerm] = useState('');
-  const navigation = useNavigation<NavigationProp<BestPageParams>>();
-  const {settings} = useSettings();
+  const [bests, setBests] = useState<GymSet[]>()
+  const [term, setTerm] = useState('')
+  const navigation = useNavigation<NavigationProp<BestPageParams>>()
+  const {settings} = useSettings()
 
   const refresh = useCallback(async (value: string) => {
     const weights = await setRepo
@@ -27,9 +27,9 @@ export default function BestList() {
       .where('name LIKE :name', {name: `%${value}%`})
       .andWhere('NOT hidden')
       .groupBy('name')
-      .getMany();
-    console.log(`${BestList.name}.refresh:`, {length: weights.length});
-    let newBest: GymSet[] = [];
+      .getMany()
+    console.log(`${BestList.name}.refresh:`, {length: weights.length})
+    let newBest: GymSet[] = []
     for (const set of weights) {
       const reps = await setRepo
         .createQueryBuilder()
@@ -39,25 +39,25 @@ export default function BestList() {
         .andWhere('weight = :weight', {weight: set.weight})
         .andWhere('NOT hidden')
         .groupBy('name')
-        .getMany();
-      newBest.push(...reps);
+        .getMany()
+      newBest.push(...reps)
     }
-    setBests(newBest);
-  }, []);
+    setBests(newBest)
+  }, [])
 
   useFocusEffect(
     useCallback(() => {
-      refresh(term);
+      refresh(term)
     }, [refresh, term]),
-  );
+  )
 
   const search = useCallback(
     (value: string) => {
-      setTerm(value);
-      refresh(value);
+      setTerm(value)
+      refresh(value)
     },
     [refresh],
-  );
+  )
 
   const renderItem = ({item}: {item: GymSet}) => (
     <List.Item
@@ -72,7 +72,7 @@ export default function BestList() {
         null
       }
     />
-  );
+  )
 
   return (
     <>
@@ -88,5 +88,5 @@ export default function BestList() {
         )}
       </Page>
     </>
-  );
+  )
 }

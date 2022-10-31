@@ -1,43 +1,43 @@
-import {Column, Entity, PrimaryColumn} from 'typeorm';
+import {Column, Entity, PrimaryColumn} from 'typeorm'
 
 @Entity()
 export default class Settings {
   @PrimaryColumn('boolean')
-  alarm: boolean;
+  alarm: boolean
 
   @Column('boolean')
-  vibrate: boolean;
+  vibrate: boolean
 
   @Column('text')
-  sound: string;
+  sound: string
 
   @Column('boolean')
-  notify: boolean;
+  notify: boolean
 
   @Column('boolean')
-  images: boolean;
+  images: boolean
 
   @Column('boolean')
-  showUnit: boolean;
+  showUnit: boolean
 
   @Column('text')
-  color: string;
+  color: string
 
   @Column('boolean')
-  steps: boolean;
+  steps: boolean
 
   @Column('text')
-  date: string;
+  date: string
 
   @Column('boolean')
-  showDate: boolean;
+  showDate: boolean
 
   @Column('text')
-  theme: string;
+  theme: string
 
   @Column('boolean')
-  showSets: boolean;
+  showSets: boolean
 
   @Column('boolean')
-  noSound: boolean;
+  noSound: boolean
 }

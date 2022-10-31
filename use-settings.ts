@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
-import Settings from './settings';
+import React, {useContext} from 'react'
+import Settings from './settings'
 
 export const defaultSettings: Settings = {
   alarm: 0,
@@ -15,16 +15,16 @@ export const defaultSettings: Settings = {
   theme: 'system',
   vibrate: 1,
   noSound: 0,
-};
+}
 
 export const SettingsContext = React.createContext<{
-  settings: Settings;
-  setSettings: (value: Settings) => void;
+  settings: Settings
+  setSettings: (value: Settings) => void
 }>({
   settings: defaultSettings,
   setSettings: () => null,
-});
+})
 
 export function useSettings() {
-  return useContext(SettingsContext);
+  return useContext(SettingsContext)
 }
