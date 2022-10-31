@@ -1,6 +1,6 @@
 import {DataSource} from 'typeorm'
 import GymSet from './gym-set'
-import {Sets1667185586014} from './migrations/1667185586014-sets'
+import {Sets1667185586014 as sets1667185586014} from './migrations/1667185586014-sets'
 import {plans1667186124792} from './migrations/1667186124792-plans'
 import {settings1667186130041} from './migrations/1667186130041-settings'
 import {addSound1667186139844} from './migrations/1667186139844-add-sound'
@@ -22,6 +22,7 @@ import {addTheme1667186439366} from './migrations/1667186439366-add-theme'
 import {addShowSets1667186443614} from './migrations/1667186443614-add-show-sets'
 import {addSetsCreated1667186451005} from './migrations/1667186451005-add-sets-created'
 import {addNoSound1667186456118} from './migrations/1667186456118-add-no-sound'
+import {dropMigrations1667190214743} from './migrations/1667190214743-drop-migrations'
 import {Plan} from './plan'
 import Settings from './settings'
 
@@ -30,9 +31,10 @@ export const AppDataSource = new DataSource({
   database: 'massive.db',
   location: 'default',
   entities: [GymSet, Plan, Settings],
+  migrationsRun: true,
   migrationsTableName: 'typeorm_migrations',
   migrations: [
-    Sets1667185586014,
+    sets1667185586014,
     plans1667186124792,
     settings1667186130041,
     addSound1667186139844,
@@ -54,5 +56,6 @@ export const AppDataSource = new DataSource({
     addShowSets1667186443614,
     addSetsCreated1667186451005,
     addNoSound1667186456118,
+    dropMigrations1667190214743,
   ],
 })
