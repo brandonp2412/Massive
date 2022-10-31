@@ -6,25 +6,40 @@ import {
 import {useCallback, useState} from 'react';
 import {FlatList, Image} from 'react-native';
 import {List} from 'react-native-paper';
-import {getBestReps, getBestWeights} from './best.service';
 import {BestPageParams} from './BestPage';
+import {setRepo} from './db';
 import DrawerHeader from './DrawerHeader';
+import GymSet from './gym-set';
 import Page from './Page';
-import Set from './set';
 import {useSettings} from './use-settings';
 
 export default function BestList() {
-  const [bests, setBests] = useState<Set[]>();
+  const [bests, setBests] = useState<GymSet[]>();
   const [term, setTerm] = useState('');
   const navigation = useNavigation<NavigationProp<BestPageParams>>();
   const {settings} = useSettings();
 
   const refresh = useCallback(async (value: string) => {
-    const weights = await getBestWeights(value);
+    const weights = await setRepo
+      .createQueryBuilder()
+      .select()
+      .addSelect('MAX(weight)', 'weight')
+      .where('name LIKE :name', {name: `%${value}%`})
+      .andWhere('NOT hidden')
+      .groupBy('name')
+      .getMany();
     console.log(`${BestList.name}.refresh:`, {length: weights.length});
-    let newBest: Set[] = [];
+    let newBest: GymSet[] = [];
     for (const set of weights) {
-      const reps = await getBestReps(set.name, set.weight);
+      const reps = await setRepo
+        .createQueryBuilder()
+        .select()
+        .addSelect('MAX(reps)', 'reps')
+        .where('name = :name', {name: set.name})
+        .andWhere('weight = :weight', {weight: set.weight})
+        .andWhere('NOT hidden')
+        .groupBy('name')
+        .getMany();
       newBest.push(...reps);
     }
     setBests(newBest);
@@ -44,7 +59,7 @@ export default function BestList() {
     [refresh],
   );
 
-  const renderItem = ({item}: {item: Set}) => (
+  const renderItem = ({item}: {item: GymSet}) => (
     <List.Item
       key={item.name}
       title={item.name}

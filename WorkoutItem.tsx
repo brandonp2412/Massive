@@ -3,8 +3,8 @@ import {useCallback, useMemo, useState} from 'react';
 import {GestureResponderEvent, Image} from 'react-native';
 import {List, Menu, Text} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
-import Set from './set';
-import {deleteSetsBy} from './set.service';
+import {setRepo} from './db';
+import GymSet from './gym-set';
 import {useSettings} from './use-settings';
 import {WorkoutsPageParams} from './WorkoutsPage';
 
@@ -12,7 +12,7 @@ export default function WorkoutItem({
   item,
   onRemove,
 }: {
-  item: Set;
+  item: GymSet;
   onRemove: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -22,7 +22,7 @@ export default function WorkoutItem({
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
   const remove = useCallback(async () => {
-    await deleteSetsBy(item.name);
+    await setRepo.delete({name: item.name});
     setShowMenu(false);
     onRemove();
   }, [setShowMenu, onRemove, item.name]);

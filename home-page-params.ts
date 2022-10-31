@@ -1,8 +1,8 @@
-import Set from './set';
+import GymSet from './gym-set';
 
 export type HomePageParams = {
   Sets: {};
   EditSet: {
-    set: Set;
+    set: GymSet;
   };
 };

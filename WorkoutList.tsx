@@ -8,27 +8,30 @@ import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
 import DrawerHeader from './DrawerHeader';
 import Page from './Page';
-import Set from './set';
-import {getDistinctSets} from './set.service';
+import GymSet from './gym-set';
 import SetList from './SetList';
 import WorkoutItem from './WorkoutItem';
 import {WorkoutsPageParams} from './WorkoutsPage';
+import {setRepo} from './db';
 
 const limit = 15;
 
 export default function WorkoutList() {
-  const [workouts, setWorkouts] = useState<Set[]>();
+  const [workouts, setWorkouts] = useState<GymSet[]>();
   const [offset, setOffset] = useState(0);
   const [term, setTerm] = useState('');
   const [end, setEnd] = useState(false);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
   const refresh = useCallback(async (value: string) => {
-    const newWorkouts = await getDistinctSets({
-      term: `%${value}%`,
-      limit,
-      offset: 0,
-    });
+    const newWorkouts = await setRepo
+      .createQueryBuilder()
+      .select()
+      .where('name LIKE :name', {name: `%${value}%`})
+      .groupBy('name')
+      .orderBy('name')
+      .limit(limit)
+      .getMany();
     console.log(`${WorkoutList.name}`, {newWorkout: newWorkouts[0]});
     setWorkouts(newWorkouts);
     setOffset(0);
@@ -42,7 +45,7 @@ export default function WorkoutList() {
   );
 
   const renderItem = useCallback(
-    ({item}: {item: Set}) => (
+    ({item}: {item: GymSet}) => (
       <WorkoutItem item={item} key={item.name} onRemove={() => refresh(term)} />
     ),
     [refresh, term],
@@ -57,11 +60,15 @@ export default function WorkoutList() {
       newOffset,
       term,
     });
-    const newWorkouts = await getDistinctSets({
-      term: `%${term}%`,
-      limit,
-      offset: newOffset,
-    });
+    const newWorkouts = await setRepo
+      .createQueryBuilder()
+      .select()
+      .where('name LIKE :name', {name: `%${term}%`})
+      .groupBy('name')
+      .orderBy('name')
+      .limit(limit)
+      .offset(newOffset)
+      .getMany();
     if (newWorkouts.length === 0) return setEnd(true);
     if (!workouts) return;
     setWorkouts([...workouts, ...newWorkouts]);
@@ -71,7 +78,7 @@ export default function WorkoutList() {
 
   const onAdd = useCallback(async () => {
     navigation.navigate('EditWorkout', {
-      value: {name: '', sets: 3, image: '', steps: '', reps: 0, weight: 0},
+      value: new GymSet(),
     });
   }, [navigation]);
 

@@ -2,10 +2,10 @@ import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {useCallback} from 'react';
 import {NativeModules, View} from 'react-native';
 import {PADDING} from './constants';
+import {getNow, setRepo} from './db';
+import GymSet from './gym-set';
 import {HomePageParams} from './home-page-params';
 import {useSnackbar} from './MassiveSnack';
-import Set from './set';
-import {addSet, getSet, updateSet} from './set.service';
 import SetForm from './SetForm';
 import StackHeader from './StackHeader';
 import {useSettings} from './use-settings';
@@ -20,7 +20,7 @@ export default function EditSet() {
   const startTimer = useCallback(
     async (name: string) => {
       if (!settings.alarm) return;
-      const {minutes, seconds} = await getSet(name);
+      const {minutes, seconds} = await setRepo.findOne({where: {name}});
       const milliseconds = (minutes ?? 3) * 60 * 1000 + (seconds ?? 0) * 1000;
       NativeModules.AlarmModule.timer(
         milliseconds,
@@ -32,37 +32,32 @@ export default function EditSet() {
     [settings],
   );
 
-  const update = useCallback(
-    async (value: Set) => {
-      console.log(`${EditSet.name}.update`, value);
-      await updateSet(value);
-      navigation.goBack();
-    },
-    [navigation],
-  );
-
   const add = useCallback(
-    async (value: Set) => {
-      console.log(`${EditSet.name}.add`, {set: value});
+    async (value: GymSet) => {
       startTimer(value.name);
-      await addSet(value);
-      if (!settings.notify) return navigation.goBack();
+      const [{now}] = await getNow();
+      value.created = now;
+      value.hidden = false;
+      console.log(`${EditSet.name}.add`, {set: value});
+      const result = await setRepo.save(value);
+      console.log({result});
+      if (!settings.notify) return;
       if (
         value.weight > set.weight ||
         (value.reps > set.reps && value.weight === set.weight)
       )
         toast("Great work King! That's a new record.", 3000);
-      navigation.goBack();
     },
-    [navigation, startTimer, set, toast, settings],
+    [startTimer, set, toast, settings],
   );
 
   const save = useCallback(
-    async (value: Set) => {
-      if (typeof set.id === 'number') return update(value);
-      return add(value);
+    async (value: GymSet) => {
+      if (typeof set.id === 'number') await setRepo.save(value);
+      else await add(value);
+      navigation.goBack();
     },
-    [update, add, set.id],
+    [add, set.id, navigation],
   );
 
   return (

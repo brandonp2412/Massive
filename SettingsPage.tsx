@@ -8,12 +8,12 @@ import {useColor} from './color';
 import {darkColors, lightColors} from './colors';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
+import {settingsRepo} from './db';
 import DrawerHeader from './DrawerHeader';
 import Input from './input';
 import {useSnackbar} from './MassiveSnack';
 import Page from './Page';
 import Settings from './settings';
-import {updateSettings} from './settings.service';
 import Switch from './Switch';
 import {useSettings} from './use-settings';
 
@@ -50,8 +50,8 @@ export default function SettingsPage() {
 
   const update = useCallback(
     (value: boolean, field: keyof Settings) => {
-      updateSettings({...settings, [field]: +value});
-      setSettings({...settings, [field]: +value});
+      settingsRepo.update({}, {[field]: value});
+      setSettings({...settings, [field]: value});
     },
     [settings, setSettings],
   );
@@ -81,7 +81,7 @@ export default function SettingsPage() {
       copyTo: 'documentDirectory',
     });
     if (!fileCopyUri) return;
-    updateSettings({sound: fileCopyUri} as Settings);
+    settingsRepo.update({}, {sound: fileCopyUri});
     setSettings({...settings, sound: fileCopyUri});
     toast('This song will now play after rest timers complete.', 4000);
   }, [toast, setSettings, settings]);
@@ -150,28 +150,28 @@ export default function SettingsPage() {
   );
 
   const switches: Input<boolean>[] = [
-    {name: 'Rest timers', value: !!alarm, onChange: changeAlarmEnabled},
-    {name: 'Vibrate', value: !!vibrate, onChange: changeVibrate},
-    {name: 'Disable sound', value: !!noSound, onChange: changeNoSound},
-    {name: 'Record notifications', value: !!notify, onChange: changeNotify},
-    {name: 'Show images', value: !!images, onChange: changeImages},
-    {name: 'Show unit', value: !!showUnit, onChange: changeUnit},
-    {name: 'Show steps', value: !!steps, onChange: changeSteps},
-    {name: 'Show date', value: !!showDate, onChange: changeShowDate},
-    {name: 'Show sets', value: !!showSets, onChange: changeShowSets},
+    {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
+    {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
+    {name: 'Disable sound', value: noSound, onChange: changeNoSound},
+    {name: 'Record notifications', value: notify, onChange: changeNotify},
+    {name: 'Show images', value: images, onChange: changeImages},
+    {name: 'Show unit', value: showUnit, onChange: changeUnit},
+    {name: 'Show steps', value: steps, onChange: changeSteps},
+    {name: 'Show date', value: showDate, onChange: changeShowDate},
+    {name: 'Show sets', value: showSets, onChange: changeShowSets},
   ];
 
   const changeTheme = useCallback(
     (value: string) => {
-      updateSettings({...settings, theme: value as any});
-      setSettings({...settings, theme: value as any});
+      settingsRepo.update({}, {theme: value});
+      setSettings({...settings, theme: value});
     },
     [settings, setSettings],
   );
 
   const changeDate = useCallback(
     (value: string) => {
-      updateSettings({...settings, date: value as any});
+      settingsRepo.update({}, {date: value});
       setSettings({...settings, date: value as any});
     },
     [settings, setSettings],

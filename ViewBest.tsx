@@ -2,13 +2,14 @@ import {Picker} from '@react-native-picker/picker';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
 import {View} from 'react-native';
-import {getOneRepMax, getVolumes, getWeightsBy} from './best.service';
+import {getOneRepMax} from './best.service';
 import {BestPageParams} from './BestPage';
 import Chart from './Chart';
 import {PADDING} from './constants';
+import {setRepo} from './db';
+import GymSet from './gym-set';
 import {Metrics} from './metrics';
 import {Periods} from './periods';
-import Set from './set';
 import StackHeader from './StackHeader';
 import {formatMonth} from './time';
 import useDark from './use-dark';
@@ -17,7 +18,7 @@ import Volume from './volume';
 export default function ViewBest() {
   const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>();
   const dark = useDark();
-  const [weights, setWeights] = useState<Set[]>([]);
+  const [weights, setWeights] = useState<GymSet[]>([]);
   const [volumes, setVolumes] = useState<Volume[]>([]);
   const [metric, setMetric] = useState(Metrics.Weight);
   const [period, setPeriod] = useState(Periods.Monthly);
@@ -25,12 +26,34 @@ export default function ViewBest() {
   useEffect(() => {
     console.log(`${ViewBest.name}.useEffect`, {metric});
     console.log(`${ViewBest.name}.useEffect`, {period});
+    let difference = '-7 days';
+    if (period === Periods.Monthly) difference = '-1 months';
+    else if (period === Periods.Yearly) difference = '-1 years';
+    let group = '%Y-%m-%d';
+    if (period === Periods.Yearly) group = '%Y-%m';
+    const builder = setRepo
+      .createQueryBuilder()
+      .select("STRFTIME('%Y-%m-%d', created)", 'created')
+      .addSelect('unit')
+      .where('name = :name', {name: params.best.name})
+      .andWhere('NOT hidden')
+      .andWhere("DATE(created) >= DATE('now', 'weekday 0', :difference)", {
+        difference,
+      })
+      .groupBy('name')
+      .addGroupBy(`STRFTIME('${group}', created)`);
     switch (metric) {
       case Metrics.Weight:
-        getWeightsBy(params.best.name, period).then(setWeights);
+        builder
+          .addSelect('MAX(weight)', 'weight')
+          .getRawMany()
+          .then(setWeights);
         break;
       case Metrics.Volume:
-        getVolumes(params.best.name, period).then(setVolumes);
+        builder
+          .addSelect('SUM(weight * reps)', 'value')
+          .getRawMany()
+          .then(setVolumes);
         break;
       default:
         getOneRepMax({name: params.best.name, period}).then(setWeights);

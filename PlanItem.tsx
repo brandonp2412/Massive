@@ -7,9 +7,9 @@ import {useCallback, useMemo, useState} from 'react';
 import {GestureResponderEvent, Text} from 'react-native';
 import {Divider, List, Menu} from 'react-native-paper';
 import {getBestSet} from './best.service';
+import {planRepo} from './db';
 import {Plan} from './plan';
 import {PlanPageParams} from './plan-page-params';
-import {deletePlan} from './plan.service';
 import {DAYS} from './time';
 
 export default function PlanItem({
@@ -33,7 +33,7 @@ export default function PlanItem({
   );
 
   const remove = useCallback(async () => {
-    if (typeof item.id === 'number') await deletePlan(item.id);
+    if (typeof item.id === 'number') await planRepo.delete(item.id);
     setShow(false);
     onRemove();
   }, [setShow, item.id, onRemove]);
@@ -42,6 +42,7 @@ export default function PlanItem({
     const workouts = item.workouts.split(',');
     const first = workouts[0];
     const set = await getBestSet(first);
+    console.log(`${PlanItem.name}.start:`, {set});
     setShow(false);
     navigation.navigate('StartPlan', {plan: item, set});
   }, [item, navigation]);

@@ -3,6 +3,10 @@ import {
   openDatabase,
   SQLiteDatabase,
 } from 'react-native-sqlite-storage';
+import {DataSource} from 'typeorm';
+import GymSet from './gym-set';
+import {Plan} from './plan';
+import Settings from './settings';
 
 enablePromise(true);
 
@@ -127,7 +131,25 @@ const migrations = [
 
 export let db: SQLiteDatabase;
 
+export const AppDataSource = new DataSource({
+  type: 'react-native',
+  database: 'massive.db',
+  location: 'default',
+  entities: [GymSet, Plan, Settings],
+});
+
+export const setRepo = AppDataSource.manager.getRepository(GymSet);
+export const planRepo = AppDataSource.manager.getRepository(Plan);
+export const settingsRepo = AppDataSource.manager.getRepository(Settings);
+
+export const getNow = (): Promise<{now: string}[]> => {
+  return AppDataSource.manager.query(
+    "SELECT STRFTIME('%Y-%m-%dT%H:%M:%S','now','localtime') AS now",
+  );
+};
+
 export const runMigrations = async () => {
+  await AppDataSource.initialize();
   db = await openDatabase({name: 'massive.db'});
   await db.executeSql(`
     CREATE TABLE IF NOT EXISTS migrations(

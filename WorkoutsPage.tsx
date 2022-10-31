@@ -1,12 +1,12 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import EditWorkout from './EditWorkout';
-import Set from './set';
+import GymSet from './gym-set';
 import WorkoutList from './WorkoutList';
 
 export type WorkoutsPageParams = {
   WorkoutList: {};
   EditWorkout: {
-    value: Set;
+    value: GymSet;
   };
 };
 

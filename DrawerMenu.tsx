@@ -4,18 +4,18 @@ import DocumentPicker from 'react-native-document-picker';
 import {FileSystem} from 'react-native-file-access';
 import {Divider, IconButton, Menu} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
+import {AppDataSource, planRepo} from './db';
 import {DrawerParamList} from './drawer-param-list';
+import GymSet from './gym-set';
 import {useSnackbar} from './MassiveSnack';
 import {Plan} from './plan';
-import {addPlans, deletePlans, getAllPlans} from './plan.service';
-import Set from './set';
-import {addSets, deleteSets, getAllSets} from './set.service';
 import useDark from './use-dark';
 import {write} from './write';
 
 const setFields =
   'id,name,reps,weight,created,unit,hidden,sets,minutes,seconds';
 const planFields = 'id,days,workouts';
+const setRepo = AppDataSource.manager.getRepository(GymSet);
 
 export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const [showMenu, setShowMenu] = useState(false);
@@ -25,14 +25,14 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const dark = useDark();
 
   const exportSets = useCallback(async () => {
-    const sets = await getAllSets();
+    const sets = await setRepo.find({});
     const data = [setFields]
       .concat(
         sets.map(set =>
           setFields
             .split(',')
             .map(fieldString => {
-              const field = fieldString as keyof Set;
+              const field = fieldString as keyof GymSet;
               if (field === 'unit') return set[field] || 'kg';
               return set[field];
             })
@@ -45,7 +45,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   }, []);
 
   const exportPlans = useCallback(async () => {
-    const plans: Plan[] = await getAllPlans();
+    const plans = await planRepo.find({});
     const data = [planFields]
       .concat(plans.map(set => `"${set.id}","${set.days}","${set.workouts}"`))
       .join('\n');
@@ -62,14 +62,14 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const uploadSets = useCallback(async () => {
     const result = await DocumentPicker.pickSingle();
     const file = await FileSystem.readFile(result.uri);
-    console.log(`${DrawerMenu.name}.${uploadSets.name}:`, file.length);
+    console.log(`${DrawerMenu.name}.uploadSets:`, file.length);
     const lines = file.split('\n');
     console.log(lines[0]);
     if (!setFields.includes(lines[0])) return toast('Invalid csv.', 3000);
     const values = lines
       .slice(1)
       .filter(line => line)
-      .map(set => {
+      .map(line => {
         let [
           ,
           setName,
@@ -81,15 +81,22 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
           sets,
           minutes,
           seconds,
-        ] = set.split(',');
-        unit = unit || 'kg';
-        hidden = hidden || '0';
-        return `('${setName}',${reps},${weight},'${created}','${unit}',${hidden},${
-          sets ?? 3
-        },${minutes ?? 3},${seconds ?? 30})`;
-      })
-      .join(',');
-    await addSets(setFields.split(',').slice(1).join(','), values);
+        ] = line.split(',');
+        const set: GymSet = {
+          name: setName,
+          reps: +reps,
+          weight: +weight,
+          created,
+          unit: unit ?? 'kg',
+          hidden: !!Number(hidden),
+          sets: +sets,
+          minutes: +minutes,
+          seconds: +seconds,
+        };
+        return set;
+      });
+    console.log(`${DrawerMenu.name}.uploadSets:`, {values});
+    await setRepo.insert(values);
     toast('Data imported.', 3000);
     reset({index: 0, routes: [{name}]});
   }, [reset, name, toast]);
@@ -108,10 +115,13 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
         const [, days, workouts] = set
           .split('","')
           .map(cell => cell.replace(/"/g, ''));
-        return `('${days}','${workouts}')`;
-      })
-      .join(',');
-    await addPlans(values);
+        const plan: Plan = {
+          days,
+          workouts,
+        };
+        return plan;
+      });
+    await planRepo.insert(values);
     toast('Data imported.', 3000);
   }, [toast]);
 
@@ -125,8 +135,8 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const remove = useCallback(async () => {
     setShowMenu(false);
     setShowRemove(false);
-    if (name === 'Home') await deleteSets();
-    else if (name === 'Plans') await deletePlans();
+    if (name === 'Home') await setRepo.delete({});
+    else if (name === 'Plans') await planRepo.delete({});
     toast('All data has been deleted.', 4000);
     reset({index: 0, routes: [{name}]});
   }, [reset, name, toast]);

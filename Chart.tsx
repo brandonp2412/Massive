@@ -4,7 +4,7 @@ import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import {CombinedDarkTheme, CombinedDefaultTheme} from './App';
 import {useColor} from './color';
 import {MARGIN, PADDING} from './constants';
-import Set from './set';
+import GymSet from './gym-set';
 import useDark from './use-dark';
 
 export default function Chart({
@@ -14,7 +14,7 @@ export default function Chart({
   yFormat,
 }: {
   yData: number[];
-  xData: Set[];
+  xData: GymSet[];
   xFormat: (value: any, index: number) => string;
   yFormat: (value: any) => string;
 }) {

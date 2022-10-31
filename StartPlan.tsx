@@ -6,11 +6,12 @@ import {Button} from 'react-native-paper';
 import {getBestSet} from './best.service';
 import {PADDING} from './constants';
 import CountMany from './count-many';
+import {AppDataSource, getNow, setRepo} from './db';
+import GymSet from './gym-set';
 import MassiveInput from './MassiveInput';
 import {useSnackbar} from './MassiveSnack';
 import {PlanPageParams} from './plan-page-params';
-import Set from './set';
-import {addSet, countMany} from './set.service';
+import {countMany} from './set.service';
 import SetForm from './SetForm';
 import StackHeader from './StackHeader';
 import StartPlanItem from './StartPlanItem';
@@ -26,7 +27,7 @@ export default function StartPlan() {
   const {toast} = useSnackbar();
   const [minutes, setMinutes] = useState(set.minutes);
   const [seconds, setSeconds] = useState(set.seconds);
-  const [best, setBest] = useState<Set>(set);
+  const [best, setBest] = useState<GymSet>(set);
   const [selected, setSelected] = useState(0);
   const {settings} = useSettings();
   const [counts, setCounts] = useState<CountMany[]>();
@@ -41,10 +42,26 @@ export default function StartPlan() {
   });
 
   const refresh = useCallback(() => {
-    return countMany(workouts).then(newCounts => {
-      setCounts(newCounts);
-      console.log(`${StartPlan.name}.focus:`, {newCounts});
-    });
+    const questions = workouts.map(_ => '(?)').join(',');
+    const condition = `
+      sets.name = workouts.name
+        AND sets.created LIKE STRFTIME('%Y-%m-%d%%', 'now', 'localtime')
+        AND NOT sets.hidden
+    `;
+    return AppDataSource.manager
+      .createQueryBuilder()
+      .select('COUNT(sets.id)', 'total')
+      .addSelect('workouts')
+      .from(`(SELECT 0 AS name UNION values ${questions})`, 'workouts')
+      .leftJoin('sets', condition)
+      .groupBy('workouts.name')
+      .limit(-1)
+      .offset(1)
+      .getRawMany()
+      .then(newCounts => {
+        setCounts(newCounts);
+        console.log(`${StartPlan.name}.focus:`, {newCounts});
+      });
   }, [workouts]);
 
   useFocusEffect(
@@ -55,7 +72,8 @@ export default function StartPlan() {
 
   const handleSubmit = async () => {
     console.log(`${SetForm.name}.handleSubmit:`, {reps, weight, unit, best});
-    await addSet({
+    const [{now}] = await getNow();
+    await setRepo.save({
       name,
       weight: +weight,
       reps: +reps,
@@ -64,6 +82,7 @@ export default function StartPlan() {
       steps: set.steps,
       image: set.image,
       unit,
+      created: now,
     });
     await refresh();
     if (
@@ -92,11 +111,12 @@ export default function StartPlan() {
   const select = useCallback(
     async (index: number) => {
       setSelected(index);
-      console.log(`${StartPlan.name}.next:`, {name});
+      console.log(`${StartPlan.name}.next:`, {name, index});
       if (!counts) return;
       const workout = counts[index];
       console.log(`${StartPlan.name}.next:`, {workout});
       const newBest = await getBestSet(workout.name);
+      console.log(`${StartPlan.name}.next:`, {newBest});
       setMinutes(newBest.minutes);
       setSeconds(newBest.seconds);
       setName(newBest.name);

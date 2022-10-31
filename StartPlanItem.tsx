@@ -3,7 +3,7 @@ import {GestureResponderEvent, ListRenderItemInfo, View} from 'react-native';
 import {List, Menu, RadioButton} from 'react-native-paper';
 import {useColor} from './color';
 import CountMany from './count-many';
-import {deleteFirst} from './set.service';
+import {setRepo} from './db';
 
 interface Props extends ListRenderItemInfo<CountMany> {
   onSelect: (index: number) => void;
@@ -18,10 +18,15 @@ export default function StartPlanItem(props: Props) {
   const [showMenu, setShowMenu] = useState(false);
 
   const undo = useCallback(async () => {
-    await deleteFirst(item.name);
+    const first = await setRepo.findOne({
+      where: {name: item.name, hidden: 0 as any},
+      order: {created: 'desc'},
+    });
+    console.log({first});
+    await setRepo.delete(first.id);
     setShowMenu(false);
     onUndo();
-  }, [setShowMenu, item.name, onUndo]);
+  }, [setShowMenu, onUndo, item.name]);
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {

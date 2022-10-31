@@ -1,15 +1,43 @@
-export default interface Settings {
-  alarm: number;
-  vibrate: number;
+import {Column, Entity, PrimaryColumn} from 'typeorm';
+
+@Entity()
+export default class Settings {
+  @PrimaryColumn('boolean')
+  alarm: boolean;
+
+  @Column('boolean')
+  vibrate: boolean;
+
+  @Column('text')
   sound: string;
-  notify: number;
-  images: number;
-  showUnit: number;
+
+  @Column('boolean')
+  notify: boolean;
+
+  @Column('boolean')
+  images: boolean;
+
+  @Column('boolean')
+  showUnit: boolean;
+
+  @Column('text')
   color: string;
-  steps: number;
+
+  @Column('boolean')
+  steps: boolean;
+
+  @Column('text')
   date: string;
-  showDate: number;
-  theme: 'system' | 'dark' | 'light';
-  showSets: number;
-  noSound: number;
+
+  @Column('boolean')
+  showDate: boolean;
+
+  @Column('text')
+  theme: string;
+
+  @Column('boolean')
+  showSets: boolean;
+
+  @Column('boolean')
+  noSound: boolean;
 }

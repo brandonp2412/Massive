@@ -11,6 +11,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --quiet"
   },
   "dependencies": {
+    "@babel/plugin-transform-flow-strip-types": "^7.19.0",
     "@babel/preset-env": "^7.19.1",
     "@react-native-masked-view/masked-view": "^0.2.7",
     "@react-native-picker/picker": "^2.4.4",
@@ -45,12 +46,15 @@
     "react-native-svg-charts": "^5.4.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-shot": "^3.4.0",
-    "react-test-renderer": "^18.2.0"
+    "react-test-renderer": "^18.2.0",
+    "typeorm": "^0.3.10"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-decorators": "^7.20.0",
     "@babel/runtime": "^7.12.5",
     "@react-native-community/eslint-config": "^2.0.0",
+    "@types/node": "^18.11.7",
     "@types/react-native": "^0.69.0",
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.29.0",

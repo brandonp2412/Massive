@@ -13,11 +13,10 @@ import {
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {Color} from './color';
 import {lightColors} from './colors';
-import {runMigrations} from './db';
+import {runMigrations, settingsRepo} from './db';
 import MassiveSnack from './MassiveSnack';
 import Routes from './Routes';
 import Settings from './settings';
-import {getSettings} from './settings.service';
 import {SettingsContext} from './use-settings';
 
 export const CombinedDefaultTheme = {
@@ -51,7 +50,7 @@ const App = () => {
 
   useEffect(() => {
     runMigrations().then(async () => {
-      const gotSettings = await getSettings();
+      const gotSettings = await settingsRepo.findOne({where: {}});
       console.log(`${App.name}.runMigrations:`, {gotSettings});
       setSettings(gotSettings);
       if (gotSettings.color) setColor(gotSettings.color);

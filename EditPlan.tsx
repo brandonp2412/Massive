@@ -8,10 +8,9 @@ import {useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Text} from 'react-native-paper';
 import {MARGIN, PADDING} from './constants';
+import {planRepo, setRepo} from './db';
 import {DrawerParamList} from './drawer-param-list';
 import {PlanPageParams} from './plan-page-params';
-import {addPlan, updatePlan} from './plan.service';
-import {getNames} from './set.service';
 import StackHeader from './StackHeader';
 import Switch from './Switch';
 import {DAYS} from './time';
@@ -29,10 +28,15 @@ export default function EditPlan() {
   const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   useEffect(() => {
-    getNames().then(n => {
-      console.log(EditPlan.name, {n});
-      setNames(n);
-    });
+    setRepo
+      .createQueryBuilder()
+      .select('name')
+      .distinct(true)
+      .getRawMany()
+      .then(values => {
+        console.log(EditPlan.name, {values});
+        setNames(values.map(value => value.name));
+      });
   }, []);
 
   const save = useCallback(async () => {
@@ -40,14 +44,7 @@ export default function EditPlan() {
     if (!days || !workouts) return;
     const newWorkouts = workouts.filter(workout => workout).join(',');
     const newDays = days.filter(day => day).join(',');
-    if (typeof plan.id === 'undefined')
-      await addPlan({days: newDays, workouts: newWorkouts});
-    else
-      await updatePlan({
-        days: newDays,
-        workouts: newWorkouts,
-        id: plan.id,
-      });
+    await planRepo.save({days: newDays, workouts: newWorkouts, id: plan.id});
     navigation.goBack();
   }, [days, workouts, plan, navigation]);
 

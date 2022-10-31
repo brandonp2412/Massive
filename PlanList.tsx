@@ -6,11 +6,12 @@ import {
 import {useCallback, useState} from 'react';
 import {FlatList} from 'react-native';
 import {List} from 'react-native-paper';
+import {Like} from 'typeorm';
+import {planRepo} from './db';
 import DrawerHeader from './DrawerHeader';
 import Page from './Page';
 import {Plan} from './plan';
 import {PlanPageParams} from './plan-page-params';
-import {getPlans} from './plan.service';
 import PlanItem from './PlanItem';
 
 export default function PlanList() {
@@ -19,7 +20,11 @@ export default function PlanList() {
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const refresh = useCallback(async (value: string) => {
-    getPlans(value).then(setPlans);
+    planRepo
+      .find({
+        where: [{days: Like(`%${value}%`)}, {workouts: Like(`%${value}%`)}],
+      })
+      .then(setPlans);
   }, []);
 
   useFocusEffect(

@@ -4,18 +4,18 @@ import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, TouchableRipple} from 'react-native-paper';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN} from './constants';
+import {setRepo} from './db';
+import GymSet from './gym-set';
 import MassiveInput from './MassiveInput';
 import {useSnackbar} from './MassiveSnack';
-import Set from './set';
-import {getSets} from './set.service';
 import {useSettings} from './use-settings';
 
 export default function SetForm({
   save,
   set,
 }: {
-  set: Set;
-  save: (set: Set) => void;
+  set: GymSet;
+  save: (set: GymSet) => void;
 }) {
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps.toString());
@@ -39,9 +39,8 @@ export default function SetForm({
     if (!name) return;
     let image = newImage;
     if (!newImage && !removeImage)
-      image = await getSets({term: name, limit: 1, offset: 0}).then(
-        ([gotSet]) => gotSet?.image,
-      );
+      image = await setRepo.findOne({where: {name}}).then(s => s.image);
+
     console.log(`${SetForm.name}.handleSubmit:`, {image});
     save({
       name,

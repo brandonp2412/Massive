@@ -3,12 +3,12 @@ import {useCallback, useRef, useState} from 'react';
 import {ScrollView, TextInput, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Card, TouchableRipple} from 'react-native-paper';
+import {Like} from 'typeorm';
 import ConfirmDialog from './ConfirmDialog';
 import {MARGIN, PADDING} from './constants';
+import {getNow, planRepo, setRepo} from './db';
 import MassiveInput from './MassiveInput';
 import {useSnackbar} from './MassiveSnack';
-import {updatePlanWorkouts} from './plan.service';
-import {addSet, updateManySet, updateSetImage} from './set.service';
 import StackHeader from './StackHeader';
 import {useSettings} from './use-settings';
 import {WorkoutsPageParams} from './WorkoutsPage';
@@ -36,21 +36,29 @@ export default function EditWorkout() {
   const {settings} = useSettings();
 
   const update = async () => {
-    await updateManySet({
-      oldName: params.value.name,
-      newName: name || params.value.name,
-      sets: sets ?? '3',
-      seconds: seconds?.toString() ?? '30',
-      minutes: minutes?.toString() ?? '3',
-      steps,
-    });
-    await updatePlanWorkouts(params.value.name, name || params.value.name);
-    if (uri || removeImage) await updateSetImage(params.value.name, uri || '');
+    await setRepo.update(
+      {name: params.value.name},
+      {
+        name: name || params.value.name,
+        sets: Number(sets),
+        minutes: +minutes,
+        seconds: +seconds,
+        steps,
+        image: removeImage ? '' : uri,
+      },
+    );
+    await planRepo.query(
+      `UPDATE plans 
+       SET workouts = REPLACE(workouts, $1, $2) 
+       WHERE workouts LIKE $3`,
+      [params.value.name, name, `%${params.value.name}%`],
+    );
     navigation.goBack();
   };
 
   const add = async () => {
-    await addSet({
+    const [{now}] = await getNow();
+    await setRepo.save({
       name,
       reps: 0,
       weight: 0,
@@ -60,6 +68,7 @@ export default function EditWorkout() {
       seconds: seconds ? +seconds : 30,
       sets: sets ? +sets : 3,
       steps,
+      created: now,
     });
     navigation.goBack();
   };
