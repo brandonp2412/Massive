@@ -86,7 +86,7 @@ export default function StartPlan() {
   useFocusEffect(
     useCallback(() => {
       refresh().then(newCounts => select(0, newCounts))
-    }, [refresh]),
+    }, [refresh, select]),
   )
 
   const handleSubmit = async () => {

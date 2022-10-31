@@ -1,4 +1,5 @@
 import {createDrawerNavigator} from '@react-navigation/drawer'
+import {useMemo} from 'react'
 import {IconButton} from 'react-native-paper'
 import BestPage from './BestPage'
 import {DrawerParamList} from './drawer-param-list'
@@ -14,13 +15,16 @@ const Drawer = createDrawerNavigator<DrawerParamList>()
 export default function Routes() {
   const dark = useDark()
 
-  const routes: Route[] = [
-    {name: 'Home', component: HomePage, icon: 'home'},
-    {name: 'Plans', component: PlanPage, icon: 'event'},
-    {name: 'Best', component: BestPage, icon: 'insights'},
-    {name: 'Workouts', component: WorkoutsPage, icon: 'fitness-center'},
-    {name: 'Settings', component: SettingsPage, icon: 'settings'},
-  ]
+  const routes: Route[] = useMemo(
+    () => [
+      {name: 'Home', component: HomePage, icon: 'home'},
+      {name: 'Plans', component: PlanPage, icon: 'event'},
+      {name: 'Best', component: BestPage, icon: 'insights'},
+      {name: 'Workouts', component: WorkoutsPage, icon: 'fitness-center'},
+      {name: 'Settings', component: SettingsPage, icon: 'settings'},
+    ],
+    [],
+  )
 
   return (
     <Drawer.Navigator

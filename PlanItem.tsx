@@ -6,7 +6,6 @@ import {
 import {useCallback, useMemo, useState} from 'react'
 import {GestureResponderEvent, Text} from 'react-native'
 import {Divider, List, Menu} from 'react-native-paper'
-import {getBestSet} from './best.service'
 import {planRepo} from './db'
 import {Plan} from './plan'
 import {PlanPageParams} from './plan-page-params'

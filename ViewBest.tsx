@@ -56,9 +56,9 @@ export default function ViewBest() {
         builder
           .addSelect('MAX(weight / (1.0278 - 0.0278 * reps))', 'weight')
           .getRawMany()
-          .then(weights => {
-            console.log({weights})
-            setWeights(weights)
+          .then(newWeights => {
+            console.log({weights: newWeights})
+            setWeights(newWeights)
           })
     }
   }, [params.best.name, metric, period])

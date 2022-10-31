@@ -2,19 +2,19 @@ import React, {useContext} from 'react'
 import Settings from './settings'
 
 export const defaultSettings: Settings = {
-  alarm: 0,
+  alarm: true,
   color: '',
   date: '',
-  images: 1,
-  notify: 0,
-  showDate: 0,
-  showSets: 1,
-  showUnit: 1,
+  images: true,
+  notify: false,
+  showDate: false,
+  showSets: true,
+  showUnit: true,
   sound: '',
-  steps: 0,
+  steps: false,
   theme: 'system',
-  vibrate: 1,
-  noSound: 0,
+  vibrate: true,
+  noSound: false,
 }
 
 export const SettingsContext = React.createContext<{

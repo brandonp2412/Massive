@@ -11,4 +11,4 @@ module.exports = {
     './node_modules/react-native-gesture-handler/jestSetup',
     './jestSetup.ts',
   ],
-};
+}

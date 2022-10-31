@@ -42,6 +42,7 @@ export const CombinedDarkTheme = {
 
 const App = () => {
   const isDark = useColorScheme() === 'dark'
+  const [initialized, setInitialized] = useState(false)
   const [settings, setSettings] = useState<Settings>()
   const [color, setColor] = useState(
     isDark
@@ -55,6 +56,7 @@ const App = () => {
       console.log(`${App.name}.useEffect:`, {gotSettings})
       setSettings(gotSettings)
       if (gotSettings.color) setColor(gotSettings.color)
+      setInitialized(true)
     })
   }, [setColor])
 
@@ -73,15 +75,22 @@ const App = () => {
     return value
   }, [color, isDark, settings])
 
+  const settingsContext = useMemo(
+    () => ({settings, setSettings}),
+    [settings, setSettings],
+  )
+
+  const colorContext = useMemo(() => ({color, setColor}), [color, setColor])
+
   return (
-    <Color.Provider value={{color, setColor}}>
+    <Color.Provider value={colorContext}>
       <PaperProvider
         theme={theme}
         settings={{icon: props => <MaterialIcon {...props} />}}>
         <NavigationContainer theme={theme}>
           <MassiveSnack>
-            {settings && (
-              <SettingsContext.Provider value={{settings, setSettings}}>
+            {initialized && (
+              <SettingsContext.Provider value={settingsContext}>
                 <Routes />
               </SettingsContext.Provider>
             )}

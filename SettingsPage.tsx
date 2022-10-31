@@ -1,6 +1,6 @@
 import {Picker} from '@react-native-picker/picker'
 import {useFocusEffect} from '@react-navigation/native'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {NativeModules, ScrollView} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Button} from 'react-native-paper'
@@ -22,19 +22,6 @@ export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
   const {settings, setSettings} = useSettings()
-  const {
-    vibrate,
-    sound,
-    notify,
-    images,
-    showUnit,
-    steps,
-    showDate,
-    showSets,
-    theme,
-    alarm,
-    noSound,
-  } = settings
   const {color, setColor} = useColor()
   const {toast} = useSnackbar()
 
@@ -150,15 +137,15 @@ export default function SettingsPage() {
   )
 
   const switches: Input<boolean>[] = [
-    {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
-    {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
-    {name: 'Disable sound', value: noSound, onChange: changeNoSound},
-    {name: 'Record notifications', value: notify, onChange: changeNotify},
-    {name: 'Show images', value: images, onChange: changeImages},
-    {name: 'Show unit', value: showUnit, onChange: changeUnit},
-    {name: 'Show steps', value: steps, onChange: changeSteps},
-    {name: 'Show date', value: showDate, onChange: changeShowDate},
-    {name: 'Show sets', value: showSets, onChange: changeShowSets},
+    {name: 'Rest timers', value: settings.alarm, onChange: changeAlarmEnabled},
+    {name: 'Vibrate', value: settings.vibrate, onChange: changeVibrate},
+    {name: 'Disable sound', value: settings.noSound, onChange: changeNoSound},
+    {name: 'Notifications', value: settings.notify, onChange: changeNotify},
+    {name: 'Show images', value: settings.images, onChange: changeImages},
+    {name: 'Show unit', value: settings.showUnit, onChange: changeUnit},
+    {name: 'Show steps', value: settings.steps, onChange: changeSteps},
+    {name: 'Show date', value: settings.showDate, onChange: changeShowDate},
+    {name: 'Show sets', value: settings.showSets, onChange: changeShowSets},
   ]
 
   const changeTheme = useCallback(
@@ -176,6 +163,27 @@ export default function SettingsPage() {
     },
     [settings, setSettings],
   )
+
+  const sound = useMemo(() => {
+    if (!settings.sound) return null
+    const split = settings.sound.split('/')
+    return split.pop()
+  }, [settings.sound])
+
+  const theme = useMemo(() => {
+    if (!'theme'.includes(term.toLowerCase())) return null
+    return (
+      <Picker
+        style={{color}}
+        dropdownIconColor={color}
+        selectedValue={settings.theme}
+        onValueChange={changeTheme}>
+        <Picker.Item value="system" label="Follow system theme" />
+        <Picker.Item value="dark" label="Dark theme" />
+        <Picker.Item value="light" label="Light theme" />
+      </Picker>
+    )
+  }, [term, color, changeTheme, settings.theme])
 
   return (
     <>
@@ -195,17 +203,7 @@ export default function SettingsPage() {
                 {input.name}
               </Switch>
             ))}
-          {'theme'.includes(term.toLowerCase()) && (
-            <Picker
-              style={{color}}
-              dropdownIconColor={color}
-              selectedValue={theme}
-              onValueChange={changeTheme}>
-              <Picker.Item value="system" label="Follow system theme" />
-              <Picker.Item value="dark" label="Dark theme" />
-              <Picker.Item value="light" label="Light theme" />
-            </Picker>
-          )}
+          {theme}
           {'color'.includes(term.toLowerCase()) && (
             <Picker
               style={{color, marginTop: -10}}
@@ -244,10 +242,7 @@ export default function SettingsPage() {
           )}
           {'alarm sound'.includes(term.toLowerCase()) && (
             <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
-              Alarm sound
-              {sound
-                ? ': ' + sound.split('/')[sound.split('/').length - 1]
-                : null}
+              Alarm sound: {sound}
             </Button>
           )}
         </ScrollView>
