@@ -121,8 +121,8 @@ export default function SettingsPage() {
   const changeShowSets = useCallback(
     (enabled: boolean) => {
       update(enabled, 'showSets')
-      if (enabled) toast('Show maximum sets for workouts.', 4000)
-      else toast('Stopped showing maximum sets for workouts.', 4000)
+      if (enabled) toast('Show target sets for workouts.', 4000)
+      else toast('Stopped showing target sets for workouts.', 4000)
     },
     [toast, update],
   )
