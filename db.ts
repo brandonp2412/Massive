@@ -17,10 +17,3 @@ export const getNow = (): Promise<{now: string}[]> => {
     "SELECT STRFTIME('%Y-%m-%dT%H:%M:%S','now','localtime') AS now",
   )
 }
-
-export const runMigrations = async () => {
-  console.log(`${runMigrations.name}:`, 'Initializing...')
-  await AppDataSource.initialize()
-  console.log(`${runMigrations.name}:`, 'Running migrations...')
-  await AppDataSource.runMigrations()
-}

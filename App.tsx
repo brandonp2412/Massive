@@ -13,7 +13,8 @@ import {
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 import {Color} from './color'
 import {lightColors} from './colors'
-import {runMigrations, settingsRepo} from './db'
+import {AppDataSource} from './data-source'
+import {settingsRepo} from './db'
 import MassiveSnack from './MassiveSnack'
 import Routes from './Routes'
 import Settings from './settings'
@@ -49,9 +50,9 @@ const App = () => {
   )
 
   useEffect(() => {
-    runMigrations().then(async () => {
+    AppDataSource.initialize().then(async () => {
       const gotSettings = await settingsRepo.findOne({where: {}})
-      console.log(`${App.name}.runMigrations:`, {gotSettings})
+      console.log(`${App.name}.useEffect:`, {gotSettings})
       setSettings(gotSettings)
       if (gotSettings.color) setColor(gotSettings.color)
     })
