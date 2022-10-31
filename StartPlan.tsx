@@ -86,7 +86,8 @@ export default function StartPlan() {
   useFocusEffect(
     useCallback(() => {
       refresh().then(newCounts => select(0, newCounts))
-    }, [refresh, select]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refresh]),
   )
 
   const handleSubmit = async () => {
