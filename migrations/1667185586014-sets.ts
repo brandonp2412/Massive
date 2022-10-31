@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner} from 'typeorm';
+import {MigrationInterface, QueryRunner} from 'typeorm'
 
 export class Sets1667185586014 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -11,10 +11,10 @@ export class Sets1667185586014 implements MigrationInterface {
         created TEXT NOT NULL,
         unit TEXT DEFAULT 'kg'
       )
-  `);
+  `)
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE sets`);
+    await queryRunner.query(`DROP TABLE sets`)
   }
 }

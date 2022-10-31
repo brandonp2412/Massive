@@ -1,13 +1,13 @@
-import {MigrationInterface, QueryRunner} from 'typeorm';
+import {MigrationInterface, QueryRunner} from 'typeorm'
 
 export class addTheme1667186439366 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
-    ALTER TABLE settings ADD COLUMN theme TEXT
-  `);
+    await queryRunner
+      .query(`ALTER TABLE settings ADD COLUMN theme TEXT`)
+      .catch(() => null)
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropColumn('settings', 'theme');
+    await queryRunner.dropColumn('settings', 'theme')
   }
 }

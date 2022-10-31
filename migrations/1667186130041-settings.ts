@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner} from 'typeorm';
+import {MigrationInterface, QueryRunner} from 'typeorm'
 
 export class settings1667186130041 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -10,10 +10,10 @@ export class settings1667186130041 implements MigrationInterface {
         vibrate BOOLEAN NOT NULL DEFAULT 1,
         sets INTEGER NOT NULL DEFAULT 3
       )
-  `);
+  `)
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('settings');
+    await queryRunner.dropTable('settings')
   }
 }
