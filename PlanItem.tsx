@@ -39,12 +39,9 @@ export default function PlanItem({
   }, [setShow, item.id, onRemove]);
 
   const start = useCallback(async () => {
-    const workouts = item.workouts.split(',');
-    const first = workouts[0];
-    const set = await getBestSet(first);
-    console.log(`${PlanItem.name}.start:`, {set});
+    console.log(`${PlanItem.name}.start:`, {item});
     setShow(false);
-    navigation.navigate('StartPlan', {plan: item, set});
+    navigation.navigate('StartPlan', {plan: item});
   }, [item, navigation]);
 
   const longPress = useCallback(

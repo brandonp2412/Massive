@@ -65,7 +65,7 @@ export default function SetList() {
     });
     if (newSets.length === 0) return setEnd(true);
     if (!sets) return;
-    // setSets([...sets, ...newSets]);
+    setSets([...sets, ...newSets]);
     if (newSets.length < limit) return setEnd(true);
     setOffset(newOffset);
   }, [term, end, offset, sets]);
@@ -109,10 +109,6 @@ export default function SetList() {
             data={sets}
             style={{flex: 1}}
             renderItem={renderItem}
-            getItem={(data: any, index: number) => {
-              console.log({data, index});
-              return data[index];
-            }}
             onEndReached={next}
           />
         )}

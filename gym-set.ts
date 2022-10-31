@@ -27,13 +27,13 @@ export default class GymSet {
   hidden = false;
 
   @Column('text')
-  created?: string;
+  created: string;
 
   @Column('text')
-  unit?: string;
+  unit: string;
 
   @Column('text')
-  image?: string;
+  image: string;
 
   @Column('text')
   steps?: string;

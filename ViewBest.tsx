@@ -2,7 +2,6 @@ import {Picker} from '@react-native-picker/picker';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
 import {View} from 'react-native';
-import {getOneRepMax} from './best.service';
 import {BestPageParams} from './BestPage';
 import Chart from './Chart';
 import {PADDING} from './constants';
@@ -56,7 +55,14 @@ export default function ViewBest() {
           .then(setVolumes);
         break;
       default:
-        getOneRepMax({name: params.best.name, period}).then(setWeights);
+        // Brzycki formula https://en.wikipedia.org/wiki/One-repetition_maximum#Brzycki
+        builder
+          .addSelect('MAX(weight / (1.0278 - 0.0278 * reps))', 'weight')
+          .getRawMany()
+          .then(weights => {
+            console.log({weights});
+            setWeights(weights);
+          });
     }
   }, [params.best.name, metric, period]);
 

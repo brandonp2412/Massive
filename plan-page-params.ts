@@ -1,5 +1,4 @@
 import {Plan} from './plan';
-import GymSet from './gym-set';
 
 export type PlanPageParams = {
   PlanList: {};
@@ -8,6 +7,5 @@ export type PlanPageParams = {
   };
   StartPlan: {
     plan: Plan;
-    set: GymSet;
   };
 };

@@ -6,12 +6,12 @@ import {Button} from 'react-native-paper';
 import {getBestSet} from './best.service';
 import {PADDING} from './constants';
 import CountMany from './count-many';
-import {AppDataSource, getNow, setRepo} from './db';
+import {AppDataSource} from './data-source';
+import {getNow, setRepo} from './db';
 import GymSet from './gym-set';
 import MassiveInput from './MassiveInput';
 import {useSnackbar} from './MassiveSnack';
 import {PlanPageParams} from './plan-page-params';
-import {countMany} from './set.service';
 import SetForm from './SetForm';
 import StackHeader from './StackHeader';
 import StartPlanItem from './StartPlanItem';
@@ -19,15 +19,14 @@ import {useSettings} from './use-settings';
 
 export default function StartPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>();
-  const {set} = params;
-  const [name, setName] = useState(set.name);
-  const [reps, setReps] = useState(set.reps.toString());
-  const [weight, setWeight] = useState(set.weight.toString());
-  const [unit, setUnit] = useState<string>();
+  const [name, setName] = useState('');
+  const [reps, setReps] = useState('');
+  const [weight, setWeight] = useState('');
+  const [unit, setUnit] = useState<string>('kg');
   const {toast} = useSnackbar();
-  const [minutes, setMinutes] = useState(set.minutes);
-  const [seconds, setSeconds] = useState(set.seconds);
-  const [best, setBest] = useState<GymSet>(set);
+  const [minutes, setMinutes] = useState(3);
+  const [seconds, setSeconds] = useState(30);
+  const [best, setBest] = useState<GymSet>();
   const [selected, setSelected] = useState(0);
   const {settings} = useSettings();
   const [counts, setCounts] = useState<CountMany[]>();
@@ -38,35 +37,55 @@ export default function StartPlan() {
 
   const [selection, setSelection] = useState({
     start: 0,
-    end: set.reps.toString().length,
+    end: 0,
   });
 
   const refresh = useCallback(() => {
-    const questions = workouts.map(_ => '(?)').join(',');
-    const condition = `
-      sets.name = workouts.name
+    const questions = workouts
+      .map((workout, index) => `('${workout}',${index})`)
+      .join(',');
+    console.log({questions, workouts});
+    const select = `
+      SELECT workouts.name, COUNT(sets.id) as total
+      FROM (select 0 as name, 0 as sequence union values ${questions}) as workouts 
+      LEFT JOIN sets ON sets.name = workouts.name 
         AND sets.created LIKE STRFTIME('%Y-%m-%d%%', 'now', 'localtime')
         AND NOT sets.hidden
+      GROUP BY workouts.name
+      ORDER BY workouts.sequence
+      LIMIT -1
+      OFFSET 1
     `;
-    return AppDataSource.manager
-      .createQueryBuilder()
-      .select('COUNT(sets.id)', 'total')
-      .addSelect('workouts')
-      .from(`(SELECT 0 AS name UNION values ${questions})`, 'workouts')
-      .leftJoin('sets', condition)
-      .groupBy('workouts.name')
-      .limit(-1)
-      .offset(1)
-      .getRawMany()
-      .then(newCounts => {
-        setCounts(newCounts);
-        console.log(`${StartPlan.name}.focus:`, {newCounts});
-      });
+    return AppDataSource.manager.query(select).then(newCounts => {
+      setCounts(newCounts);
+      console.log(`${StartPlan.name}.focus:`, {newCounts});
+      return newCounts;
+    });
   }, [workouts]);
+
+  const select = useCallback(
+    async (index: number, newCounts?: CountMany[]) => {
+      setSelected(index);
+      console.log(`${StartPlan.name}.next:`, {name, index});
+      if (!counts && !newCounts) return;
+      const workout = counts ? counts[index] : newCounts[index];
+      console.log(`${StartPlan.name}.next:`, {workout});
+      const newBest = await getBestSet(workout.name);
+      console.log(`${StartPlan.name}.next:`, {newBest});
+      setMinutes(newBest.minutes);
+      setSeconds(newBest.seconds);
+      setName(newBest.name);
+      setReps(newBest.reps.toString());
+      setWeight(newBest.weight.toString());
+      setUnit(newBest.unit);
+      setBest(newBest);
+    },
+    [name, counts],
+  );
 
   useFocusEffect(
     useCallback(() => {
-      refresh();
+      refresh().then(newCounts => select(0, newCounts));
     }, [refresh]),
   );
 
@@ -77,12 +96,12 @@ export default function StartPlan() {
       name,
       weight: +weight,
       reps: +reps,
-      minutes: set.minutes,
-      seconds: set.seconds,
-      steps: set.steps,
-      image: set.image,
       unit,
       created: now,
+      minutes,
+      seconds,
+      sets: best.sets,
+      hidden: false,
     });
     await refresh();
     if (
@@ -106,26 +125,6 @@ export default function StartPlan() {
         toast('Commas and single quotes would break CSV exports', 6000);
     },
     [toast],
-  );
-
-  const select = useCallback(
-    async (index: number) => {
-      setSelected(index);
-      console.log(`${StartPlan.name}.next:`, {name, index});
-      if (!counts) return;
-      const workout = counts[index];
-      console.log(`${StartPlan.name}.next:`, {workout});
-      const newBest = await getBestSet(workout.name);
-      console.log(`${StartPlan.name}.next:`, {newBest});
-      setMinutes(newBest.minutes);
-      setSeconds(newBest.seconds);
-      setName(newBest.name);
-      setReps(newBest.reps.toString());
-      setWeight(newBest.weight.toString());
-      setUnit(newBest.unit);
-      setBest(newBest);
-    },
-    [name, counts],
   );
 
   return (

@@ -39,7 +39,7 @@ export default function SetForm({
     if (!name) return;
     let image = newImage;
     if (!newImage && !removeImage)
-      image = await setRepo.findOne({where: {name}}).then(s => s.image);
+      image = await setRepo.findOne({where: {name}}).then(s => s?.image);
 
     console.log(`${SetForm.name}.handleSubmit:`, {image});
     save({
@@ -52,6 +52,7 @@ export default function SetForm({
       minutes: Number(set.minutes ?? 3),
       seconds: Number(set.seconds ?? 30),
       sets: set.sets ?? 3,
+      hidden: false,
     });
   };
 
