@@ -73,18 +73,20 @@ export default function SetList() {
   const onAdd = useCallback(async () => {
     console.log(`${SetList.name}.onAdd`, {set})
     const [{now}] = await getNow()
-    navigation.navigate('EditSet', {
-      set: set || {
-        hidden: false,
-        minutes: 3,
-        name: '',
-        reps: 0,
-        seconds: 30,
-        sets: 3,
-        weight: 0,
-        created: now,
-      },
-    })
+    const newSet: GymSet = set || {
+      hidden: false,
+      minutes: 3,
+      name: '',
+      reps: 0,
+      seconds: 30,
+      sets: 3,
+      weight: 0,
+      created: now,
+      image: '',
+      unit: 'kg',
+    }
+    delete newSet.id
+    navigation.navigate('EditSet', {set: newSet})
   }, [navigation, set])
 
   const search = useCallback(
