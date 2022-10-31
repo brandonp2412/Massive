@@ -1,12 +1,7 @@
-import {enablePromise, SQLiteDatabase} from 'react-native-sqlite-storage'
 import {AppDataSource} from './data-source'
 import GymSet from './gym-set'
 import {Plan} from './plan'
 import Settings from './settings'
-
-enablePromise(true)
-
-export let db: SQLiteDatabase
 
 export const setRepo = AppDataSource.manager.getRepository(GymSet)
 export const planRepo = AppDataSource.manager.getRepository(Plan)
