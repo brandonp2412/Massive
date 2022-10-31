@@ -1,7 +1,6 @@
 import React, {useCallback, useState} from 'react'
 import {GestureResponderEvent, ListRenderItemInfo, View} from 'react-native'
-import {List, Menu, RadioButton} from 'react-native-paper'
-import {useColor} from './color'
+import {List, Menu, RadioButton, useTheme} from 'react-native-paper'
 import CountMany from './count-many'
 import {setRepo} from './db'
 
@@ -13,7 +12,7 @@ interface Props extends ListRenderItemInfo<CountMany> {
 
 export default function StartPlanItem(props: Props) {
   const {index, item, onSelect, selected, onUndo} = props
-  const {color} = useColor()
+  const {colors} = useTheme()
   const [anchor, setAnchor] = useState({x: 0, y: 0})
   const [showMenu, setShowMenu] = useState(false)
 
@@ -48,7 +47,7 @@ export default function StartPlanItem(props: Props) {
             onPress={() => onSelect(index)}
             value={index.toString()}
             status={selected === index ? 'checked' : 'unchecked'}
-            color={color}
+            color={colors.primary}
           />
         </View>
       )}

@@ -11,14 +11,13 @@ import {
   Provider as PaperProvider,
 } from 'react-native-paper'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
-import {Color} from './color'
 import {lightColors} from './colors'
 import {AppDataSource} from './data-source'
 import {settingsRepo} from './db'
 import MassiveSnack from './MassiveSnack'
 import Routes from './Routes'
 import Settings from './settings'
-import {SettingsContext} from './use-settings'
+import {defaultSettings, SettingsContext} from './use-settings'
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -43,61 +42,60 @@ export const CombinedDarkTheme = {
 const App = () => {
   const isDark = useColorScheme() === 'dark'
   const [initialized, setInitialized] = useState(false)
-  const [settings, setSettings] = useState<Settings>()
-  const [color, setColor] = useState(
-    isDark
-      ? CombinedDarkTheme.colors.primary.toUpperCase()
-      : CombinedDefaultTheme.colors.primary.toUpperCase(),
-  )
+  const [settings, setSettings] = useState<Settings>({
+    ...defaultSettings,
+    color: isDark
+      ? CombinedDarkTheme.colors.primary
+      : CombinedDefaultTheme.colors.primary,
+  })
 
   useEffect(() => {
     AppDataSource.initialize().then(async () => {
       const gotSettings = await settingsRepo.findOne({where: {}})
       console.log(`${App.name}.useEffect:`, {gotSettings})
       setSettings(gotSettings)
-      if (gotSettings.color) setColor(gotSettings.color)
       setInitialized(true)
     })
-  }, [setColor])
+  }, [])
 
   const theme = useMemo(() => {
-    const darkTheme = {
-      ...CombinedDarkTheme,
-      colors: {...CombinedDarkTheme.colors, primary: color},
-    }
-    const lightTheme = {
-      ...CombinedDefaultTheme,
-      colors: {...CombinedDefaultTheme.colors, primary: color},
-    }
+    const darkTheme = settings?.color
+      ? {
+          ...CombinedDarkTheme,
+          colors: {...CombinedDarkTheme.colors, primary: settings.color},
+        }
+      : CombinedDarkTheme
+    const lightTheme = settings?.color
+      ? {
+          ...CombinedDefaultTheme,
+          colors: {...CombinedDefaultTheme.colors, primary: settings.color},
+        }
+      : CombinedDefaultTheme
     let value = isDark ? darkTheme : lightTheme
     if (settings?.theme === 'dark') value = darkTheme
     else if (settings?.theme === 'light') value = lightTheme
     return value
-  }, [color, isDark, settings])
+  }, [isDark, settings?.theme, settings?.color])
 
   const settingsContext = useMemo(
     () => ({settings, setSettings}),
     [settings, setSettings],
   )
 
-  const colorContext = useMemo(() => ({color, setColor}), [color, setColor])
-
   return (
-    <Color.Provider value={colorContext}>
-      <PaperProvider
-        theme={theme}
-        settings={{icon: props => <MaterialIcon {...props} />}}>
-        <NavigationContainer theme={theme}>
-          <MassiveSnack>
-            {initialized && (
-              <SettingsContext.Provider value={settingsContext}>
-                <Routes />
-              </SettingsContext.Provider>
-            )}
-          </MassiveSnack>
-        </NavigationContainer>
-      </PaperProvider>
-    </Color.Provider>
+    <PaperProvider
+      theme={theme}
+      settings={{icon: props => <MaterialIcon {...props} />}}>
+      <NavigationContainer theme={theme}>
+        <MassiveSnack>
+          {initialized && (
+            <SettingsContext.Provider value={settingsContext}>
+              <Routes />
+            </SettingsContext.Provider>
+          )}
+        </MassiveSnack>
+      </NavigationContainer>
+    </PaperProvider>
   )
 }
 

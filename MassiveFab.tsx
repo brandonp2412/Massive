@@ -1,11 +1,13 @@
 import {ComponentProps} from 'react'
-import {FAB} from 'react-native-paper'
-import {useColor} from './color'
+import {FAB, useTheme} from 'react-native-paper'
 import {lightColors} from './colors'
 
 export default function MassiveFab(props: Partial<ComponentProps<typeof FAB>>) {
-  const {color} = useColor()
-  const fabColor = lightColors.map(lightColor => lightColor.hex).includes(color)
+  const {colors} = useTheme()
+
+  const fabColor = lightColors
+    .map(lightColor => lightColor.hex)
+    .includes(colors.primary)
     ? 'black'
     : undefined
 
@@ -17,7 +19,7 @@ export default function MassiveFab(props: Partial<ComponentProps<typeof FAB>>) {
         position: 'absolute',
         right: 10,
         bottom: 10,
-        backgroundColor: color,
+        backgroundColor: colors.primary,
       }}
       {...props}
     />

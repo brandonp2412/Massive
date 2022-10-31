@@ -1,9 +1,10 @@
 import React, {useContext} from 'react'
+import {darkColors} from './colors'
 import Settings from './settings'
 
 export const defaultSettings: Settings = {
   alarm: true,
-  color: '',
+  color: darkColors[0].hex,
   date: '',
   images: true,
   notify: false,

@@ -4,7 +4,6 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {NativeModules, ScrollView} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Button} from 'react-native-paper'
-import {useColor} from './color'
 import {darkColors, lightColors} from './colors'
 import ConfirmDialog from './ConfirmDialog'
 import {MARGIN} from './constants'
@@ -22,7 +21,6 @@ export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
   const {settings, setSettings} = useSettings()
-  const {color, setColor} = useColor()
   const {toast} = useSnackbar()
 
   useEffect(() => {
@@ -174,8 +172,8 @@ export default function SettingsPage() {
     if (!'theme'.includes(term.toLowerCase())) return null
     return (
       <Picker
-        style={{color}}
-        dropdownIconColor={color}
+        style={{color: settings.color}}
+        dropdownIconColor={settings.color}
         selectedValue={settings.theme}
         onValueChange={changeTheme}>
         <Picker.Item value="system" label="Follow system theme" />
@@ -183,7 +181,12 @@ export default function SettingsPage() {
         <Picker.Item value="light" label="Light theme" />
       </Picker>
     )
-  }, [term, color, changeTheme, settings.theme])
+  }, [term, settings.color, changeTheme, settings.theme])
+
+  const changeColor = useCallback((value: string) => {
+    setSettings({...settings, color: value})
+    settingsRepo.update({}, {color: value})
+  }, [])
 
   return (
     <>
@@ -206,10 +209,10 @@ export default function SettingsPage() {
           {theme}
           {'color'.includes(term.toLowerCase()) && (
             <Picker
-              style={{color, marginTop: -10}}
-              dropdownIconColor={color}
-              selectedValue={color}
-              onValueChange={value => setColor(value)}>
+              style={{color: settings.color, marginTop: -10}}
+              dropdownIconColor={settings.color}
+              selectedValue={settings.color}
+              onValueChange={changeColor}>
               {lightColors.concat(darkColors).map(colorOption => (
                 <Picker.Item
                   key={colorOption.hex}
@@ -222,8 +225,8 @@ export default function SettingsPage() {
           )}
           {'date format'.includes(term.toLowerCase()) && (
             <Picker
-              style={{color, marginTop: -10}}
-              dropdownIconColor={color}
+              style={{color: settings.color, marginTop: -10}}
+              dropdownIconColor={settings.color}
               selectedValue={settings.date}
               onValueChange={changeDate}>
               <Picker.Item value="%Y-%m-%d %H:%M" label="1990-12-24 15:05" />

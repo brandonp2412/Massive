@@ -1,8 +1,8 @@
+import {useTheme} from '@react-navigation/native'
 import * as shape from 'd3-shape'
 import {View} from 'react-native'
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts'
 import {CombinedDarkTheme, CombinedDefaultTheme} from './App'
-import {useColor} from './color'
 import {MARGIN, PADDING} from './constants'
 import GymSet from './gym-set'
 import useDark from './use-dark'
@@ -18,7 +18,7 @@ export default function Chart({
   xFormat: (value: any, index: number) => string
   yFormat: (value: any) => string
 }) {
-  const {color} = useColor()
+  const {colors} = useTheme()
   const dark = useDark()
   const axesSvg = {
     fontSize: 10,
@@ -46,7 +46,7 @@ export default function Chart({
             contentInset={verticalContentInset}
             curve={shape.curveBasis}
             svg={{
-              stroke: color,
+              stroke: colors.primary,
             }}>
             <Grid />
           </LineChart>
