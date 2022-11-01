@@ -88,6 +88,15 @@ const App = () => {
     [settings, setSettings],
   )
 
+  const action = useMemo(
+    () => ({
+      label: 'Close',
+      onPress: () => setSnackbar(''),
+      color: theme.colors.primary,
+    }),
+    [theme.colors.primary],
+  )
+
   return (
     <PaperProvider
       theme={theme}
@@ -104,11 +113,7 @@ const App = () => {
         duration={3000}
         onDismiss={() => setSnackbar('')}
         visible={!!snackbar}
-        action={{
-          label: 'Close',
-          onPress: () => setSnackbar(''),
-          color: theme.colors.primary,
-        }}>
+        action={action}>
         {snackbar}
       </Snackbar>
     </PaperProvider>
