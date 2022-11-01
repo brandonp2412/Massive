@@ -1,8 +1,10 @@
 import React, {useCallback, useState} from 'react'
 import {GestureResponderEvent, ListRenderItemInfo, View} from 'react-native'
 import {List, Menu, RadioButton, useTheme} from 'react-native-paper'
+import {Like} from 'typeorm'
 import CountMany from './count-many'
-import {setRepo} from './db'
+import {getNow, setRepo} from './db'
+import {toast} from './toast'
 
 interface Props extends ListRenderItemInfo<CountMany> {
   onSelect: (index: number) => void
@@ -17,13 +19,19 @@ export default function StartPlanItem(props: Props) {
   const [showMenu, setShowMenu] = useState(false)
 
   const undo = useCallback(async () => {
+    const [{now}] = await getNow()
+    const created = now.split('T')[0]
     const first = await setRepo.findOne({
-      where: {name: item.name, hidden: 0 as any},
+      where: {
+        name: item.name,
+        hidden: 0 as any,
+        created: Like(`${created}%`),
+      },
       order: {created: 'desc'},
     })
-    console.log({first})
-    await setRepo.delete(first.id)
     setShowMenu(false)
+    if (!first) return toast('Nothing to undo.')
+    await setRepo.delete(first.id)
     onUndo()
   }, [setShowMenu, onUndo, item.name])
 
