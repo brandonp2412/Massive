@@ -1,15 +1,20 @@
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native'
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
 import {useCallback, useRef, useState} from 'react'
 import {ScrollView, TextInput, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Button, Card, TouchableRipple} from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
 import {MARGIN, PADDING} from './constants'
-import {getNow, planRepo, setRepo} from './db'
+import {getNow, planRepo, setRepo, settingsRepo} from './db'
 import MassiveInput from './MassiveInput'
+import Settings from './settings'
 import StackHeader from './StackHeader'
 import {toast} from './toast'
-import {useSettings} from './use-settings'
 import {WorkoutsPageParams} from './WorkoutsPage'
 
 export default function EditWorkout() {
@@ -31,7 +36,13 @@ export default function EditWorkout() {
   const stepsRef = useRef<TextInput>(null)
   const minutesRef = useRef<TextInput>(null)
   const secondsRef = useRef<TextInput>(null)
-  const {settings} = useSettings()
+  const [settings, setSettings] = useState<Settings>()
+
+  useFocusEffect(
+    useCallback(() => {
+      settingsRepo.findOne({where: {}}).then(setSettings)
+    }, []),
+  )
 
   const update = async () => {
     await setRepo.update(
@@ -119,7 +130,7 @@ export default function EditWorkout() {
             onChangeText={handleName}
             onSubmitEditing={submitName}
           />
-          {!!settings.steps && (
+          {settings.steps && (
             <MassiveInput
               innerRef={stepsRef}
               selectTextOnFocus={false}
@@ -130,7 +141,7 @@ export default function EditWorkout() {
               onSubmitEditing={() => setsRef.current?.focus()}
             />
           )}
-          {!!settings.showSets && (
+          {settings.showSets && (
             <MassiveInput
               innerRef={setsRef}
               value={sets}
@@ -140,7 +151,7 @@ export default function EditWorkout() {
               onSubmitEditing={() => minutesRef.current?.focus()}
             />
           )}
-          {!!settings.alarm && (
+          {settings.alarm && (
             <>
               <MassiveInput
                 innerRef={minutesRef}
@@ -160,7 +171,7 @@ export default function EditWorkout() {
               />
             </>
           )}
-          {!!settings.images && uri && (
+          {settings.images && uri && (
             <TouchableRipple
               style={{marginBottom: MARGIN}}
               onPress={changeImage}
@@ -168,7 +179,7 @@ export default function EditWorkout() {
               <Card.Cover source={{uri}} />
             </TouchableRipple>
           )}
-          {!!settings.images && !uri && (
+          {settings.images && !uri && (
             <Button
               style={{marginBottom: MARGIN}}
               onPress={changeImage}

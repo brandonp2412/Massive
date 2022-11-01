@@ -12,7 +12,8 @@ import GymSet from './gym-set'
 import SetList from './SetList'
 import WorkoutItem from './WorkoutItem'
 import {WorkoutsPageParams} from './WorkoutsPage'
-import {setRepo} from './db'
+import {setRepo, settingsRepo} from './db'
+import Settings from './settings'
 
 const limit = 15
 
@@ -21,6 +22,7 @@ export default function WorkoutList() {
   const [offset, setOffset] = useState(0)
   const [term, setTerm] = useState('')
   const [end, setEnd] = useState(false)
+  const [settings, setSettings] = useState<Settings>()
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>()
 
   const refresh = useCallback(async (value: string) => {
@@ -41,14 +43,20 @@ export default function WorkoutList() {
   useFocusEffect(
     useCallback(() => {
       refresh(term)
+      settingsRepo.findOne({where: {}}).then(setSettings)
     }, [refresh, term]),
   )
 
   const renderItem = useCallback(
     ({item}: {item: GymSet}) => (
-      <WorkoutItem item={item} key={item.name} onRemove={() => refresh(term)} />
+      <WorkoutItem
+        images={settings?.images}
+        item={item}
+        key={item.name}
+        onRemove={() => refresh(term)}
+      />
     ),
-    [refresh, term],
+    [refresh, term, settings?.images],
   )
 
   const next = useCallback(async () => {

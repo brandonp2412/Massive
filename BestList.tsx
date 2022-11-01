@@ -7,17 +7,23 @@ import {useCallback, useState} from 'react'
 import {FlatList, Image} from 'react-native'
 import {List} from 'react-native-paper'
 import {BestPageParams} from './BestPage'
-import {setRepo} from './db'
+import {setRepo, settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
 import GymSet from './gym-set'
 import Page from './Page'
-import {useSettings} from './use-settings'
+import Settings from './settings'
 
 export default function BestList() {
   const [bests, setBests] = useState<GymSet[]>()
   const [term, setTerm] = useState('')
   const navigation = useNavigation<NavigationProp<BestPageParams>>()
-  const {settings} = useSettings()
+  const [settings, setSettings] = useState<Settings>()
+
+  useFocusEffect(
+    useCallback(() => {
+      settingsRepo.findOne({where: {}}).then(setSettings)
+    }, []),
+  )
 
   const refresh = useCallback(async (value: string) => {
     const weights = await setRepo

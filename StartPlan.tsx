@@ -7,15 +7,15 @@ import {getBestSet} from './best.service'
 import {PADDING} from './constants'
 import CountMany from './count-many'
 import {AppDataSource} from './data-source'
-import {getNow, setRepo} from './db'
+import {getNow, setRepo, settingsRepo} from './db'
 import GymSet from './gym-set'
 import MassiveInput from './MassiveInput'
 import {PlanPageParams} from './plan-page-params'
 import SetForm from './SetForm'
+import Settings from './settings'
 import StackHeader from './StackHeader'
 import StartPlanItem from './StartPlanItem'
 import {toast} from './toast'
-import {useSettings} from './use-settings'
 
 export default function StartPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
@@ -27,7 +27,7 @@ export default function StartPlan() {
   const [seconds, setSeconds] = useState(30)
   const [best, setBest] = useState<GymSet>()
   const [selected, setSelected] = useState(0)
-  const {settings} = useSettings()
+  const [settings, setSettings] = useState<Settings>()
   const [counts, setCounts] = useState<CountMany[]>()
   const weightRef = useRef<TextInput>(null)
   const repsRef = useRef<TextInput>(null)
@@ -85,6 +85,7 @@ export default function StartPlan() {
   useFocusEffect(
     useCallback(() => {
       refresh().then(newCounts => select(0, newCounts))
+      settingsRepo.findOne({where: {}}).then(setSettings)
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refresh]),
   )
@@ -148,7 +149,7 @@ export default function StartPlan() {
             innerRef={weightRef}
             blurOnSubmit
           />
-          {!!settings.showUnit && (
+          {settings?.showUnit && (
             <MassiveInput
               autoCapitalize="none"
               label="Unit"

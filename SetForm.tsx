@@ -7,15 +7,17 @@ import {MARGIN} from './constants'
 import {getNow, setRepo} from './db'
 import GymSet from './gym-set'
 import MassiveInput from './MassiveInput'
+import Settings from './settings'
 import {toast} from './toast'
-import {useSettings} from './use-settings'
 
 export default function SetForm({
   save,
   set,
+  settings,
 }: {
   set: GymSet
   save: (set: GymSet) => void
+  settings: Settings
 }) {
   const [name, setName] = useState(set.name)
   const [reps, setReps] = useState(set.reps.toString())
@@ -28,7 +30,6 @@ export default function SetForm({
     end: set.reps.toString().length,
   })
   const [removeImage, setRemoveImage] = useState(false)
-  const {settings} = useSettings()
   const weightRef = useRef<TextInput>(null)
   const repsRef = useRef<TextInput>(null)
   const unitRef = useRef<TextInput>(null)
@@ -113,7 +114,7 @@ export default function SetForm({
           onSubmitEditing={handleSubmit}
           innerRef={weightRef}
         />
-        {!!settings.showUnit && (
+        {settings.showUnit && (
           <MassiveInput
             autoCapitalize="none"
             label="Unit"
@@ -122,10 +123,10 @@ export default function SetForm({
             innerRef={unitRef}
           />
         )}
-        {typeof set.id === 'number' && !!settings.showDate && (
+        {typeof set.id === 'number' && settings.showDate && (
           <MassiveInput label="Created" disabled value={set.created} />
         )}
-        {!!settings.images && newImage && (
+        {settings.images && newImage && (
           <TouchableRipple
             style={{marginBottom: MARGIN}}
             onPress={changeImage}
@@ -133,7 +134,7 @@ export default function SetForm({
             <Card.Cover source={{uri: newImage}} />
           </TouchableRipple>
         )}
-        {!!settings.images && !newImage && (
+        {settings.images && !newImage && (
           <Button
             style={{marginBottom: MARGIN}}
             onPress={changeImage}

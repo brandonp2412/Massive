@@ -5,20 +5,20 @@ import {List, Menu, Text} from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
 import {setRepo} from './db'
 import GymSet from './gym-set'
-import {useSettings} from './use-settings'
 import {WorkoutsPageParams} from './WorkoutsPage'
 
 export default function WorkoutItem({
   item,
   onRemove,
+  images,
 }: {
   item: GymSet
   onRemove: () => void
+  images: boolean
 }) {
   const [showMenu, setShowMenu] = useState(false)
   const [anchor, setAnchor] = useState({x: 0, y: 0})
   const [showRemove, setShowRemove] = useState('')
-  const {settings} = useSettings()
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>()
 
   const remove = useCallback(async () => {
@@ -37,12 +37,8 @@ export default function WorkoutItem({
 
   const description = useMemo(() => {
     const seconds = item.seconds?.toString().padStart(2, '0')
-    if (settings.alarm && settings.showSets)
-      return `${item.sets} x ${item.minutes || 0}:${seconds}`
-    else if (settings.alarm && !settings.showSets)
-      return `${item.minutes || 0}:${seconds}`
-    return `${item.sets}`
-  }, [item, settings])
+    return `${item.sets} x ${item.minutes || 0}:${seconds}`
+  }, [item])
 
   return (
     <>
@@ -52,7 +48,7 @@ export default function WorkoutItem({
         description={description}
         onLongPress={longPress}
         left={() =>
-          !!settings.images &&
+          images &&
           item.image && (
             <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
           )

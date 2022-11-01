@@ -14,6 +14,7 @@ module.exports = {
         curly: 'off',
         'react/react-in-jsx-scope': 'off',
         'react-native/no-inline-styles': 'off',
+        'no-spaced-func': 'off',
       },
     },
   ],

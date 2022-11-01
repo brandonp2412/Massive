@@ -1,20 +1,31 @@
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native'
-import {useCallback} from 'react'
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
+import {useCallback, useState} from 'react'
 import {NativeModules, View} from 'react-native'
 import {PADDING} from './constants'
-import {setRepo} from './db'
+import {setRepo, settingsRepo} from './db'
 import GymSet from './gym-set'
 import {HomePageParams} from './home-page-params'
 import SetForm from './SetForm'
+import Settings from './settings'
 import StackHeader from './StackHeader'
 import {toast} from './toast'
-import {useSettings} from './use-settings'
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>()
   const {set} = params
   const navigation = useNavigation()
-  const {settings} = useSettings()
+  const [settings, setSettings] = useState<Settings>()
+
+  useFocusEffect(
+    useCallback(() => {
+      settingsRepo.findOne({where: {}}).then(setSettings)
+    }, []),
+  )
 
   const startTimer = useCallback(
     async (name: string) => {
@@ -23,9 +34,9 @@ export default function EditSet() {
       const milliseconds = (minutes ?? 3) * 60 * 1000 + (seconds ?? 0) * 1000
       NativeModules.AlarmModule.timer(
         milliseconds,
-        !!settings.vibrate,
+        settings.vibrate,
         settings.sound,
-        !!settings.noSound,
+        settings.noSound,
       )
     },
     [settings],
@@ -60,7 +71,7 @@ export default function EditSet() {
     <>
       <StackHeader title="Edit set" />
       <View style={{padding: PADDING, flex: 1}}>
-        <SetForm save={save} set={set} />
+        {settings && <SetForm settings={settings} save={save} set={set} />}
       </View>
     </>
   )

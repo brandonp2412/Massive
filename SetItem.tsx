@@ -5,20 +5,21 @@ import {Divider, List, Menu, Text} from 'react-native-paper'
 import {setRepo} from './db'
 import GymSet from './gym-set'
 import {HomePageParams} from './home-page-params'
+import Settings from './settings'
 import {format} from './time'
 import useDark from './use-dark'
-import {useSettings} from './use-settings'
 
 export default function SetItem({
   item,
   onRemove,
+  settings,
 }: {
   item: GymSet
   onRemove: () => void
+  settings: Settings
 }) {
   const [showMenu, setShowMenu] = useState(false)
   const [anchor, setAnchor] = useState({x: 0, y: 0})
-  const {settings} = useSettings()
   const dark = useDark()
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
@@ -51,14 +52,14 @@ export default function SetItem({
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}
         left={() =>
-          !!settings.images &&
+          settings.images &&
           item.image && (
             <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
           )
         }
         right={() => (
           <>
-            {!!settings.showDate && (
+            {settings.showDate && (
               <Text
                 style={{
                   alignSelf: 'center',

@@ -1,11 +1,11 @@
 import {useColorScheme} from 'react-native'
-import {useSettings} from './use-settings'
+import {useTheme} from './use-theme'
 
 export default function useDark() {
   const dark = useColorScheme() === 'dark'
-  const {settings} = useSettings()
+  const {theme} = useTheme()
 
-  if (settings.theme === 'dark') return true
-  if (settings.theme === 'light') return false
+  if (theme === 'dark') return true
+  if (theme === 'light') return false
   return dark
 }

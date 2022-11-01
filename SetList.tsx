@@ -7,12 +7,13 @@ import React, {useCallback, useEffect, useState} from 'react'
 import {FlatList} from 'react-native'
 import {List} from 'react-native-paper'
 import {Like} from 'typeorm'
-import {getNow, setRepo} from './db'
+import {getNow, setRepo, settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
 import GymSet from './gym-set'
 import {HomePageParams} from './home-page-params'
 import Page from './Page'
 import SetItem from './SetItem'
+import Settings from './settings'
 
 const limit = 15
 
@@ -22,6 +23,7 @@ export default function SetList() {
   const [offset, setOffset] = useState(0)
   const [term, setTerm] = useState('')
   const [end, setEnd] = useState(false)
+  const [settings, setSettings] = useState<Settings>()
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
   useEffect(() => console.log({sets}), [sets])
@@ -43,6 +45,7 @@ export default function SetList() {
   useFocusEffect(
     useCallback(() => {
       refresh(term)
+      settingsRepo.findOne({where: {}}).then(setSettings)
     }, [refresh, term]),
   )
 
@@ -107,12 +110,14 @@ export default function SetList() {
             description="A set is a group of repetitions. E.g. 8 reps of Squats."
           />
         ) : (
-          <FlatList
-            data={sets}
-            style={{flex: 1}}
-            renderItem={renderItem}
-            onEndReached={next}
-          />
+          settings && (
+            <FlatList
+              data={sets}
+              style={{flex: 1}}
+              renderItem={renderItem}
+              onEndReached={next}
+            />
+          )
         )}
       </Page>
     </>
