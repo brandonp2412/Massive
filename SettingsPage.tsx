@@ -11,9 +11,11 @@ import {settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
 import Input from './input'
 import Page from './Page'
+import Select from './Select'
 import Settings from './settings'
 import Switch from './Switch'
 import {toast} from './toast'
+import useDark from './use-dark'
 import {useSettings} from './use-settings'
 
 export default function SettingsPage() {
@@ -21,6 +23,7 @@ export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
   const {settings, setSettings} = useSettings()
+  const dark = useDark()
 
   useEffect(() => {
     console.log(`${SettingsPage.name}.useEffect:`, {settings})
@@ -168,23 +171,19 @@ export default function SettingsPage() {
   const sound = useMemo(() => {
     if (!settings.sound) return null
     const split = settings.sound.split('/')
-    return split.pop()
+    return ': ' + split.pop()
   }, [settings.sound])
 
   const theme = useMemo(() => {
     if (!'theme'.includes(term.toLowerCase())) return null
     return (
-      <Picker
-        style={{color: settings.color}}
-        dropdownIconColor={settings.color}
-        selectedValue={settings.theme}
-        onValueChange={changeTheme}>
+      <Select value={settings.theme} onChange={changeTheme}>
         <Picker.Item value="system" label="Follow system theme" />
         <Picker.Item value="dark" label="Dark theme" />
         <Picker.Item value="light" label="Light theme" />
-      </Picker>
+      </Select>
     )
-  }, [term, settings.color, changeTheme, settings.theme])
+  }, [term, changeTheme, settings.theme])
 
   const changeColor = useCallback(
     (value: string) => {
@@ -214,11 +213,7 @@ export default function SettingsPage() {
             ))}
           {theme}
           {'color'.includes(term.toLowerCase()) && (
-            <Picker
-              style={{color: settings.color, marginTop: -10}}
-              dropdownIconColor={settings.color}
-              selectedValue={settings.color}
-              onValueChange={changeColor}>
+            <Select value={settings.color} onChange={changeColor}>
               {lightColors.concat(darkColors).map(colorOption => (
                 <Picker.Item
                   key={colorOption.hex}
@@ -227,14 +222,10 @@ export default function SettingsPage() {
                   color={colorOption.hex}
                 />
               ))}
-            </Picker>
+            </Select>
           )}
           {'date format'.includes(term.toLowerCase()) && (
-            <Picker
-              style={{color: settings.color, marginTop: -10}}
-              dropdownIconColor={settings.color}
-              selectedValue={settings.date}
-              onValueChange={changeDate}>
+            <Select value={settings.date} onChange={changeDate}>
               <Picker.Item value="%Y-%m-%d %H:%M" label="1990-12-24 15:05" />
               <Picker.Item value="%Y-%m-%d" label="1990-12-24" />
               <Picker.Item value="%d/%m" label="24/12 (dd/MM)" />
@@ -247,11 +238,11 @@ export default function SettingsPage() {
                 label="24/12/1990 3:05 PM"
               />
               <Picker.Item value="%d/%m %h:%M %p" label="24/12 3:05 PM" />
-            </Picker>
+            </Select>
           )}
           {'alarm sound'.includes(term.toLowerCase()) && (
             <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
-              Alarm sound: {sound}
+              Alarm sound{sound}
             </Button>
           )}
         </ScrollView>
