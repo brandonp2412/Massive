@@ -1,13 +1,15 @@
 import {NavigationContainer} from '@react-navigation/native'
 import React from 'react'
-import {Provider as PaperProvider} from 'react-native-paper'
-import MassiveSnack from './MassiveSnack'
-import {defaultSettings, SettingsContext} from './use-settings'
+import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
+import {ThemeContext} from './use-theme'
 
-export const setColor = jest.fn()
-const settings = defaultSettings
-export const setSettings = jest.fn()
+export const theme = {
+  theme: 'system',
+  setTheme: jest.fn(),
+  color: DefaultTheme.colors.primary,
+  setColor: jest.fn(),
+}
 
 export const MockProviders = ({
   children,
@@ -15,10 +17,8 @@ export const MockProviders = ({
   children: JSX.Element | JSX.Element[]
 }) => (
   <PaperProvider settings={{icon: props => <MaterialIcon {...props} />}}>
-    <SettingsContext.Provider value={{settings, setSettings}}>
-      <MassiveSnack>
-        <NavigationContainer>{children}</NavigationContainer>
-      </MassiveSnack>
-    </SettingsContext.Provider>
+    <ThemeContext.Provider value={theme}>
+      <NavigationContainer>{children}</NavigationContainer>
+    </ThemeContext.Provider>
   </PaperProvider>
 )
