@@ -5,6 +5,7 @@ import {
 } from '@react-navigation/native'
 import {useEffect, useMemo, useState} from 'react'
 import {DeviceEventEmitter, useColorScheme} from 'react-native'
+import React from 'react'
 import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
