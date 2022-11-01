@@ -2,19 +2,18 @@ import {RouteProp, useNavigation, useRoute} from '@react-navigation/native'
 import {useCallback} from 'react'
 import {NativeModules, View} from 'react-native'
 import {PADDING} from './constants'
-import {getNow, setRepo} from './db'
+import {setRepo} from './db'
 import GymSet from './gym-set'
 import {HomePageParams} from './home-page-params'
-import {useSnackbar} from './MassiveSnack'
 import SetForm from './SetForm'
 import StackHeader from './StackHeader'
+import {toast} from './toast'
 import {useSettings} from './use-settings'
 
 export default function EditSet() {
   const {params} = useRoute<RouteProp<HomePageParams, 'EditSet'>>()
   const {set} = params
   const navigation = useNavigation()
-  const {toast} = useSnackbar()
   const {settings} = useSettings()
 
   const startTimer = useCallback(
@@ -35,9 +34,6 @@ export default function EditSet() {
   const add = useCallback(
     async (value: GymSet) => {
       startTimer(value.name)
-      const [{now}] = await getNow()
-      value.created = now
-      value.hidden = false
       console.log(`${EditSet.name}.add`, {set: value})
       const result = await setRepo.save(value)
       console.log({result})
@@ -46,9 +42,9 @@ export default function EditSet() {
         value.weight > set.weight ||
         (value.reps > set.reps && value.weight === set.weight)
       )
-        toast("Great work King! That's a new record.", 3000)
+        toast("Great work King! That's a new record.")
     },
-    [startTimer, set, toast, settings],
+    [startTimer, set, settings],
   )
 
   const save = useCallback(

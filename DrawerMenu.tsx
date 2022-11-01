@@ -8,8 +8,8 @@ import {AppDataSource} from './data-source'
 import {planRepo} from './db'
 import {DrawerParamList} from './drawer-param-list'
 import GymSet from './gym-set'
-import {useSnackbar} from './MassiveSnack'
 import {Plan} from './plan'
+import {toast} from './toast'
 import useDark from './use-dark'
 import {write} from './write'
 
@@ -20,7 +20,6 @@ const setRepo = AppDataSource.manager.getRepository(GymSet)
 export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
   const [showMenu, setShowMenu] = useState(false)
   const [showRemove, setShowRemove] = useState(false)
-  const {toast} = useSnackbar()
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
   const dark = useDark()
 
@@ -65,7 +64,7 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
     console.log(`${DrawerMenu.name}.uploadSets:`, file.length)
     const lines = file.split('\n')
     console.log(lines[0])
-    if (!setFields.includes(lines[0])) return toast('Invalid csv.', 3000)
+    if (!setFields.includes(lines[0])) return toast('Invalid csv.')
     const values = lines
       .slice(1)
       .filter(line => line)
@@ -92,21 +91,22 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
           sets: +sets,
           minutes: +minutes,
           seconds: +seconds,
+          image: '',
         }
         return set
       })
     console.log(`${DrawerMenu.name}.uploadSets:`, {values})
     await setRepo.insert(values)
-    toast('Data imported.', 3000)
+    toast('Data imported.')
     reset({index: 0, routes: [{name}]})
-  }, [reset, name, toast])
+  }, [reset, name])
 
   const uploadPlans = useCallback(async () => {
     const result = await DocumentPicker.pickSingle()
     const file = await FileSystem.readFile(result.uri)
     console.log(`${DrawerMenu.name}.uploadPlans:`, file.length)
     const lines = file.split('\n')
-    if (lines[0] != planFields) return toast('Invalid csv.', 3000)
+    if (lines[0] !== planFields) return toast('Invalid csv.')
     const values = file
       .split('\n')
       .slice(1)
@@ -122,8 +122,8 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
         return plan
       })
     await planRepo.insert(values)
-    toast('Data imported.', 3000)
-  }, [toast])
+    toast('Data imported.')
+  }, [])
 
   const upload = useCallback(async () => {
     setShowMenu(false)
@@ -137,9 +137,9 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
     setShowRemove(false)
     if (name === 'Home') await setRepo.delete({})
     else if (name === 'Plans') await planRepo.delete({})
-    toast('All data has been deleted.', 4000)
+    toast('All data has been deleted.')
     reset({index: 0, routes: [{name}]})
-  }, [reset, name, toast])
+  }, [reset, name])
 
   if (name === 'Home' || name === 'Plans')
     return (

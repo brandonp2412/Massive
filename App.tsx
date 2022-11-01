@@ -4,19 +4,20 @@ import {
   NavigationContainer,
 } from '@react-navigation/native'
 import {useEffect, useMemo, useState} from 'react'
-import {useColorScheme} from 'react-native'
+import {DeviceEventEmitter, useColorScheme} from 'react-native'
 import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
   Provider as PaperProvider,
+  Snackbar,
 } from 'react-native-paper'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 import {lightColors} from './colors'
 import {AppDataSource} from './data-source'
 import {settingsRepo} from './db'
-import MassiveSnack from './MassiveSnack'
 import Routes from './Routes'
 import Settings from './settings'
+import {TOAST} from './toast'
 import {defaultSettings, SettingsContext} from './use-settings'
 
 export const CombinedDefaultTheme = {
@@ -48,6 +49,7 @@ const App = () => {
       ? CombinedDarkTheme.colors.primary
       : CombinedDefaultTheme.colors.primary,
   })
+  const [snackbar, setSnackbar] = useState('')
 
   useEffect(() => {
     AppDataSource.initialize().then(async () => {
@@ -55,6 +57,10 @@ const App = () => {
       console.log(`${App.name}.useEffect:`, {gotSettings})
       setSettings(gotSettings)
       setInitialized(true)
+    })
+    DeviceEventEmitter.addListener(TOAST, ({value}: {value: string}) => {
+      console.log(`${Routes.name}.toast:`, {value})
+      setSnackbar(value)
     })
   }, [])
 
@@ -87,14 +93,24 @@ const App = () => {
       theme={theme}
       settings={{icon: props => <MaterialIcon {...props} />}}>
       <NavigationContainer theme={theme}>
-        <MassiveSnack>
-          {initialized && (
-            <SettingsContext.Provider value={settingsContext}>
-              <Routes />
-            </SettingsContext.Provider>
-          )}
-        </MassiveSnack>
+        {initialized && (
+          <SettingsContext.Provider value={settingsContext}>
+            <Routes />
+          </SettingsContext.Provider>
+        )}
       </NavigationContainer>
+
+      <Snackbar
+        duration={3000}
+        onDismiss={() => setSnackbar('')}
+        visible={!!snackbar}
+        action={{
+          label: 'Close',
+          onPress: () => setSnackbar(''),
+          color: theme.colors.primary,
+        }}>
+        {snackbar}
+      </Snackbar>
     </PaperProvider>
   )
 }

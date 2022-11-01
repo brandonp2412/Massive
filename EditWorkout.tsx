@@ -7,8 +7,8 @@ import ConfirmDialog from './ConfirmDialog'
 import {MARGIN, PADDING} from './constants'
 import {getNow, planRepo, setRepo} from './db'
 import MassiveInput from './MassiveInput'
-import {useSnackbar} from './MassiveSnack'
 import StackHeader from './StackHeader'
+import {toast} from './toast'
 import {useSettings} from './use-settings'
 import {WorkoutsPageParams} from './WorkoutsPage'
 
@@ -26,7 +26,6 @@ export default function EditWorkout() {
     params.value.seconds?.toString() ?? '30',
   )
   const [sets, setSets] = useState(params.value.sets?.toString() ?? '3')
-  const {toast} = useSnackbar()
   const navigation = useNavigation()
   const setsRef = useRef<TextInput>(null)
   const stepsRef = useRef<TextInput>(null)
@@ -94,13 +93,13 @@ export default function EditWorkout() {
   const handleName = (value: string) => {
     setName(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000)
+      toast('Commas and single quotes would break CSV exports')
   }
 
   const handleSteps = (value: string) => {
     setSteps(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000)
+      toast('Commas and single quotes would break CSV exports')
   }
 
   const submitName = () => {

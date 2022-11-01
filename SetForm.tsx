@@ -4,10 +4,10 @@ import DocumentPicker from 'react-native-document-picker'
 import {Button, Card, TouchableRipple} from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
 import {MARGIN} from './constants'
-import {setRepo} from './db'
+import {getNow, setRepo} from './db'
 import GymSet from './gym-set'
 import MassiveInput from './MassiveInput'
-import {useSnackbar} from './MassiveSnack'
+import {toast} from './toast'
 import {useSettings} from './use-settings'
 
 export default function SetForm({
@@ -28,7 +28,6 @@ export default function SetForm({
     end: set.reps.toString().length,
   })
   const [removeImage, setRemoveImage] = useState(false)
-  const {toast} = useSnackbar()
   const {settings} = useSettings()
   const weightRef = useRef<TextInput>(null)
   const repsRef = useRef<TextInput>(null)
@@ -42,8 +41,10 @@ export default function SetForm({
       image = await setRepo.findOne({where: {name}}).then(s => s?.image)
 
     console.log(`${SetForm.name}.handleSubmit:`, {image})
+    const [{now}] = await getNow()
     save({
       name,
+      created: now,
       reps: Number(reps),
       weight: Number(weight),
       id: set.id,
@@ -59,13 +60,13 @@ export default function SetForm({
   const handleName = (value: string) => {
     setName(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000)
+      toast('Commas and single quotes would break CSV exports')
   }
 
   const handleUnit = (value: string) => {
     setUnit(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000)
+      toast('Commas and single quotes would break CSV exports')
   }
 
   const changeImage = useCallback(async () => {

@@ -1,7 +1,7 @@
 import {Picker} from '@react-native-picker/picker'
 import {useFocusEffect} from '@react-navigation/native'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {NativeModules, ScrollView} from 'react-native'
+import {DeviceEventEmitter, NativeModules, ScrollView} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Button} from 'react-native-paper'
 import {darkColors, lightColors} from './colors'
@@ -10,10 +10,10 @@ import {MARGIN} from './constants'
 import {settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
 import Input from './input'
-import {useSnackbar} from './MassiveSnack'
 import Page from './Page'
 import Settings from './settings'
 import Switch from './Switch'
+import {toast} from './toast'
 import {useSettings} from './use-settings'
 
 export default function SettingsPage() {
@@ -21,7 +21,6 @@ export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
   const {settings, setSettings} = useSettings()
-  const {toast} = useSnackbar()
 
   useEffect(() => {
     console.log(`${SettingsPage.name}.useEffect:`, {settings})
@@ -43,21 +42,25 @@ export default function SettingsPage() {
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
-      if (enabled) toast('Timers will now run after each set.', 4000)
-      else toast('Stopped timers running after each set.', 4000)
+      if (enabled)
+        DeviceEventEmitter.emit('toast', {
+          value: 'Timers will now run after each set',
+          timeout: 4000,
+        })
+      else toast('Stopped timers running after each set.')
       if (enabled && !ignoring) setBattery(true)
       update(enabled, 'alarm')
     },
-    [setBattery, ignoring, toast, update],
+    [setBattery, ignoring, update],
   )
 
   const changeVibrate = useCallback(
     (enabled: boolean) => {
-      if (enabled) toast('When a timer completes, vibrate your phone.', 4000)
-      else toast('Stop vibrating at the end of timers.', 4000)
+      if (enabled) toast('When a timer completes, vibrate your phone.')
+      else toast('Stop vibrating at the end of timers.')
       update(enabled, 'vibrate')
     },
-    [toast, update],
+    [update],
   )
 
   const changeSound = useCallback(async () => {
@@ -68,70 +71,70 @@ export default function SettingsPage() {
     if (!fileCopyUri) return
     settingsRepo.update({}, {sound: fileCopyUri})
     setSettings({...settings, sound: fileCopyUri})
-    toast('This song will now play after rest timers complete.', 4000)
-  }, [toast, setSettings, settings])
+    toast('This song will now play after rest timers complete.')
+  }, [setSettings, settings])
 
   const changeNotify = useCallback(
     (enabled: boolean) => {
       update(enabled, 'notify')
-      if (enabled) toast('Show when a set is a new record.', 4000)
-      else toast('Stopped showing notifications for new records.', 4000)
+      if (enabled) toast('Show when a set is a new record.')
+      else toast('Stopped showing notifications for new records.')
     },
-    [toast, update],
+    [update],
   )
 
   const changeImages = useCallback(
     (enabled: boolean) => {
       update(enabled, 'images')
-      if (enabled) toast('Show images for sets.', 4000)
-      else toast('Stopped showing images for sets.', 4000)
+      if (enabled) toast('Show images for sets.')
+      else toast('Stopped showing images for sets.')
     },
-    [toast, update],
+    [update],
   )
 
   const changeUnit = useCallback(
     (enabled: boolean) => {
       update(enabled, 'showUnit')
-      if (enabled) toast('Show option to select unit for sets.', 4000)
-      else toast('Hid unit option for sets.', 4000)
+      if (enabled) toast('Show option to select unit for sets.')
+      else toast('Hid unit option for sets.')
     },
-    [toast, update],
+    [update],
   )
 
   const changeSteps = useCallback(
     (enabled: boolean) => {
       update(enabled, 'steps')
-      if (enabled) toast('Show steps for a workout.', 4000)
-      else toast('Stopped showing steps for workouts.', 4000)
+      if (enabled) toast('Show steps for a workout.')
+      else toast('Stopped showing steps for workouts.')
     },
-    [toast, update],
+    [update],
   )
 
   const changeShowDate = useCallback(
     (enabled: boolean) => {
       update(enabled, 'showDate')
-      if (enabled) toast('Show date for sets by default.', 4000)
-      else toast('Stopped showing date for sets by default.', 4000)
+      if (enabled) toast('Show date for sets by default.')
+      else toast('Stopped showing date for sets by default.')
     },
-    [toast, update],
+    [update],
   )
 
   const changeShowSets = useCallback(
     (enabled: boolean) => {
       update(enabled, 'showSets')
-      if (enabled) toast('Show target sets for workouts.', 4000)
-      else toast('Stopped showing target sets for workouts.', 4000)
+      if (enabled) toast('Show target sets for workouts.')
+      else toast('Stopped showing target sets for workouts.')
     },
-    [toast, update],
+    [update],
   )
 
   const changeNoSound = useCallback(
     (enabled: boolean) => {
       update(enabled, 'noSound')
-      if (enabled) toast('Disable sound on rest timer alarms.', 4000)
-      else toast('Enabled sound for rest timer alarms.', 4000)
+      if (enabled) toast('Disable sound on rest timer alarms.')
+      else toast('Enabled sound for rest timer alarms.')
     },
-    [toast, update],
+    [update],
   )
 
   const switches: Input<boolean>[] = [
@@ -183,10 +186,13 @@ export default function SettingsPage() {
     )
   }, [term, settings.color, changeTheme, settings.theme])
 
-  const changeColor = useCallback((value: string) => {
-    setSettings({...settings, color: value})
-    settingsRepo.update({}, {color: value})
-  }, [])
+  const changeColor = useCallback(
+    (value: string) => {
+      setSettings({...settings, color: value})
+      settingsRepo.update({}, {color: value})
+    },
+    [setSettings, settings],
+  )
 
   return (
     <>

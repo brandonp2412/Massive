@@ -10,11 +10,11 @@ import {AppDataSource} from './data-source'
 import {getNow, setRepo} from './db'
 import GymSet from './gym-set'
 import MassiveInput from './MassiveInput'
-import {useSnackbar} from './MassiveSnack'
 import {PlanPageParams} from './plan-page-params'
 import SetForm from './SetForm'
 import StackHeader from './StackHeader'
 import StartPlanItem from './StartPlanItem'
+import {toast} from './toast'
 import {useSettings} from './use-settings'
 
 export default function StartPlan() {
@@ -23,7 +23,6 @@ export default function StartPlan() {
   const [reps, setReps] = useState('')
   const [weight, setWeight] = useState('')
   const [unit, setUnit] = useState<string>('kg')
-  const {toast} = useSnackbar()
   const [minutes, setMinutes] = useState(3)
   const [seconds, setSeconds] = useState(30)
   const [best, setBest] = useState<GymSet>()
@@ -109,9 +108,9 @@ export default function StartPlan() {
       settings.notify &&
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
     )
-      toast("Great work King! That's a new record.", 5000)
-    else if (settings.alarm) toast('Resting...', 3000)
-    else toast('Added set', 3000)
+      toast("Great work King! That's a new record.")
+    else if (settings.alarm) toast('Resting...')
+    else toast('Added set')
     if (!settings.alarm) return
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000
     const {vibrate, sound, noSound} = settings
@@ -119,14 +118,11 @@ export default function StartPlan() {
     NativeModules.AlarmModule.timer(...args)
   }
 
-  const handleUnit = useCallback(
-    (value: string) => {
-      setUnit(value.replace(/,|'/g, ''))
-      if (value.match(/,|'/))
-        toast('Commas and single quotes would break CSV exports', 6000)
-    },
-    [toast],
-  )
+  const handleUnit = useCallback((value: string) => {
+    setUnit(value.replace(/,|'/g, ''))
+    if (value.match(/,|'/))
+      toast('Commas and single quotes would break CSV exports')
+  }, [])
 
   return (
     <>
