@@ -2,13 +2,8 @@
 
 set -ex
 
-yarn tsc &
-tsc=$!
-yarn lint &
-lint=$!
-yarn test &
-units=$1
-wait $tsc $lint $units
+yarn tsc
+yarn lint
 git push origin HEAD &
 
 cd android || exit 1
