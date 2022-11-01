@@ -115,7 +115,7 @@ export default function StartPlan() {
     if (!settings.alarm) return
     const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000
     const {vibrate, sound, noSound} = settings
-    const args = [milliseconds, !!vibrate, sound, !!noSound]
+    const args = [milliseconds, vibrate, sound, noSound]
     NativeModules.AlarmModule.timer(...args)
   }
 
