@@ -3,7 +3,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native'
-import React, {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {FlatList} from 'react-native'
 import {List} from 'react-native-paper'
 import {Like} from 'typeorm'
