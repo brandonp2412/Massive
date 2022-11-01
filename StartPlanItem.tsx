@@ -1,9 +1,11 @@
+import {NavigationProp, useNavigation} from '@react-navigation/native'
 import React, {useCallback, useState} from 'react'
 import {GestureResponderEvent, ListRenderItemInfo, View} from 'react-native'
 import {List, Menu, RadioButton, useTheme} from 'react-native-paper'
 import {Like} from 'typeorm'
 import CountMany from './count-many'
 import {getNow, setRepo} from './db'
+import {PlanPageParams} from './plan-page-params'
 import {toast} from './toast'
 
 interface Props extends ListRenderItemInfo<CountMany> {
@@ -17,6 +19,7 @@ export default function StartPlanItem(props: Props) {
   const {colors} = useTheme()
   const [anchor, setAnchor] = useState({x: 0, y: 0})
   const [showMenu, setShowMenu] = useState(false)
+  const {navigate} = useNavigation<NavigationProp<PlanPageParams>>()
 
   const undo = useCallback(async () => {
     const [{now}] = await getNow()
@@ -43,6 +46,22 @@ export default function StartPlanItem(props: Props) {
     [setShowMenu, setAnchor],
   )
 
+  const edit = async () => {
+    const [{now}] = await getNow()
+    const created = now.split('T')[0]
+    const first = await setRepo.findOne({
+      where: {
+        name: item.name,
+        hidden: 0 as any,
+        created: Like(`${created}%`),
+      },
+      order: {created: 'desc'},
+    })
+    setShowMenu(false)
+    if (!first) return toast('Nothing to edit.')
+    navigate('EditSet', {set: first})
+  }
+
   return (
     <List.Item
       onLongPress={longPress}
@@ -65,6 +84,7 @@ export default function StartPlanItem(props: Props) {
             anchor={anchor}
             visible={showMenu}
             onDismiss={() => setShowMenu(false)}>
+            <Menu.Item icon="edit" onPress={edit} title="Edit" />
             <Menu.Item icon="undo" onPress={undo} title="Undo" />
           </Menu>
         </>

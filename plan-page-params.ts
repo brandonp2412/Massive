@@ -1,3 +1,4 @@
+import GymSet from './gym-set'
 import {Plan} from './plan'
 
 export type PlanPageParams = {
@@ -7,5 +8,8 @@ export type PlanPageParams = {
   }
   StartPlan: {
     plan: Plan
+  }
+  EditSet: {
+    set: GymSet
   }
 }
