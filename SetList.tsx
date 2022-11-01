@@ -51,9 +51,14 @@ export default function SetList() {
 
   const renderItem = useCallback(
     ({item}: {item: GymSet}) => (
-      <SetItem item={item} key={item.id} onRemove={() => refresh(term)} />
+      <SetItem
+        settings={settings}
+        item={item}
+        key={item.id}
+        onRemove={() => refresh(term)}
+      />
     ),
-    [refresh, term],
+    [refresh, term, settings],
   )
 
   const next = useCallback(async () => {
