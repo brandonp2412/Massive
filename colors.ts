@@ -1,6 +1,6 @@
 export const lightColors = [
-  {hex: '#FA8072', name: 'Salmon'},
   {hex: '#B3E5FC', name: 'Cyan'},
+  {hex: '#FA8072', name: 'Salmon'},
   {hex: '#FFC0CB', name: 'Pink'},
   {hex: '#E9DCC9', name: 'Linen'},
 ]
