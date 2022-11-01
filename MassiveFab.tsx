@@ -6,9 +6,7 @@ import {lightColors} from './colors'
 export default function MassiveFab(props: Partial<ComponentProps<typeof FAB>>) {
   const {colors} = useTheme()
 
-  const fabColor = lightColors
-    .map(lightColor => lightColor.hex)
-    .includes(colors.primary)
+  const fabColor = lightColors.includes(colors.primary)
     ? CombinedDarkTheme.colors.background
     : CombinedDefaultTheme.colors.background
 

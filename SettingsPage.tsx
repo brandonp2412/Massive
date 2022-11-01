@@ -202,10 +202,10 @@ export default function SettingsPage() {
             <Select value={color} onChange={changeColor}>
               {lightColors.concat(darkColors).map(colorOption => (
                 <Picker.Item
-                  key={colorOption.hex}
-                  value={colorOption.hex}
+                  key={colorOption}
+                  value={colorOption}
                   label="Primary color"
-                  color={colorOption.hex}
+                  color={colorOption}
                 />
               ))}
             </Select>

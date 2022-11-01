@@ -13,7 +13,6 @@ import {
   Snackbar,
 } from 'react-native-paper'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
-import {lightColors} from './colors'
 import {AppDataSource} from './data-source'
 import {settingsRepo} from './db'
 import Routes from './Routes'
@@ -35,8 +34,6 @@ export const CombinedDarkTheme = {
   colors: {
     ...NavigationDarkTheme.colors,
     ...PaperDarkTheme.colors,
-    primary: lightColors[0].hex,
-    background: '#0E0E0E',
   },
 }
 

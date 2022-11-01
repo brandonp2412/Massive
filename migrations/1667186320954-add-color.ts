@@ -10,7 +10,7 @@ export class addColor1667186320954 implements MigrationInterface {
           name: 'color',
           type: 'text',
           isNullable: false,
-          default: `'${darkColors[0].hex}'`,
+          default: `'${darkColors[0]}'`,
         }),
       )
       .catch(console.error)
