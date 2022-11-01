@@ -43,13 +43,14 @@ export const CombinedDarkTheme = {
 const App = () => {
   const isDark = useColorScheme() === 'dark'
   const [initialized, setInitialized] = useState(false)
+  const [snackbar, setSnackbar] = useState('')
+
   const [settings, setSettings] = useState<Settings>({
     ...defaultSettings,
     color: isDark
       ? CombinedDarkTheme.colors.primary
       : CombinedDefaultTheme.colors.primary,
   })
-  const [snackbar, setSnackbar] = useState('')
 
   useEffect(() => {
     AppDataSource.initialize().then(async () => {

@@ -15,7 +15,6 @@ import Select from './Select'
 import Settings from './settings'
 import Switch from './Switch'
 import {toast} from './toast'
-import useDark from './use-dark'
 import {useSettings} from './use-settings'
 
 export default function SettingsPage() {
@@ -23,7 +22,6 @@ export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
   const {settings, setSettings} = useSettings()
-  const dark = useDark()
 
   useEffect(() => {
     console.log(`${SettingsPage.name}.useEffect:`, {settings})
