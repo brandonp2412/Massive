@@ -14,7 +14,7 @@ export default function Select({
 
   return (
     <Picker
-      style={{color: colors.primary}}
+      style={{color: colors.primary, marginTop: -10}}
       dropdownIconColor={colors.text}
       selectedValue={value}
       onValueChange={onChange}>

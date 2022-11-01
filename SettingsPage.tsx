@@ -1,7 +1,7 @@
 import {Picker} from '@react-native-picker/picker'
 import {useFocusEffect} from '@react-navigation/native'
 import {useCallback, useMemo, useState} from 'react'
-import {DeviceEventEmitter, NativeModules, ScrollView} from 'react-native'
+import {DeviceEventEmitter, NativeModules, ScrollView, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Button} from 'react-native-paper'
 import {darkColors, lightColors} from './colors'
@@ -190,6 +190,7 @@ export default function SettingsPage() {
                 {input.name}
               </Switch>
             ))}
+          <View style={{marginBottom: 10}} />
           {'theme'.includes(term.toLowerCase()) && (
             <Select value={theme} onChange={changeTheme}>
               <Picker.Item value="system" label="Follow system theme" />
