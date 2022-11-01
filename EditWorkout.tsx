@@ -130,7 +130,7 @@ export default function EditWorkout() {
             onChangeText={handleName}
             onSubmitEditing={submitName}
           />
-          {settings.steps && (
+          {settings?.steps && (
             <MassiveInput
               innerRef={stepsRef}
               selectTextOnFocus={false}
@@ -141,7 +141,7 @@ export default function EditWorkout() {
               onSubmitEditing={() => setsRef.current?.focus()}
             />
           )}
-          {settings.showSets && (
+          {settings?.showSets && (
             <MassiveInput
               innerRef={setsRef}
               value={sets}
@@ -151,7 +151,7 @@ export default function EditWorkout() {
               onSubmitEditing={() => minutesRef.current?.focus()}
             />
           )}
-          {settings.alarm && (
+          {settings?.alarm && (
             <>
               <MassiveInput
                 innerRef={minutesRef}
@@ -171,7 +171,7 @@ export default function EditWorkout() {
               />
             </>
           )}
-          {settings.images && uri && (
+          {settings?.images && uri && (
             <TouchableRipple
               style={{marginBottom: MARGIN}}
               onPress={changeImage}
@@ -179,7 +179,7 @@ export default function EditWorkout() {
               <Card.Cover source={{uri}} />
             </TouchableRipple>
           )}
-          {settings.images && !uri && (
+          {settings?.images && !uri && (
             <Button
               style={{marginBottom: MARGIN}}
               onPress={changeImage}
