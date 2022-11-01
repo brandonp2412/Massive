@@ -15,6 +15,6 @@ export class Sets1667185586014 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE sets`)
+    await queryRunner.query('DROP TABLE sets')
   }
 }
