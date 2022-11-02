@@ -86,9 +86,9 @@ const App = () => {
     () => ({
       label: 'Close',
       onPress: () => setSnackbar(''),
-      color: paperTheme.colors.primary,
+      color: paperTheme.colors.background,
     }),
-    [paperTheme.colors.primary],
+    [paperTheme.colors.background],
   )
 
   return (
