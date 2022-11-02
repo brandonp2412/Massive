@@ -80,6 +80,7 @@ export default function StartPlan() {
   useEffect(() => {
     refresh().then(newCounts => select(0, newCounts))
     settingsRepo.findOne({where: {}}).then(setSettings)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh])
 
   const handleSubmit = async () => {
