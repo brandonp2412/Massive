@@ -1,5 +1,5 @@
-import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {RouteProp, useRoute} from '@react-navigation/native'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {NativeModules, TextInput, View} from 'react-native'
 import {FlatList} from 'react-native-gesture-handler'
 import {Button} from 'react-native-paper'
@@ -19,12 +19,9 @@ import {toast} from './toast'
 
 export default function StartPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
-  const [name, setName] = useState('')
   const [reps, setReps] = useState('')
   const [weight, setWeight] = useState('')
   const [unit, setUnit] = useState<string>('kg')
-  const [minutes, setMinutes] = useState(3)
-  const [seconds, setSeconds] = useState(30)
   const [best, setBest] = useState<GymSet>()
   const [selected, setSelected] = useState(0)
   const [settings, setSettings] = useState<Settings>()
@@ -65,43 +62,35 @@ export default function StartPlan() {
   const select = useCallback(
     async (index: number, newCounts?: CountMany[]) => {
       setSelected(index)
-      console.log(`${StartPlan.name}.next:`, {name, index})
+      console.log(`${StartPlan.name}.next:`, {best, index})
       if (!counts && !newCounts) return
       const workout = counts ? counts[index] : newCounts[index]
       console.log(`${StartPlan.name}.next:`, {workout})
       const newBest = await getBestSet(workout.name)
+      delete newBest.id
       console.log(`${StartPlan.name}.next:`, {newBest})
-      setMinutes(newBest.minutes)
-      setSeconds(newBest.seconds)
-      setName(newBest.name)
       setReps(newBest.reps.toString())
       setWeight(newBest.weight.toString())
       setUnit(newBest.unit)
       setBest(newBest)
     },
-    [name, counts],
+    [counts, best],
   )
 
-  useFocusEffect(
-    useCallback(() => {
-      refresh().then(newCounts => select(0, newCounts))
-      settingsRepo.findOne({where: {}}).then(setSettings)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [refresh]),
-  )
+  useEffect(() => {
+    refresh().then(newCounts => select(0, newCounts))
+    settingsRepo.findOne({where: {}}).then(setSettings)
+  }, [refresh])
 
   const handleSubmit = async () => {
     console.log(`${SetForm.name}.handleSubmit:`, {reps, weight, unit, best})
     const [{now}] = await getNow()
     await setRepo.save({
-      name,
+      ...best,
       weight: +weight,
       reps: +reps,
       unit,
       created: now,
-      minutes,
-      seconds,
-      sets: best.sets,
       hidden: false,
     })
     await refresh()
@@ -113,7 +102,8 @@ export default function StartPlan() {
     else if (settings.alarm) toast('Resting...')
     else toast('Added set')
     if (!settings.alarm) return
-    const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000
+    const milliseconds =
+      Number(best.minutes) * 60 * 1000 + Number(best.seconds) * 1000
     const {vibrate, sound, noSound} = settings
     const args = [milliseconds, vibrate, sound, noSound]
     NativeModules.AlarmModule.timer(...args)
