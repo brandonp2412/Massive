@@ -50,16 +50,17 @@ const App = () => {
   )
 
   useEffect(() => {
+    DeviceEventEmitter.addListener(TOAST, ({value}: {value: string}) => {
+      console.log(`${Routes.name}.toast:`, {value})
+      setSnackbar(value)
+    })
+    if (AppDataSource.isInitialized) return
     AppDataSource.initialize().then(async () => {
       const settings = await settingsRepo.findOne({where: {}})
       console.log(`${App.name}.useEffect:`, {gotSettings: settings})
       setTheme(settings.theme)
       setColor(settings.color)
       setInitialized(true)
-    })
-    DeviceEventEmitter.addListener(TOAST, ({value}: {value: string}) => {
-      console.log(`${Routes.name}.toast:`, {value})
-      setSnackbar(value)
     })
   }, [])
 
