@@ -78,21 +78,27 @@ export default function PlanItem({
     [item.workouts],
   )
 
+  const copy = useCallback(() => {
+    const plan: Plan = {...item}
+    delete plan.id
+    setShow(false)
+    navigation.navigate('EditPlan', {plan})
+  }, [navigation, item])
+
   return (
-    <>
-      <List.Item
-        onPress={start}
-        title={title}
-        description={description}
-        onLongPress={longPress}
-        right={() => (
-          <Menu anchor={anchor} visible={show} onDismiss={() => setShow(false)}>
-            <Menu.Item icon="edit" onPress={edit} title="Edit" />
-            <Divider />
-            <Menu.Item icon="delete" onPress={remove} title="Delete" />
-          </Menu>
-        )}
-      />
-    </>
+    <List.Item
+      onPress={start}
+      title={title}
+      description={description}
+      onLongPress={longPress}
+      right={() => (
+        <Menu anchor={anchor} visible={show} onDismiss={() => setShow(false)}>
+          <Menu.Item icon="edit" onPress={edit} title="Edit" />
+          <Menu.Item icon="content-copy" onPress={copy} title="Copy" />
+          <Divider />
+          <Menu.Item icon="delete" onPress={remove} title="Delete" />
+        </Menu>
+      )}
+    />
   )
 }
