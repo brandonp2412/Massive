@@ -4,7 +4,7 @@ set -ex
 
 yarn tsc
 yarn lint
-git push origin HEAD &
+git push origin HEAD
 
 cd android || exit 1
 build=app/build.gradle 
