@@ -54,7 +54,7 @@ const App = () => {
       console.log(`${Routes.name}.toast:`, {value})
       setSnackbar(value)
     })
-    if (AppDataSource.isInitialized) return
+    if (AppDataSource.isInitialized) return setInitialized(true)
     AppDataSource.initialize().then(async () => {
       const settings = await settingsRepo.findOne({where: {}})
       console.log(`${App.name}.useEffect:`, {gotSettings: settings})
