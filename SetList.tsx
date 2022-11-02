@@ -26,8 +26,6 @@ export default function SetList() {
   const [settings, setSettings] = useState<Settings>()
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
-  useEffect(() => console.log({sets}), [sets])
-
   const refresh = useCallback(async (value: string) => {
     const newSets = await setRepo.find({
       where: {name: Like(`%${value}%`), hidden: 0 as any},
@@ -35,6 +33,7 @@ export default function SetList() {
       skip: 0,
       order: {created: 'DESC'},
     })
+    console.log(`${SetList.name}.refresh:`, {newSets})
     setSet(newSets[0])
     if (newSets.length === 0) return setSets([])
     setSets(newSets)
@@ -81,19 +80,9 @@ export default function SetList() {
   const onAdd = useCallback(async () => {
     console.log(`${SetList.name}.onAdd`, {set})
     const [{now}] = await getNow()
-    const newSet: GymSet = set || {
-      hidden: false,
-      minutes: 3,
-      name: '',
-      reps: 0,
-      seconds: 30,
-      sets: 3,
-      weight: 0,
-      created: now,
-      image: '',
-      unit: 'kg',
-    }
+    const newSet: GymSet = set || new GymSet()
     delete newSet.id
+    newSet.created = now
     navigation.navigate('EditSet', {set: newSet})
   }, [navigation, set])
 
