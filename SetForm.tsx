@@ -8,6 +8,7 @@ import {getNow, setRepo} from './db'
 import GymSet from './gym-set'
 import MassiveInput from './MassiveInput'
 import Settings from './settings'
+import { format } from './time'
 import {toast} from './toast'
 
 export default function SetForm({
@@ -57,7 +58,7 @@ export default function SetForm({
       hidden: false,
     })
   }
-
+  
   const handleName = (value: string) => {
     setName(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
@@ -124,7 +125,7 @@ export default function SetForm({
           />
         )}
         {typeof set.id === 'number' && settings.showDate && (
-          <MassiveInput label="Created" disabled value={set.created} />
+          <MassiveInput label="Created" disabled value={format(set.created, settings.date)} />
         )}
         {settings.images && newImage && (
           <TouchableRipple
