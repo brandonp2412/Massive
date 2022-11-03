@@ -34,8 +34,8 @@ export default function SetList() {
       order: {created: 'DESC'},
     })
     console.log(`${SetList.name}.refresh:`, {newSets})
-    const newSet = newSets[0]
-    delete newSet.id
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {id, ...newSet} = newSets[0]
     setSet(newSet)
     if (newSets.length === 0) return setSets([])
     setSets(newSets)
