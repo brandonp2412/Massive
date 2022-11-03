@@ -1,62 +1,45 @@
-import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
-import {NativeModules, View} from 'react-native';
-import {Button, Subheading, Title} from 'react-native-paper';
-import DrawerHeader from './DrawerHeader';
-import MassiveFab from './MassiveFab';
-import Page from './Page';
-import {getSettings, updateSettings} from './settings.service';
-import {useSettings} from './use-settings';
+import React, {useEffect, useState} from 'react'
+import {NativeEventEmitter, NativeModules, View} from 'react-native'
+import {Button, Subheading, Title} from 'react-native-paper'
+import {PADDING} from './constants'
+import {settingsRepo} from './db'
+import DrawerHeader from './DrawerHeader'
+import MassiveFab from './MassiveFab'
+import Settings from './settings'
+
+interface TickEvent {
+  minutes: string
+  seconds: string
+}
 
 export default function TimerPage() {
-  const [remaining, setRemaining] = useState(0);
-  const {settings} = useSettings();
+  const [minutes, setMinutes] = useState('00')
+  const [seconds, setSeconds] = useState('00')
+  const [settings, setSettings] = useState<Settings>()
 
-  const minutes = Math.floor(remaining / 1000 / 60);
-  const seconds = Math.floor((remaining / 1000) % 60);
-  let interval = 0;
-
-  const tick = useCallback(() => {
-    let newRemaining = 0;
-    getSettings().then(gotSettings => {
-      if (!gotSettings.nextAlarm) return;
-      const date = new Date(gotSettings.nextAlarm);
-      newRemaining = date.getTime() - new Date().getTime();
-      if (newRemaining < 0) setRemaining(0);
-      else setRemaining(newRemaining);
-    });
-    interval = setInterval(() => {
-      console.log({newRemaining});
-      newRemaining -= 1000;
-      if (newRemaining > 0) return setRemaining(newRemaining);
-      clearInterval(interval);
-      setRemaining(0);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useFocusEffect(tick);
+  useEffect(() => {
+    settingsRepo.findOne({where: {}}).then(setSettings)
+    const emitter = new NativeEventEmitter()
+    const listener = emitter.addListener('tick', (event: TickEvent) => {
+      console.log(`${TimerPage.name}.tick:`, {event})
+      setMinutes(event.minutes)
+      setSeconds(event.seconds)
+    })
+    return listener.remove
+  }, [])
 
   const stop = () => {
-    NativeModules.AlarmModule.stop();
-    clearInterval(interval);
-    setRemaining(0);
-    updateSettings({...settings, nextAlarm: undefined});
-  };
+    NativeModules.AlarmModule.stop()
+  }
 
   const add = async () => {
-    if (!settings.nextAlarm) return;
-    const date = new Date(settings.nextAlarm);
-    date.setTime(date.getTime() + 1000 * 60);
-    NativeModules.AlarmModule.add(date, settings.vibrate, settings.sound);
-    await updateSettings({...settings, nextAlarm: date.toISOString()});
-    tick();
-  };
+    NativeModules.AlarmModule.add(settings.vibrate, settings.sound)
+  }
 
   return (
     <>
       <DrawerHeader name="Timer" />
-      <Page>
+      <View style={{flexGrow: 1, padding: PADDING}}>
         <View
           style={{
             flex: 1,
@@ -69,8 +52,8 @@ export default function TimerPage() {
           </Subheading>
           <Button onPress={add}>Add 1 min</Button>
         </View>
-      </Page>
+      </View>
       <MassiveFab icon="stop" onPress={stop} />
     </>
-  );
+  )
 }

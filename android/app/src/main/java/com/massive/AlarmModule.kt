@@ -16,10 +16,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import com.facebook.react.bridge.Callback
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.*
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import kotlin.math.floor
 
 
@@ -27,39 +25,63 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     ReactContextBaseJavaModule(context) {
 
     var countdownTimer: CountDownTimer? = null
+    var currentMs: Long = 0
+    var running = false
 
     override fun getName(): String {
         return "AlarmModule"
     }
 
-    private val receiver = object : BroadcastReceiver() {
+    private val stopReceiver = object : BroadcastReceiver() {
+        @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d("AlarmModule", "Received broadcast intent")
-            Toast.makeText(reactApplicationContext, "called from test receiver", Toast.LENGTH_SHORT)
-                .show()
+            stop()
         }
+    }
+
+    init {
+        reactApplicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST))
+    }
+
+    override fun onCatalystInstanceDestroy() {
+        reactApplicationContext.unregisterReceiver(stopReceiver)
+        super.onCatalystInstanceDestroy()
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
-    fun add(milliseconds: Int, vibrate: Boolean, sound: String?) {
+    fun add(vibrate: Boolean, sound: String?) {
         Log.d("AlarmModule", "Add 1 min to alarm.")
-        val addIntent = Intent(reactApplicationContext, TimerService::class.java)
-        addIntent.action = "add"
-        addIntent.putExtra("vibrate", vibrate)
-        addIntent.putExtra("sound", sound)
-        addIntent.data = Uri.parse("$milliseconds")
-        reactApplicationContext.startService(addIntent)
+        countdownTimer?.cancel()
+        val newMs = if (running) currentMs.toInt().plus(60000) else 60000
+        countdownTimer = getTimer(newMs, vibrate, sound)
+        countdownTimer?.start()
+        running = true
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
     fun stop() {
         Log.d("AlarmModule", "Stop alarm.")
-        val timerIntent = Intent(reactApplicationContext, TimerService::class.java)
-        reactApplicationContext.stopService(timerIntent)
-        val alarmIntent = Intent(reactApplicationContext, AlarmService::class.java)
-        reactApplicationContext.stopService(alarmIntent)
+        countdownTimer?.cancel()
+        running = false
+        reactApplicationContext?.stopService(
+            Intent(
+                reactApplicationContext,
+                AlarmService::class.java
+            )
+        )
+        val manager = getManager()
+        manager.cancel(NOTIFICATION_ID_DONE)
+        manager.cancel(NOTIFICATION_ID_PENDING)
+        val params = Arguments.createMap().apply {
+            putString("minutes", "00")
+            putString("seconds", "00")
+        }
+        reactApplicationContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("tick", params)
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -76,6 +98,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         countdownTimer?.cancel()
         countdownTimer = getTimer(milliseconds, vibrate, sound)
         countdownTimer?.start()
+        running = true
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -114,6 +137,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         return object : CountDownTimer(endMs.toLong(), 1000) {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onTick(current: Long) {
+                currentMs = current
                 val seconds =
                     floor((current / 1000).toDouble() % 60).toInt().toString().padStart(2, '0')
                 val minutes =
@@ -124,6 +148,13 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                     NotificationCompat.PRIORITY_LOW
                 val manager = getManager()
                 manager.notify(NOTIFICATION_ID_PENDING, builder.build())
+                val params = Arguments.createMap().apply {
+                    putString("minutes", minutes)
+                    putString("seconds", seconds)
+                }
+                reactApplicationContext
+                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+                    .emit("tick", params)
             }
 
             @RequiresApi(Build.VERSION_CODES.O)
@@ -149,6 +180,9 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                 alarmIntent.putExtra("vibrate", vibrate)
                 alarmIntent.putExtra("sound", sound)
                 context.startService(alarmIntent)
+                reactApplicationContext
+                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+                    .emit("finish", Arguments.createMap())
             }
         }
     }
@@ -160,11 +194,10 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         val contentIntent = Intent(context, MainActivity::class.java)
         val pendingContent =
             PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
-        reactApplicationContext.registerReceiver(receiver, IntentFilter(STOP_BROADCAST))
-        val stopIntent = Intent(STOP_BROADCAST)
-        stopIntent.flags =Intent.FLAG_ACTIVITY_NEW_TASK
+        val stopBroadcast = Intent(STOP_BROADCAST)
+        stopBroadcast.setPackage(reactApplicationContext.packageName)
         val pendingStop =
-            PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_MUTABLE)
+            PendingIntent.getBroadcast(context, 0, stopBroadcast, PendingIntent.FLAG_IMMUTABLE)
         return NotificationCompat.Builder(context, CHANNEL_ID_PENDING)
             .setSmallIcon(R.drawable.ic_baseline_hourglass_bottom_24).setContentTitle("Resting")
             .setContentIntent(pendingContent)

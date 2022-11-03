@@ -7,6 +7,7 @@ import HomePage from './HomePage'
 import PlanPage from './PlanPage'
 import Route from './route'
 import SettingsPage from './SettingsPage'
+import TimerPage from './TimerPage'
 import useDark from './use-dark'
 import WorkoutsPage from './WorkoutsPage'
 
@@ -21,6 +22,7 @@ export default function Routes() {
       {name: 'Plans', component: PlanPage, icon: 'event'},
       {name: 'Best', component: BestPage, icon: 'insights'},
       {name: 'Workouts', component: WorkoutsPage, icon: 'fitness-center'},
+      {name: 'Timer', component: TimerPage, icon: 'access-time'},
       {name: 'Settings', component: SettingsPage, icon: 'settings'},
     ],
     [],
