@@ -24,6 +24,7 @@ export default function SetItem({
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
   const remove = useCallback(async () => {
+    console.log(`${SetItem.name}.remove:`, {id: item.id})
     if (typeof item.id === 'number') await setRepo.delete(item.id)
     setShowMenu(false)
     onRemove()
