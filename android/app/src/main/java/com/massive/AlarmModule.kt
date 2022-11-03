@@ -51,11 +51,11 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
-    fun add(vibrate: Boolean, sound: String?) {
+    fun add(vibrate: Boolean, sound: String?, noSound: Boolean = false) {
         Log.d("AlarmModule", "Add 1 min to alarm.")
         countdownTimer?.cancel()
         val newMs = if (running) currentMs.toInt().plus(60000) else 60000
-        countdownTimer = getTimer(newMs, vibrate, sound)
+        countdownTimer = getTimer(newMs, vibrate, sound, noSound)
         countdownTimer?.start()
         running = true
     }
@@ -96,7 +96,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
             )
         )
         countdownTimer?.cancel()
-        countdownTimer = getTimer(milliseconds, vibrate, sound)
+        countdownTimer = getTimer(milliseconds, vibrate, sound, noSound)
         countdownTimer?.start()
         running = true
     }
@@ -132,7 +132,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getTimer(endMs: Int, vibrate: Boolean, sound: String?): CountDownTimer {
+    private fun getTimer(endMs: Int, vibrate: Boolean, sound: String?, noSound: Boolean): CountDownTimer {
         val builder = getBuilder()
         return object : CountDownTimer(endMs.toLong(), 1000) {
             @RequiresApi(Build.VERSION_CODES.O)
@@ -176,9 +176,11 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                 val manager = getManager()
                 manager.notify(NOTIFICATION_ID_DONE, builder.build())
                 manager.cancel(NOTIFICATION_ID_PENDING)
-                val alarmIntent = Intent(context, AlarmService::class.java)
-                alarmIntent.putExtra("vibrate", vibrate)
-                alarmIntent.putExtra("sound", sound)
+                val alarmIntent = Intent(context, AlarmService::class.java).apply {
+                    putExtra("vibrate", vibrate)
+                    putExtra("sound", sound)
+                    putExtra("noSound", noSound)
+                }
                 context.startService(alarmIntent)
                 reactApplicationContext
                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
