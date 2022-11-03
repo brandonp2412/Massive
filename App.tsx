@@ -50,18 +50,24 @@ const App = () => {
   )
 
   useEffect(() => {
-    DeviceEventEmitter.addListener(TOAST, ({value}: {value: string}) => {
-      console.log(`${Routes.name}.toast:`, {value})
-      setSnackbar(value)
-    })
-    if (AppDataSource.isInitialized) return setInitialized(true)
-    AppDataSource.initialize().then(async () => {
-      const settings = await settingsRepo.findOne({where: {}})
-      console.log(`${App.name}.useEffect:`, {gotSettings: settings})
-      setTheme(settings.theme)
-      setColor(settings.color)
-      setInitialized(true)
-    })
+    const description = DeviceEventEmitter.addListener(
+      TOAST,
+      ({value}: {value: string}) => {
+        console.log(`${Routes.name}.toast:`, {value})
+        setSnackbar(value)
+      },
+    )
+    if (AppDataSource.isInitialized) setInitialized(true)
+    else {
+      AppDataSource.initialize().then(async () => {
+        const settings = await settingsRepo.findOne({where: {}})
+        console.log(`${App.name}.useEffect:`, {gotSettings: settings})
+        setTheme(settings.theme)
+        setColor(settings.color)
+        setInitialized(true)
+      })
+    }
+    return description.remove
   }, [])
 
   const paperTheme = useMemo(() => {
