@@ -21,14 +21,14 @@ export default function SetForm({
   settings: Settings
 }) {
   const [name, setName] = useState(set.name)
-  const [reps, setReps] = useState(set.reps.toString())
-  const [weight, setWeight] = useState(set.weight.toString())
+  const [reps, setReps] = useState(set.reps?.toString())
+  const [weight, setWeight] = useState(set.weight?.toString())
   const [newImage, setNewImage] = useState(set.image)
   const [unit, setUnit] = useState(set.unit)
   const [showRemove, setShowRemove] = useState(false)
   const [selection, setSelection] = useState({
     start: 0,
-    end: set.reps.toString().length,
+    end: set.reps?.toString().length,
   })
   const [removeImage, setRemoveImage] = useState(false)
   const weightRef = useRef<TextInput>(null)
