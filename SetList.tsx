@@ -34,7 +34,9 @@ export default function SetList() {
       order: {created: 'DESC'},
     })
     console.log(`${SetList.name}.refresh:`, {newSets})
-    setSet(newSets[0])
+    const newSet = newSets[0]
+    delete newSet.id
+    setSet(newSet)
     if (newSets.length === 0) return setSets([])
     setSets(newSets)
     setOffset(0)
@@ -80,8 +82,18 @@ export default function SetList() {
   const onAdd = useCallback(async () => {
     console.log(`${SetList.name}.onAdd`, {set})
     const [{now}] = await getNow()
-    const newSet: GymSet = set || new GymSet()
-    delete newSet.id
+    const newSet: GymSet = set || {
+      created: now,
+      hidden: false,
+      image: '',
+      minutes: 3,
+      seconds: 30,
+      name: '',
+      reps: 0,
+      sets: 0,
+      unit: 'kg',
+      weight: 0,
+    }
     newSet.created = now
     navigation.navigate('EditSet', {set: newSet})
   }, [navigation, set])
