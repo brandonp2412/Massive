@@ -1,13 +1,15 @@
-import {Plan} from './plan';
-import Set from './set';
+import GymSet from './gym-set'
+import {Plan} from './plan'
 
 export type PlanPageParams = {
-  PlanList: {};
+  PlanList: {}
   EditPlan: {
-    plan: Plan;
-  };
+    plan: Plan
+  }
   StartPlan: {
-    plan: Plan;
-    set: Set;
-  };
-};
+    plan: Plan
+  }
+  EditSet: {
+    set: GymSet
+  }
+}

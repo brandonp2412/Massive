@@ -2,45 +2,70 @@ import {
   NavigationProp,
   useFocusEffect,
   useNavigation,
-} from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, Image} from 'react-native';
-import {List} from 'react-native-paper';
-import {getBestReps, getBestWeights} from './best.service';
-import {BestPageParams} from './BestPage';
-import DrawerHeader from './DrawerHeader';
-import Page from './Page';
-import Set from './set';
-import {useSettings} from './use-settings';
+} from '@react-navigation/native'
+import {useCallback, useState} from 'react'
+import {FlatList, Image} from 'react-native'
+import {List} from 'react-native-paper'
+import {BestPageParams} from './BestPage'
+import {setRepo, settingsRepo} from './db'
+import DrawerHeader from './DrawerHeader'
+import GymSet from './gym-set'
+import Page from './Page'
+import Settings from './settings'
 
 export default function BestList() {
-  const [bests, setBests] = useState<Set[]>();
-  const [search, setSearch] = useState('');
-  const navigation = useNavigation<NavigationProp<BestPageParams>>();
-  const {settings} = useSettings();
-
-  const refresh = useCallback(async () => {
-    const weights = await getBestWeights(search);
-    console.log(`${BestList.name}.refresh:`, {length: weights.length});
-    let newBest: Set[] = [];
-    for (const set of weights) {
-      const reps = await getBestReps(set.name, set.weight);
-      newBest.push(...reps);
-    }
-    setBests(newBest);
-  }, [search]);
+  const [bests, setBests] = useState<GymSet[]>()
+  const [term, setTerm] = useState('')
+  const navigation = useNavigation<NavigationProp<BestPageParams>>()
+  const [settings, setSettings] = useState<Settings>()
 
   useFocusEffect(
     useCallback(() => {
-      refresh();
-    }, [refresh]),
-  );
+      settingsRepo.findOne({where: {}}).then(setSettings)
+    }, []),
+  )
 
-  useEffect(() => {
-    refresh();
-  }, [search, refresh]);
+  const refresh = useCallback(async (value: string) => {
+    const weights = await setRepo
+      .createQueryBuilder()
+      .select()
+      .addSelect('MAX(weight)', 'weight')
+      .where('name LIKE :name', {name: `%${value}%`})
+      .andWhere('NOT hidden')
+      .groupBy('name')
+      .getMany()
+    console.log(`${BestList.name}.refresh:`, {length: weights.length})
+    let newBest: GymSet[] = []
+    for (const set of weights) {
+      const reps = await setRepo
+        .createQueryBuilder()
+        .select()
+        .addSelect('MAX(reps)', 'reps')
+        .where('name = :name', {name: set.name})
+        .andWhere('weight = :weight', {weight: set.weight})
+        .andWhere('NOT hidden')
+        .groupBy('name')
+        .getMany()
+      newBest.push(...reps)
+    }
+    setBests(newBest)
+  }, [])
 
-  const renderItem = ({item}: {item: Set}) => (
+  useFocusEffect(
+    useCallback(() => {
+      refresh(term)
+    }, [refresh, term]),
+  )
+
+  const search = useCallback(
+    (value: string) => {
+      setTerm(value)
+      refresh(value)
+    },
+    [refresh],
+  )
+
+  const renderItem = ({item}: {item: GymSet}) => (
     <List.Item
       key={item.name}
       title={item.name}
@@ -53,12 +78,12 @@ export default function BestList() {
         null
       }
     />
-  );
+  )
 
   return (
     <>
       <DrawerHeader name="Best" />
-      <Page search={search} setSearch={setSearch}>
+      <Page term={term} search={search}>
         {bests?.length === 0 ? (
           <List.Item
             title="No exercises yet"
@@ -69,5 +94,5 @@ export default function BestList() {
         )}
       </Page>
     </>
-  );
+  )
 }

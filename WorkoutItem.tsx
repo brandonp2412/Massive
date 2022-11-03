@@ -1,48 +1,44 @@
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useMemo, useState} from 'react';
-import {GestureResponderEvent, Image} from 'react-native';
-import {List, Menu, Text} from 'react-native-paper';
-import ConfirmDialog from './ConfirmDialog';
-import Set from './set';
-import {deleteSetsBy} from './set.service';
-import {useSettings} from './use-settings';
-import {WorkoutsPageParams} from './WorkoutsPage';
+import {NavigationProp, useNavigation} from '@react-navigation/native'
+import {useCallback, useMemo, useState} from 'react'
+import {GestureResponderEvent, Image} from 'react-native'
+import {List, Menu, Text} from 'react-native-paper'
+import ConfirmDialog from './ConfirmDialog'
+import {setRepo} from './db'
+import GymSet from './gym-set'
+import {WorkoutsPageParams} from './WorkoutsPage'
 
 export default function WorkoutItem({
   item,
-  onRemoved,
+  onRemove,
+  images,
 }: {
-  item: Set;
-  onRemoved: () => void;
+  item: GymSet
+  onRemove: () => void
+  images: boolean
 }) {
-  const [showMenu, setShowMenu] = useState(false);
-  const [anchor, setAnchor] = useState({x: 0, y: 0});
-  const [showRemove, setShowRemove] = useState('');
-  const {settings} = useSettings();
-  const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
+  const [showMenu, setShowMenu] = useState(false)
+  const [anchor, setAnchor] = useState({x: 0, y: 0})
+  const [showRemove, setShowRemove] = useState('')
+  const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>()
 
   const remove = useCallback(async () => {
-    await deleteSetsBy(item.name);
-    setShowMenu(false);
-    onRemoved();
-  }, [setShowMenu, onRemoved, item.name]);
+    await setRepo.delete({name: item.name})
+    setShowMenu(false)
+    onRemove()
+  }, [setShowMenu, onRemove, item.name])
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {
-      setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY});
-      setShowMenu(true);
+      setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY})
+      setShowMenu(true)
     },
     [setShowMenu, setAnchor],
-  );
+  )
 
   const description = useMemo(() => {
-    const seconds = item.seconds?.toString().padStart(2, '0');
-    if (settings.alarm && settings.showSets)
-      return `${item.sets} x ${item.minutes || 0}:${seconds}`;
-    else if (settings.alarm && !settings.showSets)
-      return `${item.minutes || 0}:${seconds}`;
-    return `${item.sets}`;
-  }, [item, settings]);
+    const seconds = item.seconds?.toString().padStart(2, '0')
+    return `${item.sets} x ${item.minutes || 0}:${seconds}`
+  }, [item])
 
   return (
     <>
@@ -52,7 +48,7 @@ export default function WorkoutItem({
         description={description}
         onLongPress={longPress}
         left={() =>
-          !!settings.images &&
+          images &&
           item.image && (
             <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
           )
@@ -69,8 +65,8 @@ export default function WorkoutItem({
               <Menu.Item
                 icon="delete"
                 onPress={() => {
-                  setShowRemove(item.name);
-                  setShowMenu(false);
+                  setShowRemove(item.name)
+                  setShowMenu(false)
                 }}
                 title="Delete"
               />
@@ -87,5 +83,5 @@ export default function WorkoutItem({
         sure?
       </ConfirmDialog>
     </>
-  );
+  )
 }

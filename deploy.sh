@@ -1,7 +1,11 @@
 #!/bin/sh
 
 set -ex
-git push origin HEAD > /dev/null &
+
+yarn tsc
+yarn lint
+git push origin HEAD
+
 cd android || exit 1
 build=app/build.gradle 
 versionCode=$(

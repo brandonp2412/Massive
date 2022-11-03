@@ -1,6 +1,6 @@
 {
   "name": "massive",
-  "version": "1.45",
+  "version": "1.56",
   "private": true,
   "license": "GPL-3.0-only",
   "scripts": {
@@ -8,20 +8,27 @@
     "release": "react-native run-android --variant=release",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --quiet"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@babel/plugin-transform-flow-strip-types": "^7.19.0",
     "@babel/preset-env": "^7.19.1",
     "@react-native-masked-view/masked-view": "^0.2.7",
     "@react-native-picker/picker": "^2.4.4",
     "@react-navigation/drawer": "^6.5.0",
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/stack": "^6.3.0",
+    "@testing-library/jest-native": "^5.1.2",
+    "@testing-library/react-native": "^11.3.0",
     "@types/d3-shape": "^3.1.0",
+    "@types/jest": "^29.2.0",
     "@types/react-native-sqlite-storage": "^5.0.2",
     "@types/react-native-svg-charts": "^5.0.12",
     "@types/react-native-vector-icons": "^6.4.12",
+    "babel-jest": "^29.2.2",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "eslint-plugin-flowtype": "^8.0.3",
+    "jest": "^29.2.2",
     "react": "^18.2.0",
     "react-native": "^0.70.4",
     "react-native-document-picker": "^8.1.2",
@@ -38,12 +45,16 @@
     "react-native-svg": "^13.4.0",
     "react-native-svg-charts": "^5.4.0",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-view-shot": "^3.4.0"
+    "react-native-view-shot": "^3.4.0",
+    "react-test-renderer": "^18.2.0",
+    "typeorm": "^0.3.10"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-decorators": "^7.20.0",
     "@babel/runtime": "^7.12.5",
     "@react-native-community/eslint-config": "^2.0.0",
+    "@types/node": "^18.11.7",
     "@types/react-native": "^0.69.0",
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.29.0",

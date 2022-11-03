@@ -1,31 +1,30 @@
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {useNavigation} from '@react-navigation/native';
-import React from 'react';
-import {IconButton} from 'react-native-paper';
-import BestPage from './BestPage';
-import {DrawerParamList} from './drawer-param-list';
-import HomePage from './HomePage';
-import PlanPage from './PlanPage';
-import Route from './route';
-import SettingsPage from './SettingsPage';
-import TimerPage from './TimerPage';
-import useDark from './use-dark';
-import WorkoutsPage from './WorkoutsPage';
+import {createDrawerNavigator} from '@react-navigation/drawer'
+import {useMemo} from 'react'
+import {IconButton} from 'react-native-paper'
+import BestPage from './BestPage'
+import {DrawerParamList} from './drawer-param-list'
+import HomePage from './HomePage'
+import PlanPage from './PlanPage'
+import Route from './route'
+import SettingsPage from './SettingsPage'
+import useDark from './use-dark'
+import WorkoutsPage from './WorkoutsPage'
 
-const Drawer = createDrawerNavigator<DrawerParamList>();
+const Drawer = createDrawerNavigator<DrawerParamList>()
 
 export default function Routes() {
-  const dark = useDark();
-  const navigation = useNavigation();
+  const dark = useDark()
 
-  const routes: Route[] = [
-    {name: 'Home', component: HomePage, icon: 'home'},
-    {name: 'Plans', component: PlanPage, icon: 'event'},
-    {name: 'Best', component: BestPage, icon: 'insights'},
-    {name: 'Workouts', component: WorkoutsPage, icon: 'fitness-center'},
-    {name: 'Timer', component: TimerPage, icon: 'access-time'},
-    {name: 'Settings', component: SettingsPage, icon: 'settings'},
-  ];
+  const routes: Route[] = useMemo(
+    () => [
+      {name: 'Home', component: HomePage, icon: 'home'},
+      {name: 'Plans', component: PlanPage, icon: 'event'},
+      {name: 'Best', component: BestPage, icon: 'insights'},
+      {name: 'Workouts', component: WorkoutsPage, icon: 'fitness-center'},
+      {name: 'Settings', component: SettingsPage, icon: 'settings'},
+    ],
+    [],
+  )
 
   return (
     <Drawer.Navigator
@@ -45,5 +44,5 @@ export default function Routes() {
         />
       ))}
     </Drawer.Navigator>
-  );
+  )
 }

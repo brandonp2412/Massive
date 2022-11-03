@@ -2,105 +2,118 @@ import {
   NavigationProp,
   useFocusEffect,
   useNavigation,
-} from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList} from 'react-native';
-import {List} from 'react-native-paper';
-import DrawerHeader from './DrawerHeader';
-import {HomePageParams} from './home-page-params';
-import Page from './Page';
-import Set from './set';
-import {defaultSet, getSets, getToday} from './set.service';
-import SetItem from './SetItem';
-import {useSettings} from './use-settings';
+} from '@react-navigation/native'
+import {useCallback, useEffect, useState} from 'react'
+import {FlatList} from 'react-native'
+import {List} from 'react-native-paper'
+import {Like} from 'typeorm'
+import {getNow, setRepo, settingsRepo} from './db'
+import DrawerHeader from './DrawerHeader'
+import GymSet from './gym-set'
+import {HomePageParams} from './home-page-params'
+import Page from './Page'
+import SetItem from './SetItem'
+import Settings from './settings'
 
-const limit = 15;
+const limit = 15
 
 export default function SetList() {
-  const [sets, setSets] = useState<Set[]>();
-  const [set, setSet] = useState<Set>();
-  const [offset, setOffset] = useState(0);
-  const [search, setSearch] = useState('');
-  const [end, setEnd] = useState(false);
-  const {settings} = useSettings();
-  const navigation = useNavigation<NavigationProp<HomePageParams>>();
+  const [sets, setSets] = useState<GymSet[]>([])
+  const [set, setSet] = useState<GymSet>()
+  const [offset, setOffset] = useState(0)
+  const [term, setTerm] = useState('')
+  const [end, setEnd] = useState(false)
+  const [settings, setSettings] = useState<Settings>()
+  const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
-  const refresh = useCallback(async () => {
-    const todaysSet = await getToday();
-    if (todaysSet) setSet({...todaysSet});
-    const newSets = await getSets({
-      search: `%${search}%`,
-      limit,
-      offset: 0,
-      format: settings.date || '%Y-%m-%d %H:%M',
-    });
-    console.log(`${SetList.name}.refresh:`, {first: newSets[0]});
-    if (newSets.length === 0) return setSets([]);
-    setSets(newSets);
-    setOffset(0);
-    setEnd(false);
-  }, [search, settings.date]);
+  const refresh = useCallback(async (value: string) => {
+    const newSets = await setRepo.find({
+      where: {name: Like(`%${value}%`), hidden: 0 as any},
+      take: limit,
+      skip: 0,
+      order: {created: 'DESC'},
+    })
+    console.log(`${SetList.name}.refresh:`, {newSets})
+    setSet(newSets[0])
+    if (newSets.length === 0) return setSets([])
+    setSets(newSets)
+    setOffset(0)
+    setEnd(false)
+  }, [])
 
   useFocusEffect(
     useCallback(() => {
-      refresh();
-    }, [refresh]),
-  );
-
-  useEffect(() => {
-    refresh();
-  }, [search, refresh]);
+      refresh(term)
+      settingsRepo.findOne({where: {}}).then(setSettings)
+    }, [refresh, term]),
+  )
 
   const renderItem = useCallback(
-    ({item}: {item: Set}) => (
-      <SetItem item={item} key={item.id} onRemove={refresh} />
+    ({item}: {item: GymSet}) => (
+      <SetItem
+        settings={settings}
+        item={item}
+        key={item.id}
+        onRemove={() => refresh(term)}
+      />
     ),
-    [refresh],
-  );
+    [refresh, term, settings],
+  )
 
   const next = useCallback(async () => {
-    if (end) return;
-    const newOffset = offset + limit;
-    console.log(`${SetList.name}.next:`, {offset, newOffset, search});
-    const newSets = await getSets({
-      search: `%${search}%`,
-      limit,
-      offset: newOffset,
-      format: settings.date || '%Y-%m-%d %H:%M',
-    });
-    if (newSets.length === 0) return setEnd(true);
-    if (!sets) return;
-    setSets([...sets, ...newSets]);
-    if (newSets.length < limit) return setEnd(true);
-    setOffset(newOffset);
-  }, [search, end, offset, sets, settings.date]);
+    if (end) return
+    const newOffset = offset + limit
+    console.log(`${SetList.name}.next:`, {offset, newOffset, term})
+    const newSets = await setRepo.find({
+      where: {name: Like(`%${term}%`), hidden: 0 as any},
+      take: limit,
+      skip: newOffset,
+      order: {created: 'DESC'},
+    })
+    if (newSets.length === 0) return setEnd(true)
+    if (!sets) return
+    setSets([...sets, ...newSets])
+    if (newSets.length < limit) return setEnd(true)
+    setOffset(newOffset)
+  }, [term, end, offset, sets])
 
   const onAdd = useCallback(async () => {
-    console.log(`${SetList.name}.onAdd`, {set});
-    navigation.navigate('EditSet', {
-      set: set || {...defaultSet},
-    });
-  }, [navigation, set]);
+    console.log(`${SetList.name}.onAdd`, {set})
+    const [{now}] = await getNow()
+    const newSet: GymSet = set || new GymSet()
+    delete newSet.id
+    newSet.created = now
+    navigation.navigate('EditSet', {set: newSet})
+  }, [navigation, set])
+
+  const search = useCallback(
+    (value: string) => {
+      setTerm(value)
+      refresh(value)
+    },
+    [refresh],
+  )
 
   return (
     <>
       <DrawerHeader name="Home" />
-      <Page onAdd={onAdd} search={search} setSearch={setSearch}>
+      <Page onAdd={onAdd} term={term} search={search}>
         {sets?.length === 0 ? (
           <List.Item
             title="No sets yet"
             description="A set is a group of repetitions. E.g. 8 reps of Squats."
           />
         ) : (
-          <FlatList
-            data={sets}
-            style={{flex: 1}}
-            renderItem={renderItem}
-            keyExtractor={s => s.id!.toString()}
-            onEndReached={next}
-          />
+          settings && (
+            <FlatList
+              data={sets}
+              style={{flex: 1}}
+              renderItem={renderItem}
+              onEndReached={next}
+            />
+          )
         )}
       </Page>
     </>
-  );
+  )
 }

@@ -1,108 +1,120 @@
-import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native';
-import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {NativeModules, TextInput, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {Button, List, RadioButton} from 'react-native-paper';
-import {getBestSet} from './best.service';
-import {useColor} from './color';
-import {PADDING} from './constants';
-import CountMany from './count-many';
-import MassiveInput from './MassiveInput';
-import {useSnackbar} from './MassiveSnack';
-import {PlanPageParams} from './plan-page-params';
-import Set from './set';
-import {addSet, countMany} from './set.service';
-import SetForm from './SetForm';
-import StackHeader from './StackHeader';
-import {useSettings} from './use-settings';
+import {RouteProp, useRoute} from '@react-navigation/native'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {NativeModules, TextInput, View} from 'react-native'
+import {FlatList} from 'react-native-gesture-handler'
+import {Button} from 'react-native-paper'
+import {getBestSet} from './best.service'
+import {PADDING} from './constants'
+import CountMany from './count-many'
+import {AppDataSource} from './data-source'
+import {getNow, setRepo, settingsRepo} from './db'
+import GymSet from './gym-set'
+import MassiveInput from './MassiveInput'
+import {PlanPageParams} from './plan-page-params'
+import SetForm from './SetForm'
+import Settings from './settings'
+import StackHeader from './StackHeader'
+import StartPlanItem from './StartPlanItem'
+import {toast} from './toast'
 
 export default function StartPlan() {
-  const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>();
-  const {set} = params;
-  const [name, setName] = useState(set.name);
-  const [reps, setReps] = useState(set.reps.toString());
-  const [weight, setWeight] = useState(set.weight.toString());
-  const [unit, setUnit] = useState<string>();
-  const {toast} = useSnackbar();
-  const [minutes, setMinutes] = useState(set.minutes);
-  const [seconds, setSeconds] = useState(set.seconds);
-  const [best, setBest] = useState<Set>(set);
-  const [selected, setSelected] = useState(0);
-  const {settings} = useSettings();
-  const [counts, setCounts] = useState<CountMany[]>();
-  const weightRef = useRef<TextInput>(null);
-  const repsRef = useRef<TextInput>(null);
-  const unitRef = useRef<TextInput>(null);
-  const workouts = useMemo(() => params.plan.workouts.split(','), [params]);
-  const {color} = useColor();
+  const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
+  const [reps, setReps] = useState('')
+  const [weight, setWeight] = useState('')
+  const [unit, setUnit] = useState<string>('kg')
+  const [best, setBest] = useState<GymSet>()
+  const [selected, setSelected] = useState(0)
+  const [settings, setSettings] = useState<Settings>()
+  const [counts, setCounts] = useState<CountMany[]>()
+  const weightRef = useRef<TextInput>(null)
+  const repsRef = useRef<TextInput>(null)
+  const unitRef = useRef<TextInput>(null)
+  const workouts = useMemo(() => params.plan.workouts.split(','), [params])
 
   const [selection, setSelection] = useState({
     start: 0,
-    end: set.reps.toString().length,
-  });
+    end: 0,
+  })
 
-  useFocusEffect(
-    useCallback(() => {
-      countMany(workouts).then(newCounts => {
-        setCounts(newCounts);
-        console.log(`${StartPlan.name}.focus:`, {newCounts});
-      });
-    }, [params]),
-  );
+  const refresh = useCallback(() => {
+    const questions = workouts
+      .map((workout, index) => `('${workout}',${index})`)
+      .join(',')
+    console.log({questions, workouts})
+    const select = `
+      SELECT workouts.name, COUNT(sets.id) as total
+      FROM (select 0 as name, 0 as sequence union values ${questions}) as workouts 
+      LEFT JOIN sets ON sets.name = workouts.name 
+        AND sets.created LIKE STRFTIME('%Y-%m-%d%%', 'now', 'localtime')
+        AND NOT sets.hidden
+      GROUP BY workouts.name
+      ORDER BY workouts.sequence
+      LIMIT -1
+      OFFSET 1
+    `
+    return AppDataSource.manager.query(select).then(newCounts => {
+      setCounts(newCounts)
+      console.log(`${StartPlan.name}.focus:`, {newCounts})
+      return newCounts
+    })
+  }, [workouts])
+
+  const select = useCallback(
+    async (index: number, newCounts?: CountMany[]) => {
+      setSelected(index)
+      console.log(`${StartPlan.name}.next:`, {best, index})
+      if (!counts && !newCounts) return
+      const workout = counts ? counts[index] : newCounts[index]
+      console.log(`${StartPlan.name}.next:`, {workout})
+      const newBest = await getBestSet(workout.name)
+      delete newBest.id
+      console.log(`${StartPlan.name}.next:`, {newBest})
+      setReps(newBest.reps.toString())
+      setWeight(newBest.weight.toString())
+      setUnit(newBest.unit)
+      setBest(newBest)
+    },
+    [counts, best],
+  )
+
+  useEffect(() => {
+    refresh().then(newCounts => select(0, newCounts))
+    settingsRepo.findOne({where: {}}).then(setSettings)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refresh])
 
   const handleSubmit = async () => {
-    console.log(`${SetForm.name}.handleSubmit:`, {reps, weight, unit, best});
-    await addSet({
-      name,
+    console.log(`${SetForm.name}.handleSubmit:`, {reps, weight, unit, best})
+    const [{now}] = await getNow()
+    await setRepo.save({
+      ...best,
       weight: +weight,
       reps: +reps,
-      minutes: set.minutes,
-      seconds: set.seconds,
-      steps: set.steps,
-      image: set.image,
       unit,
-    });
-    countMany(workouts).then(setCounts);
+      created: now,
+      hidden: false,
+    })
+    await refresh()
     if (
       settings.notify &&
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
     )
-      toast("Great work King! That's a new record.", 5000);
-    else if (settings.alarm) toast('Resting...', 3000);
-    else toast('Added set', 3000);
-    if (!settings.alarm) return;
-    const milliseconds = Number(minutes) * 60 * 1000 + Number(seconds) * 1000;
-    const args = [milliseconds, !!settings.vibrate, settings.sound];
-    NativeModules.AlarmModule.timer(...args);
-  };
+      toast("Great work King! That's a new record.")
+    else if (settings.alarm) toast('Resting...')
+    else toast('Added set')
+    if (!settings.alarm) return
+    const milliseconds =
+      Number(best.minutes) * 60 * 1000 + Number(best.seconds) * 1000
+    const {vibrate, sound, noSound} = settings
+    const args = [milliseconds, vibrate, sound, noSound]
+    NativeModules.AlarmModule.timer(...args)
+  }
 
-  const handleUnit = useCallback(
-    (value: string) => {
-      setUnit(value.replace(/,|'/g, ''));
-      if (value.match(/,|'/))
-        toast('Commas and single quotes would break CSV exports', 6000);
-    },
-    [toast],
-  );
-
-  const select = useCallback(
-    async (index: number) => {
-      setSelected(index);
-      console.log(`${StartPlan.name}.next:`, {name});
-      if (!counts) return;
-      const workout = counts[index];
-      console.log(`${StartPlan.name}.next:`, {workout});
-      const newBest = await getBestSet(workout.name);
-      setMinutes(newBest.minutes);
-      setSeconds(newBest.seconds);
-      setName(newBest.name);
-      setReps(newBest.reps.toString());
-      setWeight(newBest.weight.toString());
-      setUnit(newBest.unit);
-      setBest(newBest);
-    },
-    [name, workouts],
-  );
+  const handleUnit = useCallback((value: string) => {
+    setUnit(value.replace(/,|'/g, ''))
+    if (value.match(/,|'/))
+      toast('Commas and single quotes would break CSV exports')
+  }, [])
 
   return (
     <>
@@ -128,7 +140,7 @@ export default function StartPlan() {
             innerRef={weightRef}
             blurOnSubmit
           />
-          {!!settings.showUnit && (
+          {settings?.showUnit && (
             <MassiveInput
               autoCapitalize="none"
               label="Unit"
@@ -140,26 +152,12 @@ export default function StartPlan() {
           {counts && (
             <FlatList
               data={counts}
-              renderItem={({item, index}) => (
-                <List.Item
-                  title={item.name}
-                  description={
-                    settings.showSets
-                      ? `${item.total} / ${item.sets ?? 3}`
-                      : item.total.toString()
-                  }
-                  onPress={() => select(index)}
-                  left={() => (
-                    <View
-                      style={{alignItems: 'center', justifyContent: 'center'}}>
-                      <RadioButton
-                        onPress={() => select(index)}
-                        value={index.toString()}
-                        status={selected === index ? 'checked' : 'unchecked'}
-                        color={color}
-                      />
-                    </View>
-                  )}
+              renderItem={props => (
+                <StartPlanItem
+                  {...props}
+                  onUndo={refresh}
+                  onSelect={select}
+                  selected={selected}
                 />
               )}
             />
@@ -170,5 +168,5 @@ export default function StartPlan() {
         </Button>
       </View>
     </>
-  );
+  )
 }

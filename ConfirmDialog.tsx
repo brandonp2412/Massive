@@ -1,5 +1,4 @@
-import React from 'react';
-import {Button, Dialog, Portal, Text} from 'react-native-paper';
+import {Button, Dialog, Portal, Text} from 'react-native-paper'
 
 export default function ConfirmDialog({
   title,
@@ -8,11 +7,11 @@ export default function ConfirmDialog({
   show,
   setShow,
 }: {
-  title: string;
-  children: JSX.Element | JSX.Element[] | string;
-  onOk: () => void;
-  show: boolean;
-  setShow: (show: boolean) => void;
+  title: string
+  children: JSX.Element | JSX.Element[] | string
+  onOk: () => void
+  show: boolean
+  setShow: (show: boolean) => void
 }) {
   return (
     <Portal>
@@ -27,5 +26,5 @@ export default function ConfirmDialog({
         </Dialog.Actions>
       </Dialog>
     </Portal>
-  );
+  )
 }

@@ -1,10 +1,9 @@
-import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
-import EditSet from './EditSet';
-import {HomePageParams} from './home-page-params';
-import SetList from './SetList';
+import {createStackNavigator} from '@react-navigation/stack'
+import EditSet from './EditSet'
+import {HomePageParams} from './home-page-params'
+import SetList from './SetList'
 
-const Stack = createStackNavigator<HomePageParams>();
+const Stack = createStackNavigator<HomePageParams>()
 
 export default function HomePage() {
   return (
@@ -13,5 +12,5 @@ export default function HomePage() {
       <Stack.Screen name="Sets" component={SetList} />
       <Stack.Screen name="EditSet" component={EditSet} />
     </Stack.Navigator>
-  );
+  )
 }

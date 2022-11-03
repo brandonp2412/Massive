@@ -1,15 +1,15 @@
-import React from 'react';
-import {FAB} from 'react-native-paper';
-import {useColor} from './color';
-import {lightColors} from './colors';
+import {ComponentProps} from 'react'
+import {FAB} from 'react-native-paper'
+import {CombinedDarkTheme, CombinedDefaultTheme} from './App'
+import {lightColors} from './colors'
+import {useTheme} from './use-theme'
 
-export default function MassiveFab(
-  props: Partial<React.ComponentProps<typeof FAB>>,
-) {
-  const {color} = useColor();
-  const fabColor = lightColors.map(lightColor => lightColor.hex).includes(color)
-    ? 'black'
-    : undefined;
+export default function MassiveFab(props: Partial<ComponentProps<typeof FAB>>) {
+  const {color} = useTheme()
+
+  const fabColor = lightColors.includes(color)
+    ? CombinedDarkTheme.colors.background
+    : CombinedDefaultTheme.colors.background
 
   return (
     <FAB
@@ -23,5 +23,5 @@ export default function MassiveFab(
       }}
       {...props}
     />
-  );
+  )
 }

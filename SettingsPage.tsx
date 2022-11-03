@@ -1,190 +1,185 @@
-import {Picker} from '@react-native-picker/picker';
-import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
-import {NativeModules, ScrollView} from 'react-native';
-import DocumentPicker from 'react-native-document-picker';
-import {Button} from 'react-native-paper';
-import {useColor} from './color';
-import {darkColors, lightColors} from './colors';
-import ConfirmDialog from './ConfirmDialog';
-import {MARGIN} from './constants';
-import DrawerHeader from './DrawerHeader';
-import Input from './input';
-import {useSnackbar} from './MassiveSnack';
-import Page from './Page';
-import Settings from './settings';
-import {updateSettings} from './settings.service';
-import Switch from './Switch';
-import {useSettings} from './use-settings';
+import {Picker} from '@react-native-picker/picker'
+import {useFocusEffect} from '@react-navigation/native'
+import {useCallback, useMemo, useState} from 'react'
+import {DeviceEventEmitter, NativeModules, ScrollView, View} from 'react-native'
+import DocumentPicker from 'react-native-document-picker'
+import {Button} from 'react-native-paper'
+import {darkColors, lightColors} from './colors'
+import ConfirmDialog from './ConfirmDialog'
+import {MARGIN} from './constants'
+import {settingsRepo} from './db'
+import DrawerHeader from './DrawerHeader'
+import Input from './input'
+import Page from './Page'
+import Select from './Select'
+import Switch from './Switch'
+import {toast} from './toast'
+import {useTheme} from './use-theme'
 
 export default function SettingsPage() {
-  const [battery, setBattery] = useState(false);
-  const [ignoring, setIgnoring] = useState(false);
-  const [search, setSearch] = useState('');
-  const {settings, setSettings} = useSettings();
-  const {
-    vibrate,
-    sound,
-    notify,
-    images,
-    showUnit,
-    steps,
-    showDate,
-    showSets,
-    theme,
-    alarm,
-    noSound,
-  } = settings;
-  const {color, setColor} = useColor();
-  const {toast} = useSnackbar();
-
-  useEffect(() => {
-    console.log(`${SettingsPage.name}.useEffect:`, {settings});
-  }, [settings]);
+  const [battery, setBattery] = useState(false)
+  const [ignoring, setIgnoring] = useState(false)
+  const [term, setTerm] = useState('')
+  const [vibrate, setVibrate] = useState(false)
+  const [alarm, setAlarm] = useState(false)
+  const [sound, setSound] = useState('')
+  const [notify, setNotify] = useState(false)
+  const [images, setImages] = useState(false)
+  const [showUnit, setShowUnit] = useState(false)
+  const [steps, setSteps] = useState(false)
+  const [date, setDate] = useState('%Y-%m-%d %H:%M')
+  const {theme, setTheme, color, setColor} = useTheme()
+  const [showDate, setShowDate] = useState(false)
+  const [showSets, setShowSets] = useState(false)
+  const [noSound, setNoSound] = useState(false)
 
   useFocusEffect(
     useCallback(() => {
-      NativeModules.AlarmModule.ignoringBattery(setIgnoring);
+      NativeModules.AlarmModule.ignoringBattery(setIgnoring)
+      settingsRepo.findOne({where: {}}).then(settings => {
+        setAlarm(settings.alarm)
+        setVibrate(settings.vibrate)
+        setSound(settings.sound)
+        setNotify(settings.notify)
+        setImages(settings.images)
+        setShowUnit(settings.showUnit)
+        setSteps(settings.steps)
+        setDate(settings.date)
+        setShowDate(settings.showDate)
+        setShowSets(settings.showSets)
+      })
     }, []),
-  );
-
-  const update = useCallback(
-    (value: boolean, field: keyof Settings) => {
-      updateSettings({...settings, [field]: +value});
-      setSettings({...settings, [field]: +value});
-    },
-    [settings, setSettings],
-  );
+  )
 
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
-      if (enabled) toast('Timers will now run after each set.', 4000);
-      else toast('Stopped timers running after each set.', 4000);
-      if (enabled && !ignoring) setBattery(true);
-      update(enabled, 'alarm');
+      if (enabled)
+        DeviceEventEmitter.emit('toast', {
+          value: 'Timers will now run after each set',
+          timeout: 4000,
+        })
+      else toast('Stopped timers running after each set.')
+      if (enabled && !ignoring) setBattery(true)
+      setAlarm(enabled)
+      settingsRepo.update({}, {alarm: enabled})
     },
-    [setBattery, ignoring, toast, update],
-  );
+    [setBattery, ignoring],
+  )
 
-  const changeVibrate = useCallback(
-    (enabled: boolean) => {
-      if (enabled) toast('When a timer completes, vibrate your phone.', 4000);
-      else toast('Stop vibrating at the end of timers.', 4000);
-      update(enabled, 'vibrate');
-    },
-    [toast, update],
-  );
+  const changeVibrate = useCallback((enabled: boolean) => {
+    if (enabled) toast('When a timer completes, vibrate your phone.')
+    else toast('Stop vibrating at the end of timers.')
+    setVibrate(enabled)
+    settingsRepo.update({}, {vibrate: enabled})
+  }, [])
 
   const changeSound = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
       type: 'audio/*',
       copyTo: 'documentDirectory',
-    });
-    if (!fileCopyUri) return;
-    updateSettings({sound: fileCopyUri} as Settings);
-    setSettings({...settings, sound: fileCopyUri});
-    toast('This song will now play after rest timers complete.', 4000);
-  }, [toast, setSettings, settings]);
+    })
+    if (!fileCopyUri) return
+    settingsRepo.update({}, {sound: fileCopyUri})
+    setSound(fileCopyUri)
+    toast('This song will now play after rest timers complete.')
+  }, [])
 
-  const changeNotify = useCallback(
-    (enabled: boolean) => {
-      update(enabled, 'notify');
-      if (enabled) toast('Show when a set is a new record.', 4000);
-      else toast('Stopped showing notifications for new records.', 4000);
-    },
-    [toast, update],
-  );
+  const changeNotify = useCallback((enabled: boolean) => {
+    setNotify(enabled)
+    settingsRepo.update({}, {notify: enabled})
+    if (enabled) toast('Show when a set is a new record.')
+    else toast('Stopped showing notifications for new records.')
+  }, [])
 
-  const changeImages = useCallback(
-    (enabled: boolean) => {
-      update(enabled, 'images');
-      if (enabled) toast('Show images for sets.', 4000);
-      else toast('Stopped showing images for sets.', 4000);
-    },
-    [toast, update],
-  );
+  const changeImages = useCallback((enabled: boolean) => {
+    setImages(enabled)
+    settingsRepo.update({}, {images: enabled})
+    if (enabled) toast('Show images for sets.')
+    else toast('Stopped showing images for sets.')
+  }, [])
 
-  const changeUnit = useCallback(
-    (enabled: boolean) => {
-      update(enabled, 'showUnit');
-      if (enabled) toast('Show option to select unit for sets.', 4000);
-      else toast('Hid unit option for sets.', 4000);
-    },
-    [toast, update],
-  );
+  const changeUnit = useCallback((enabled: boolean) => {
+    setShowUnit(enabled)
+    settingsRepo.update({}, {showUnit: enabled})
+    if (enabled) toast('Show option to select unit for sets.')
+    else toast('Hid unit option for sets.')
+  }, [])
 
-  const changeSteps = useCallback(
-    (enabled: boolean) => {
-      update(enabled, 'steps');
-      if (enabled) toast('Show steps for a workout.', 4000);
-      else toast('Stopped showing steps for workouts.', 4000);
-    },
-    [toast, update],
-  );
+  const changeSteps = useCallback((enabled: boolean) => {
+    setSteps(enabled)
+    settingsRepo.update({}, {steps: enabled})
+    if (enabled) toast('Show steps for a workout.')
+    else toast('Stopped showing steps for workouts.')
+  }, [])
 
-  const changeShowDate = useCallback(
-    (enabled: boolean) => {
-      update(enabled, 'showDate');
-      if (enabled) toast('Show date for sets by default.', 4000);
-      else toast('Stopped showing date for sets by default.', 4000);
-    },
-    [toast, update],
-  );
+  const changeShowDate = useCallback((enabled: boolean) => {
+    setShowDate(enabled)
+    settingsRepo.update({}, {showDate: enabled})
+    if (enabled) toast('Show date for sets by default.')
+    else toast('Stopped showing date for sets by default.')
+  }, [])
 
-  const changeShowSets = useCallback(
-    (enabled: boolean) => {
-      update(enabled, 'showSets');
-      if (enabled) toast('Show maximum sets for workouts.', 4000);
-      else toast('Stopped showing maximum sets for workouts.', 4000);
-    },
-    [toast, update],
-  );
+  const changeShowSets = useCallback((enabled: boolean) => {
+    setShowSets(enabled)
+    settingsRepo.update({}, {showSets: enabled})
+    if (enabled) toast('Show target sets for workouts.')
+    else toast('Stopped showing target sets for workouts.')
+  }, [])
 
-  const changeNoSound = useCallback(
-    (enabled: boolean) => {
-      update(enabled, 'noSound');
-      if (enabled) toast('Disable sound on rest timer alarms.', 4000);
-      else toast('Enabled sound for rest timer alarms.', 4000);
-    },
-    [toast, update],
-  );
+  const changeNoSound = useCallback((enabled: boolean) => {
+    setNoSound(enabled)
+    settingsRepo.update({}, {noSound: enabled})
+    if (enabled) toast('Disable sound on rest timer alarms.')
+    else toast('Enabled sound for rest timer alarms.')
+  }, [])
 
   const switches: Input<boolean>[] = [
-    {name: 'Rest timers', value: !!alarm, onChange: changeAlarmEnabled},
-    {name: 'Vibrate', value: !!vibrate, onChange: changeVibrate},
-    {name: 'Disable sound', value: !!noSound, onChange: changeNoSound},
-    {name: 'Record notifications', value: !!notify, onChange: changeNotify},
-    {name: 'Show images', value: !!images, onChange: changeImages},
-    {name: 'Show unit', value: !!showUnit, onChange: changeUnit},
-    {name: 'Show steps', value: !!steps, onChange: changeSteps},
-    {name: 'Show date', value: !!showDate, onChange: changeShowDate},
-    {name: 'Show sets', value: !!showSets, onChange: changeShowSets},
-  ];
+    {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
+    {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
+    {name: 'Disable sound', value: noSound, onChange: changeNoSound},
+    {name: 'Notifications', value: notify, onChange: changeNotify},
+    {name: 'Show images', value: images, onChange: changeImages},
+    {name: 'Show unit', value: showUnit, onChange: changeUnit},
+    {name: 'Show steps', value: steps, onChange: changeSteps},
+    {name: 'Show date', value: showDate, onChange: changeShowDate},
+    {name: 'Show sets', value: showSets, onChange: changeShowSets},
+  ]
 
   const changeTheme = useCallback(
     (value: string) => {
-      updateSettings({...settings, theme: value as any});
-      setSettings({...settings, theme: value as any});
+      settingsRepo.update({}, {theme: value})
+      setTheme(value)
     },
-    [settings, setSettings],
-  );
+    [setTheme],
+  )
 
-  const changeDate = useCallback(
+  const changeDate = useCallback((value: string) => {
+    settingsRepo.update({}, {date: value})
+    setDate(value)
+  }, [])
+
+  const soundString = useMemo(() => {
+    if (!sound) return null
+    const split = sound.split('/')
+    return ': ' + split.pop()
+  }, [sound])
+
+  const changeColor = useCallback(
     (value: string) => {
-      updateSettings({...settings, date: value as any});
-      setSettings({...settings, date: value as any});
+      setColor(value)
+      settingsRepo.update({}, {color: value})
     },
-    [settings, setSettings],
-  );
+    [setColor],
+  )
 
   return (
     <>
       <DrawerHeader name="Settings" />
-      <Page search={search} setSearch={setSearch}>
+      <Page term={term} search={setTerm}>
         <ScrollView style={{marginTop: MARGIN}}>
           {switches
             .filter(input =>
-              input.name.toLowerCase().includes(search.toLowerCase()),
+              input.name.toLowerCase().includes(term.toLowerCase()),
             )
             .map(input => (
               <Switch
@@ -195,39 +190,28 @@ export default function SettingsPage() {
                 {input.name}
               </Switch>
             ))}
-          {'theme'.includes(search.toLowerCase()) && (
-            <Picker
-              style={{color}}
-              dropdownIconColor={color}
-              selectedValue={theme}
-              onValueChange={changeTheme}>
+          <View style={{marginBottom: 10}} />
+          {'theme'.includes(term.toLowerCase()) && (
+            <Select value={theme} onChange={changeTheme}>
               <Picker.Item value="system" label="Follow system theme" />
               <Picker.Item value="dark" label="Dark theme" />
               <Picker.Item value="light" label="Light theme" />
-            </Picker>
+            </Select>
           )}
-          {'color'.includes(search.toLowerCase()) && (
-            <Picker
-              style={{color, marginTop: -10}}
-              dropdownIconColor={color}
-              selectedValue={color}
-              onValueChange={value => setColor(value)}>
+          {'color'.includes(term.toLowerCase()) && (
+            <Select value={color} onChange={changeColor}>
               {lightColors.concat(darkColors).map(colorOption => (
                 <Picker.Item
-                  key={colorOption.hex}
-                  value={colorOption.hex}
+                  key={colorOption}
+                  value={colorOption}
                   label="Primary color"
-                  color={colorOption.hex}
+                  color={colorOption}
                 />
               ))}
-            </Picker>
+            </Select>
           )}
-          {'date format'.includes(search.toLowerCase()) && (
-            <Picker
-              style={{color, marginTop: -10}}
-              dropdownIconColor={color}
-              selectedValue={settings.date}
-              onValueChange={changeDate}>
+          {'date format'.includes(term.toLowerCase()) && (
+            <Select value={date} onChange={changeDate}>
               <Picker.Item value="%Y-%m-%d %H:%M" label="1990-12-24 15:05" />
               <Picker.Item value="%Y-%m-%d" label="1990-12-24" />
               <Picker.Item value="%d/%m" label="24/12 (dd/MM)" />
@@ -240,14 +224,11 @@ export default function SettingsPage() {
                 label="24/12/1990 3:05 PM"
               />
               <Picker.Item value="%d/%m %h:%M %p" label="24/12 3:05 PM" />
-            </Picker>
+            </Select>
           )}
-          {'alarm sound'.includes(search.toLowerCase()) && (
+          {'alarm sound'.includes(term.toLowerCase()) && (
             <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
-              Alarm sound
-              {sound
-                ? ': ' + sound.split('/')[sound.split('/').length - 1]
-                : null}
+              Alarm sound{soundString}
             </Button>
           )}
         </ScrollView>
@@ -256,12 +237,12 @@ export default function SettingsPage() {
           show={battery}
           setShow={setBattery}
           onOk={() => {
-            NativeModules.AlarmModule.ignoreBattery();
-            setBattery(false);
+            NativeModules.AlarmModule.ignoreBattery()
+            setBattery(false)
           }}>
           Disable battery optimizations for Massive to use rest timers.
         </ConfirmDialog>
       </Page>
     </>
-  );
+  )
 }

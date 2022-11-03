@@ -1,56 +1,73 @@
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import React, {useCallback, useRef, useState} from 'react';
-import {ScrollView, TextInput, View} from 'react-native';
-import DocumentPicker from 'react-native-document-picker';
-import {Button, Card, TouchableRipple} from 'react-native-paper';
-import ConfirmDialog from './ConfirmDialog';
-import {MARGIN, PADDING} from './constants';
-import MassiveInput from './MassiveInput';
-import {useSnackbar} from './MassiveSnack';
-import {updatePlanWorkouts} from './plan.service';
-import {addSet, updateManySet, updateSetImage} from './set.service';
-import StackHeader from './StackHeader';
-import {useSettings} from './use-settings';
-import {WorkoutsPageParams} from './WorkoutsPage';
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
+import {useCallback, useRef, useState} from 'react'
+import {ScrollView, TextInput, View} from 'react-native'
+import DocumentPicker from 'react-native-document-picker'
+import {Button, Card, TouchableRipple} from 'react-native-paper'
+import ConfirmDialog from './ConfirmDialog'
+import {MARGIN, PADDING} from './constants'
+import {getNow, planRepo, setRepo, settingsRepo} from './db'
+import MassiveInput from './MassiveInput'
+import Settings from './settings'
+import StackHeader from './StackHeader'
+import {toast} from './toast'
+import {WorkoutsPageParams} from './WorkoutsPage'
 
 export default function EditWorkout() {
-  const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>();
-  const [removeImage, setRemoveImage] = useState(false);
-  const [showRemove, setShowRemove] = useState(false);
-  const [name, setName] = useState(params.value.name);
-  const [steps, setSteps] = useState(params.value.steps);
-  const [uri, setUri] = useState(params.value.image);
+  const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>()
+  const [removeImage, setRemoveImage] = useState(false)
+  const [showRemove, setShowRemove] = useState(false)
+  const [name, setName] = useState(params.value.name)
+  const [steps, setSteps] = useState(params.value.steps)
+  const [uri, setUri] = useState(params.value.image)
   const [minutes, setMinutes] = useState(
     params.value.minutes?.toString() ?? '3',
-  );
+  )
   const [seconds, setSeconds] = useState(
     params.value.seconds?.toString() ?? '30',
-  );
-  const [sets, setSets] = useState(params.value.sets?.toString() ?? '3');
-  const {toast} = useSnackbar();
-  const navigation = useNavigation();
-  const setsRef = useRef<TextInput>(null);
-  const stepsRef = useRef<TextInput>(null);
-  const minutesRef = useRef<TextInput>(null);
-  const secondsRef = useRef<TextInput>(null);
-  const {settings} = useSettings();
+  )
+  const [sets, setSets] = useState(params.value.sets?.toString() ?? '3')
+  const navigation = useNavigation()
+  const setsRef = useRef<TextInput>(null)
+  const stepsRef = useRef<TextInput>(null)
+  const minutesRef = useRef<TextInput>(null)
+  const secondsRef = useRef<TextInput>(null)
+  const [settings, setSettings] = useState<Settings>()
+
+  useFocusEffect(
+    useCallback(() => {
+      settingsRepo.findOne({where: {}}).then(setSettings)
+    }, []),
+  )
 
   const update = async () => {
-    await updateManySet({
-      oldName: params.value.name,
-      newName: name || params.value.name,
-      sets: sets ?? '3',
-      seconds: seconds?.toString() ?? '30',
-      minutes: minutes?.toString() ?? '3',
-      steps,
-    });
-    await updatePlanWorkouts(params.value.name, name || params.value.name);
-    if (uri || removeImage) await updateSetImage(params.value.name, uri || '');
-    navigation.goBack();
-  };
+    await setRepo.update(
+      {name: params.value.name},
+      {
+        name: name || params.value.name,
+        sets: Number(sets),
+        minutes: +minutes,
+        seconds: +seconds,
+        steps,
+        image: removeImage ? '' : uri,
+      },
+    )
+    await planRepo.query(
+      `UPDATE plans 
+       SET workouts = REPLACE(workouts, $1, $2) 
+       WHERE workouts LIKE $3`,
+      [params.value.name, name, `%${params.value.name}%`],
+    )
+    navigation.goBack()
+  }
 
   const add = async () => {
-    await addSet({
+    const [{now}] = await getNow()
+    await setRepo.save({
       name,
       reps: 0,
       weight: 0,
@@ -60,45 +77,46 @@ export default function EditWorkout() {
       seconds: seconds ? +seconds : 30,
       sets: sets ? +sets : 3,
       steps,
-    });
-    navigation.goBack();
-  };
+      created: now,
+    })
+    navigation.goBack()
+  }
 
   const save = async () => {
-    if (params.value.name) return update();
-    return add();
-  };
+    if (params.value.name) return update()
+    return add()
+  }
 
   const changeImage = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
       type: 'image/*',
       copyTo: 'documentDirectory',
-    });
-    if (fileCopyUri) setUri(fileCopyUri);
-  }, []);
+    })
+    if (fileCopyUri) setUri(fileCopyUri)
+  }, [])
 
   const handleRemove = useCallback(async () => {
-    setUri('');
-    setRemoveImage(true);
-    setShowRemove(false);
-  }, []);
+    setUri('')
+    setRemoveImage(true)
+    setShowRemove(false)
+  }, [])
 
   const handleName = (value: string) => {
-    setName(value.replace(/,|'/g, ''));
+    setName(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000);
-  };
+      toast('Commas and single quotes would break CSV exports')
+  }
 
   const handleSteps = (value: string) => {
-    setSteps(value.replace(/,|'/g, ''));
+    setSteps(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports', 6000);
-  };
+      toast('Commas and single quotes would break CSV exports')
+  }
 
   const submitName = () => {
-    if (settings.steps) stepsRef.current?.focus();
-    else setsRef.current?.focus();
-  };
+    if (settings.steps) stepsRef.current?.focus()
+    else setsRef.current?.focus()
+  }
 
   return (
     <>
@@ -112,7 +130,7 @@ export default function EditWorkout() {
             onChangeText={handleName}
             onSubmitEditing={submitName}
           />
-          {!!settings.steps && (
+          {settings?.steps && (
             <MassiveInput
               innerRef={stepsRef}
               selectTextOnFocus={false}
@@ -123,7 +141,7 @@ export default function EditWorkout() {
               onSubmitEditing={() => setsRef.current?.focus()}
             />
           )}
-          {!!settings.showSets && (
+          {settings?.showSets && (
             <MassiveInput
               innerRef={setsRef}
               value={sets}
@@ -133,7 +151,7 @@ export default function EditWorkout() {
               onSubmitEditing={() => minutesRef.current?.focus()}
             />
           )}
-          {!!settings.alarm && (
+          {settings?.alarm && (
             <>
               <MassiveInput
                 innerRef={minutesRef}
@@ -153,7 +171,7 @@ export default function EditWorkout() {
               />
             </>
           )}
-          {!!settings.images && uri && (
+          {settings?.images && uri && (
             <TouchableRipple
               style={{marginBottom: MARGIN}}
               onPress={changeImage}
@@ -161,7 +179,7 @@ export default function EditWorkout() {
               <Card.Cover source={{uri}} />
             </TouchableRipple>
           )}
-          {!!settings.images && !uri && (
+          {settings?.images && !uri && (
             <Button
               style={{marginBottom: MARGIN}}
               onPress={changeImage}
@@ -182,5 +200,5 @@ export default function EditWorkout() {
         </ConfirmDialog>
       </View>
     </>
-  );
+  )
 }

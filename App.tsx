@@ -2,23 +2,22 @@ import {
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
   NavigationContainer,
-} from '@react-navigation/native';
-import React, {useEffect, useMemo, useState} from 'react';
-import {useColorScheme} from 'react-native';
+} from '@react-navigation/native'
+import {useEffect, useMemo, useState} from 'react'
+import {DeviceEventEmitter, useColorScheme} from 'react-native'
+import React from 'react'
 import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
-  Provider,
-} from 'react-native-paper';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import {Color} from './color';
-import {lightColors} from './colors';
-import {runMigrations} from './db';
-import MassiveSnack from './MassiveSnack';
-import Routes from './Routes';
-import Settings from './settings';
-import {getSettings} from './settings.service';
-import {SettingsContext} from './use-settings';
+  Provider as PaperProvider,
+  Snackbar,
+} from 'react-native-paper'
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
+import {AppDataSource} from './data-source'
+import {settingsRepo} from './db'
+import Routes from './Routes'
+import {TOAST} from './toast'
+import {ThemeContext} from './use-theme'
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -27,7 +26,7 @@ export const CombinedDefaultTheme = {
     ...NavigationDefaultTheme.colors,
     ...PaperDefaultTheme.colors,
   },
-};
+}
 
 export const CombinedDarkTheme = {
   ...NavigationDarkTheme,
@@ -35,61 +34,85 @@ export const CombinedDarkTheme = {
   colors: {
     ...NavigationDarkTheme.colors,
     ...PaperDarkTheme.colors,
-    primary: lightColors[0].hex,
-    background: '#0E0E0E',
   },
-};
+}
 
 const App = () => {
-  const isDark = useColorScheme() === 'dark';
-  const [settings, setSettings] = useState<Settings>();
-  const [color, setColor] = useState(
+  const isDark = useColorScheme() === 'dark'
+  const [initialized, setInitialized] = useState(false)
+  const [snackbar, setSnackbar] = useState('')
+  const [theme, setTheme] = useState('system')
+
+  const [color, setColor] = useState<string>(
     isDark
-      ? CombinedDarkTheme.colors.primary.toUpperCase()
-      : CombinedDefaultTheme.colors.primary.toUpperCase(),
-  );
+      ? CombinedDarkTheme.colors.primary
+      : CombinedDefaultTheme.colors.primary,
+  )
 
   useEffect(() => {
-    runMigrations().then(async () => {
-      const gotSettings = await getSettings();
-      console.log(`${App.name}.runMigrations:`, {gotSettings});
-      setSettings(gotSettings);
-      if (gotSettings.color) setColor(gotSettings.color);
-    });
-  }, [setColor]);
+    DeviceEventEmitter.addListener(TOAST, ({value}: {value: string}) => {
+      console.log(`${Routes.name}.toast:`, {value})
+      setSnackbar(value)
+    })
+    if (AppDataSource.isInitialized) return setInitialized(true)
+    AppDataSource.initialize().then(async () => {
+      const settings = await settingsRepo.findOne({where: {}})
+      console.log(`${App.name}.useEffect:`, {gotSettings: settings})
+      setTheme(settings.theme)
+      setColor(settings.color)
+      setInitialized(true)
+    })
+  }, [])
 
-  const theme = useMemo(() => {
-    const darkTheme = {
-      ...CombinedDarkTheme,
-      colors: {...CombinedDarkTheme.colors, primary: color},
-    };
-    const lightTheme = {
-      ...CombinedDefaultTheme,
-      colors: {...CombinedDefaultTheme.colors, primary: color},
-    };
-    let value = isDark ? darkTheme : lightTheme;
-    if (settings?.theme === 'dark') value = darkTheme;
-    else if (settings?.theme === 'light') value = lightTheme;
-    return value;
-  }, [color, isDark, settings]);
+  const paperTheme = useMemo(() => {
+    const darkTheme = color
+      ? {
+          ...CombinedDarkTheme,
+          colors: {...CombinedDarkTheme.colors, primary: color},
+        }
+      : CombinedDarkTheme
+    const lightTheme = color
+      ? {
+          ...CombinedDefaultTheme,
+          colors: {...CombinedDefaultTheme.colors, primary: color},
+        }
+      : CombinedDefaultTheme
+    let value = isDark ? darkTheme : lightTheme
+    if (theme === 'dark') value = darkTheme
+    else if (theme === 'light') value = lightTheme
+    return value
+  }, [isDark, theme, color])
+
+  const action = useMemo(
+    () => ({
+      label: 'Close',
+      onPress: () => setSnackbar(''),
+      color: paperTheme.colors.background,
+    }),
+    [paperTheme.colors.background],
+  )
 
   return (
-    <Color.Provider value={{color, setColor}}>
-      <Provider
-        theme={theme}
-        settings={{icon: props => <MaterialIcon {...props} />}}>
-        <NavigationContainer theme={theme}>
-          <MassiveSnack>
-            {settings && (
-              <SettingsContext.Provider value={{settings, setSettings}}>
-                <Routes />
-              </SettingsContext.Provider>
-            )}
-          </MassiveSnack>
-        </NavigationContainer>
-      </Provider>
-    </Color.Provider>
-  );
-};
+    <PaperProvider
+      theme={paperTheme}
+      settings={{icon: props => <MaterialIcon {...props} />}}>
+      <NavigationContainer theme={paperTheme}>
+        {initialized && (
+          <ThemeContext.Provider value={{theme, setTheme, color, setColor}}>
+            <Routes />
+          </ThemeContext.Provider>
+        )}
+      </NavigationContainer>
 
-export default App;
+      <Snackbar
+        duration={3000}
+        onDismiss={() => setSnackbar('')}
+        visible={!!snackbar}
+        action={action}>
+        {snackbar}
+      </Snackbar>
+    </PaperProvider>
+  )
+}
+
+export default App

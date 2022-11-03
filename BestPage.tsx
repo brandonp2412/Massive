@@ -1,16 +1,15 @@
-import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
-import BestList from './BestList';
-import Set from './set';
-import ViewBest from './ViewBest';
+import {createStackNavigator} from '@react-navigation/stack'
+import BestList from './BestList'
+import GymSet from './gym-set'
+import ViewBest from './ViewBest'
 
-const Stack = createStackNavigator<BestPageParams>();
+const Stack = createStackNavigator<BestPageParams>()
 export type BestPageParams = {
-  BestList: {};
+  BestList: {}
   ViewBest: {
-    best: Set;
-  };
-};
+    best: GymSet
+  }
+}
 
 export default function BestPage() {
   return (
@@ -19,5 +18,5 @@ export default function BestPage() {
       <Stack.Screen name="BestList" component={BestList} />
       <Stack.Screen name="ViewBest" component={ViewBest} />
     </Stack.Navigator>
-  );
+  )
 }
