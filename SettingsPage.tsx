@@ -47,6 +47,7 @@ export default function SettingsPage() {
         setDate(settings.date)
         setShowDate(settings.showDate)
         setShowSets(settings.showSets)
+        setNoSound(settings.noSound)
       })
     }, []),
   )
