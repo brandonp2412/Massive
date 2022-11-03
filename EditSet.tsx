@@ -30,8 +30,9 @@ export default function EditSet() {
   const startTimer = useCallback(
     async (name: string) => {
       if (!settings.alarm) return
-      const {minutes, seconds} = await setRepo.findOne({where: {name}})
-      const milliseconds = (minutes ?? 3) * 60 * 1000 + (seconds ?? 0) * 1000
+      const first = await setRepo.findOne({where: {name}})
+      const milliseconds =
+        (first?.minutes ?? 3) * 60 * 1000 + (first?.seconds ?? 0) * 1000
       NativeModules.AlarmModule.timer(
         milliseconds,
         settings.vibrate,
