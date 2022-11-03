@@ -12,12 +12,12 @@ import {format} from './time'
 import {toast} from './toast'
 
 export default function SetForm({
-  save,
+  onSaved,
   set,
   settings,
 }: {
   set: GymSet
-  save: (set: GymSet) => void
+  onSaved: (set: GymSet) => void
   settings: Settings
 }) {
   const [name, setName] = useState(set.name)
@@ -44,12 +44,12 @@ export default function SetForm({
 
     console.log(`${SetForm.name}.handleSubmit:`, {image})
     const [{now}] = await getNow()
-    save({
+    const saved = await setRepo.save({
+      id: set.id,
       name,
       created: now,
       reps: Number(reps),
       weight: Number(weight),
-      id: set.id,
       unit,
       image,
       minutes: Number(set.minutes ?? 3),
@@ -57,19 +57,20 @@ export default function SetForm({
       sets: set.sets ?? 3,
       hidden: false,
     })
+    onSaved(saved)
   }
 
-  const handleName = (value: string) => {
+  const handleName = useCallback((value: string) => {
     setName(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
       toast('Commas and single quotes would break CSV exports')
-  }
+  }, [])
 
-  const handleUnit = (value: string) => {
+  const handleUnit = useCallback((value: string) => {
     setUnit(value.replace(/,|'/g, ''))
     if (value.match(/,|'/))
       toast('Commas and single quotes would break CSV exports')
-  }
+  }, [])
 
   const changeImage = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
@@ -148,6 +149,7 @@ export default function SetForm({
           </Button>
         )}
       </View>
+
       <Button
         disabled={!name}
         mode="contained"
@@ -155,6 +157,7 @@ export default function SetForm({
         onPress={handleSubmit}>
         Save
       </Button>
+
       <ConfirmDialog
         title="Remove image"
         onOk={handleRemove}

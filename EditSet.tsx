@@ -43,12 +43,10 @@ export default function EditSet() {
     [settings],
   )
 
-  const add = useCallback(
+  const added = useCallback(
     async (value: GymSet) => {
       startTimer(value.name)
       console.log(`${EditSet.name}.add`, {set: value})
-      const result = await setRepo.save(value)
-      console.log({result})
       if (!settings.notify) return
       if (
         value.weight > set.weight ||
@@ -59,20 +57,19 @@ export default function EditSet() {
     [startTimer, set, settings],
   )
 
-  const save = useCallback(
+  const saved = useCallback(
     async (value: GymSet) => {
-      if (typeof set.id === 'number') await setRepo.save(value)
-      else await add(value)
+      if (typeof set.id !== 'number') added(value)
       navigation.goBack()
     },
-    [add, set.id, navigation],
+    [added, set.id, navigation],
   )
 
   return (
     <>
       <StackHeader title="Edit set" />
       <View style={{padding: PADDING, flex: 1}}>
-        {settings && <SetForm settings={settings} save={save} set={set} />}
+        {settings && <SetForm settings={settings} onSaved={saved} set={set} />}
       </View>
     </>
   )
