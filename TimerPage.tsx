@@ -33,7 +33,8 @@ export default function TimerPage() {
   }
 
   const add = async () => {
-    NativeModules.AlarmModule.add(settings.vibrate, settings.sound)
+    const params = [settings.vibrate, settings.sound, settings.noSound]
+    NativeModules.AlarmModule.add(...params)
   }
 
   return (
