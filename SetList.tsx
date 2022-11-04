@@ -3,7 +3,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native'
-import {useCallback, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {FlatList} from 'react-native'
 import {List} from 'react-native-paper'
 import {Like} from 'typeorm'
@@ -19,12 +19,16 @@ const limit = 15
 
 export default function SetList() {
   const [sets, setSets] = useState<GymSet[]>([])
-  const [set, setSet] = useState<GymSet>()
+  const [set, setSet] = useState<GymSet>(new GymSet())
   const [offset, setOffset] = useState(0)
   const [term, setTerm] = useState('')
   const [end, setEnd] = useState(false)
   const [settings, setSettings] = useState<Settings>()
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
+
+  useEffect(() => {
+    console.log({sets, set})
+  }, [sets, set])
 
   const refresh = useCallback(async (value: string) => {
     const newSets = await setRepo.find({
@@ -33,14 +37,15 @@ export default function SetList() {
       skip: 0,
       order: {created: 'DESC'},
     })
-    console.log(`${SetList.name}.refresh:`, {newSets})
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {id, ...newSet} = newSets[0]
-    setSet(newSet)
-    if (newSets.length === 0) return setSets([])
     setSets(newSets)
     setOffset(0)
     setEnd(false)
+    console.log(`${SetList.name}.refresh:`, {newSets})
+    const first = newSets[0]
+    if (!first) return
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {id, ...newSet} = first
+    setSet(newSet)
   }, [])
 
   useFocusEffect(
