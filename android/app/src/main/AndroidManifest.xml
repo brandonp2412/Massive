@@ -43,16 +43,8 @@
             android:name=".StopAlarm"
             android:exported="true"
             android:process=":remote" />
-
-        <service
-            android:name=".StopTimer"
-            android:exported="false"
-            android:process=":remote" />
         <service
             android:name=".AlarmService"
-            android:exported="false" />
-        <service
-            android:name=".TimerService"
             android:exported="false" />
     </application>
 
