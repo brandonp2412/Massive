@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {NativeEventEmitter, NativeModules, StyleSheet, View} from 'react-native'
-import {Button, Text, Title} from 'react-native-paper'
+import {Button, Text} from 'react-native-paper'
 import {MARGIN, PADDING} from './constants'
 import {settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
