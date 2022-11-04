@@ -50,6 +50,15 @@ const App = () => {
   )
 
   useEffect(() => {
+    const init = async () => {
+      if (!AppDataSource.isInitialized) await AppDataSource.initialize()
+      const settings = await settingsRepo.findOne({where: {}})
+      console.log(`${App.name}.useEffect:`, {gotSettings: settings})
+      setTheme(settings.theme)
+      setColor(settings.color)
+      setInitialized(true)
+    }
+    init()
     const description = DeviceEventEmitter.addListener(
       TOAST,
       ({value}: {value: string}) => {
@@ -57,16 +66,6 @@ const App = () => {
         setSnackbar(value)
       },
     )
-    if (AppDataSource.isInitialized) setInitialized(true)
-    else {
-      AppDataSource.initialize().then(async () => {
-        const settings = await settingsRepo.findOne({where: {}})
-        console.log(`${App.name}.useEffect:`, {gotSettings: settings})
-        setTheme(settings.theme)
-        setColor(settings.color)
-        setInitialized(true)
-      })
-    }
     return description.remove
   }, [])
 
