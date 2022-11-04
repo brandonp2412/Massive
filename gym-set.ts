@@ -38,3 +38,16 @@ export default class GymSet {
   @Column('text')
   steps?: string
 }
+
+export const defaultSet: GymSet = {
+  created: '',
+  name: '',
+  image: '',
+  hidden: false,
+  minutes: 3,
+  seconds: 30,
+  reps: 0,
+  sets: 0,
+  unit: 'kg',
+  weight: 0,
+}

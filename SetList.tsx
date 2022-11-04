@@ -3,13 +3,13 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {FlatList} from 'react-native'
 import {List} from 'react-native-paper'
 import {Like} from 'typeorm'
 import {getNow, setRepo, settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
-import GymSet from './gym-set'
+import GymSet, {defaultSet} from './gym-set'
 import {HomePageParams} from './home-page-params'
 import Page from './Page'
 import SetItem from './SetItem'
@@ -19,16 +19,12 @@ const limit = 15
 
 export default function SetList() {
   const [sets, setSets] = useState<GymSet[]>([])
-  const [set, setSet] = useState<GymSet>(new GymSet())
+  const [set, setSet] = useState<GymSet>(defaultSet)
   const [offset, setOffset] = useState(0)
   const [term, setTerm] = useState('')
   const [end, setEnd] = useState(false)
   const [settings, setSettings] = useState<Settings>()
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
-
-  useEffect(() => {
-    console.log({sets, set})
-  }, [sets, set])
 
   const refresh = useCallback(async (value: string) => {
     const newSets = await setRepo.find({
@@ -88,16 +84,8 @@ export default function SetList() {
     console.log(`${SetList.name}.onAdd`, {set})
     const [{now}] = await getNow()
     const newSet: GymSet = set || {
+      ...defaultSet,
       created: now,
-      hidden: false,
-      image: '',
-      minutes: 3,
-      seconds: 30,
-      name: '',
-      reps: 0,
-      sets: 0,
-      unit: 'kg',
-      weight: 0,
     }
     newSet.created = now
     navigation.navigate('EditSet', {set: newSet})

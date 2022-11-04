@@ -11,6 +11,7 @@ import {Button, Card, TouchableRipple} from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
 import {MARGIN, PADDING} from './constants'
 import {getNow, planRepo, setRepo, settingsRepo} from './db'
+import {defaultSet} from './gym-set'
 import MassiveInput from './MassiveInput'
 import Settings from './settings'
 import StackHeader from './StackHeader'
@@ -68,9 +69,8 @@ export default function EditWorkout() {
   const add = async () => {
     const [{now}] = await getNow()
     await setRepo.save({
+      ...defaultSet,
       name,
-      reps: 0,
-      weight: 0,
       hidden: true,
       image: uri,
       minutes: minutes ? +minutes : 3,
