@@ -72,6 +72,14 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         countdownTimer = getTimer(newMs, vibrate, sound, noSound)
         countdownTimer?.start()
         running = true
+        val manager = getManager()
+        manager.cancel(NOTIFICATION_ID_DONE)
+        reactApplicationContext.stopService(
+            Intent(
+                reactApplicationContext,
+                AlarmService::class.java
+            )
+        )
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -146,7 +154,12 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getTimer(endMs: Int, vibrate: Boolean, sound: String?, noSound: Boolean): CountDownTimer {
+    private fun getTimer(
+        endMs: Int,
+        vibrate: Boolean,
+        sound: String?,
+        noSound: Boolean
+    ): CountDownTimer {
         val builder = getBuilder()
         return object : CountDownTimer(endMs.toLong(), 1000) {
             @RequiresApi(Build.VERSION_CODES.O)
