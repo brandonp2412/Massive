@@ -1,11 +1,20 @@
-import React, {useEffect, useState} from 'react'
-import {NativeEventEmitter, NativeModules, StyleSheet, View} from 'react-native'
+import React, {useEffect, useMemo, useState} from 'react'
+import {
+  Dimensions,
+  NativeEventEmitter,
+  NativeModules,
+  StyleSheet,
+  View,
+} from 'react-native'
 import {Button, Text} from 'react-native-paper'
+import {ProgressCircle} from 'react-native-svg-charts'
 import {MARGIN, PADDING} from './constants'
 import {settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
 import MassiveFab from './MassiveFab'
 import Settings from './settings'
+import {useTheme} from './use-theme'
+import {useTheme as usePaperTheme} from 'react-native-paper'
 
 interface TickEvent {
   minutes: string
@@ -16,6 +25,8 @@ export default function TimerPage() {
   const [minutes, setMinutes] = useState('00')
   const [seconds, setSeconds] = useState('00')
   const [settings, setSettings] = useState<Settings>()
+  const {color} = useTheme()
+  const {colors} = usePaperTheme()
 
   useEffect(() => {
     settingsRepo.findOne({where: {}}).then(setSettings)
@@ -37,6 +48,18 @@ export default function TimerPage() {
     NativeModules.AlarmModule.add(...params)
   }
 
+  const progress = useMemo(() => {
+    return (Number(minutes) * 60 + Number(seconds)) / 210
+  }, [minutes, seconds])
+
+  const left = useMemo(() => {
+    return Dimensions.get('screen').width * 0.5 - 85
+  }, [])
+
+  const top = useMemo(() => {
+    return Dimensions.get('screen').height * 0.5 - 45
+  }, [])
+
   return (
     <>
       <DrawerHeader name="Timer" />
@@ -47,21 +70,26 @@ export default function TimerPage() {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={styles.text}>Remaining</Text>
-          <Text style={styles.text}>
-            {minutes}:{seconds}
-          </Text>
-          <Button onPress={add}>Add 1 min</Button>
+          <View>
+            <Text style={{fontSize: 70, top: 150}}>
+              {minutes}:{seconds}
+            </Text>
+          </View>
+          <ProgressCircle
+            style={{height: 300, width: 500, marginBottom: MARGIN, top: -50}}
+            progress={progress}
+            progressColor={color}
+            backgroundColor={colors.placeholder}
+            strokeWidth={10}
+          />
         </View>
       </View>
+      <Button
+        onPress={add}
+        style={{position: 'absolute', top: '85%', left: left + 25}}>
+        Add 1 min
+      </Button>
       <MassiveFab icon="stop" onPress={stop} />
     </>
   )
 }
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 32,
-    marginBottom: MARGIN,
-  },
-})
