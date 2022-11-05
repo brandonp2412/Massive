@@ -47,7 +47,7 @@ export default function SetForm({
     const saved = await setRepo.save({
       id: set.id,
       name,
-      created: now,
+      created: set.created || now,
       reps: Number(reps),
       weight: Number(weight),
       unit,
