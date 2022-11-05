@@ -35,17 +35,31 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     private val stopReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("AlarmModule", "Received broadcast intent")
+            Log.d("AlarmModule", "Received stop broadcast intent")
             stop()
         }
     }
 
+    private val addReceiver = object : BroadcastReceiver() {
+        @RequiresApi(Build.VERSION_CODES.O)
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d("AlarmModule", "Received add broadcast intent")
+            val vibrate = intent?.extras?.getBoolean("vibrate") == true
+            val sound = intent?.extras?.getString("sound")
+            val noSound = intent?.extras?.getBoolean("noSound") == true
+            add(vibrate, sound, noSound)
+        }
+    }
+
+
     init {
         reactApplicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST))
+        reactApplicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST))
     }
 
     override fun onCatalystInstanceDestroy() {
         reactApplicationContext.unregisterReceiver(stopReceiver)
+        reactApplicationContext.unregisterReceiver(addReceiver)
         super.onCatalystInstanceDestroy()
     }
 
@@ -196,6 +210,11 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         val contentIntent = Intent(context, MainActivity::class.java)
         val pendingContent =
             PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
+        val addBroadcast = Intent(ADD_BROADCAST).apply {
+            setPackage(reactApplicationContext.packageName)
+        }
+        val pendingAdd =
+            PendingIntent.getBroadcast(context, 0, addBroadcast, PendingIntent.FLAG_IMMUTABLE)
         val stopBroadcast = Intent(STOP_BROADCAST)
         stopBroadcast.setPackage(reactApplicationContext.packageName)
         val pendingStop =
@@ -204,6 +223,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
             .setSmallIcon(R.drawable.ic_baseline_hourglass_bottom_24).setContentTitle("Resting")
             .setContentIntent(pendingContent)
             .addAction(R.drawable.ic_baseline_stop_24, "Stop", pendingStop)
+            .addAction(R.drawable.ic_baseline_stop_24, "Add 1 min", pendingAdd)
             .setDeleteIntent(pendingStop)
     }
 
@@ -229,6 +249,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
 
     companion object {
         const val STOP_BROADCAST = "stop-timer-event"
+        const val ADD_BROADCAST = "add-timer-event"
         const val CHANNEL_ID_PENDING = "Timer"
         const val CHANNEL_ID_DONE = "Alarm"
         const val NOTIFICATION_ID_PENDING = 1
