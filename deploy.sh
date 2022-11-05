@@ -29,8 +29,11 @@ sed -i "s/\"version\": \"[0-9]*.[0-9]*\"/\"version\": \"$major.$minor\"/" ../pac
 
 [ "$1" != "--nobundle" ] && ./gradlew bundleRelease
 
+set +x
 source ~/.cache/yay/rvm/rvm.sh
 rvm use ruby-2.7.5
+set -x
+
 fastlane supply --aab app/build/outputs/bundle/release/app-release.aab
 
 git add app/build.gradle ../package.json
