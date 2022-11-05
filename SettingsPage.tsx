@@ -30,7 +30,6 @@ export default function SettingsPage() {
   const [date, setDate] = useState('%Y-%m-%d %H:%M')
   const {theme, setTheme, color, setColor} = useTheme()
   const [showDate, setShowDate] = useState(false)
-  const [showSets, setShowSets] = useState(false)
   const [noSound, setNoSound] = useState(false)
 
   useFocusEffect(
@@ -46,7 +45,6 @@ export default function SettingsPage() {
         setSteps(settings.steps)
         setDate(settings.date)
         setShowDate(settings.showDate)
-        setShowSets(settings.showSets)
         setNoSound(settings.noSound)
       })
     }, []),
@@ -120,13 +118,6 @@ export default function SettingsPage() {
     else toast('Stopped showing date for sets by default.')
   }, [])
 
-  const changeShowSets = useCallback((enabled: boolean) => {
-    setShowSets(enabled)
-    settingsRepo.update({}, {showSets: enabled})
-    if (enabled) toast('Show target sets for workouts.')
-    else toast('Stopped showing target sets for workouts.')
-  }, [])
-
   const changeNoSound = useCallback((enabled: boolean) => {
     setNoSound(enabled)
     settingsRepo.update({}, {noSound: enabled})
@@ -143,7 +134,6 @@ export default function SettingsPage() {
     {name: 'Show unit', value: showUnit, onChange: changeUnit},
     {name: 'Show steps', value: steps, onChange: changeSteps},
     {name: 'Show date', value: showDate, onChange: changeShowDate},
-    {name: 'Show sets', value: showSets, onChange: changeShowSets},
   ]
 
   const changeTheme = useCallback(
