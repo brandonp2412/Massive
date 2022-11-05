@@ -1,12 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react'
-import {
-  Dimensions,
-  NativeEventEmitter,
-  NativeModules,
-  StyleSheet,
-  View,
-} from 'react-native'
-import {Button, Text} from 'react-native-paper'
+import {Dimensions, NativeEventEmitter, NativeModules, View} from 'react-native'
+import {Button, Text, useTheme as usePaperTheme} from 'react-native-paper'
 import {ProgressCircle} from 'react-native-svg-charts'
 import {MARGIN, PADDING} from './constants'
 import {settingsRepo} from './db'
@@ -14,7 +8,6 @@ import DrawerHeader from './DrawerHeader'
 import MassiveFab from './MassiveFab'
 import Settings from './settings'
 import {useTheme} from './use-theme'
-import {useTheme as usePaperTheme} from 'react-native-paper'
 
 interface TickEvent {
   minutes: string
@@ -54,10 +47,6 @@ export default function TimerPage() {
 
   const left = useMemo(() => {
     return Dimensions.get('screen').width * 0.5 - 85
-  }, [])
-
-  const top = useMemo(() => {
-    return Dimensions.get('screen').height * 0.5 - 45
   }, [])
 
   return (
