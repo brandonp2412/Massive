@@ -43,10 +43,10 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     private val addReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("AlarmModule", "Received add broadcast intent")
             val vibrate = intent?.extras?.getBoolean("vibrate") == true
             val sound = intent?.extras?.getString("sound")
             val noSound = intent?.extras?.getBoolean("noSound") == true
+            Log.d("AlarmModule", "vibrate=$vibrate,sound=$sound,noSound=$noSound")
             add(vibrate, sound, noSound)
         }
     }
@@ -160,7 +160,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         sound: String?,
         noSound: Boolean
     ): CountDownTimer {
-        val builder = getBuilder()
+        val builder = getBuilder(vibrate, sound, noSound)
         return object : CountDownTimer(endMs.toLong(), 1000) {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onTick(current: Long) {
@@ -218,16 +218,23 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
 
     @SuppressLint("UnspecifiedImmutableFlag")
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getBuilder(): NotificationCompat.Builder {
+    private fun getBuilder(
+        vibrate: Boolean,
+        sound: String?,
+        noSound: Boolean
+    ): NotificationCompat.Builder {
         val context = reactApplicationContext
         val contentIntent = Intent(context, MainActivity::class.java)
         val pendingContent =
             PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
         val addBroadcast = Intent(ADD_BROADCAST).apply {
             setPackage(reactApplicationContext.packageName)
+            putExtra("vibrate", vibrate)
+            putExtra("sound", sound)
+            putExtra("noSound", noSound)
         }
         val pendingAdd =
-            PendingIntent.getBroadcast(context, 0, addBroadcast, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, 0, addBroadcast, PendingIntent.FLAG_MUTABLE)
         val stopBroadcast = Intent(STOP_BROADCAST)
         stopBroadcast.setPackage(reactApplicationContext.packageName)
         val pendingStop =
