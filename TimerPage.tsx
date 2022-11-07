@@ -7,7 +7,6 @@ import {settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
 import MassiveFab from './MassiveFab'
 import Settings from './settings'
-import {useTheme} from './use-theme'
 
 interface TickEvent {
   minutes: string
@@ -18,7 +17,6 @@ export default function TimerPage() {
   const [minutes, setMinutes] = useState('00')
   const [seconds, setSeconds] = useState('00')
   const [settings, setSettings] = useState<Settings>()
-  const {color} = useTheme()
 
   useEffect(() => {
     settingsRepo.findOne({where: {}}).then(setSettings)
@@ -66,7 +64,6 @@ export default function TimerPage() {
           <ProgressCircle
             style={{height: 300, width: 500, marginBottom: MARGIN, top: -50}}
             progress={progress}
-            progressColor={color}
             strokeWidth={10}
           />
         </View>
