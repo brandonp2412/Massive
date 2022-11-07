@@ -1,7 +1,7 @@
 import {Picker} from '@react-native-picker/picker'
 import {useFocusEffect} from '@react-navigation/native'
 import {useCallback, useMemo, useState} from 'react'
-import {DeviceEventEmitter, NativeModules, ScrollView, View} from 'react-native'
+import {DeviceEventEmitter, FlatList, NativeModules, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Button} from 'react-native-paper'
 import {darkColors, lightColors} from './colors'
@@ -125,16 +125,38 @@ export default function SettingsPage() {
     else toast('Enabled sound for rest timer alarms.')
   }, [])
 
-  const switches: Input<boolean>[] = [
-    {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
-    {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
-    {name: 'Disable sound', value: noSound, onChange: changeNoSound},
-    {name: 'Notifications', value: notify, onChange: changeNotify},
-    {name: 'Show images', value: images, onChange: changeImages},
-    {name: 'Show unit', value: showUnit, onChange: changeUnit},
-    {name: 'Show steps', value: steps, onChange: changeSteps},
-    {name: 'Show date', value: showDate, onChange: changeShowDate},
-  ]
+  const switches: Input<boolean>[] = useMemo(
+    () =>
+      [
+        {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
+        {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
+        {name: 'Disable sound', value: noSound, onChange: changeNoSound},
+        {name: 'Notifications', value: notify, onChange: changeNotify},
+        {name: 'Show images', value: images, onChange: changeImages},
+        {name: 'Show unit', value: showUnit, onChange: changeUnit},
+        {name: 'Show steps', value: steps, onChange: changeSteps},
+        {name: 'Show date', value: showDate, onChange: changeShowDate},
+      ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase())),
+    [
+      term,
+      showDate,
+      changeShowDate,
+      alarm,
+      changeAlarmEnabled,
+      vibrate,
+      changeVibrate,
+      noSound,
+      changeNoSound,
+      notify,
+      changeNotify,
+      images,
+      changeImages,
+      showUnit,
+      changeUnit,
+      steps,
+      changeSteps,
+    ],
+  )
 
   const changeTheme = useCallback(
     (value: string) => {
@@ -163,25 +185,30 @@ export default function SettingsPage() {
     [setColor],
   )
 
+  const renderItem = useCallback(
+    ({item}: {item: Input<boolean>}) => (
+      <Switch
+        onPress={() => item.onChange(!item.value)}
+        key={item.name}
+        value={item.value}
+        onValueChange={item.onChange}>
+        {item.name}
+      </Switch>
+    ),
+    [],
+  )
+
   return (
     <>
       <DrawerHeader name="Settings" />
       <Page term={term} search={setTerm}>
-        <ScrollView style={{marginTop: MARGIN}}>
-          {switches
-            .filter(input =>
-              input.name.toLowerCase().includes(term.toLowerCase()),
-            )
-            .map(input => (
-              <Switch
-                onPress={() => input.onChange(!input.value)}
-                key={input.name}
-                value={input.value}
-                onValueChange={input.onChange}>
-                {input.name}
-              </Switch>
-            ))}
-          <View style={{marginBottom: 10}} />
+        <View>
+          <FlatList
+            style={{marginTop: MARGIN}}
+            data={switches}
+            renderItem={renderItem}
+          />
+          <View style={{marginBottom: MARGIN}} />
           {'theme'.includes(term.toLowerCase()) && (
             <Select value={theme} onChange={changeTheme}>
               <Picker.Item value="system" label="Follow system theme" />
@@ -222,7 +249,7 @@ export default function SettingsPage() {
               Alarm sound{soundString}
             </Button>
           )}
-        </ScrollView>
+        </View>
         <ConfirmDialog
           title="Battery optimizations"
           show={battery}
