@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react'
 import {Dimensions, NativeEventEmitter, NativeModules, View} from 'react-native'
-import {Button, Text, useTheme as usePaperTheme} from 'react-native-paper'
+import {Button, Text} from 'react-native-paper'
 import {ProgressCircle} from 'react-native-svg-charts'
 import {MARGIN, PADDING} from './constants'
 import {settingsRepo} from './db'
@@ -19,7 +19,6 @@ export default function TimerPage() {
   const [seconds, setSeconds] = useState('00')
   const [settings, setSettings] = useState<Settings>()
   const {color} = useTheme()
-  const {colors} = usePaperTheme()
 
   useEffect(() => {
     settingsRepo.findOne({where: {}}).then(setSettings)
@@ -68,7 +67,6 @@ export default function TimerPage() {
             style={{height: 300, width: 500, marginBottom: MARGIN, top: -50}}
             progress={progress}
             progressColor={color}
-            backgroundColor={colors.placeholder}
             strokeWidth={10}
           />
         </View>
