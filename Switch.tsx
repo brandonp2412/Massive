@@ -1,10 +1,6 @@
-import {useMemo} from 'react'
 import {Pressable} from 'react-native'
 import {Switch as PaperSwitch, Text, useTheme} from 'react-native-paper'
-import {CombinedDarkTheme, CombinedDefaultTheme} from './App'
-import {colorShade} from './colors'
 import {MARGIN} from './constants'
-import useDark from './use-dark'
 
 export default function Switch({
   value,
@@ -18,19 +14,6 @@ export default function Switch({
   children: string
 }) {
   const {colors} = useTheme()
-  const dark = useDark()
-
-  const track = useMemo(() => {
-    if (dark)
-      return {
-        false: CombinedDarkTheme.colors.placeholder,
-        true: colorShade(colors.primary, -40),
-      }
-    return {
-      false: CombinedDefaultTheme.colors.placeholder,
-      true: colorShade(colors.primary, -40),
-    }
-  }, [dark, colors.primary])
 
   return (
     <Pressable
@@ -41,7 +24,6 @@ export default function Switch({
         alignItems: 'center',
       }}>
       <PaperSwitch
-        trackColor={track}
         color={colors.primary}
         style={{marginRight: MARGIN}}
         value={value}
