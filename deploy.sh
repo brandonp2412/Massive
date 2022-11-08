@@ -29,8 +29,8 @@ sed -i "s/\"version\": \"[0-9]*.[0-9]*\"/\"version\": \"$major.$minor\"/" ../pac
 
 [ "$1" != "--nobundle" ] && ./gradlew bundleRelease
 
-# bundle install
-# fastlane supply --aab app/build/outputs/bundle/release/app-release.aab
+bundle install
+bundle exec fastlane supply --aab app/build/outputs/bundle/release/app-release.aab
 
 git add app/build.gradle ../package.json
 git commit --no-verify --message "Set versionCode=$versionCode"
