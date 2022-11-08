@@ -67,6 +67,7 @@ export default function TimerPage() {
             progress={progress}
             strokeWidth={10}
             progressColor={colors.primary}
+            backgroundColor={colors.placeholder}
           />
         </View>
       </View>
