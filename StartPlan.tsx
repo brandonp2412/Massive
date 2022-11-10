@@ -115,15 +115,6 @@ export default function StartPlan() {
       toast('Commas and single quotes would break CSV exports')
   }, [])
 
-  const saveText = useMemo(() => {
-    if (minutes === '00' && seconds === '00') return 'Save'
-    return `Resting ${minutes}:${seconds}`
-  }, [minutes, seconds])
-
-  const progress = useMemo(() => {
-    return (Number(minutes) * 60 + Number(seconds)) / 210
-  }, [minutes, seconds])
-
   return (
     <>
       <StackHeader title={params.plan.days.replace(/,/g, ', ')} />
@@ -174,7 +165,7 @@ export default function StartPlan() {
         <ProgressBar
           visible={minutes !== '00' || seconds !== '00'}
           style={{marginBottom: MARGIN}}
-          progress={progress}
+          progress={(Number(minutes) * 60 + Number(seconds)) / 210}
         />
         <Button mode="contained" icon="save" onPress={handleSubmit}>
           Save
