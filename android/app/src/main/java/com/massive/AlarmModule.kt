@@ -211,7 +211,10 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                 context.startService(alarmIntent)
                 reactApplicationContext
                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-                    .emit("finish", Arguments.createMap())
+                    .emit("finish", Arguments.createMap().apply {
+                        putString("minutes", "00")
+                        putString("seconds", "00")
+                    })
             }
         }
     }
