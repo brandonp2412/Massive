@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react'
-import {Dimensions, NativeEventEmitter, NativeModules, View} from 'react-native'
+import {Dimensions, NativeModules, View} from 'react-native'
 import {Button, Text, useTheme} from 'react-native-paper'
 import {ProgressCircle} from 'react-native-svg-charts'
 import {MARGIN, PADDING} from './constants'
@@ -7,27 +7,20 @@ import {settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
 import MassiveFab from './MassiveFab'
 import Settings from './settings'
+import useTimer from './use-timer'
 
-interface TickEvent {
+export interface TickEvent {
   minutes: string
   seconds: string
 }
 
 export default function TimerPage() {
-  const [minutes, setMinutes] = useState('00')
-  const [seconds, setSeconds] = useState('00')
+  const {minutes, seconds} = useTimer()
   const [settings, setSettings] = useState<Settings>()
   const {colors} = useTheme()
 
   useEffect(() => {
     settingsRepo.findOne({where: {}}).then(setSettings)
-    const emitter = new NativeEventEmitter()
-    const listener = emitter.addListener('tick', (event: TickEvent) => {
-      console.log(`${TimerPage.name}.tick:`, {event})
-      setMinutes(event.minutes)
-      setSeconds(event.seconds)
-    })
-    return listener.remove
   }, [])
 
   const stop = () => {

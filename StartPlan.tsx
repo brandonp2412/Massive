@@ -2,9 +2,9 @@ import {RouteProp, useRoute} from '@react-navigation/native'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {NativeModules, TextInput, View} from 'react-native'
 import {FlatList} from 'react-native-gesture-handler'
-import {Button} from 'react-native-paper'
+import {Button, ProgressBar} from 'react-native-paper'
 import {getBestSet} from './best.service'
-import {PADDING} from './constants'
+import {MARGIN, PADDING} from './constants'
 import CountMany from './count-many'
 import {AppDataSource} from './data-source'
 import {getNow, setRepo, settingsRepo} from './db'
@@ -16,6 +16,7 @@ import Settings from './settings'
 import StackHeader from './StackHeader'
 import StartPlanItem from './StartPlanItem'
 import {toast} from './toast'
+import useTimer from './use-timer'
 
 export default function StartPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
@@ -30,13 +31,14 @@ export default function StartPlan() {
   const repsRef = useRef<TextInput>(null)
   const unitRef = useRef<TextInput>(null)
   const workouts = useMemo(() => params.plan.workouts.split(','), [params])
+  const {minutes, seconds} = useTimer()
 
   const [selection, setSelection] = useState({
     start: 0,
     end: 0,
   })
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     const questions = workouts
       .map((workout, index) => `('${workout}',${index})`)
       .join(',')
@@ -52,11 +54,10 @@ export default function StartPlan() {
       LIMIT -1
       OFFSET 1
     `
-    return AppDataSource.manager.query(select).then(newCounts => {
-      setCounts(newCounts)
-      console.log(`${StartPlan.name}.focus:`, {newCounts})
-      return newCounts
-    })
+    const newCounts = await AppDataSource.manager.query(select)
+    console.log(`${StartPlan.name}.focus:`, {newCounts})
+    setCounts(newCounts)
+    return newCounts
   }, [workouts])
 
   const select = useCallback(
@@ -100,9 +101,7 @@ export default function StartPlan() {
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
     )
       toast("Great work King! That's a new record.")
-    else if (settings.alarm) toast('Resting...')
-    else toast('Added set')
-    if (!settings.alarm) return
+    else if (!settings.alarm) return toast('Added set')
     const milliseconds =
       Number(best.minutes) * 60 * 1000 + Number(best.seconds) * 1000
     const {vibrate, sound, noSound} = settings
@@ -115,6 +114,15 @@ export default function StartPlan() {
     if (value.match(/,|'/))
       toast('Commas and single quotes would break CSV exports')
   }, [])
+
+  const saveText = useMemo(() => {
+    if (minutes === '00' && seconds === '00') return 'Save'
+    return `Resting ${minutes}:${seconds}`
+  }, [minutes, seconds])
+
+  const progress = useMemo(() => {
+    return (Number(minutes) * 60 + Number(seconds)) / 210
+  }, [minutes, seconds])
 
   return (
     <>
@@ -163,6 +171,11 @@ export default function StartPlan() {
             />
           )}
         </View>
+        <ProgressBar
+          visible={minutes !== '00' || seconds !== '00'}
+          style={{marginBottom: MARGIN}}
+          progress={progress}
+        />
         <Button mode="contained" icon="save" onPress={handleSubmit}>
           Save
         </Button>
