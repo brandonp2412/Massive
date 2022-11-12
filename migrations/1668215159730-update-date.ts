@@ -2,7 +2,7 @@ import {MigrationInterface, QueryRunner} from 'typeorm'
 import {settingsRepo} from '../db'
 
 export class updateDate1668215159730 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
+  public async up(_queryRunner: QueryRunner): Promise<void> {
     const settings = await settingsRepo.findOne({where: {}})
     let newDate = 'P'
     switch (settings.date) {
@@ -28,7 +28,5 @@ export class updateDate1668215159730 implements MigrationInterface {
     await settingsRepo.save(settings)
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    // There's no going back...
-  }
+  public async down(_queryRunner: QueryRunner): Promise<void> {}
 }
