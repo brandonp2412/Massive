@@ -103,7 +103,9 @@ export default function ViewBest() {
             yData={weights.map(set => set.weight)}
             yFormat={value => `${value}${weights[0].unit}`}
             xData={weights}
-            xFormat={(_value, index) => formatMonth(weights[index].created!)}
+            xFormat={(_value, index) =>
+              format(new Date(weights[index].created), 'D/M')
+            }
           />
         )}
       </View>
