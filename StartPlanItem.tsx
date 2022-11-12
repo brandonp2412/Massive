@@ -1,7 +1,14 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native'
 import React, {useCallback, useState} from 'react'
 import {GestureResponderEvent, ListRenderItemInfo, View} from 'react-native'
-import {List, Menu, RadioButton, useTheme} from 'react-native-paper'
+import {
+  List,
+  Menu,
+  ProgressBar,
+  RadioButton,
+  Text,
+  useTheme,
+} from 'react-native-paper'
 import {Like} from 'typeorm'
 import CountMany from './count-many'
 import {getNow, setRepo} from './db'
@@ -66,7 +73,9 @@ export default function StartPlanItem(props: Props) {
     <List.Item
       onLongPress={longPress}
       title={item.name}
-      description={item.total.toString()}
+      description={
+        item.sets ? `${item.total} / ${item.sets}` : item.total.toString()
+      }
       onPress={() => onSelect(index)}
       left={() => (
         <View style={{alignItems: 'center', justifyContent: 'center'}}>
@@ -79,7 +88,12 @@ export default function StartPlanItem(props: Props) {
         </View>
       )}
       right={() => (
-        <>
+        <View
+          style={{
+            width: '25%',
+            justifyContent: 'center',
+          }}>
+          {item.sets > 0 && <ProgressBar progress={item.total / item.sets} />}
           <Menu
             anchor={anchor}
             visible={showMenu}
@@ -87,7 +101,7 @@ export default function StartPlanItem(props: Props) {
             <Menu.Item icon="edit" onPress={edit} title="Edit" />
             <Menu.Item icon="undo" onPress={undo} title="Undo" />
           </Menu>
-        </>
+        </View>
       )}
     />
   )

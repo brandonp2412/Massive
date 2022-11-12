@@ -42,7 +42,7 @@ export default function StartPlan() {
       .join(',')
     console.log({questions, workouts})
     const select = `
-      SELECT workouts.name, COUNT(sets.id) as total
+      SELECT workouts.name, COUNT(sets.id) as total, sets.sets
       FROM (select 0 as name, 0 as sequence union values ${questions}) as workouts 
       LEFT JOIN sets ON sets.name = workouts.name 
         AND sets.created LIKE STRFTIME('%Y-%m-%d%%', 'now', 'localtime')
