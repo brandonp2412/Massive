@@ -6,8 +6,8 @@ import {setRepo} from './db'
 import GymSet from './gym-set'
 import {HomePageParams} from './home-page-params'
 import Settings from './settings'
-import {format} from './time'
 import useDark from './use-dark'
+import {format} from 'date-fns'
 
 export default function SetItem({
   item,
@@ -66,7 +66,7 @@ export default function SetItem({
                   alignSelf: 'center',
                   color: dark ? '#909090ff' : '#717171ff',
                 }}>
-                {format(item.created || '', settings.date)}
+                {format(new Date(item.created), settings.date)}
               </Text>
             )}
             <Menu

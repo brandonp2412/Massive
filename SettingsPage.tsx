@@ -1,9 +1,11 @@
 import {Picker} from '@react-native-picker/picker'
+import DeviceTimeFormat from 'react-native-device-time-format'
 import {useFocusEffect} from '@react-navigation/native'
+import {format} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
 import {DeviceEventEmitter, FlatList, NativeModules, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
-import {Button} from 'react-native-paper'
+import {Button, Text} from 'react-native-paper'
 import {darkColors, lightColors} from './colors'
 import ConfirmDialog from './ConfirmDialog'
 import {MARGIN} from './constants'
@@ -31,6 +33,8 @@ export default function SettingsPage() {
   const {theme, setTheme, color, setColor} = useTheme()
   const [showDate, setShowDate] = useState(false)
   const [noSound, setNoSound] = useState(false)
+  const [formatOptions, setFormatOptions] = useState<string[]>([])
+  const today = new Date()
 
   useFocusEffect(
     useCallback(() => {
@@ -46,6 +50,10 @@ export default function SettingsPage() {
         setDate(settings.date)
         setShowDate(settings.showDate)
         setNoSound(settings.noSound)
+      })
+      DeviceTimeFormat.is24HourFormat().then(is24 => {
+        if (is24) return setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
+        setFormatOptions(['P', 'Pp', 'ccc p', 'p'])
       })
     }, []),
   )
@@ -230,18 +238,13 @@ export default function SettingsPage() {
           )}
           {'date format'.includes(term.toLowerCase()) && (
             <Select value={date} onChange={changeDate}>
-              <Picker.Item value="%Y-%m-%d %H:%M" label="1990-12-24 15:05" />
-              <Picker.Item value="%Y-%m-%d" label="1990-12-24" />
-              <Picker.Item value="%d/%m" label="24/12 (dd/MM)" />
-              <Picker.Item value="%H:%M" label="15:05 (24-hour time)" />
-              <Picker.Item value="%h:%M %p" label="3:05 PM (12-hour time)" />
-              <Picker.Item value="%d/%m/%y" label="24/12/1996" />
-              <Picker.Item value="%A %h:%M %p" label="Monday 3:05 PM" />
-              <Picker.Item
-                value="%d/%m/%y %h:%M %p"
-                label="24/12/1990 3:05 PM"
-              />
-              <Picker.Item value="%d/%m %h:%M %p" label="24/12 3:05 PM" />
+              {formatOptions.map(option => (
+                <Picker.Item
+                  key={option}
+                  value={option}
+                  label={format(today, option)}
+                />
+              ))}
             </Select>
           )}
           {'alarm sound'.includes(term.toLowerCase()) && (

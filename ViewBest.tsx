@@ -1,5 +1,6 @@
 import {Picker} from '@react-native-picker/picker'
 import {RouteProp, useRoute} from '@react-navigation/native'
+import {format} from 'date-fns'
 import {useEffect, useState} from 'react'
 import {View} from 'react-native'
 import {BestPageParams} from './BestPage'
@@ -10,7 +11,6 @@ import GymSet from './gym-set'
 import {Metrics} from './metrics'
 import {Periods} from './periods'
 import StackHeader from './StackHeader'
-import {formatMonth} from './time'
 import useDark from './use-dark'
 import Volume from './volume'
 
@@ -94,7 +94,9 @@ export default function ViewBest() {
               }`
             }
             xData={weights}
-            xFormat={(_value, index) => formatMonth(weights[index].created!)}
+            xFormat={(_value, index) =>
+              format(new Date(weights[index].created), 'D/M')
+            }
           />
         ) : (
           <Chart

@@ -1,3 +1,4 @@
+import {format} from 'date-fns'
 import {useCallback, useRef, useState} from 'react'
 import {TextInput, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
@@ -8,7 +9,6 @@ import {getNow, setRepo} from './db'
 import GymSet from './gym-set'
 import MassiveInput from './MassiveInput'
 import Settings from './settings'
-import {format} from './time'
 import {toast} from './toast'
 
 export default function SetForm({
@@ -129,7 +129,7 @@ export default function SetForm({
           <MassiveInput
             label="Created"
             disabled
-            value={format(set.created, settings.date)}
+            value={format(new Date(set.created), settings.date)}
           />
         )}
         {settings.images && newImage && (
