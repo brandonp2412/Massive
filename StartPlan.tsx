@@ -99,6 +99,7 @@ export default function StartPlan() {
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
     )
       toast("Great work King! That's a new record.")
+    if (!settings.alarm) return
     const milliseconds =
       Number(best.minutes) * 60 * 1000 + Number(best.seconds) * 1000
     const {vibrate, sound, noSound} = settings

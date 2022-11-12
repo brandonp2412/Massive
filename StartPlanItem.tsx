@@ -6,7 +6,6 @@ import {
   Menu,
   ProgressBar,
   RadioButton,
-  Text,
   useTheme,
 } from 'react-native-paper'
 import {Like} from 'typeorm'
