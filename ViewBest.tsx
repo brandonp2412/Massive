@@ -95,7 +95,7 @@ export default function ViewBest() {
             }
             xData={weights}
             xFormat={(_value, index) =>
-              format(new Date(weights[index].created), 'D/M')
+              format(new Date(weights[index].created), 'd/M')
             }
           />
         ) : (
@@ -104,7 +104,7 @@ export default function ViewBest() {
             yFormat={value => `${value}${weights[0].unit}`}
             xData={weights}
             xFormat={(_value, index) =>
-              format(new Date(weights[index].created), 'D/M')
+              format(new Date(weights[index].created), 'd/M')
             }
           />
         )}
