@@ -2,9 +2,9 @@ import {RouteProp, useRoute} from '@react-navigation/native'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {NativeModules, TextInput, View} from 'react-native'
 import {FlatList} from 'react-native-gesture-handler'
-import {Button} from 'react-native-paper'
+import {Button, ProgressBar} from 'react-native-paper'
 import {getBestSet} from './best.service'
-import {PADDING} from './constants'
+import {MARGIN, PADDING} from './constants'
 import CountMany from './count-many'
 import {AppDataSource} from './data-source'
 import {getNow, setRepo, settingsRepo} from './db'
@@ -113,6 +113,11 @@ export default function StartPlan() {
       toast('Commas and single quotes would break CSV exports')
   }, [])
 
+  const progress = useMemo(() => {
+    if (!counts || !counts[selected].sets) return
+    return counts[selected].total / (counts[selected].sets ?? 1)
+  }, [counts, selected])
+
   return (
     <>
       <StackHeader title={params.plan.days.replace(/,/g, ', ')} />
@@ -160,6 +165,9 @@ export default function StartPlan() {
             />
           )}
         </View>
+        {progress && (
+          <ProgressBar progress={progress} style={{marginBottom: MARGIN}} />
+        )}
         <Button mode="contained" icon="save" onPress={handleSubmit}>
           Save
         </Button>

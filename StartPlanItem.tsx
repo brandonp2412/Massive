@@ -1,13 +1,7 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native'
 import React, {useCallback, useState} from 'react'
 import {GestureResponderEvent, ListRenderItemInfo, View} from 'react-native'
-import {
-  List,
-  Menu,
-  ProgressBar,
-  RadioButton,
-  useTheme,
-} from 'react-native-paper'
+import {List, Menu, RadioButton, useTheme} from 'react-native-paper'
 import {Like} from 'typeorm'
 import CountMany from './count-many'
 import {getNow, setRepo} from './db'
@@ -92,7 +86,6 @@ export default function StartPlanItem(props: Props) {
             width: '25%',
             justifyContent: 'center',
           }}>
-          {item.sets > 0 && <ProgressBar progress={item.total / item.sets} />}
           <Menu
             anchor={anchor}
             visible={showMenu}
