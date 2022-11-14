@@ -2,7 +2,13 @@ import {Picker} from '@react-native-picker/picker'
 import {useFocusEffect} from '@react-navigation/native'
 import {format} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
-import {DeviceEventEmitter, FlatList, NativeModules, View} from 'react-native'
+import {
+  DeviceEventEmitter,
+  FlatList,
+  NativeModules,
+  Platform,
+  View,
+} from 'react-native'
 import DeviceTimeFormat from 'react-native-device-time-format'
 import DocumentPicker from 'react-native-document-picker'
 import {Button} from 'react-native-paper'
@@ -33,12 +39,16 @@ export default function SettingsPage() {
   const {theme, setTheme, color, setColor} = useTheme()
   const [showDate, setShowDate] = useState(false)
   const [noSound, setNoSound] = useState(false)
-  const [formatOptions, setFormatOptions] = useState<string[]>([])
+  const [formatOptions, setFormatOptions] = useState<string[]>([
+    'P',
+    'Pp',
+    'ccc p',
+    'p',
+  ])
   const today = new Date()
 
   useFocusEffect(
     useCallback(() => {
-      NativeModules.AlarmModule.ignoringBattery(setIgnoring)
       settingsRepo.findOne({where: {}}).then(settings => {
         setAlarm(settings.alarm)
         setVibrate(settings.vibrate)
@@ -51,9 +61,10 @@ export default function SettingsPage() {
         setShowDate(settings.showDate)
         setNoSound(settings.noSound)
       })
+      if (Platform.OS !== 'android') return
+      NativeModules.AlarmModule.ignoringBattery(setIgnoring)
       DeviceTimeFormat.is24HourFormat().then(is24 => {
-        if (is24) return setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
-        setFormatOptions(['P', 'Pp', 'ccc p', 'p'])
+        if (is24) setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
       })
     }, []),
   )
