@@ -2,9 +2,9 @@ import {RouteProp, useRoute} from '@react-navigation/native'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {NativeModules, TextInput, View} from 'react-native'
 import {FlatList} from 'react-native-gesture-handler'
-import {Button, ProgressBar} from 'react-native-paper'
+import {Button} from 'react-native-paper'
 import {getBestSet} from './best.service'
-import {MARGIN, PADDING} from './constants'
+import {PADDING} from './constants'
 import CountMany from './count-many'
 import {AppDataSource} from './data-source'
 import {getNow, setRepo, settingsRepo} from './db'
@@ -99,6 +99,7 @@ export default function StartPlan() {
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
     )
       toast("Great work King! That's a new record.")
+    else toast('Set added.')
     if (!settings.alarm) return
     const milliseconds =
       Number(best.minutes) * 60 * 1000 + Number(best.seconds) * 1000
@@ -112,11 +113,6 @@ export default function StartPlan() {
     if (value.match(/,|'/))
       toast('Commas and single quotes would break CSV exports')
   }, [])
-
-  const progress = useMemo(() => {
-    if (!counts || !counts[selected].sets) return
-    return counts[selected].total / (counts[selected].sets ?? 1)
-  }, [counts, selected])
 
   return (
     <>
@@ -165,9 +161,6 @@ export default function StartPlan() {
             />
           )}
         </View>
-        {progress && (
-          <ProgressBar progress={progress} style={{marginBottom: MARGIN}} />
-        )}
         <Button mode="contained" icon="save" onPress={handleSubmit}>
           Save
         </Button>
