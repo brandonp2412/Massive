@@ -29,7 +29,7 @@ export default function SettingsPage() {
   const [images, setImages] = useState(false)
   const [showUnit, setShowUnit] = useState(false)
   const [steps, setSteps] = useState(false)
-  const [date, setDate] = useState('%Y-%m-%d %H:%M')
+  const [date, setDate] = useState('P')
   const {theme, setTheme, color, setColor} = useTheme()
   const [showDate, setShowDate] = useState(false)
   const [noSound, setNoSound] = useState(false)
