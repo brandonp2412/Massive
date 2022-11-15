@@ -7317,7 +7317,7 @@ __metadata:
     metro-react-native-babel-preset: ^0.73.3
     react: ^18.2.0
     react-native: ^0.70.5
-    react-native-device-time-format: 2.2.0
+    react-native-device-time-format: 2.3.0
     react-native-document-picker: ^8.1.2
     react-native-file-access: ^2.5.0
     react-native-gesture-handler: ^2.8.0
@@ -8807,10 +8807,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-device-time-format@npm:2.2.0":
-  version: 2.2.0
-  resolution: "react-native-device-time-format@npm:2.2.0"
-  checksum: 32039600ccdc8b04016f25f1709951d11a801e55562540a5637683c9d314da0deb6350bacf0ec4cab4b6807ae945ec8a3a40216afc372bdaa90ac1e770e35908
+"react-native-device-time-format@npm:2.3.0":
+  version: 2.3.0
+  resolution: "react-native-device-time-format@npm:2.3.0"
+  checksum: c19e20f40be82fff2d0c812124303e4607c3553103ddc7d672cc277e19c9ed418af81955be3c6dc9b273c417eb504d511847245952124374fb9546a68aa16efa
   languageName: node
   linkType: hard
 
