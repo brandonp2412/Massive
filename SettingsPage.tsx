@@ -1,4 +1,3 @@
-import {Picker} from '@react-native-picker/picker'
 import {useFocusEffect} from '@react-navigation/native'
 import {format} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
@@ -229,34 +228,36 @@ export default function SettingsPage() {
           />
           <View style={{marginBottom: MARGIN}} />
           {'theme'.includes(term.toLowerCase()) && (
-            <Select value={theme} onChange={changeTheme}>
-              <Picker.Item value="system" label="Follow system theme" />
-              <Picker.Item value="dark" label="Dark theme" />
-              <Picker.Item value="light" label="Light theme" />
-            </Select>
+            <Select
+              value={theme}
+              onChange={changeTheme}
+              items={[
+                {label: 'Follow system theme', value: 'system'},
+                {label: 'Dark theme', value: 'dark'},
+                {label: 'Light theme', value: 'light'},
+              ]}
+            />
           )}
           {'color'.includes(term.toLowerCase()) && (
-            <Select value={color} onChange={changeColor}>
-              {lightColors.concat(darkColors).map(colorOption => (
-                <Picker.Item
-                  key={colorOption}
-                  value={colorOption}
-                  label="Primary color"
-                  color={colorOption}
-                />
-              ))}
-            </Select>
+            <Select
+              value={color}
+              onChange={changeColor}
+              items={lightColors.concat(darkColors).map(colorOption => ({
+                label: 'Primary color',
+                value: colorOption,
+                color: colorOption,
+              }))}
+            />
           )}
           {'date format'.includes(term.toLowerCase()) && (
-            <Select value={date} onChange={changeDate}>
-              {formatOptions.map(option => (
-                <Picker.Item
-                  key={option}
-                  value={option}
-                  label={format(today, option)}
-                />
-              ))}
-            </Select>
+            <Select
+              value={date}
+              onChange={changeDate}
+              items={formatOptions.map(option => ({
+                label: format(today, option),
+                value: option,
+              }))}
+            />
           )}
           {'alarm sound'.includes(term.toLowerCase()) && (
             <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>

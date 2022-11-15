@@ -1,24 +1,29 @@
-import {Picker} from '@react-native-picker/picker'
 import {useTheme} from 'react-native-paper'
+import RNPickerSelect from 'react-native-picker-select'
+import {Item} from 'react-native-picker-select'
 
 export default function Select({
   value,
   onChange,
-  children,
+  items,
 }: {
   value: string
   onChange: (value: string) => void
-  children: JSX.Element | JSX.Element[]
+  items: Item[]
 }) {
   const {colors} = useTheme()
 
   return (
-    <Picker
-      style={{color: colors.primary, marginTop: -10}}
-      dropdownIconColor={colors.text}
-      selectedValue={value}
-      onValueChange={onChange}>
-      {children}
-    </Picker>
+    <RNPickerSelect
+      style={{
+        placeholder: {
+          color: 'white',
+        },
+      }}
+      placeholder="Hello, world!"
+      value={value}
+      onValueChange={onChange}
+      items={items}
+    />
   )
 }

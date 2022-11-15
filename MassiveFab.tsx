@@ -17,8 +17,8 @@ export default function MassiveFab(props: Partial<ComponentProps<typeof FAB>>) {
       color={fabColor}
       style={{
         position: 'absolute',
-        right: 10,
-        bottom: 10,
+        right: 20,
+        bottom: 20,
         backgroundColor: color,
       }}
       {...props}
