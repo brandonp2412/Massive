@@ -55,7 +55,7 @@ const App = () => {
       const settings = await settingsRepo.findOne({where: {}})
       console.log(`${App.name}.useEffect:`, {gotSettings: settings})
       setTheme(settings.theme)
-      setColor(settings.color)
+      if (settings.color) setColor(settings.color)
       setInitialized(true)
     }
     init()
