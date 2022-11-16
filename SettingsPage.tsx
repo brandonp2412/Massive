@@ -226,7 +226,6 @@ export default function SettingsPage() {
             data={switches}
             renderItem={renderItem}
           />
-          <View style={{marginBottom: MARGIN}} />
           {'theme'.includes(term.toLowerCase()) && (
             <Select
               value={theme}
@@ -260,7 +259,9 @@ export default function SettingsPage() {
             />
           )}
           {'alarm sound'.includes(term.toLowerCase()) && (
-            <Button style={{alignSelf: 'flex-start'}} onPress={changeSound}>
+            <Button
+              style={{alignSelf: 'flex-start', marginTop: MARGIN}}
+              onPress={changeSound}>
               Alarm sound{soundString}
             </Button>
           )}
