@@ -22,7 +22,11 @@ export default function Select({
       onDismiss={() => setShow(false)}
       anchor={<Button style={{alignSelf: 'flex-start'}}>{value}</Button>}>
       {items.map(item => (
-        <Menu.Item title={item.label} onPress={() => onChange(item.value)} />
+        <Menu.Item
+          key={item.value}
+          title={item.label}
+          onPress={() => onChange(item.value)}
+        />
       ))}
     </Menu>
   )
