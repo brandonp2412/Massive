@@ -232,10 +232,20 @@ export default function SettingsPage() {
               value={theme}
               onChange={changeTheme}
               items={[
-                {label: 'Follow system theme', value: 'system', color},
-                {label: 'Dark theme', value: 'dark', color},
-                {label: 'Light theme', value: 'light', color},
+                {label: 'Follow system theme', value: 'system'},
+                {label: 'Dark theme', value: 'dark'},
+                {label: 'Light theme', value: 'light'},
               ]}
+            />
+          )}
+          {'date format'.includes(term.toLowerCase()) && (
+            <Select
+              value={date}
+              onChange={changeDate}
+              items={formatOptions.map(option => ({
+                label: format(today, option),
+                value: option,
+              }))}
             />
           )}
           {'color'.includes(term.toLowerCase()) && (
@@ -246,17 +256,6 @@ export default function SettingsPage() {
                 label: 'Primary color',
                 value: colorOption,
                 color: colorOption,
-              }))}
-            />
-          )}
-          {'date format'.includes(term.toLowerCase()) && (
-            <Select
-              value={date}
-              onChange={changeDate}
-              items={formatOptions.map(option => ({
-                label: format(today, option),
-                value: option,
-                color,
               }))}
             />
           )}
