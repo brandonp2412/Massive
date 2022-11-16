@@ -1,4 +1,4 @@
-import {RouteProp, useRoute} from '@react-navigation/native'
+import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {NativeModules, TextInput, View} from 'react-native'
 import {FlatList} from 'react-native-gesture-handler'
@@ -76,9 +76,14 @@ export default function StartPlan() {
     [counts, best],
   )
 
+  useFocusEffect(
+    useCallback(() => {
+      settingsRepo.findOne({where: {}}).then(setSettings)
+    }, []),
+  )
+
   useEffect(() => {
     refresh().then(newCounts => select(0, newCounts))
-    settingsRepo.findOne({where: {}}).then(setSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh])
 
