@@ -1,7 +1,12 @@
-import {useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {Button, Menu, useTheme} from 'react-native-paper'
-import RNPickerSelect from 'react-native-picker-select'
-import {Item} from 'react-native-picker-select'
+import {MARGIN} from './constants'
+
+export interface Item {
+  value: string
+  label: string
+  color?: string
+}
 
 export default function Select({
   value,
@@ -12,17 +17,39 @@ export default function Select({
   onChange: (value: string) => void
   items: Item[]
 }) {
-  const {colors} = useTheme()
   const [show, setShow] = useState(false)
+  const {colors} = useTheme()
+
+  const selected = useMemo(
+    () => items.find(item => item.value === value),
+    [items, value],
+  )
+
+  const handlePress = useCallback(
+    (newValue: string) => {
+      onChange(newValue)
+      setShow(false)
+    },
+    [onChange],
+  )
 
   return (
     <Menu
-      style={{alignSelf: 'flex-start', justifyContent: 'flex-start'}}
       visible={show}
       onDismiss={() => setShow(false)}
-      anchor={<Button style={{alignSelf: 'flex-start'}}>{value}</Button>}>
+      anchor={
+        <Button
+          onPress={() => setShow(true)}
+          style={{alignSelf: 'flex-start', marginTop: MARGIN}}>
+          {selected.label}
+        </Button>
+      }>
       {items.map(item => (
-        <Menu.Item title={item.label} onPress={() => onChange(item.value)} />
+        <Menu.Item
+          titleStyle={{color: item.color || colors.text}}
+          title={item.label}
+          onPress={() => handlePress(item.value)}
+        />
       ))}
     </Menu>
   )

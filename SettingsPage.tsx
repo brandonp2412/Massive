@@ -238,7 +238,7 @@ export default function SettingsPage() {
               value={date}
               onChange={changeDate}
               items={formatOptions.map(option => ({
-                label: format(today, option),
+                label: `Date format: ${format(today, option)}`,
                 value: option,
               }))}
             />
