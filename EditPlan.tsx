@@ -102,29 +102,15 @@ export default function EditPlan() {
             ))
           )}
         </ScrollView>
-        {names.length === 0 ? (
-          <Button
-            disabled={workouts.length === 0 && days.length === 0}
-            mode="contained"
-            onPress={() => {
-              navigation.goBack()
-              navigation.navigate('Workouts', {
-                screen: 'EditWorkout',
-                params: {value: {name: ''}},
-              })
-            }}>
-            Add workout
-          </Button>
-        ) : (
-          <Button
-            disabled={workouts.length === 0 && days.length === 0}
-            style={{marginTop: MARGIN}}
-            mode="contained"
-            icon="save"
-            onPress={save}>
-            Save
-          </Button>
-        )}
+
+        <Button
+          disabled={workouts.length === 0 && days.length === 0}
+          style={styles.button}
+          mode="contained"
+          icon="save"
+          onPress={save}>
+          Save
+        </Button>
       </View>
     </>
   )
@@ -134,5 +120,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     marginBottom: MARGIN,
+  },
+  button: {
+    margin: MARGIN * 2,
   },
 })
