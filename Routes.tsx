@@ -1,5 +1,6 @@
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {useMemo} from 'react'
+import {Platform} from 'react-native'
 import {IconButton} from 'react-native-paper'
 import BestPage from './BestPage'
 import {DrawerParamList} from './drawer-param-list'
@@ -35,16 +36,22 @@ export default function Routes() {
         swipeEdgeWidth: 1000,
         headerShown: false,
       }}>
-      {routes.map(route => (
-        <Drawer.Screen
-          key={route.name}
-          name={route.name}
-          component={route.component}
-          options={{
-            drawerIcon: () => <IconButton icon={route.icon} />,
-          }}
-        />
-      ))}
+      {}
+      {routes
+        .filter(route => {
+          if (Platform.OS === 'ios' && route.name === 'Timer') return false
+          return true
+        })
+        .map(route => (
+          <Drawer.Screen
+            key={route.name}
+            name={route.name}
+            component={route.component}
+            options={{
+              drawerIcon: () => <IconButton icon={route.icon} />,
+            }}
+          />
+        ))}
     </Drawer.Navigator>
   )
 }
