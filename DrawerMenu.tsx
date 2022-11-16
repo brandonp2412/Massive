@@ -1,5 +1,6 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {useCallback, useState} from 'react'
+import {Platform} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {FileSystem} from 'react-native-file-access'
 import {Divider, IconButton, Menu} from 'react-native-paper'
@@ -153,8 +154,16 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
             icon="more-vert"
           />
         }>
-        <Menu.Item icon="arrow-downward" onPress={download} title="Download" />
-        <Menu.Item icon="arrow-upward" onPress={upload} title="Upload" />
+        {Platform.OS === 'android' && (
+          <>
+            <Menu.Item
+              icon="arrow-downward"
+              onPress={download}
+              title="Download"
+            />
+            <Menu.Item icon="arrow-upward" onPress={upload} title="Upload" />
+          </>
+        )}
         <Divider />
         <Menu.Item
           icon="delete"
