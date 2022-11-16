@@ -218,7 +218,7 @@ export default function SettingsPage() {
       <Page term={term} search={setTerm}>
         <View>
           <FlatList
-            style={{marginTop: MARGIN, marginBottom: MARGIN}}
+            style={{marginTop: MARGIN}}
             data={switches}
             renderItem={renderItem}
           />
