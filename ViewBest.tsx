@@ -1,4 +1,3 @@
-import {Picker} from '@react-native-picker/picker'
 import {RouteProp, useRoute} from '@react-navigation/native'
 import {format} from 'date-fns'
 import {useEffect, useState} from 'react'
@@ -10,13 +9,12 @@ import {setRepo} from './db'
 import GymSet from './gym-set'
 import {Metrics} from './metrics'
 import {Periods} from './periods'
+import Select from './Select'
 import StackHeader from './StackHeader'
-import useDark from './use-dark'
 import Volume from './volume'
 
 export default function ViewBest() {
   const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>()
-  const dark = useDark()
   const [weights, setWeights] = useState<GymSet[]>([])
   const [volumes, setVolumes] = useState<Volume[]>([])
   const [metric, setMetric] = useState(Metrics.Weight)
@@ -67,24 +65,27 @@ export default function ViewBest() {
     <>
       <StackHeader title={params.best.name} />
       <View style={{padding: PADDING}}>
-        <Picker
-          style={{color: dark ? 'white' : 'black'}}
-          dropdownIconColor={dark ? 'white' : 'black'}
-          selectedValue={metric}
-          onValueChange={value => setMetric(value)}>
-          <Picker.Item value={Metrics.Volume} label={Metrics.Volume} />
-          <Picker.Item value={Metrics.Weight} label={Metrics.Weight} />
-          <Picker.Item value={Metrics.OneRepMax} label={Metrics.OneRepMax} />
-        </Picker>
-        <Picker
-          style={{color: dark ? 'white' : 'black'}}
-          dropdownIconColor={dark ? 'white' : 'black'}
-          selectedValue={period}
-          onValueChange={value => setPeriod(value)}>
-          <Picker.Item value={Periods.Weekly} label={Periods.Weekly} />
-          <Picker.Item value={Periods.Monthly} label={Periods.Monthly} />
-          <Picker.Item value={Periods.Yearly} label={Periods.Yearly} />
-        </Picker>
+        <Select
+          items={[
+            {value: Metrics.Volume, label: Metrics.Volume},
+            {value: Metrics.OneRepMax, label: Metrics.OneRepMax},
+            {
+              label: Metrics.Weight,
+              value: Metrics.Weight,
+            },
+          ]}
+          onChange={value => setMetric(value as Metrics)}
+          value={metric}
+        />
+        <Select
+          items={[
+            {value: Periods.Weekly, label: Periods.Weekly},
+            {value: Periods.Monthly, label: Periods.Monthly},
+            {value: Periods.Yearly, label: Periods.Yearly},
+          ]}
+          onChange={value => setPeriod(value as Periods)}
+          value={period}
+        />
         {metric === Metrics.Volume ? (
           <Chart
             yData={volumes.map(v => v.value)}
