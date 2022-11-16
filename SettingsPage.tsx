@@ -232,9 +232,9 @@ export default function SettingsPage() {
               value={theme}
               onChange={changeTheme}
               items={[
-                {label: 'Follow system theme', value: 'system'},
-                {label: 'Dark theme', value: 'dark'},
-                {label: 'Light theme', value: 'light'},
+                {label: 'Follow system theme', value: 'system', color},
+                {label: 'Dark theme', value: 'dark', color},
+                {label: 'Light theme', value: 'light', color},
               ]}
             />
           )}
@@ -256,6 +256,7 @@ export default function SettingsPage() {
               items={formatOptions.map(option => ({
                 label: format(today, option),
                 value: option,
+                color,
               }))}
             />
           )}

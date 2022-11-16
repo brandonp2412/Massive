@@ -21,7 +21,7 @@ export default function Select({
         },
       }}
       value={value}
-      placeholder={{label: 'Select...'}}
+      placeholder={{}}
       onValueChange={onChange}
       items={items}
     />
