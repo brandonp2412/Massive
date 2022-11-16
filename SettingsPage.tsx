@@ -8,7 +8,6 @@ import {
   Platform,
   View,
 } from 'react-native'
-import DeviceTimeFormat from 'react-native-device-time-format'
 import DocumentPicker from 'react-native-document-picker'
 import {Button} from 'react-native-paper'
 import {darkColors, lightColors} from './colors'
@@ -62,9 +61,6 @@ export default function SettingsPage() {
       })
       if (Platform.OS !== 'android') return
       NativeModules.AlarmModule.ignoringBattery(setIgnoring)
-      DeviceTimeFormat.is24HourFormat().then(is24 => {
-        if (is24) setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
-      })
     }, []),
   )
 
