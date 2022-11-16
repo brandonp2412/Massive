@@ -17,11 +17,11 @@ export default function Select({
     <RNPickerSelect
       style={{
         placeholder: {
-          color: 'white',
+          color: colors.primary,
         },
       }}
-      placeholder="Hello, world!"
       value={value}
+      placeholder={{label: 'Select...'}}
       onValueChange={onChange}
       items={items}
     />
