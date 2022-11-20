@@ -41,7 +41,7 @@ export default function Select({
         <Button
           onPress={() => setShow(true)}
           style={{alignSelf: 'flex-start', marginTop: MARGIN}}>
-          {selected.label}
+          {selected?.label}
         </Button>
       }>
       {items.map(item => (

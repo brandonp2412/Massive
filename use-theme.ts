@@ -6,7 +6,7 @@ export const ThemeContext = createContext<{
   setTheme: (value: string) => void
   setColor: (value: string) => void
 }>({
-  theme: '',
+  theme: 'system',
   color: '',
   setTheme: () => null,
   setColor: () => null,

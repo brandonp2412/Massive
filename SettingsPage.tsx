@@ -224,7 +224,7 @@ export default function SettingsPage() {
           />
           {'theme'.includes(term.toLowerCase()) && (
             <Select
-              value={theme}
+              value={theme || 'system'}
               onChange={changeTheme}
               items={[
                 {label: 'Follow system theme', value: 'system'},
