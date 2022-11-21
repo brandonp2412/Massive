@@ -51,7 +51,6 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         }
     }
 
-
     init {
         reactApplicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST))
         reactApplicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST))
@@ -121,36 +120,6 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         countdownTimer = getTimer(milliseconds, vibrate, sound, noSound)
         countdownTimer?.start()
         running = true
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    @ReactMethod
-    fun ignoringBattery(callback: Callback) {
-        val packageName = reactApplicationContext.packageName
-        val pm = reactApplicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            callback.invoke(pm.isIgnoringBatteryOptimizations(packageName))
-        } else {
-            callback.invoke(true)
-        }
-    }
-
-    @SuppressLint("BatteryLife")
-    @RequiresApi(Build.VERSION_CODES.M)
-    @ReactMethod
-    fun ignoreBattery() {
-        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-        intent.data = Uri.parse("package:" + reactApplicationContext.packageName)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        try {
-            reactApplicationContext.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(
-                reactApplicationContext,
-                "Requests to ignore battery optimizations are disabled on your device.",
-                Toast.LENGTH_LONG
-            ).show()
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

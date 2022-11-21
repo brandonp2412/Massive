@@ -22,6 +22,8 @@ import Switch from './Switch'
 import {toast} from './toast'
 import {useTheme} from './use-theme'
 
+const defaultFormats = ['P', 'Pp', 'ccc p', 'p']
+
 export default function SettingsPage() {
   const [battery, setBattery] = useState(false)
   const [ignoring, setIgnoring] = useState(false)
@@ -37,12 +39,7 @@ export default function SettingsPage() {
   const {theme, setTheme, color, setColor} = useTheme()
   const [showDate, setShowDate] = useState(false)
   const [noSound, setNoSound] = useState(false)
-  const [formatOptions, setFormatOptions] = useState<string[]>([
-    'P',
-    'Pp',
-    'ccc p',
-    'p',
-  ])
+  const [formatOptions, setFormatOptions] = useState<string[]>(defaultFormats)
   const today = new Date()
 
   useFocusEffect(
@@ -60,7 +57,12 @@ export default function SettingsPage() {
         setNoSound(settings.noSound)
       })
       if (Platform.OS !== 'android') return
-      NativeModules.AlarmModule.ignoringBattery(setIgnoring)
+      NativeModules.SettingsModule.ignoringBattery(setIgnoring)
+      NativeModules.SettingsModule.is24().then((is24: boolean) => {
+        console.log(`${SettingsPage.name}.focus:`, {is24})
+        if (is24) setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
+        else setFormatOptions(defaultFormats)
+      })
     }, []),
   )
 
@@ -267,7 +269,7 @@ export default function SettingsPage() {
           show={battery}
           setShow={setBattery}
           onOk={() => {
-            NativeModules.AlarmModule.ignoreBattery()
+            NativeModules.SettingsModule.ignoreBattery()
             setBattery(false)
           }}>
           Disable battery optimizations for Massive to use rest timers.

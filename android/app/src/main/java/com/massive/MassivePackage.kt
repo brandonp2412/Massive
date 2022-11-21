@@ -4,7 +4,6 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
-import com.massive.AlarmModule
 import java.util.ArrayList
 
 class MassivePackage : ReactPackage {
@@ -18,6 +17,7 @@ class MassivePackage : ReactPackage {
         val modules: MutableList<NativeModule> = ArrayList()
         modules.add(AlarmModule(reactContext))
         modules.add(DownloadModule(reactContext))
+        modules.add(SettingsModule(reactContext))
         return modules
     }
 }
