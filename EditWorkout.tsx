@@ -89,7 +89,7 @@ export default function EditWorkout() {
 
   const changeImage = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
-      type: 'image/*',
+      type: DocumentPicker.types.images,
       copyTo: 'documentDirectory',
     })
     if (fileCopyUri) setUri(fileCopyUri)
