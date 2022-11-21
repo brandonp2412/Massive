@@ -1,4 +1,4 @@
-import {Pressable} from 'react-native'
+import {Platform, Pressable} from 'react-native'
 import {Switch as PaperSwitch, Text, useTheme} from 'react-native-paper'
 import {MARGIN} from './constants'
 
@@ -22,6 +22,7 @@ export default function Switch({
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignItems: 'center',
+        marginBottom: Platform.OS === 'ios' ? MARGIN : null,
       }}>
       <PaperSwitch
         color={colors.primary}
