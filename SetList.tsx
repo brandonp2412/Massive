@@ -27,6 +27,7 @@ export default function SetList() {
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
   const refresh = useCallback(async (value: string) => {
+    console.log(`${SetList.name}.refresh:`, {value, limit})
     const newSets = await setRepo.find({
       where: {name: Like(`%${value}%`), hidden: 0 as any},
       take: limit,
@@ -36,7 +37,6 @@ export default function SetList() {
     setSets(newSets)
     setOffset(0)
     setEnd(false)
-    console.log(`${SetList.name}.refresh:`, {newSets})
     const first = newSets[0]
     if (!first) return
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
