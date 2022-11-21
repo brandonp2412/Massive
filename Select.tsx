@@ -21,7 +21,7 @@ export default function Select({
   const {colors} = useTheme()
 
   const selected = useMemo(
-    () => items.find(item => item.value === value),
+    () => items.find(item => item.value === value) || items[0],
     [items, value],
   )
 
