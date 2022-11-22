@@ -1,9 +1,11 @@
-import {NativeModules, PermissionsAndroid} from 'react-native'
+import {PermissionsAndroid, Platform} from 'react-native'
 import {Dirs, FileSystem} from 'react-native-file-access'
+import {toast} from './toast'
 
 export const write = async (name: string, data: string) => {
   const filePath = `${Dirs.DocumentDir}/${name}`
   const permission = async () => {
+    if (Platform.OS !== 'android') return true
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
     )
@@ -12,7 +14,7 @@ export const write = async (name: string, data: string) => {
   const granted = await permission()
   if (!granted) return
   await FileSystem.writeFile(filePath, data)
-  if (!FileSystem.exists(filePath)) return
-  await FileSystem.cpExternal(filePath, name, 'downloads')
-  NativeModules.DownloadModule.show(name)
+  if (Platform.OS === 'android')
+    await FileSystem.cpExternal(filePath, name, 'downloads')
+  toast(`Downloaded ${name}`)
 }
