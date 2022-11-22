@@ -1,5 +1,6 @@
-import {NativeModules, PermissionsAndroid, Platform} from 'react-native'
+import {PermissionsAndroid, Platform} from 'react-native'
 import {Dirs, FileSystem} from 'react-native-file-access'
+import {toast} from './toast'
 
 export const write = async (name: string, data: string) => {
   const filePath = `${Dirs.DocumentDir}/${name}`
@@ -15,5 +16,5 @@ export const write = async (name: string, data: string) => {
   await FileSystem.writeFile(filePath, data)
   if (Platform.OS === 'android')
     await FileSystem.cpExternal(filePath, name, 'downloads')
-  NativeModules.DownloadModule.show(name)
+  toast(`Downloaded ${name}`)
 }
