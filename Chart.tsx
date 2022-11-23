@@ -31,7 +31,12 @@ export default function Chart({
 
   return (
     <>
-      <View style={{height: 300, padding: PADDING, flexDirection: 'row'}}>
+      <View
+        style={{
+          height: 300,
+          padding: PADDING,
+          flexDirection: 'row',
+        }}>
         <YAxis
           data={yData}
           style={{marginBottom: xAxisHeight}}
@@ -51,10 +56,9 @@ export default function Chart({
             <Grid />
           </LineChart>
           <XAxis
-            style={{marginHorizontal: -10, height: xAxisHeight}}
             data={xData}
             formatLabel={xFormat}
-            contentInset={{left: 10, right: 10}}
+            contentInset={{left: 15, right: 16}}
             svg={axesSvg}
           />
         </View>
