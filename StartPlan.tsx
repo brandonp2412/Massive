@@ -4,7 +4,7 @@ import {NativeModules, TextInput, View} from 'react-native'
 import {FlatList} from 'react-native-gesture-handler'
 import {Button} from 'react-native-paper'
 import {getBestSet} from './best.service'
-import {PADDING} from './constants'
+import {MARGIN, PADDING} from './constants'
 import CountMany from './count-many'
 import {AppDataSource} from './data-source'
 import {getNow, setRepo, settingsRepo} from './db'
@@ -166,7 +166,11 @@ export default function StartPlan() {
             />
           )}
         </View>
-        <Button mode="contained" icon="save" onPress={handleSubmit}>
+        <Button
+          style={{margin: MARGIN * 2}}
+          mode="contained"
+          icon="save"
+          onPress={handleSubmit}>
           Save
         </Button>
       </View>
