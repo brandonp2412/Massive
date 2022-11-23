@@ -1,7 +1,8 @@
 import {RouteProp, useRoute} from '@react-navigation/native'
 import {format} from 'date-fns'
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {View} from 'react-native'
+import {List, Text} from 'react-native-paper'
 import {BestPageParams} from './BestPage'
 import Chart from './Chart'
 import {PADDING} from './constants'
@@ -61,6 +62,41 @@ export default function ViewBest() {
     }
   }, [params.best.name, metric, period])
 
+  const charts = useMemo(() => {
+    if (
+      (metric === Metrics.Volume && volumes.length === 0) ||
+      (metric === Metrics.Weight && weights.length === 0) ||
+      (metric === Metrics.OneRepMax && weights.length === 0)
+    )
+      return <List.Item title="No data yet." />
+    if (metric === Metrics.Volume)
+      return (
+        <Chart
+          yData={volumes.map(v => v.value)}
+          yFormat={(value: number) =>
+            `${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${
+              volumes[0].unit || 'kg'
+            }`
+          }
+          xData={weights}
+          xFormat={(_value, index) =>
+            format(new Date(weights[index].created), 'd/M')
+          }
+        />
+      )
+
+    return (
+      <Chart
+        yData={weights.map(set => set.weight)}
+        yFormat={value => `${value}${weights[0].unit}`}
+        xData={weights}
+        xFormat={(_value, index) =>
+          format(new Date(weights[index].created), 'd/M')
+        }
+      />
+    )
+  }, [volumes, weights, metric])
+
   return (
     <>
       <StackHeader title={params.best.name} />
@@ -86,29 +122,7 @@ export default function ViewBest() {
           onChange={value => setPeriod(value as Periods)}
           value={period}
         />
-        {metric === Metrics.Volume ? (
-          <Chart
-            yData={volumes.map(v => v.value)}
-            yFormat={(value: number) =>
-              `${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${
-                volumes[0].unit || 'kg'
-              }`
-            }
-            xData={weights}
-            xFormat={(_value, index) =>
-              format(new Date(weights[index].created), 'd/M')
-            }
-          />
-        ) : (
-          <Chart
-            yData={weights.map(set => set.weight)}
-            yFormat={value => `${value}${weights[0].unit}`}
-            xData={weights}
-            xFormat={(_value, index) =>
-              format(new Date(weights[index].created), 'd/M')
-            }
-          />
-        )}
+        {charts}
       </View>
     </>
   )
