@@ -40,7 +40,10 @@ export default function Select({
       anchor={
         <Button
           onPress={() => setShow(true)}
-          style={{alignSelf: 'flex-start', marginTop: MARGIN}}>
+          style={{
+            alignSelf: 'flex-start',
+            marginTop: MARGIN,
+          }}>
           {selected?.label}
         </Button>
       }>

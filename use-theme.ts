@@ -1,15 +1,20 @@
 import {createContext, useContext} from 'react'
+import {DarkTheme, DefaultTheme} from 'react-native-paper'
 
 export const ThemeContext = createContext<{
   theme: string
-  color: string
+  lightColor: string
   setTheme: (value: string) => void
-  setColor: (value: string) => void
+  setLightColor: (value: string) => void
+  darkColor: string
+  setDarkColor: (value: string) => void
 }>({
   theme: 'system',
-  color: '',
+  lightColor: DefaultTheme.colors.primary,
   setTheme: () => null,
-  setColor: () => null,
+  setLightColor: () => null,
+  darkColor: DarkTheme.colors.primary,
+  setDarkColor: () => null,
 })
 
 export function useTheme() {

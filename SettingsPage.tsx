@@ -36,7 +36,8 @@ export default function SettingsPage() {
   const [showUnit, setShowUnit] = useState(false)
   const [steps, setSteps] = useState(false)
   const [date, setDate] = useState('P')
-  const {theme, setTheme, color, setColor} = useTheme()
+  const {theme, setTheme, lightColor, setLightColor, darkColor, setDarkColor} =
+    useTheme()
   const [showDate, setShowDate] = useState(false)
   const [noSound, setNoSound] = useState(false)
   const [formatOptions, setFormatOptions] = useState<string[]>(defaultFormats)
@@ -45,6 +46,7 @@ export default function SettingsPage() {
   useFocusEffect(
     useCallback(() => {
       settingsRepo.findOne({where: {}}).then(settings => {
+        console.log(`${SettingsPage.name}.focus:`, settings)
         setAlarm(settings.alarm)
         setVibrate(settings.vibrate)
         setSound(settings.sound)
@@ -193,12 +195,20 @@ export default function SettingsPage() {
     return ': ' + split.pop()
   }, [sound])
 
-  const changeColor = useCallback(
+  const changeDarkColor = useCallback(
     (value: string) => {
-      setColor(value)
-      settingsRepo.update({}, {color: value})
+      setDarkColor(value)
+      settingsRepo.update({}, {darkColor: value})
     },
-    [setColor],
+    [setDarkColor],
+  )
+
+  const changeLightColor = useCallback(
+    (value: string) => {
+      setLightColor(value)
+      settingsRepo.update({}, {lightColor: value})
+    },
+    [setLightColor],
   )
 
   const renderItem = useCallback(
@@ -247,10 +257,21 @@ export default function SettingsPage() {
           )}
           {'color'.includes(term.toLowerCase()) && (
             <Select
-              value={color}
-              onChange={changeColor}
-              items={lightColors.concat(darkColors).map(colorOption => ({
-                label: 'Primary color',
+              value={darkColor}
+              onChange={changeDarkColor}
+              items={lightColors.map(colorOption => ({
+                label: 'Dark color',
+                value: colorOption,
+                color: colorOption,
+              }))}
+            />
+          )}
+          {'color'.includes(term.toLowerCase()) && (
+            <Select
+              value={lightColor}
+              onChange={changeLightColor}
+              items={darkColors.map(colorOption => ({
+                label: 'Light color',
                 value: colorOption,
                 color: colorOption,
               }))}

@@ -21,7 +21,10 @@ export default class Settings {
   showUnit: boolean
 
   @Column('text')
-  color?: string
+  lightColor?: string
+
+  @Column('text')
+  darkColor?: string
 
   @Column('boolean')
   steps: boolean

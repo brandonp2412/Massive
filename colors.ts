@@ -1,4 +1,7 @@
+import {DarkTheme, DefaultTheme} from 'react-native-paper'
+
 export const lightColors = [
+  DarkTheme.colors.primary,
   '#B3E5FC',
   '#FA8072',
   '#FFC0CB',
@@ -6,7 +9,12 @@ export const lightColors = [
   '#BBA1CE',
 ]
 
-export const darkColors = ['#8156A7', '#007AFF', '#000000', '#CD5C5C']
+export const darkColors = [
+  DefaultTheme.colors.primary,
+  '#007AFF',
+  '#000000',
+  '#CD5C5C',
+]
 
 export const colorShade = (color: any, amount: number) => {
   color = color.replace(/^#/, '')

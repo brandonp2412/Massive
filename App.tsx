@@ -43,10 +43,12 @@ const App = () => {
   const [snackbar, setSnackbar] = useState('')
   const [theme, setTheme] = useState('system')
 
-  const [color, setColor] = useState<string>(
-    isDark
-      ? CombinedDarkTheme.colors.primary
-      : CombinedDefaultTheme.colors.primary,
+  const [lightColor, setLightColor] = useState<string>(
+    CombinedDefaultTheme.colors.primary,
+  )
+
+  const [darkColor, setDarkColor] = useState<string>(
+    CombinedDarkTheme.colors.primary,
   )
 
   useEffect(() => {
@@ -55,7 +57,7 @@ const App = () => {
       const settings = await settingsRepo.findOne({where: {}})
       console.log(`${App.name}.useEffect:`, {gotSettings: settings})
       setTheme(settings.theme)
-      if (settings.color) setColor(settings.color)
+      if (settings.lightColor) setLightColor(settings.lightColor)
       setInitialized(true)
     }
     init()
@@ -70,23 +72,23 @@ const App = () => {
   }, [])
 
   const paperTheme = useMemo(() => {
-    const darkTheme = color
+    const darkTheme = lightColor
       ? {
           ...CombinedDarkTheme,
-          colors: {...CombinedDarkTheme.colors, primary: color},
+          colors: {...CombinedDarkTheme.colors, primary: darkColor},
         }
       : CombinedDarkTheme
-    const lightTheme = color
+    const lightTheme = lightColor
       ? {
           ...CombinedDefaultTheme,
-          colors: {...CombinedDefaultTheme.colors, primary: color},
+          colors: {...CombinedDefaultTheme.colors, primary: lightColor},
         }
       : CombinedDefaultTheme
     let value = isDark ? darkTheme : lightTheme
     if (theme === 'dark') value = darkTheme
     else if (theme === 'light') value = lightTheme
     return value
-  }, [isDark, theme, color])
+  }, [isDark, theme, lightColor, darkColor])
 
   const action = useMemo(
     () => ({
@@ -103,7 +105,15 @@ const App = () => {
       settings={{icon: props => <MaterialIcon {...props} />}}>
       <NavigationContainer theme={paperTheme}>
         {initialized && (
-          <ThemeContext.Provider value={{theme, setTheme, color, setColor}}>
+          <ThemeContext.Provider
+            value={{
+              theme,
+              setTheme,
+              lightColor,
+              setLightColor,
+              darkColor,
+              setDarkColor,
+            }}>
             <Routes />
           </ThemeContext.Provider>
         )}

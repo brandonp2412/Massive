@@ -1,13 +1,12 @@
 import {ComponentProps} from 'react'
-import {FAB} from 'react-native-paper'
+import {FAB, useTheme} from 'react-native-paper'
 import {CombinedDarkTheme, CombinedDefaultTheme} from './App'
 import {lightColors} from './colors'
-import {useTheme} from './use-theme'
 
 export default function MassiveFab(props: Partial<ComponentProps<typeof FAB>>) {
-  const {color} = useTheme()
+  const {colors} = useTheme()
 
-  const fabColor = lightColors.includes(color)
+  const fabColor = lightColors.includes(colors.primary)
     ? CombinedDarkTheme.colors.background
     : CombinedDefaultTheme.colors.background
 
@@ -19,7 +18,7 @@ export default function MassiveFab(props: Partial<ComponentProps<typeof FAB>>) {
         position: 'absolute',
         right: 20,
         bottom: 20,
-        backgroundColor: color,
+        backgroundColor: colors.primary,
       }}
       {...props}
     />
