@@ -1,14 +1,20 @@
 import {NavigationContainer} from '@react-navigation/native'
 import React from 'react'
-import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper'
+import {
+  DarkTheme,
+  DefaultTheme,
+  Provider as PaperProvider,
+} from 'react-native-paper'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 import {ThemeContext} from './use-theme'
 
 export const theme = {
   theme: 'system',
   setTheme: jest.fn(),
-  color: DefaultTheme.colors.primary,
-  setColor: jest.fn(),
+  lightColor: DefaultTheme.colors.primary,
+  darkColor: DarkTheme.colors.primary,
+  setLightColor: jest.fn(),
+  setDarkColor: jest.fn(),
 }
 
 export const MockProviders = ({
