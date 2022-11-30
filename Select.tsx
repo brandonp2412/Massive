@@ -1,5 +1,5 @@
 import {useCallback, useMemo, useState} from 'react'
-import {View} from 'react-native'
+import {StyleProp, View, ViewStyle} from 'react-native'
 import {Button, Menu, Subheading, useTheme} from 'react-native-paper'
 
 export interface Item {
@@ -13,11 +13,13 @@ export default function Select({
   onChange,
   items,
   label,
+  style,
 }: {
   value: string
   onChange: (value: string) => void
   items: Item[]
   label?: string
+  style?: StyleProp<ViewStyle>
 }) {
   const [show, setShow] = useState(false)
   const {colors} = useTheme()
@@ -41,7 +43,7 @@ export default function Select({
         flexDirection: 'row',
         alignItems: 'center',
       }}>
-      {label && <Subheading>{label}</Subheading>}
+      {label && <Subheading style={style}>{label}</Subheading>}
       <Menu
         visible={show}
         onDismiss={() => setShow(false)}
