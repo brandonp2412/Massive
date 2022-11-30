@@ -190,7 +190,7 @@ export default function SettingsPage() {
   const soundString = useMemo(() => {
     if (!sound) return null
     const split = sound.split('/')
-    return ': ' + split.pop()
+    return split.pop()
   }, [sound])
 
   const changeDarkColor = useCallback(
