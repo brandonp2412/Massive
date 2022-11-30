@@ -121,7 +121,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: MARGIN,
   },
-  button: {
-    margin: MARGIN * 2,
-  },
+  button: {},
 })

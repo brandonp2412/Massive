@@ -165,11 +165,7 @@ export default function StartPlan() {
             />
           )}
         </View>
-        <Button
-          style={{margin: MARGIN * 2}}
-          mode="contained"
-          icon="save"
-          onPress={handleSubmit}>
+        <Button mode="contained" icon="save" onPress={handleSubmit}>
           Save
         </Button>
       </View>

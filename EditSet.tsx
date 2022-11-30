@@ -198,7 +198,6 @@ export default function EditSet() {
       </View>
 
       <Button
-        style={{margin: MARGIN * 2}}
         disabled={!name}
         mode="contained"
         icon="save"
