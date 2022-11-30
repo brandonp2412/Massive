@@ -12,7 +12,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.*
-import java.text.DateFormat
 
 class SettingsModule constructor(context: ReactApplicationContext?) :
     ReactContextBaseJavaModule(context) {
