@@ -1,14 +1,12 @@
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 
-import com.android.build.OutputFile
-
 project.ext.react = [
-    enableHermes: true,  // clean and rebuild if changing
+        enableHermes: true,  // clean and rebuild if changing
 ]
 
 project.ext.vectoricons = [
-  iconFontNames: ['MaterialIcons.ttf']
+        iconFontNames: ['MaterialIcons.ttf']
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -43,21 +41,21 @@ android {
         missingDimensionStrategy "RNNotifications.reactNativeVersion", "reactNative60"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 36105
-        versionName "1.79"
+        versionCode 36106
+        versionName "1.80"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
             externalNativeBuild {
                 ndkBuild {
                     arguments "APP_PLATFORM=android-21",
-                        "APP_STL=c++_shared",
-                        "NDK_TOOLCHAIN_VERSION=clang",
-                        "GENERATED_SRC_DIR=$buildDir/generated/source",
-                        "PROJECT_BUILD_DIR=$buildDir",
-                        "REACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
-                        "REACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
-                        "NODE_MODULES_DIR=$rootDir/../node_modules"
+                            "APP_STL=c++_shared",
+                            "NDK_TOOLCHAIN_VERSION=clang",
+                            "GENERATED_SRC_DIR=$buildDir/generated/source",
+                            "PROJECT_BUILD_DIR=$buildDir",
+                            "REACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
+                            "REACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
+                            "NODE_MODULES_DIR=$rootDir/../node_modules"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
                     cppFlags "-std=c++17"
                     targets "massive_appmodules"
@@ -65,7 +63,7 @@ android {
             }
             if (!enableSeparateBuildPerCPUArchitecture) {
                 ndk {
-                    abiFilters (*reactNativeArchitectures())
+                    abiFilters(*reactNativeArchitectures())
                 }
             }
         }
@@ -110,7 +108,7 @@ android {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false
-            include (*reactNativeArchitectures())
+            include(*reactNativeArchitectures())
         }
     }
     signingConfigs {
@@ -165,21 +163,21 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.fbjni'
+        exclude group: 'com.facebook.fbjni'
     }
 
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-        exclude group:'com.squareup.okhttp3', module:'okhttp'
+        exclude group: 'com.facebook.flipper'
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     }
 
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
+        exclude group: 'com.facebook.flipper'
     }
 
     if (enableHermes) {
         implementation("com.facebook.react:hermes-engine:+") { // From node_modules
-            exclude group:'com.facebook.fbjni'
+            exclude group: 'com.facebook.fbjni'
         }
     } else {
         implementation jscFlavor
