@@ -6,6 +6,7 @@ import {
   FlatList,
   NativeModules,
   Platform,
+  StyleSheet,
   View,
 } from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
@@ -236,6 +237,7 @@ export default function SettingsPage() {
             label="Theme"
             value={theme}
             onChange={changeTheme}
+            style={styles.select}
             items={[
               {label: 'Follow system theme', value: 'system'},
               {label: 'Dark theme', value: 'dark'},
@@ -248,6 +250,7 @@ export default function SettingsPage() {
             label="Dark color"
             value={darkColor}
             onChange={changeDarkColor}
+            style={styles.select}
             items={lightColors.map(color => ({
               label: color.name,
               value: color.hex,
@@ -260,6 +263,7 @@ export default function SettingsPage() {
             value={lightColor}
             onChange={changeLightColor}
             label="Light color"
+            style={styles.select}
             items={darkColors.map(color => ({
               label: color.name,
               value: color.hex,
@@ -272,6 +276,7 @@ export default function SettingsPage() {
             value={date}
             onChange={changeDate}
             label="Date format"
+            style={styles.select}
             items={formatOptions.map(option => ({
               label: format(today, option),
               value: option,
@@ -292,3 +297,7 @@ export default function SettingsPage() {
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  select: {width: 100},
+})
