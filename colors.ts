@@ -1,19 +1,19 @@
 import {DarkTheme, DefaultTheme} from 'react-native-paper'
 
 export const lightColors = [
-  DarkTheme.colors.primary,
-  '#B3E5FC',
-  '#FA8072',
-  '#FFC0CB',
-  '#E9DCC9',
-  '#BBA1CE',
+  {hex: DarkTheme.colors.primary, name: 'Purple'},
+  {hex: '#B3E5FC', name: 'Blue'},
+  {hex: '#FA8072', name: 'Salmon'},
+  {hex: '#FFC0CB', name: 'Pink'},
+  {hex: '#E9DCC9', name: 'Linen'},
+  {hex: '#BBA1CE', name: 'Light purple'},
 ]
 
 export const darkColors = [
-  DefaultTheme.colors.primary,
-  '#007AFF',
-  '#000000',
-  '#CD5C5C',
+  {hex: DefaultTheme.colors.primary, name: 'Purple'},
+  {hex: '#007AFF', name: 'Blue'},
+  {hex: '#000000', name: 'Black'},
+  {hex: '#CD5C5C', name: 'Red'},
 ]
 
 export const colorShade = (color: any, amount: number) => {

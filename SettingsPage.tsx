@@ -241,24 +241,14 @@ export default function SettingsPage() {
             ]}
           />
         )}
-        {'date format'.includes(term.toLowerCase()) && (
-          <Select
-            value={date}
-            onChange={changeDate}
-            items={formatOptions.map(option => ({
-              label: `Date format: ${format(today, option)}`,
-              value: option,
-            }))}
-          />
-        )}
         {'color'.includes(term.toLowerCase()) && (
           <Select
             value={darkColor}
             onChange={changeDarkColor}
-            items={lightColors.map(colorOption => ({
-              label: 'Dark color',
-              value: colorOption,
-              color: colorOption,
+            items={lightColors.map(color => ({
+              label: `Dark color: ${color.name}`,
+              value: color.hex,
+              color: color.hex,
             }))}
           />
         )}
@@ -266,10 +256,20 @@ export default function SettingsPage() {
           <Select
             value={lightColor}
             onChange={changeLightColor}
-            items={darkColors.map(colorOption => ({
-              label: 'Light color',
-              value: colorOption,
-              color: colorOption,
+            items={darkColors.map(color => ({
+              label: `Light color: ${color.name}`,
+              value: color.hex,
+              color: color.hex,
+            }))}
+          />
+        )}
+        {'date format'.includes(term.toLowerCase()) && (
+          <Select
+            value={date}
+            onChange={changeDate}
+            items={formatOptions.map(option => ({
+              label: `Date format: ${format(today, option)}`,
+              value: option,
             }))}
           />
         )}
