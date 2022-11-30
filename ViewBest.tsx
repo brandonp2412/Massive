@@ -102,6 +102,7 @@ export default function ViewBest() {
       <StackHeader title={params.best.name} />
       <View style={{padding: PADDING}}>
         <Select
+          label="Metric"
           items={[
             {value: Metrics.Volume, label: Metrics.Volume},
             {value: Metrics.OneRepMax, label: Metrics.OneRepMax},
@@ -114,6 +115,7 @@ export default function ViewBest() {
           value={metric}
         />
         <Select
+          label="Period"
           items={[
             {value: Periods.Weekly, label: Periods.Weekly},
             {value: Periods.Monthly, label: Periods.Monthly},

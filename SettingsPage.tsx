@@ -6,9 +6,10 @@ import {
   FlatList,
   NativeModules,
   Platform,
+  View,
 } from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
-import {Button} from 'react-native-paper'
+import {Button, Subheading} from 'react-native-paper'
 import {darkColors, lightColors} from './colors'
 import {MARGIN} from './constants'
 import {settingsRepo} from './db'
@@ -232,6 +233,7 @@ export default function SettingsPage() {
         />
         {'theme'.includes(term.toLowerCase()) && (
           <Select
+            label="Theme"
             value={theme}
             onChange={changeTheme}
             items={[
@@ -243,10 +245,11 @@ export default function SettingsPage() {
         )}
         {'color'.includes(term.toLowerCase()) && (
           <Select
+            label="Dark color"
             value={darkColor}
             onChange={changeDarkColor}
             items={lightColors.map(color => ({
-              label: `Dark color: ${color.name}`,
+              label: color.name,
               value: color.hex,
               color: color.hex,
             }))}
@@ -256,8 +259,9 @@ export default function SettingsPage() {
           <Select
             value={lightColor}
             onChange={changeLightColor}
+            label="Light color"
             items={darkColors.map(color => ({
-              label: `Light color: ${color.name}`,
+              label: color.name,
               value: color.hex,
               color: color.hex,
             }))}
@@ -267,18 +271,22 @@ export default function SettingsPage() {
           <Select
             value={date}
             onChange={changeDate}
+            label="Date format"
             items={formatOptions.map(option => ({
-              label: `Date format: ${format(today, option)}`,
+              label: format(today, option),
               value: option,
             }))}
           />
         )}
         {'alarm sound'.includes(term.toLowerCase()) && (
-          <Button
-            style={{alignSelf: 'flex-start', marginTop: MARGIN}}
-            onPress={changeSound}>
-            Alarm sound{soundString}
-          </Button>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <Subheading>Alarm sound</Subheading>
+            <Button onPress={changeSound}>{soundString || 'Default'}</Button>
+          </View>
         )}
       </Page>
     </>
