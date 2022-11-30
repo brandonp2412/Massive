@@ -6,12 +6,10 @@ import {
   FlatList,
   NativeModules,
   Platform,
-  View,
 } from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Button} from 'react-native-paper'
 import {darkColors, lightColors} from './colors'
-import ConfirmDialog from './ConfirmDialog'
 import {MARGIN} from './constants'
 import {settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
@@ -25,7 +23,6 @@ import {useTheme} from './use-theme'
 const defaultFormats = ['P', 'Pp', 'ccc p', 'p']
 
 export default function SettingsPage() {
-  const [battery, setBattery] = useState(false)
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
   const [vibrate, setVibrate] = useState(false)
@@ -76,11 +73,11 @@ export default function SettingsPage() {
           timeout: 4000,
         })
       else toast('Stopped timers running after each set.')
-      if (enabled && !ignoring) setBattery(true)
+      if (enabled && !ignoring) NativeModules.SettingsModule.ignoreBattery()
       setAlarm(enabled)
       settingsRepo.update({}, {alarm: enabled})
     },
-    [setBattery, ignoring],
+    [ignoring],
   )
 
   const changeVibrate = useCallback((enabled: boolean) => {
@@ -227,74 +224,62 @@ export default function SettingsPage() {
   return (
     <>
       <DrawerHeader name="Settings" />
-      <Page term={term} search={setTerm}>
-        <View>
-          <FlatList
-            style={{marginTop: MARGIN}}
-            data={switches}
-            renderItem={renderItem}
+      <Page term={term} search={setTerm} style={{flexGrow: 0}}>
+        <FlatList
+          style={{marginTop: MARGIN}}
+          data={switches}
+          renderItem={renderItem}
+        />
+        {'theme'.includes(term.toLowerCase()) && (
+          <Select
+            value={theme}
+            onChange={changeTheme}
+            items={[
+              {label: 'Follow system theme', value: 'system'},
+              {label: 'Dark theme', value: 'dark'},
+              {label: 'Light theme', value: 'light'},
+            ]}
           />
-          {'theme'.includes(term.toLowerCase()) && (
-            <Select
-              value={theme}
-              onChange={changeTheme}
-              items={[
-                {label: 'Follow system theme', value: 'system'},
-                {label: 'Dark theme', value: 'dark'},
-                {label: 'Light theme', value: 'light'},
-              ]}
-            />
-          )}
-          {'date format'.includes(term.toLowerCase()) && (
-            <Select
-              value={date}
-              onChange={changeDate}
-              items={formatOptions.map(option => ({
-                label: `Date format: ${format(today, option)}`,
-                value: option,
-              }))}
-            />
-          )}
-          {'color'.includes(term.toLowerCase()) && (
-            <Select
-              value={darkColor}
-              onChange={changeDarkColor}
-              items={lightColors.map(colorOption => ({
-                label: 'Dark color',
-                value: colorOption,
-                color: colorOption,
-              }))}
-            />
-          )}
-          {'color'.includes(term.toLowerCase()) && (
-            <Select
-              value={lightColor}
-              onChange={changeLightColor}
-              items={darkColors.map(colorOption => ({
-                label: 'Light color',
-                value: colorOption,
-                color: colorOption,
-              }))}
-            />
-          )}
-          {'alarm sound'.includes(term.toLowerCase()) && (
-            <Button
-              style={{alignSelf: 'flex-start', marginTop: MARGIN}}
-              onPress={changeSound}>
-              Alarm sound{soundString}
-            </Button>
-          )}
-        </View>
-        <ConfirmDialog
-          title="Battery optimizations"
-          show={battery}
-          setShow={setBattery}
-          onOk={() => {
-            NativeModules.SettingsModule.ignoreBattery()
-            setBattery(false)
-          }}>
-          Disable battery optimizations for Massive to use rest timers.
-        </ConfirmDialog>
+        )}
+        {'date format'.includes(term.toLowerCase()) && (
+          <Select
+            value={date}
+            onChange={changeDate}
+            items={formatOptions.map(option => ({
+              label: `Date format: ${format(today, option)}`,
+              value: option,
+            }))}
+          />
+        )}
+        {'color'.includes(term.toLowerCase()) && (
+          <Select
+            value={darkColor}
+            onChange={changeDarkColor}
+            items={lightColors.map(colorOption => ({
+              label: 'Dark color',
+              value: colorOption,
+              color: colorOption,
+            }))}
+          />
+        )}
+        {'color'.includes(term.toLowerCase()) && (
+          <Select
+            value={lightColor}
+            onChange={changeLightColor}
+            items={darkColors.map(colorOption => ({
+              label: 'Light color',
+              value: colorOption,
+              color: colorOption,
+            }))}
+          />
+        )}
+        {'alarm sound'.includes(term.toLowerCase()) && (
+          <Button
+            style={{alignSelf: 'flex-start', marginTop: MARGIN}}
+            onPress={changeSound}>
+            Alarm sound{soundString}
+          </Button>
+        )}
       </Page>
     </>
   )

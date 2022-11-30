@@ -1,4 +1,4 @@
-import {StyleSheet, View} from 'react-native'
+import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native'
 import {Searchbar} from 'react-native-paper'
 import {PADDING} from './constants'
 import MassiveFab from './MassiveFab'
@@ -8,14 +8,16 @@ export default function Page({
   children,
   term,
   search,
+  style,
 }: {
   children: JSX.Element | JSX.Element[]
   onAdd?: () => void
   term: string
   search: (value: string) => void
+  style?: StyleProp<ViewStyle>
 }) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.view, style]}>
       <Searchbar
         placeholder="Search"
         value={term}
@@ -30,8 +32,8 @@ export default function Page({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
+  view: {
     padding: PADDING,
+    flexGrow: 1,
   },
 })
