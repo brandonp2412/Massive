@@ -11,7 +11,6 @@ import {getNow, setRepo, settingsRepo} from './db'
 import GymSet from './gym-set'
 import MassiveInput from './MassiveInput'
 import {PlanPageParams} from './plan-page-params'
-import SetForm from './SetForm'
 import Settings from './settings'
 import StackHeader from './StackHeader'
 import StartPlanItem from './StartPlanItem'
@@ -88,7 +87,7 @@ export default function StartPlan() {
   }, [refresh])
 
   const handleSubmit = async () => {
-    console.log(`${SetForm.name}.handleSubmit:`, {reps, weight, unit, best})
+    console.log(`${StartPlan.name}.handleSubmit:`, {reps, weight, unit, best})
     const [{now}] = await getNow()
     await setRepo.save({
       ...best,
