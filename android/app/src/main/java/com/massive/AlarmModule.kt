@@ -2,18 +2,13 @@ package com.massive
 
 import android.annotation.SuppressLint
 import android.app.*
-import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.Uri
 import android.os.Build
 import android.os.CountDownTimer
-import android.os.PowerManager
-import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.facebook.react.bridge.*
@@ -73,12 +68,8 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         running = true
         val manager = getManager()
         manager.cancel(NOTIFICATION_ID_DONE)
-        reactApplicationContext.stopService(
-            Intent(
-                reactApplicationContext,
-                AlarmService::class.java
-            )
-        )
+        val intent = Intent(reactApplicationContext, AlarmService::class.java)
+        reactApplicationContext.stopService(intent)
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -87,12 +78,8 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         Log.d("AlarmModule", "Stop alarm.")
         countdownTimer?.cancel()
         running = false
-        reactApplicationContext?.stopService(
-            Intent(
-                reactApplicationContext,
-                AlarmService::class.java
-            )
-        )
+        val intent = Intent(reactApplicationContext, AlarmService::class.java)
+        reactApplicationContext?.stopService(intent)
         val manager = getManager()
         manager.cancel(NOTIFICATION_ID_DONE)
         manager.cancel(NOTIFICATION_ID_PENDING)
@@ -111,11 +98,8 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         Log.d("AlarmModule", "Queue alarm for $milliseconds delay")
         val manager = getManager()
         manager.cancel(NOTIFICATION_ID_DONE)
-        reactApplicationContext.stopService(
-            Intent(
-                reactApplicationContext, AlarmService::class.java
-            )
-        )
+        val intent = Intent(reactApplicationContext, AlarmService::class.java)
+        reactApplicationContext.stopService(intent)
         countdownTimer?.cancel()
         countdownTimer = getTimer(milliseconds, vibrate, sound, noSound)
         countdownTimer?.start()
@@ -226,6 +210,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         )
         alarmsChannel.description = "Alarms for rest timers."
         alarmsChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        alarmsChannel.setSound(null, null)
         val notificationManager = reactApplicationContext.getSystemService(
             NotificationManager::class.java
         )
