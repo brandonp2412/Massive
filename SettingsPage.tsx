@@ -11,11 +11,11 @@ import {
 } from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Button, Subheading} from 'react-native-paper'
-import {darkColors, lightColors} from './colors'
-import {MARGIN} from './constants'
+import {ITEM_PADDING, MARGIN} from './constants'
 import {settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
 import Input from './input'
+import {darkOptions, lightOptions, themeOptions} from './options'
 import Page from './Page'
 import Select from './Select'
 import Switch from './Switch'
@@ -142,38 +142,16 @@ export default function SettingsPage() {
     else toast('Enabled sound for rest timer alarms.')
   }, [])
 
-  const switches: Input<boolean>[] = useMemo(
-    () =>
-      [
-        {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
-        {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
-        {name: 'Disable sound', value: noSound, onChange: changeNoSound},
-        {name: 'Notifications', value: notify, onChange: changeNotify},
-        {name: 'Show images', value: images, onChange: changeImages},
-        {name: 'Show unit', value: showUnit, onChange: changeUnit},
-        {name: 'Show steps', value: steps, onChange: changeSteps},
-        {name: 'Show date', value: showDate, onChange: changeShowDate},
-      ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase())),
-    [
-      term,
-      showDate,
-      changeShowDate,
-      alarm,
-      changeAlarmEnabled,
-      vibrate,
-      changeVibrate,
-      noSound,
-      changeNoSound,
-      notify,
-      changeNotify,
-      images,
-      changeImages,
-      showUnit,
-      changeUnit,
-      steps,
-      changeSteps,
-    ],
-  )
+  const switches: Input<boolean>[] = [
+    {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
+    {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
+    {name: 'Disable sound', value: noSound, onChange: changeNoSound},
+    {name: 'Notifications', value: notify, onChange: changeNotify},
+    {name: 'Show images', value: images, onChange: changeImages},
+    {name: 'Show unit', value: showUnit, onChange: changeUnit},
+    {name: 'Show steps', value: steps, onChange: changeSteps},
+    {name: 'Show date', value: showDate, onChange: changeShowDate},
+  ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase()))
 
   const changeTheme = useCallback(
     (value: string) => {
@@ -210,7 +188,7 @@ export default function SettingsPage() {
     [setLightColor],
   )
 
-  const renderItem = useCallback(
+  const renderSwitch = useCallback(
     ({item}: {item: Input<boolean>}) => (
       <Switch
         onPress={() => item.onChange(!item.value)}
@@ -223,6 +201,44 @@ export default function SettingsPage() {
     [],
   )
 
+  const selects: Input<string>[] = [
+    {name: 'Theme', value: theme, onChange: changeTheme, items: themeOptions},
+    {
+      name: 'Dark color',
+      value: darkColor,
+      onChange: changeDarkColor,
+      items: lightOptions,
+    },
+    {
+      name: 'Light color',
+      value: lightColor,
+      onChange: changeLightColor,
+      items: darkOptions,
+    },
+    {
+      name: 'Date format',
+      value: date,
+      onChange: changeDate,
+      items: formatOptions.map(option => ({
+        label: format(today, option),
+        value: option,
+      })),
+    },
+  ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase()))
+
+  const renderSelect = useCallback(
+    ({item}: {item: Input<string>}) => (
+      <Select
+        value={item.value}
+        onChange={item.onChange}
+        label={item.name}
+        style={styles.select}
+        items={item.items}
+      />
+    ),
+    [],
+  )
+
   return (
     <>
       <DrawerHeader name="Settings" />
@@ -230,64 +246,19 @@ export default function SettingsPage() {
         <FlatList
           style={{marginTop: MARGIN}}
           data={switches}
-          renderItem={renderItem}
+          renderItem={renderSwitch}
         />
-        {'theme'.includes(term.toLowerCase()) && (
-          <Select
-            label="Theme"
-            value={theme}
-            onChange={changeTheme}
-            style={styles.select}
-            items={[
-              {label: 'Follow system theme', value: 'system'},
-              {label: 'Dark theme', value: 'dark'},
-              {label: 'Light theme', value: 'light'},
-            ]}
-          />
-        )}
-        {'color'.includes(term.toLowerCase()) && (
-          <Select
-            label="Dark color"
-            value={darkColor}
-            onChange={changeDarkColor}
-            style={styles.select}
-            items={lightColors.map(color => ({
-              label: color.name,
-              value: color.hex,
-              color: color.hex,
-            }))}
-          />
-        )}
-        {'color'.includes(term.toLowerCase()) && (
-          <Select
-            value={lightColor}
-            onChange={changeLightColor}
-            label="Light color"
-            style={styles.select}
-            items={darkColors.map(color => ({
-              label: color.name,
-              value: color.hex,
-              color: color.hex,
-            }))}
-          />
-        )}
-        {'date format'.includes(term.toLowerCase()) && (
-          <Select
-            value={date}
-            onChange={changeDate}
-            label="Date format"
-            style={styles.select}
-            items={formatOptions.map(option => ({
-              label: format(today, option),
-              value: option,
-            }))}
-          />
-        )}
+        <FlatList
+          style={{paddingLeft: ITEM_PADDING}}
+          data={selects}
+          renderItem={renderSelect}
+        />
         {'alarm sound'.includes(term.toLowerCase()) && (
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
+              paddingLeft: ITEM_PADDING,
             }}>
             <Subheading style={styles.select}>Alarm sound</Subheading>
             <Button onPress={changeSound}>{soundString || 'Default'}</Button>
