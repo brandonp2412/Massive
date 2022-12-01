@@ -289,7 +289,7 @@ export default function SettingsPage() {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <Subheading>Alarm sound</Subheading>
+            <Subheading style={styles.select}>Alarm sound</Subheading>
             <Button onPress={changeSound}>{soundString || 'Default'}</Button>
           </View>
         )}
