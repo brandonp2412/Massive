@@ -232,7 +232,6 @@ export default function SettingsPage() {
         value={item.value}
         onChange={item.onChange}
         label={item.name}
-        style={styles.select}
         items={item.items}
       />
     ),
@@ -248,11 +247,7 @@ export default function SettingsPage() {
           data={switches}
           renderItem={renderSwitch}
         />
-        <FlatList
-          style={{paddingLeft: ITEM_PADDING}}
-          data={selects}
-          renderItem={renderSelect}
-        />
+        <FlatList data={selects} renderItem={renderSelect} />
         {'alarm sound'.includes(term.toLowerCase()) && (
           <View
             style={{
@@ -260,7 +255,7 @@ export default function SettingsPage() {
               alignItems: 'center',
               paddingLeft: ITEM_PADDING,
             }}>
-            <Subheading style={styles.select}>Alarm sound</Subheading>
+            <Subheading style={{width: 100}}>Alarm sound</Subheading>
             <Button onPress={changeSound}>{soundString || 'Default'}</Button>
           </View>
         )}
@@ -268,7 +263,3 @@ export default function SettingsPage() {
     </>
   )
 }
-
-const styles = StyleSheet.create({
-  select: {width: 100},
-})

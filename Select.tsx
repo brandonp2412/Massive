@@ -1,6 +1,7 @@
 import {useCallback, useMemo, useState} from 'react'
-import {StyleProp, View, ViewStyle} from 'react-native'
+import {View} from 'react-native'
 import {Button, Menu, Subheading, useTheme} from 'react-native-paper'
+import {ITEM_PADDING} from './constants'
 
 export interface Item {
   value: string
@@ -13,13 +14,11 @@ export default function Select({
   onChange,
   items,
   label,
-  style,
 }: {
   value: string
   onChange: (value: string) => void
   items: Item[]
   label?: string
-  style?: StyleProp<ViewStyle>
 }) {
   const [show, setShow] = useState(false)
   const {colors} = useTheme()
@@ -42,8 +41,9 @@ export default function Select({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
+        paddingLeft: ITEM_PADDING,
       }}>
-      {label && <Subheading style={style}>{label}</Subheading>}
+      {label && <Subheading style={{width: 100}}>{label}</Subheading>}
       <Menu
         visible={show}
         onDismiss={() => setShow(false)}
