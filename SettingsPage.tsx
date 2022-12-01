@@ -6,7 +6,6 @@ import {
   FlatList,
   NativeModules,
   Platform,
-  StyleSheet,
   View,
 } from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
