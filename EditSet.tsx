@@ -201,6 +201,7 @@ export default function EditSet() {
         disabled={!name}
         mode="contained"
         icon="save"
+        style={{margin: MARGIN}}
         onPress={handleSubmit}>
         Save
       </Button>
