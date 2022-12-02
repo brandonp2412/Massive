@@ -204,7 +204,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getManager(): NotificationManager {
+    private fun getManager(): NotificationManager {
         val alarmsChannel = NotificationChannel(
             CHANNEL_ID_DONE, CHANNEL_ID_DONE, NotificationManager.IMPORTANCE_HIGH
         )
