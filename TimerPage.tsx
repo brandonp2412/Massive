@@ -1,4 +1,5 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import {useFocusEffect} from '@react-navigation/native'
+import React, {useCallback, useMemo, useState} from 'react'
 import {Dimensions, NativeModules, View} from 'react-native'
 import {Button, Text, useTheme} from 'react-native-paper'
 import {ProgressCircle} from 'react-native-svg-charts'
@@ -19,15 +20,18 @@ export default function TimerPage() {
   const [settings, setSettings] = useState<Settings>()
   const {colors} = useTheme()
 
-  useEffect(() => {
-    settingsRepo.findOne({where: {}}).then(setSettings)
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      settingsRepo.findOne({where: {}}).then(setSettings)
+    }, []),
+  )
 
   const stop = () => {
     NativeModules.AlarmModule.stop()
   }
 
   const add = async () => {
+    console.log(`${TimerPage.name}.add:`, settings)
     const params = [settings.vibrate, settings.sound, settings.noSound]
     NativeModules.AlarmModule.add(...params)
   }
