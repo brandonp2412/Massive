@@ -5,11 +5,11 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 
 class TimerDone : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,6 +18,7 @@ class TimerDone : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    @Suppress("UNUSED_PARAMETER")
     fun stop(view: View) {
         Log.d("TimerDone", "Stopping...")
         applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
