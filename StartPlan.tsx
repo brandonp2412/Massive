@@ -2,7 +2,7 @@ import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {NativeModules, TextInput, View} from 'react-native'
 import {FlatList} from 'react-native-gesture-handler'
-import {Button} from 'react-native-paper'
+import {Button, ProgressBar} from 'react-native-paper'
 import {getBestSet} from './best.service'
 import {PADDING} from './constants'
 import CountMany from './count-many'
@@ -155,12 +155,17 @@ export default function StartPlan() {
             <FlatList
               data={counts}
               renderItem={props => (
-                <StartPlanItem
-                  {...props}
-                  onUndo={refresh}
-                  onSelect={select}
-                  selected={selected}
-                />
+                <View>
+                  <StartPlanItem
+                    {...props}
+                    onUndo={refresh}
+                    onSelect={select}
+                    selected={selected}
+                  />
+                  <ProgressBar
+                    progress={(props.item.total || 0) / (props.item.sets || 3)}
+                  />
+                </View>
               )}
             />
           )}

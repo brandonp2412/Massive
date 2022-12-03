@@ -45,6 +45,7 @@ export default function PlanItem({
     const workout = item.workouts.split(',')[0]
     let first = await getBestSet(workout)
     if (!first) first = {...defaultSet, name: workout}
+    delete first.id
     navigation.navigate('StartPlan', {plan: item, first})
   }, [item, navigation])
 
