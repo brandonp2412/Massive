@@ -8,6 +8,7 @@ export type PlanPageParams = {
   }
   StartPlan: {
     plan: Plan
+    first?: GymSet
   }
   EditSet: {
     set: GymSet

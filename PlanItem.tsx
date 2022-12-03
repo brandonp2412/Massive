@@ -6,7 +6,9 @@ import {
 import {useCallback, useMemo, useState} from 'react'
 import {GestureResponderEvent, Text} from 'react-native'
 import {Divider, List, Menu} from 'react-native-paper'
+import {getBestSet} from './best.service'
 import {planRepo} from './db'
+import {defaultSet} from './gym-set'
 import {Plan} from './plan'
 import {PlanPageParams} from './plan-page-params'
 import {DAYS} from './time'
@@ -40,7 +42,10 @@ export default function PlanItem({
   const start = useCallback(async () => {
     console.log(`${PlanItem.name}.start:`, {item})
     setShow(false)
-    navigation.navigate('StartPlan', {plan: item})
+    const workout = item.workouts.split(',')[0]
+    let first = await getBestSet(workout)
+    if (!first) first = {...defaultSet, name: workout}
+    navigation.navigate('StartPlan', {plan: item, first})
   }, [item, navigation])
 
   const longPress = useCallback(

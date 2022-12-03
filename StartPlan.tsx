@@ -1,5 +1,5 @@
 import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {NativeModules, TextInput, View} from 'react-native'
 import {FlatList} from 'react-native-gesture-handler'
 import {Button} from 'react-native-paper'
@@ -8,7 +8,7 @@ import {PADDING} from './constants'
 import CountMany from './count-many'
 import {AppDataSource} from './data-source'
 import {getNow, setRepo, settingsRepo} from './db'
-import GymSet from './gym-set'
+import GymSet, {defaultSet} from './gym-set'
 import MassiveInput from './MassiveInput'
 import {PlanPageParams} from './plan-page-params'
 import Settings from './settings'
@@ -18,10 +18,10 @@ import {toast} from './toast'
 
 export default function StartPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
-  const [reps, setReps] = useState('')
-  const [weight, setWeight] = useState('')
-  const [unit, setUnit] = useState<string>('kg')
-  const [best, setBest] = useState<GymSet>()
+  const [reps, setReps] = useState(params.first?.reps.toString() || '0')
+  const [weight, setWeight] = useState(params.first?.weight.toString() || '0')
+  const [unit, setUnit] = useState<string>(params.first?.unit || 'kg')
+  const [best, setBest] = useState<GymSet>(params.first || defaultSet)
   const [selected, setSelected] = useState(0)
   const [settings, setSettings] = useState<Settings>()
   const [counts, setCounts] = useState<CountMany[]>()
@@ -54,7 +54,6 @@ export default function StartPlan() {
     const newCounts = await AppDataSource.manager.query(select)
     console.log(`${StartPlan.name}.focus:`, {newCounts})
     setCounts(newCounts)
-    return newCounts
   }, [workouts])
 
   const select = useCallback(
@@ -65,6 +64,11 @@ export default function StartPlan() {
       const workout = counts ? counts[index] : newCounts[index]
       console.log(`${StartPlan.name}.next:`, {workout})
       const newBest = await getBestSet(workout.name)
+      if (!newBest)
+        return setBest({
+          ...best,
+          name: workout.name,
+        })
       delete newBest.id
       console.log(`${StartPlan.name}.next:`, {newBest})
       setReps(newBest.reps.toString())
@@ -78,25 +82,21 @@ export default function StartPlan() {
   useFocusEffect(
     useCallback(() => {
       settingsRepo.findOne({where: {}}).then(setSettings)
-    }, []),
+      refresh()
+    }, [refresh]),
   )
 
-  useEffect(() => {
-    refresh().then(newCounts => select(0, newCounts))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refresh])
-
   const handleSubmit = async () => {
-    console.log(`${StartPlan.name}.handleSubmit:`, {reps, weight, unit, best})
     const [{now}] = await getNow()
-    await setRepo.save({
+    const newSet: GymSet = {
       ...best,
       weight: +weight,
       reps: +reps,
       unit,
       created: now,
       hidden: false,
-    })
+    }
+    await setRepo.save(newSet)
     await refresh()
     if (
       settings.notify &&
