@@ -64,7 +64,6 @@ const App = () => {
     const description = DeviceEventEmitter.addListener(
       TOAST,
       ({value}: {value: string}) => {
-        console.log(`${Routes.name}.toast:`, {value})
         setSnackbar(value)
       },
     )
