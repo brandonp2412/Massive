@@ -63,7 +63,6 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
     const file = await FileSystem.readFile(result.uri)
     console.log(`${DrawerMenu.name}.uploadSets:`, file.length)
     const lines = file.split('\n')
-    console.log(lines[0])
     if (!setFields.includes(lines[0])) return toast('Invalid csv.')
     const values = lines
       .slice(1)
@@ -95,7 +94,6 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
         }
         return set
       })
-    console.log(`${DrawerMenu.name}.uploadSets:`, {values})
     await setRepo.insert(values)
     toast('Data imported.')
     reset({index: 0, routes: [{name}]})
