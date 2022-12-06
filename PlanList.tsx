@@ -20,11 +20,7 @@ export default function PlanList() {
   const navigation = useNavigation<NavigationProp<PlanPageParams>>()
 
   const refresh = useCallback(async (value: string) => {
-    planRepo
-      .find({
-        where: [{days: Like(`%${value}%`)}, {workouts: Like(`%${value}%`)}],
-      })
-      .then(setPlans)
+    planRepo.find({}).then(setPlans)
   }, [])
 
   useFocusEffect(

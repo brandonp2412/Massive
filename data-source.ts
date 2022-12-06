@@ -1,4 +1,5 @@
 import {DataSource} from 'typeorm'
+import {Day} from './day'
 import GymSet from './gym-set'
 import {Sets1667185586014 as sets1667185586014} from './migrations/1667185586014-sets'
 import {plans1667186124792} from './migrations/1667186124792-plans'
@@ -24,14 +25,16 @@ import {addSetsCreated1667186451005} from './migrations/1667186451005-add-sets-c
 import {addNoSound1667186456118} from './migrations/1667186456118-add-no-sound'
 import {dropMigrations1667190214743} from './migrations/1667190214743-drop-migrations'
 import {splitColor1669420187764} from './migrations/1669420187764-split-color'
+import {addDays1670284587217} from './migrations/1670284587217-add-days'
 import {Plan} from './plan'
 import Settings from './settings'
+import {Workout} from './workout'
 
 export const AppDataSource = new DataSource({
   type: 'react-native',
   database: 'massive.db',
   location: 'default',
-  entities: [GymSet, Plan, Settings],
+  entities: [GymSet, Plan, Settings, Day, Workout],
   migrationsRun: true,
   migrationsTableName: 'typeorm_migrations',
   migrations: [
@@ -59,5 +62,6 @@ export const AppDataSource = new DataSource({
     addNoSound1667186456118,
     dropMigrations1667190214743,
     splitColor1669420187764,
+    addDays1670284587217,
   ],
 })

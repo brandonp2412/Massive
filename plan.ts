@@ -1,13 +1,17 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm'
+import {Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from 'typeorm'
+import {Day} from './day'
+import {Workout} from './workout'
 
 @Entity('plans')
 export class Plan {
   @PrimaryGeneratedColumn()
   id?: number
 
-  @Column('text')
-  days: string
+  @ManyToMany(() => Day)
+  @JoinTable()
+  days: Day[]
 
-  @Column('text')
-  workouts: string
+  @ManyToMany(() => Workout)
+  @JoinTable()
+  workouts: Workout[]
 }

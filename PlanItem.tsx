@@ -23,7 +23,6 @@ export default function PlanItem({
   const [show, setShow] = useState(false)
   const [anchor, setAnchor] = useState({x: 0, y: 0})
   const [today, setToday] = useState<string>()
-  const days = useMemo(() => item.days.split(','), [item.days])
   const navigation = useNavigation<NavigationProp<PlanPageParams>>()
 
   useFocusEffect(
@@ -42,7 +41,7 @@ export default function PlanItem({
   const start = useCallback(async () => {
     console.log(`${PlanItem.name}.start:`, {item})
     setShow(false)
-    const workout = item.workouts.split(',')[0]
+    const workout = item.workouts[0].name
     let first = await getBestSet(workout)
     if (!first) first = {...defaultSet, name: workout}
     delete first.id
@@ -64,25 +63,22 @@ export default function PlanItem({
 
   const title = useMemo(
     () =>
-      days.map((day, index) => (
-        <Text key={day}>
-          {day === today ? (
+      item.days?.map((day, index) => (
+        <Text key={day.id}>
+          {day.name === today ? (
             <Text style={{fontWeight: 'bold', textDecorationLine: 'underline'}}>
-              {day}
+              {day.name}
             </Text>
           ) : (
-            day
+            day.name
           )}
-          {index === days.length - 1 ? '' : ', '}
+          {index === item.days.length - 1 ? '' : ', '}
         </Text>
       )),
-    [days, today],
+    [item.days, today],
   )
 
-  const description = useMemo(
-    () => item.workouts.replace(/,/g, ', '),
-    [item.workouts],
-  )
+  const description = useMemo(() => item.workouts?.join(', '), [item.workouts])
 
   const copy = useCallback(() => {
     const plan: Plan = {...item}
