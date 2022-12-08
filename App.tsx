@@ -58,6 +58,7 @@ const App = () => {
       console.log(`${App.name}.useEffect:`, {gotSettings: settings})
       setTheme(settings.theme)
       if (settings.lightColor) setLightColor(settings.lightColor)
+      if (settings.darkColor) setDarkColor(settings.darkColor)
       setInitialized(true)
     }
     init()
