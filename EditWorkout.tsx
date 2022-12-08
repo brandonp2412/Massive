@@ -15,7 +15,6 @@ import {defaultSet} from './gym-set'
 import MassiveInput from './MassiveInput'
 import Settings from './settings'
 import StackHeader from './StackHeader'
-import {toast} from './toast'
 import {WorkoutsPageParams} from './WorkoutsPage'
 
 export default function EditWorkout() {
@@ -101,18 +100,6 @@ export default function EditWorkout() {
     setShowRemove(false)
   }, [])
 
-  const handleName = (value: string) => {
-    setName(value.replace(/,|'/g, ''))
-    if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports')
-  }
-
-  const handleSteps = (value: string) => {
-    setSteps(value.replace(/,|'/g, ''))
-    if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports')
-  }
-
   const submitName = () => {
     if (settings.steps) stepsRef.current?.focus()
     else setsRef.current?.focus()
@@ -127,7 +114,7 @@ export default function EditWorkout() {
             autoFocus
             label="Name"
             value={name}
-            onChangeText={handleName}
+            onChangeText={setName}
             onSubmitEditing={submitName}
           />
           {settings?.steps && (
@@ -135,7 +122,7 @@ export default function EditWorkout() {
               innerRef={stepsRef}
               selectTextOnFocus={false}
               value={steps}
-              onChangeText={handleSteps}
+              onChangeText={setSteps}
               label="Steps"
               multiline
               onSubmitEditing={() => setsRef.current?.focus()}

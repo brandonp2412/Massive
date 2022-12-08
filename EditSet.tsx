@@ -99,18 +99,6 @@ export default function EditSet() {
     navigation.goBack()
   }
 
-  const handleName = useCallback((value: string) => {
-    setName(value.replace(/,|'/g, ''))
-    if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports')
-  }, [])
-
-  const handleUnit = useCallback((value: string) => {
-    setUnit(value.replace(/,|'/g, ''))
-    if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports')
-  }, [])
-
   const changeImage = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
       type: DocumentPicker.types.images,
@@ -133,7 +121,7 @@ export default function EditSet() {
         <MassiveInput
           label="Name"
           value={name}
-          onChangeText={handleName}
+          onChangeText={setName}
           autoCorrect={false}
           autoFocus={!name}
           onSubmitEditing={() => repsRef.current?.focus()}
@@ -165,7 +153,7 @@ export default function EditSet() {
             autoCapitalize="none"
             label="Unit"
             value={unit}
-            onChangeText={handleUnit}
+            onChangeText={setUnit}
             innerRef={unitRef}
           />
         )}

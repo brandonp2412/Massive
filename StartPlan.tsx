@@ -111,12 +111,6 @@ export default function StartPlan() {
     NativeModules.AlarmModule.timer(...args)
   }
 
-  const handleUnit = useCallback((value: string) => {
-    setUnit(value.replace(/,|'/g, ''))
-    if (value.match(/,|'/))
-      toast('Commas and single quotes would break CSV exports')
-  }, [])
-
   return (
     <>
       <StackHeader title={params.plan.days.replace(/,/g, ', ')} />
@@ -146,7 +140,7 @@ export default function StartPlan() {
               autoCapitalize="none"
               label="Unit"
               value={unit}
-              onChangeText={handleUnit}
+              onChangeText={setUnit}
               innerRef={unitRef}
             />
           )}
