@@ -66,7 +66,7 @@ export default function SetItem({
                   alignSelf: 'center',
                   color: dark ? '#909090ff' : '#717171ff',
                 }}>
-                {format(new Date(item.created), settings.date)}
+                {format(new Date(item.created), settings.date || 'P')}
               </Text>
             )}
             <Menu
