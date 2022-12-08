@@ -1,4 +1,8 @@
-import {useFocusEffect} from '@react-navigation/native'
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native'
 import {format} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -9,9 +13,13 @@ import {
   View,
 } from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
+import {Dirs, FileSystem} from 'react-native-file-access'
 import {Button, Subheading} from 'react-native-paper'
+import ConfirmDialog from './ConfirmDialog'
 import {ITEM_PADDING, MARGIN} from './constants'
+import {AppDataSource} from './data-source'
 import {settingsRepo} from './db'
+import {DrawerParamList} from './drawer-param-list'
 import DrawerHeader from './DrawerHeader'
 import Input from './input'
 import {darkOptions, lightOptions, themeOptions} from './options'
@@ -39,6 +47,8 @@ export default function SettingsPage() {
   const [showDate, setShowDate] = useState(false)
   const [noSound, setNoSound] = useState(false)
   const [formatOptions, setFormatOptions] = useState<string[]>(defaultFormats)
+  const [importing, setImporting] = useState(false)
+  const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
   const today = new Date()
 
   useFocusEffect(
@@ -237,6 +247,21 @@ export default function SettingsPage() {
     [],
   )
 
+  const confirmImport = useCallback(async () => {
+    setImporting(false)
+    await AppDataSource.destroy()
+    const result = await DocumentPicker.pickSingle()
+    await FileSystem.cp(result.uri, Dirs.DatabaseDir + '/massive.db')
+    await AppDataSource.initialize()
+    reset({index: 0, routes: [{name: 'Settings'}]})
+  }, [reset])
+
+  const exportDatabase = useCallback(async () => {
+    const path = Dirs.DatabaseDir + '/massive.db'
+    await FileSystem.cpExternal(path, 'massive.db', 'downloads')
+    toast('Database exported. Check downloads.')
+  }, [])
+
   return (
     <>
       <DrawerHeader name="Settings" />
@@ -258,7 +283,28 @@ export default function SettingsPage() {
             <Button onPress={changeSound}>{soundString || 'Default'}</Button>
           </View>
         )}
+        {'export database'.includes(term.toLowerCase()) && (
+          <Button style={{alignSelf: 'flex-start'}} onPress={exportDatabase}>
+            Export database
+          </Button>
+        )}
+        {'import database'.includes(term.toLowerCase()) && (
+          <Button
+            style={{alignSelf: 'flex-start'}}
+            onPress={() => setImporting(true)}>
+            Import database
+          </Button>
+        )}
       </Page>
+
+      <ConfirmDialog
+        title="Are you sure?"
+        onOk={confirmImport}
+        setShow={setImporting}
+        show={importing}>
+        Importing a database overwrites your current data. This action cannot be
+        reversed!
+      </ConfirmDialog>
     </>
   )
 }

@@ -156,6 +156,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                 val manager = getManager()
                 manager.notify(NOTIFICATION_ID_DONE, builder.build())
                 manager.cancel(NOTIFICATION_ID_PENDING)
+                Log.d("AlarmModule", "Finished: vibrate=$vibrate,sound=$sound,noSound=$noSound")
                 val alarmIntent = Intent(context, AlarmService::class.java).apply {
                     putExtra("vibrate", vibrate)
                     putExtra("sound", sound)
