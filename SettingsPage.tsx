@@ -283,14 +283,18 @@ export default function SettingsPage() {
             <Button onPress={changeSound}>{soundString || 'Default'}</Button>
           </View>
         )}
-        <Button style={{alignSelf: 'flex-start'}} onPress={exportDatabase}>
-          Export database
-        </Button>
-        <Button
-          style={{alignSelf: 'flex-start'}}
-          onPress={() => setImporting(true)}>
-          Import database
-        </Button>
+        {'export database'.includes(term.toLowerCase()) && (
+          <Button style={{alignSelf: 'flex-start'}} onPress={exportDatabase}>
+            Export database
+          </Button>
+        )}
+        {'import database'.includes(term.toLowerCase()) && (
+          <Button
+            style={{alignSelf: 'flex-start'}}
+            onPress={() => setImporting(true)}>
+            Import database
+          </Button>
+        )}
       </Page>
 
       <ConfirmDialog
