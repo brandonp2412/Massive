@@ -26,7 +26,10 @@ import {addNoSound1667186456118} from './migrations/1667186456118-add-no-sound'
 import {dropMigrations1667190214743} from './migrations/1667190214743-drop-migrations'
 import {splitColor1669420187764} from './migrations/1669420187764-split-color'
 import {addDays1670284587217} from './migrations/1670284587217-add-days'
+import {addWorkouts1670477728181} from './migrations/1670477728181-add-workouts'
 import {Plan} from './plan'
+import {PlanDay} from './plan-day'
+import {PlanWorkout} from './plan-workout'
 import Settings from './settings'
 import {Workout} from './workout'
 
@@ -34,7 +37,7 @@ export const AppDataSource = new DataSource({
   type: 'react-native',
   database: 'massive.db',
   location: 'default',
-  entities: [GymSet, Plan, Settings, Day, Workout],
+  entities: [GymSet, Plan, Settings, Day, Workout, PlanWorkout, PlanDay],
   migrationsRun: true,
   migrationsTableName: 'typeorm_migrations',
   migrations: [
@@ -63,5 +66,6 @@ export const AppDataSource = new DataSource({
     dropMigrations1667190214743,
     splitColor1669420187764,
     addDays1670284587217,
+    addWorkouts1670477728181,
   ],
 })
