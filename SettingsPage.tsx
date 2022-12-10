@@ -257,7 +257,7 @@ export default function SettingsPage() {
     await settingsRepo
       .createQueryBuilder()
       .update()
-      .set({alarm: null})
+      .set({sound: null})
       .execute()
     reset({index: 0, routes: [{name: 'Settings'}]})
   }, [reset])
