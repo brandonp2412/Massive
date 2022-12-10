@@ -18,7 +18,7 @@ import {Button, Subheading} from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
 import {ITEM_PADDING, MARGIN} from './constants'
 import {AppDataSource} from './data-source'
-import {settingsRepo} from './db'
+import {setRepo, settingsRepo} from './db'
 import {DrawerParamList} from './drawer-param-list'
 import DrawerHeader from './DrawerHeader'
 import Input from './input'
@@ -253,6 +253,12 @@ export default function SettingsPage() {
     const result = await DocumentPicker.pickSingle()
     await FileSystem.cp(result.uri, Dirs.DatabaseDir + '/massive.db')
     await AppDataSource.initialize()
+    await setRepo.createQueryBuilder().update().set({image: null}).execute()
+    await settingsRepo
+      .createQueryBuilder()
+      .update()
+      .set({alarm: null})
+      .execute()
     reset({index: 0, routes: [{name: 'Settings'}]})
   }, [reset])
 
