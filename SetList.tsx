@@ -39,8 +39,8 @@ export default function SetList() {
     setEnd(false)
     const first = newSets[0]
     if (!first) return
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {id, ...newSet} = first
+    const newSet = {...first}
+    delete newSet.id
     setSet(newSet)
   }, [])
 
