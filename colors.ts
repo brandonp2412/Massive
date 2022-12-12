@@ -6,7 +6,6 @@ export const lightColors = [
   {hex: '#FA8072', name: 'Salmon'},
   {hex: '#FFC0CB', name: 'Pink'},
   {hex: '#E9DCC9', name: 'Linen'},
-  {hex: '#BBA1CE', name: 'Light purple'},
 ]
 
 export const darkColors = [
