@@ -11,9 +11,10 @@ export const lightColors = [
 
 export const darkColors = [
   {hex: DefaultTheme.colors.primary, name: 'Purple'},
-  {hex: '#007AFF', name: 'Blue'},
+  {hex: '#0051a9', name: 'Blue'},
   {hex: '#000000', name: 'Black'},
-  {hex: '#CD5C5C', name: 'Red'},
+  {hex: '#863c3c', name: 'Red'},
+  {hex: '#1c6000', name: 'Kermit'},
 ]
 
 export const colorShade = (color: any, amount: number) => {
