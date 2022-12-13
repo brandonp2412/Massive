@@ -1,6 +1,6 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {useCallback, useState} from 'react'
-import {IconButton, Menu} from 'react-native-paper'
+import {Divider, IconButton, Menu} from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
 import {planRepo, setRepo} from './db'
 import {DrawerParamList} from './drawer-param-list'
@@ -45,15 +45,18 @@ export default function DrawerMenu({
             icon="more-vert"
           />
         }>
+        {ids.length > 0 && name === 'Home' && (
+          <>
+            <Menu.Item icon="edit" title="Edit" onPress={edit} />
+            <Divider />
+          </>
+        )}
+
         <Menu.Item
           icon="delete"
           onPress={() => setShowRemove(true)}
           title="Delete"
         />
-
-        {ids.length > 0 && name === 'Home' && (
-          <Menu.Item icon="edit" title="Edit" onPress={edit} />
-        )}
 
         <ConfirmDialog
           title="Delete all data"
