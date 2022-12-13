@@ -6,13 +6,20 @@ export default function ConfirmDialog({
   onOk,
   show,
   setShow,
+  onCancel,
 }: {
   title: string
   children: JSX.Element | JSX.Element[] | string
   onOk: () => void
   show: boolean
   setShow: (show: boolean) => void
+  onCancel?: () => void
 }) {
+  const cancel = () => {
+    setShow(false)
+    onCancel && onCancel()
+  }
+
   return (
     <Portal>
       <Dialog visible={show} onDismiss={() => setShow(false)}>
@@ -22,7 +29,7 @@ export default function ConfirmDialog({
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={onOk}>OK</Button>
-          <Button onPress={() => setShow(false)}>Cancel</Button>
+          <Button onPress={cancel}>Cancel</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>

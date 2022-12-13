@@ -1,57 +1,54 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native'
-import {useCallback, useState} from 'react'
-import {GestureResponderEvent, Image} from 'react-native'
-import {Divider, List, Menu, Text} from 'react-native-paper'
-import {setRepo} from './db'
+import {format} from 'date-fns'
+import {useCallback, useMemo} from 'react'
+import {Image} from 'react-native'
+import {List, Text} from 'react-native-paper'
 import GymSet from './gym-set'
 import {HomePageParams} from './home-page-params'
 import Settings from './settings'
 import useDark from './use-dark'
-import {format} from 'date-fns'
 
 export default function SetItem({
   item,
-  onRemove,
   settings,
+  ids,
+  setIds,
 }: {
   item: GymSet
   onRemove: () => void
   settings: Settings
+  ids: number[]
+  setIds: (value: number[]) => void
 }) {
-  const [showMenu, setShowMenu] = useState(false)
-  const [anchor, setAnchor] = useState({x: 0, y: 0})
   const dark = useDark()
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
-  const remove = useCallback(async () => {
-    console.log(`${SetItem.name}.remove:`, {id: item.id})
-    if (typeof item.id === 'number') await setRepo.delete(item.id)
-    setShowMenu(false)
-    onRemove()
-  }, [setShowMenu, onRemove, item.id])
+  const longPress = useCallback(() => {
+    if (ids.length > 0) return
+    setIds([item.id])
+  }, [ids.length, item.id, setIds])
 
-  const copy = useCallback(() => {
-    const set: GymSet = {...item}
-    delete set.id
-    setShowMenu(false)
-    navigation.navigate('EditSet', {set})
-  }, [navigation, item])
+  const press = useCallback(() => {
+    if (ids.length === 0) return navigation.navigate('EditSet', {set: item})
+    const removing = ids.find(id => id === item.id)
+    if (removing) setIds(ids.filter(id => id !== item.id))
+    else setIds([...ids, item.id])
+  }, [ids, item, navigation, setIds])
 
-  const longPress = useCallback(
-    (e: GestureResponderEvent) => {
-      setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY})
-      setShowMenu(true)
-    },
-    [setShowMenu, setAnchor],
-  )
+  const backgroundColor = useMemo(() => {
+    if (!ids.includes(item.id)) return
+    if (dark) return '#c2c2c2'
+    return '#c2c2c2'
+  }, [dark, ids, item.id])
 
   return (
     <>
       <List.Item
-        onPress={() => navigation.navigate('EditSet', {set: item})}
+        onPress={press}
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}
+        style={{backgroundColor}}
         left={() =>
           settings.images &&
           item.image && (
@@ -69,14 +66,6 @@ export default function SetItem({
                 {format(new Date(item.created), settings.date || 'P')}
               </Text>
             )}
-            <Menu
-              anchor={anchor}
-              visible={showMenu}
-              onDismiss={() => setShowMenu(false)}>
-              <Menu.Item icon="content-copy" onPress={copy} title="Copy" />
-              <Divider />
-              <Menu.Item icon="delete" onPress={remove} title="Delete" />
-            </Menu>
           </>
         )}
       />

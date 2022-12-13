@@ -4,25 +4,26 @@ import {
   useNavigation,
 } from '@react-navigation/native'
 import {useCallback, useMemo, useState} from 'react'
-import {GestureResponderEvent, Text} from 'react-native'
-import {Divider, List, Menu} from 'react-native-paper'
+import {Text} from 'react-native'
+import {List} from 'react-native-paper'
 import {getBestSet} from './best.service'
-import {planRepo} from './db'
 import {defaultSet} from './gym-set'
 import {Plan} from './plan'
 import {PlanPageParams} from './plan-page-params'
 import {DAYS} from './time'
+import useDark from './use-dark'
 
 export default function PlanItem({
   item,
-  onRemove,
+  setIds,
+  ids,
 }: {
   item: Plan
-  onRemove: () => void
+  ids: number[]
+  setIds: (value: number[]) => void
 }) {
-  const [show, setShow] = useState(false)
-  const [anchor, setAnchor] = useState({x: 0, y: 0})
   const [today, setToday] = useState<string>()
+  const dark = useDark()
   const days = useMemo(() => item.days.split(','), [item.days])
   const navigation = useNavigation<NavigationProp<PlanPageParams>>()
 
@@ -33,34 +34,22 @@ export default function PlanItem({
     }, []),
   )
 
-  const remove = useCallback(async () => {
-    if (typeof item.id === 'number') await planRepo.delete(item.id)
-    setShow(false)
-    onRemove()
-  }, [setShow, item.id, onRemove])
-
   const start = useCallback(async () => {
-    console.log(`${PlanItem.name}.start:`, {item})
-    setShow(false)
     const workout = item.workouts.split(',')[0]
     let first = await getBestSet(workout)
     if (!first) first = {...defaultSet, name: workout}
     delete first.id
-    navigation.navigate('StartPlan', {plan: item, first})
-  }, [item, navigation])
+    if (ids.length === 0)
+      return navigation.navigate('StartPlan', {plan: item, first})
+    const removing = ids.find(id => id === item.id)
+    if (removing) setIds(ids.filter(id => id !== item.id))
+    else setIds([...ids, item.id])
+  }, [ids, setIds, item, navigation])
 
-  const longPress = useCallback(
-    (e: GestureResponderEvent) => {
-      setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY})
-      setShow(true)
-    },
-    [setAnchor, setShow],
-  )
-
-  const edit = useCallback(() => {
-    setShow(false)
-    navigation.navigate('EditPlan', {plan: item})
-  }, [navigation, item])
+  const longPress = useCallback(() => {
+    if (ids.length > 0) return
+    setIds([item.id])
+  }, [ids.length, item.id, setIds])
 
   const title = useMemo(
     () =>
@@ -84,12 +73,11 @@ export default function PlanItem({
     [item.workouts],
   )
 
-  const copy = useCallback(() => {
-    const plan: Plan = {...item}
-    delete plan.id
-    setShow(false)
-    navigation.navigate('EditPlan', {plan})
-  }, [navigation, item])
+  const backgroundColor = useMemo(() => {
+    if (!ids.includes(item.id)) return
+    if (dark) return '#c2c2c2'
+    return '#c2c2c2'
+  }, [dark, ids, item.id])
 
   return (
     <List.Item
@@ -97,14 +85,7 @@ export default function PlanItem({
       title={title}
       description={description}
       onLongPress={longPress}
-      right={() => (
-        <Menu anchor={anchor} visible={show} onDismiss={() => setShow(false)}>
-          <Menu.Item icon="edit" onPress={edit} title="Edit" />
-          <Menu.Item icon="content-copy" onPress={copy} title="Copy" />
-          <Divider />
-          <Menu.Item icon="delete" onPress={remove} title="Delete" />
-        </Menu>
-      )}
+      style={{backgroundColor}}
     />
   )
 }

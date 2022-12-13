@@ -5,4 +5,7 @@ export type HomePageParams = {
   EditSet: {
     set: GymSet
   }
+  EditSets: {
+    ids: number[]
+  }
 }

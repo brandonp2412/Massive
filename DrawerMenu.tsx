@@ -4,23 +4,34 @@ import {IconButton, Menu} from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
 import {planRepo, setRepo} from './db'
 import {DrawerParamList} from './drawer-param-list'
-import {toast} from './toast'
+import {HomePageParams} from './home-page-params'
 import useDark from './use-dark'
 
-export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
+export default function DrawerMenu({
+  name,
+  ids,
+}: {
+  name: keyof DrawerParamList
+  ids: number[]
+}) {
   const [showMenu, setShowMenu] = useState(false)
   const [showRemove, setShowRemove] = useState(false)
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
+  const {navigate} = useNavigation<NavigationProp<HomePageParams>>()
   const dark = useDark()
 
   const remove = useCallback(async () => {
     setShowMenu(false)
     setShowRemove(false)
-    if (name === 'Home') await setRepo.delete({})
-    else if (name === 'Plans') await planRepo.delete({})
-    toast('All data has been deleted.')
+    if (name === 'Home') await setRepo.delete(ids.length > 0 ? ids : {})
+    else if (name === 'Plans') await planRepo.delete(ids.length > 0 ? ids : {})
     reset({index: 0, routes: [{name}]})
-  }, [reset, name])
+  }, [reset, name, ids])
+
+  const edit = useCallback(() => {
+    navigate('EditSets', {ids})
+    setShowMenu(false)
+  }, [ids, navigate])
 
   if (name === 'Home' || name === 'Plans')
     return (
@@ -39,12 +50,22 @@ export default function DrawerMenu({name}: {name: keyof DrawerParamList}) {
           onPress={() => setShowRemove(true)}
           title="Delete"
         />
+
+        {ids.length > 0 && name === 'Home' && (
+          <Menu.Item icon="edit" title="Edit" onPress={edit} />
+        )}
+
         <ConfirmDialog
           title="Delete all data"
           show={showRemove}
           setShow={setShowRemove}
-          onOk={remove}>
-          This irreversibly deletes all data from the app. Are you sure?
+          onOk={remove}
+          onCancel={() => setShowMenu(false)}>
+          {ids.length === 0 ? (
+            <>This irreversibly deletes all data from the app. Are you sure?</>
+          ) : (
+            <>This will delete {ids.length} records. Are you sure?</>
+          )}
         </ConfirmDialog>
       </Menu>
     )

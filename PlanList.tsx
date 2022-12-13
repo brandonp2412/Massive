@@ -17,6 +17,7 @@ import PlanItem from './PlanItem'
 export default function PlanList() {
   const [term, setTerm] = useState('')
   const [plans, setPlans] = useState<Plan[]>()
+  const [ids, setIds] = useState<number[]>([])
   const navigation = useNavigation<NavigationProp<PlanPageParams>>()
 
   const refresh = useCallback(async (value: string) => {
@@ -43,9 +44,9 @@ export default function PlanList() {
 
   const renderItem = useCallback(
     ({item}: {item: Plan}) => (
-      <PlanItem item={item} key={item.id} onRemove={() => refresh(term)} />
+      <PlanItem ids={ids} setIds={setIds} item={item} key={item.id} />
     ),
-    [refresh, term],
+    [ids],
   )
 
   const onAdd = () =>
@@ -53,7 +54,7 @@ export default function PlanList() {
 
   return (
     <>
-      <DrawerHeader name="Plans" />
+      <DrawerHeader name="Plans" ids={ids} />
       <Page onAdd={onAdd} term={term} search={search}>
         {plans?.length === 0 ? (
           <List.Item

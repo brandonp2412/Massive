@@ -24,6 +24,7 @@ export default function SetList() {
   const [term, setTerm] = useState('')
   const [end, setEnd] = useState(false)
   const [settings, setSettings] = useState<Settings>()
+  const [ids, setIds] = useState<number[]>([])
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
   const refresh = useCallback(async (value: string) => {
@@ -58,9 +59,11 @@ export default function SetList() {
         item={item}
         key={item.id}
         onRemove={() => refresh(term)}
+        ids={ids}
+        setIds={setIds}
       />
     ),
-    [refresh, term, settings],
+    [refresh, term, settings, ids],
   )
 
   const next = useCallback(async () => {
@@ -101,7 +104,7 @@ export default function SetList() {
 
   return (
     <>
-      <DrawerHeader name="Home" />
+      <DrawerHeader name="Home" ids={ids} />
       <Page onAdd={onAdd} term={term} search={search}>
         {sets?.length === 0 ? (
           <List.Item
