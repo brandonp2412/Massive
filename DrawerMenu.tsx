@@ -5,6 +5,7 @@ import ConfirmDialog from './ConfirmDialog'
 import {planRepo, setRepo} from './db'
 import {DrawerParamList} from './drawer-param-list'
 import {HomePageParams} from './home-page-params'
+import {PlanPageParams} from './plan-page-params'
 import useDark from './use-dark'
 
 export default function DrawerMenu({
@@ -17,7 +18,8 @@ export default function DrawerMenu({
   const [showMenu, setShowMenu] = useState(false)
   const [showRemove, setShowRemove] = useState(false)
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
-  const {navigate} = useNavigation<NavigationProp<HomePageParams>>()
+  const home = useNavigation<NavigationProp<HomePageParams>>()
+  const plans = useNavigation<NavigationProp<PlanPageParams>>()
   const dark = useDark()
 
   const remove = useCallback(async () => {
@@ -28,10 +30,32 @@ export default function DrawerMenu({
     reset({index: 0, routes: [{name}]})
   }, [reset, name, ids])
 
-  const edit = useCallback(() => {
-    navigate('EditSets', {ids})
+  const edit = useCallback(async () => {
     setShowMenu(false)
-  }, [ids, navigate])
+    if (name === 'Home') home.navigate('EditSets', {ids})
+    else if (name === 'Plans') {
+      const plan = await planRepo.findOne({where: {id: ids[0]}})
+      plans.navigate('EditPlan', {plan})
+    }
+  }, [ids, home, name, plans])
+
+  const copy = useCallback(async () => {
+    if (name === 'Home') {
+      const set = await setRepo.findOne({
+        where: {},
+        order: {created: {direction: 'DESC'}},
+      })
+      delete set.id
+      home.navigate('EditSet', {set})
+    } else if (name === 'Plans') {
+      const plan = await planRepo.findOne({
+        where: {},
+      })
+      delete plan.id
+      plans.navigate('EditPlan', {plan})
+    }
+    setShowMenu(false)
+  }, [name, home, plans])
 
   if (name === 'Home' || name === 'Plans')
     return (
@@ -45,7 +69,10 @@ export default function DrawerMenu({
             icon="more-vert"
           />
         }>
-        {ids.length > 0 && name === 'Home' && (
+        {ids.length === 1 && (
+          <Menu.Item icon="content-copy" title="Copy" onPress={copy} />
+        )}
+        {ids.length > 0 && (
           <>
             <Menu.Item icon="edit" title="Edit" onPress={edit} />
             <Divider />
