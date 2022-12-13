@@ -4,10 +4,11 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native'
-import {useCallback, useRef, useState} from 'react'
-import {TextInput, View} from 'react-native'
+import {useCallback, useState} from 'react'
+import {View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Button, Card, TouchableRipple} from 'react-native-paper'
+import {In} from 'typeorm'
 import ConfirmDialog from './ConfirmDialog'
 import {MARGIN, PADDING} from './constants'
 import {setRepo, settingsRepo} from './db'
@@ -28,9 +29,10 @@ export default function EditSets() {
   const [newImage, setNewImage] = useState('')
   const [unit, setUnit] = useState('')
   const [showRemove, setShowRemove] = useState(false)
-  const weightRef = useRef<TextInput>(null)
-  const repsRef = useRef<TextInput>(null)
-  const unitRef = useRef<TextInput>(null)
+  const [names, setNames] = useState('')
+  const [oldReps, setOldReps] = useState('')
+  const [weights, setWeights] = useState('')
+  const [units, setUnits] = useState('')
 
   const [selection, setSelection] = useState({
     start: 0,
@@ -40,7 +42,13 @@ export default function EditSets() {
   useFocusEffect(
     useCallback(() => {
       settingsRepo.findOne({where: {}}).then(setSettings)
-    }, []),
+      setRepo.find({where: {id: In(ids)}}).then(sets => {
+        setNames(sets.map(set => set.name).join(', '))
+        setOldReps(sets.map(set => set.reps).join(', '))
+        setWeights(sets.map(set => set.weight).join(', '))
+        setUnits(sets.map(set => set.unit).join(', '))
+      })
+    }, [ids]),
   )
 
   const handleSubmit = async () => {
@@ -74,33 +82,29 @@ export default function EditSets() {
 
       <View style={{padding: PADDING, flex: 1}}>
         <MassiveInput
-          label="Name"
+          label={`Names: ${names}`}
           value={name}
           onChangeText={setName}
           autoCorrect={false}
           autoFocus={!name}
-          onSubmitEditing={() => repsRef.current?.focus()}
         />
 
         <MassiveInput
-          label="Reps"
+          label={`Reps: ${oldReps}`}
           keyboardType="numeric"
           value={reps}
           onChangeText={setReps}
-          onSubmitEditing={() => weightRef.current?.focus()}
           selection={selection}
           onSelectionChange={e => setSelection(e.nativeEvent.selection)}
           autoFocus={!!name}
-          innerRef={repsRef}
         />
 
         <MassiveInput
-          label="Weight"
+          label={`Weights: ${weights}`}
           keyboardType="numeric"
           value={weight}
           onChangeText={setWeight}
           onSubmitEditing={handleSubmit}
-          innerRef={weightRef}
         />
 
         {settings.showUnit && (
@@ -109,7 +113,6 @@ export default function EditSets() {
             label="Unit"
             value={unit}
             onChangeText={setUnit}
-            innerRef={unitRef}
           />
         )}
 
