@@ -39,7 +39,8 @@ export default function DrawerMenu({
       const plan = await planRepo.findOne({where: {id: ids[0]}})
       plans.navigate('EditPlan', {plan})
     }
-  }, [ids, home, name, plans])
+    setIds([])
+  }, [ids, home, name, plans, setIds])
 
   const copy = useCallback(async () => {
     if (name === 'Home') {
@@ -57,7 +58,8 @@ export default function DrawerMenu({
       plans.navigate('EditPlan', {plan})
     }
     setShowMenu(false)
-  }, [name, home, plans])
+    setIds([])
+  }, [name, home, plans, setIds])
 
   const clear = useCallback(() => {
     setShowMenu(false)
