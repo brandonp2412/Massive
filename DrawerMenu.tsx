@@ -14,8 +14,8 @@ export default function DrawerMenu({
   setIds,
 }: {
   name: keyof DrawerParamList
-  ids: number[]
-  setIds: (values: number[]) => void
+  ids?: number[]
+  setIds?: (values: number[]) => void
 }) {
   const [showMenu, setShowMenu] = useState(false)
   const [showRemove, setShowRemove] = useState(false)
@@ -78,16 +78,25 @@ export default function DrawerMenu({
             icon="more-vert"
           />
         }>
-        {ids.length === 1 && (
-          <Menu.Item icon="content-copy" title="Copy" onPress={copy} />
-        )}
-        {ids.length > 0 && (
-          <>
-            <Menu.Item icon="clear" title="Clear" onPress={clear} />
-            <Menu.Item icon="edit" title="Edit" onPress={edit} />
-            <Divider />
-          </>
-        )}
+        <Menu.Item
+          icon="content-copy"
+          title="Copy"
+          onPress={copy}
+          disabled={ids?.length !== 1}
+        />
+        <Menu.Item
+          icon="clear"
+          title="Clear"
+          onPress={clear}
+          disabled={ids?.length === 0}
+        />
+        <Menu.Item
+          icon="edit"
+          title="Edit"
+          onPress={edit}
+          disabled={ids?.length === 0}
+        />
+        <Divider />
 
         <Menu.Item
           icon="delete"
@@ -101,10 +110,10 @@ export default function DrawerMenu({
           setShow={setShowRemove}
           onOk={remove}
           onCancel={() => setShowMenu(false)}>
-          {ids.length === 0 ? (
+          {ids?.length === 0 ? (
             <>This irreversibly deletes all data from the app. Are you sure?</>
           ) : (
-            <>This will delete {ids.length} records. Are you sure?</>
+            <>This will delete {ids?.length} records. Are you sure?</>
           )}
         </ConfirmDialog>
       </Menu>

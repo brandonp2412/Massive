@@ -11,8 +11,8 @@ export default function DrawerHeader({
   setIds,
 }: {
   name: keyof DrawerParamList
-  ids: number[]
-  setIds: (values: number[]) => void
+  ids?: number[]
+  setIds?: (values: number[]) => void
 }) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
   const dark = useDark()

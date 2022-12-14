@@ -110,7 +110,7 @@ export default function EditSets() {
         {settings.showUnit && (
           <MassiveInput
             autoCapitalize="none"
-            label="Unit"
+            label={`Units: ${units}`}
             value={unit}
             onChangeText={setUnit}
           />
