@@ -11,9 +11,11 @@ import useDark from './use-dark'
 export default function DrawerMenu({
   name,
   ids,
+  setIds,
 }: {
   name: keyof DrawerParamList
   ids: number[]
+  setIds: (values: number[]) => void
 }) {
   const [showMenu, setShowMenu] = useState(false)
   const [showRemove, setShowRemove] = useState(false)
@@ -57,6 +59,11 @@ export default function DrawerMenu({
     setShowMenu(false)
   }, [name, home, plans])
 
+  const clear = useCallback(() => {
+    setShowMenu(false)
+    setIds([])
+  }, [setIds])
+
   if (name === 'Home' || name === 'Plans')
     return (
       <Menu
@@ -74,6 +81,7 @@ export default function DrawerMenu({
         )}
         {ids.length > 0 && (
           <>
+            <Menu.Item icon="clear" title="Clear" onPress={clear} />
             <Menu.Item icon="edit" title="Edit" onPress={edit} />
             <Divider />
           </>

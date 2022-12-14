@@ -54,7 +54,7 @@ export default function PlanList() {
 
   return (
     <>
-      <DrawerHeader name="Plans" ids={ids} />
+      <DrawerHeader name="Plans" ids={ids} setIds={setIds} />
       <Page onAdd={onAdd} term={term} search={search}>
         {plans?.length === 0 ? (
           <List.Item

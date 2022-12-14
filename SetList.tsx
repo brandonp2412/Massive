@@ -104,7 +104,7 @@ export default function SetList() {
 
   return (
     <>
-      <DrawerHeader name="Home" ids={ids} />
+      <DrawerHeader name="Home" ids={ids} setIds={setIds} />
       <Page onAdd={onAdd} term={term} search={search}>
         {sets?.length === 0 ? (
           <List.Item

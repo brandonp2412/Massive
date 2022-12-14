@@ -8,9 +8,11 @@ import useDark from './use-dark'
 export default function DrawerHeader({
   name,
   ids,
+  setIds,
 }: {
   name: keyof DrawerParamList
   ids: number[]
+  setIds: (values: number[]) => void
 }) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
   const dark = useDark()
@@ -23,7 +25,7 @@ export default function DrawerHeader({
         onPress={navigation.openDrawer}
       />
       <Appbar.Content title={name} />
-      <DrawerMenu name={name} ids={ids} />
+      <DrawerMenu name={name} ids={ids} setIds={setIds} />
     </Appbar.Header>
   )
 }
