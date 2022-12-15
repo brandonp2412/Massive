@@ -7,6 +7,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {Text} from 'react-native'
 import {List} from 'react-native-paper'
 import {getBestSet} from './best.service'
+import {DARK_RIPPLE, LIGHT_RIPPLE} from './constants'
 import {defaultSet} from './gym-set'
 import {Plan} from './plan'
 import {PlanPageParams} from './plan-page-params'
@@ -75,8 +76,8 @@ export default function PlanItem({
 
   const backgroundColor = useMemo(() => {
     if (!ids.includes(item.id)) return
-    if (dark) return '#c2c2c2'
-    return '#c2c2c2'
+    if (dark) return DARK_RIPPLE
+    return LIGHT_RIPPLE
   }, [dark, ids, item.id])
 
   return (

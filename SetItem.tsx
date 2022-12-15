@@ -3,6 +3,7 @@ import {format} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 import {Image} from 'react-native'
 import {List, Text} from 'react-native-paper'
+import {DARK_RIPPLE, LIGHT_RIPPLE} from './constants'
 import GymSet from './gym-set'
 import {HomePageParams} from './home-page-params'
 import Settings from './settings'
@@ -37,8 +38,8 @@ export default function SetItem({
 
   const backgroundColor = useMemo(() => {
     if (!ids.includes(item.id)) return
-    if (dark) return '#c2c2c2'
-    return '#c2c2c2'
+    if (dark) return DARK_RIPPLE
+    return LIGHT_RIPPLE
   }, [dark, ids, item.id])
 
   return (
