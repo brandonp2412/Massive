@@ -8,7 +8,7 @@ import {PADDING} from './constants'
 import CountMany from './count-many'
 import {AppDataSource} from './data-source'
 import {getNow, setRepo, settingsRepo} from './db'
-import GymSet, {defaultSet} from './gym-set'
+import GymSet from './gym-set'
 import MassiveInput from './MassiveInput'
 import {PlanPageParams} from './plan-page-params'
 import Settings from './settings'
@@ -21,7 +21,6 @@ export default function StartPlan() {
   const [reps, setReps] = useState(params.first?.reps.toString() || '0')
   const [weight, setWeight] = useState(params.first?.weight.toString() || '0')
   const [unit, setUnit] = useState<string>(params.first?.unit || 'kg')
-  const [best, setBest] = useState<GymSet>(params.first || defaultSet)
   const [selected, setSelected] = useState(0)
   const [settings, setSettings] = useState<Settings>()
   const [counts, setCounts] = useState<CountMany[]>()
@@ -59,24 +58,18 @@ export default function StartPlan() {
   const select = useCallback(
     async (index: number, newCounts?: CountMany[]) => {
       setSelected(index)
-      console.log(`${StartPlan.name}.next:`, {best, index})
       if (!counts && !newCounts) return
       const workout = counts ? counts[index] : newCounts[index]
       console.log(`${StartPlan.name}.next:`, {workout})
       const newBest = await getBestSet(workout.name)
-      if (!newBest)
-        return setBest({
-          ...best,
-          name: workout.name,
-        })
+      if (!newBest) return
       delete newBest.id
       console.log(`${StartPlan.name}.next:`, {newBest})
       setReps(newBest.reps.toString())
       setWeight(newBest.weight.toString())
       setUnit(newBest.unit)
-      setBest(newBest)
     },
-    [counts, best],
+    [counts],
   )
 
   useFocusEffect(
@@ -88,6 +81,9 @@ export default function StartPlan() {
 
   const handleSubmit = async () => {
     const [{now}] = await getNow()
+    const workout = counts[selected]
+    const best = await getBestSet(workout.name)
+    delete best.id
     const newSet: GymSet = {
       ...best,
       weight: +weight,
