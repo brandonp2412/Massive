@@ -19,7 +19,6 @@ const limit = 15
 
 export default function SetList() {
   const [sets, setSets] = useState<GymSet[]>([])
-  const [set, setSet] = useState<GymSet>(defaultSet)
   const [offset, setOffset] = useState(0)
   const [term, setTerm] = useState('')
   const [end, setEnd] = useState(false)
@@ -38,11 +37,6 @@ export default function SetList() {
     setSets(newSets)
     setOffset(0)
     setEnd(false)
-    const first = newSets[0]
-    if (!first) return
-    const newSet = {...first}
-    delete newSet.id
-    setSet(newSet)
   }, [])
 
   useFocusEffect(
@@ -84,15 +78,13 @@ export default function SetList() {
   }, [term, end, offset, sets])
 
   const onAdd = useCallback(async () => {
-    console.log(`${SetList.name}.onAdd`, {set})
     const [{now}] = await getNow()
-    const newSet: GymSet = set || {
-      ...defaultSet,
-      created: now,
-    }
-    newSet.created = now
-    navigation.navigate('EditSet', {set: newSet})
-  }, [navigation, set])
+    let set = sets[0]
+    if (!set) set = {...defaultSet}
+    set.created = now
+    delete set.id
+    navigation.navigate('EditSet', {set})
+  }, [navigation, sets])
 
   const search = useCallback(
     (value: string) => {
