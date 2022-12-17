@@ -78,6 +78,12 @@ export default function DrawerMenu({
           />
         }>
         <Menu.Item
+          icon="edit"
+          title="Edit"
+          onPress={edit}
+          disabled={ids?.length === 0}
+        />
+        <Menu.Item
           icon="content-copy"
           title="Copy"
           onPress={copy}
@@ -87,12 +93,6 @@ export default function DrawerMenu({
           icon="clear"
           title="Clear"
           onPress={clear}
-          disabled={ids?.length === 0}
-        />
-        <Menu.Item
-          icon="edit"
-          title="Edit"
-          onPress={edit}
           disabled={ids?.length === 0}
         />
         <Divider />
