@@ -45,21 +45,20 @@ export default function DrawerMenu({
   const copy = useCallback(async () => {
     if (name === 'Home') {
       const set = await setRepo.findOne({
-        where: {},
-        order: {created: {direction: 'DESC'}},
+        where: {id: ids.pop()},
       })
       delete set.id
       home.navigate('EditSet', {set})
     } else if (name === 'Plans') {
       const plan = await planRepo.findOne({
-        where: {},
+        where: {id: ids.pop()},
       })
       delete plan.id
       plans.navigate('EditPlan', {plan})
     }
     setShowMenu(false)
     setIds([])
-  }, [name, home, plans, setIds])
+  }, [name, home, plans, setIds, ids])
 
   const clear = useCallback(() => {
     setShowMenu(false)
@@ -82,7 +81,7 @@ export default function DrawerMenu({
           icon="content-copy"
           title="Copy"
           onPress={copy}
-          disabled={ids?.length !== 1}
+          disabled={ids?.length === 0}
         />
         <Menu.Item
           icon="clear"
