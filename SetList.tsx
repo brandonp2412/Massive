@@ -126,6 +126,7 @@ export default function SetList() {
   }, [])
 
   const remove = useCallback(async () => {
+    setIds([])
     setShowMenu(false)
     setShowRemove(false)
     await setRepo.delete(ids.length > 0 ? ids : {})
