@@ -2,17 +2,14 @@ import {DrawerNavigationProp} from '@react-navigation/drawer'
 import {useNavigation} from '@react-navigation/native'
 import {Appbar, IconButton} from 'react-native-paper'
 import {DrawerParamList} from './drawer-param-list'
-import DrawerMenu from './DrawerMenu'
 import useDark from './use-dark'
 
 export default function DrawerHeader({
   name,
-  ids,
-  setIds,
+  children,
 }: {
   name: keyof DrawerParamList
-  ids?: number[]
-  setIds?: (values: number[]) => void
+  children?: JSX.Element | JSX.Element[]
 }) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
   const dark = useDark()
@@ -25,7 +22,7 @@ export default function DrawerHeader({
         onPress={navigation.openDrawer}
       />
       <Appbar.Content title={name} />
-      <DrawerMenu name={name} ids={ids} setIds={setIds} />
+      {children}
     </Appbar.Header>
   )
 }

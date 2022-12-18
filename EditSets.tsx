@@ -59,7 +59,7 @@ export default function EditSets() {
     if (weight) update.weight = Number(weight)
     if (unit) update.unit = unit
     if (newImage) update.image = newImage
-    await setRepo.update(ids, update)
+    if (Object.keys(update).length > 0) await setRepo.update(ids, update)
     navigation.goBack()
   }
 
