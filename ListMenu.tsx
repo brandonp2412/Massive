@@ -8,12 +8,14 @@ export default function ListMenu({
   onCopy,
   onClear,
   onDelete,
+  onSelect,
   ids,
 }: {
   onEdit: () => void
   onCopy: () => void
   onClear: () => void
   onDelete: () => void
+  onSelect: () => void
   ids?: number[]
 }) {
   const [showMenu, setShowMenu] = useState(false)
@@ -41,6 +43,11 @@ export default function ListMenu({
     onDelete()
   }
 
+  const select = () => {
+    setShowMenu(false)
+    onSelect()
+  }
+
   return (
     <Menu
       visible={showMenu}
@@ -52,6 +59,7 @@ export default function ListMenu({
           icon="more-vert"
         />
       }>
+      <Menu.Item icon="done-all" title="Select all" onPress={select} />
       <Menu.Item
         icon="edit"
         title="Edit"

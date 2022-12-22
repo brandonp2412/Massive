@@ -78,6 +78,10 @@ export default function PlanList() {
     setIds([])
   }, [ids, refresh, term])
 
+  const select = useCallback(() => {
+    setIds(plans.map(plan => plan.id))
+  }, [plans])
+
   return (
     <>
       <DrawerHeader name="Plans">
@@ -87,6 +91,7 @@ export default function PlanList() {
           onDelete={remove}
           onEdit={edit}
           ids={ids}
+          onSelect={select}
         />
       </DrawerHeader>
       <Page onAdd={onAdd} term={term} search={search}>

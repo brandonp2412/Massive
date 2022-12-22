@@ -124,6 +124,10 @@ export default function SetList() {
     await refresh(term)
   }, [ids, refresh, term])
 
+  const select = useCallback(() => {
+    setIds(sets.map(set => set.id))
+  }, [sets])
+
   return (
     <>
       <DrawerHeader name="Home">
@@ -133,6 +137,7 @@ export default function SetList() {
           onDelete={remove}
           onEdit={edit}
           ids={ids}
+          onSelect={select}
         />
       </DrawerHeader>
 
