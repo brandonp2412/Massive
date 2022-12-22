@@ -160,7 +160,7 @@ export default function SettingsPage() {
     {name: 'Show unit', value: showUnit, onChange: changeUnit},
     {name: 'Show steps', value: steps, onChange: changeSteps},
     {name: 'Show date', value: showDate, onChange: changeShowDate},
-  ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase()))
+  ]
 
   const changeTheme = useCallback(
     (value: string) => {
@@ -197,19 +197,6 @@ export default function SettingsPage() {
     [setLightColor],
   )
 
-  const renderSwitch = useCallback(
-    ({item}: {item: Input<boolean>}) => (
-      <Switch
-        onPress={() => item.onChange(!item.value)}
-        key={item.name}
-        value={item.value}
-        onValueChange={item.onChange}>
-        {item.name}
-      </Switch>
-    ),
-    [],
-  )
-
   const selects: Input<string>[] = [
     {name: 'Theme', value: theme, onChange: changeTheme, items: themeOptions},
     {
@@ -233,7 +220,7 @@ export default function SettingsPage() {
         value: option,
       })),
     },
-  ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase()))
+  ]
 
   const renderSelect = useCallback(
     ({item}: {item: Input<string>}) => (
@@ -272,35 +259,73 @@ export default function SettingsPage() {
     <>
       <DrawerHeader name="Settings" />
       <Page term={term} search={setTerm} style={{flexGrow: 0}}>
-        <FlatList
-          style={{marginTop: MARGIN}}
-          data={switches}
-          renderItem={renderSwitch}
-        />
+        <Switch
+          onPress={() => changeAlarmEnabled(!alarm)}
+          value={alarm}
+          onValueChange={changeAlarmEnabled}>
+          Rest timers
+        </Switch>
+        <Switch
+          onPress={() => changeVibrate(!vibrate)}
+          value={vibrate}
+          onValueChange={changeVibrate}>
+          Vibrate
+        </Switch>
+        <Switch
+          onPress={() => changeNoSound(!noSound)}
+          value={noSound}
+          onValueChange={changeNoSound}>
+          Disable sound
+        </Switch>
+        <Switch
+          onPress={() => changeNotify(!notify)}
+          value={notify}
+          onValueChange={changeNotify}>
+          Notifications
+        </Switch>
+        <Switch
+          onPress={() => changeImages(!images)}
+          value={images}
+          onValueChange={changeImages}>
+          Show images
+        </Switch>
+        <Switch
+          onPress={() => changeUnit(!showUnit)}
+          value={showUnit}
+          onValueChange={changeUnit}>
+          Show unit
+        </Switch>
+        <Switch
+          onPress={() => changeSteps(!steps)}
+          value={steps}
+          onValueChange={changeSteps}>
+          Show steps
+        </Switch>
+        <Switch
+          onPress={() => changeShowDate(!showDate)}
+          value={showDate}
+          onValueChange={changeShowDate}>
+          Show date
+        </Switch>
+
         <FlatList data={selects} renderItem={renderSelect} />
-        {'alarm sound'.includes(term.toLowerCase()) && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingLeft: ITEM_PADDING,
-            }}>
-            <Subheading style={{width: 100}}>Alarm sound</Subheading>
-            <Button onPress={changeSound}>{soundString || 'Default'}</Button>
-          </View>
-        )}
-        {'export database'.includes(term.toLowerCase()) && (
-          <Button style={{alignSelf: 'flex-start'}} onPress={exportDatabase}>
-            Export database
-          </Button>
-        )}
-        {'import database'.includes(term.toLowerCase()) && (
-          <Button
-            style={{alignSelf: 'flex-start'}}
-            onPress={() => setImporting(true)}>
-            Import database
-          </Button>
-        )}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingLeft: ITEM_PADDING,
+          }}>
+          <Subheading style={{width: 100}}>Alarm sound</Subheading>
+          <Button onPress={changeSound}>{soundString || 'Default'}</Button>
+        </View>
+        <Button style={{alignSelf: 'flex-start'}} onPress={exportDatabase}>
+          Export database
+        </Button>
+        <Button
+          style={{alignSelf: 'flex-start'}}
+          onPress={() => setImporting(true)}>
+          Import database
+        </Button>
       </Page>
 
       <ConfirmDialog

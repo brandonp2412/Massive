@@ -1,0 +1,3 @@
+Didn't work:
+- Removing term filtering
+- Removing FlatList
