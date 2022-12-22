@@ -77,7 +77,7 @@ export default function ListMenu({
         title="Delete"
       />
       <ConfirmDialog
-        title="Delete all"
+        title={ids?.length === 0 ? 'Delete all' : 'Delete selected'}
         show={showRemove}
         setShow={setShowRemove}
         onOk={remove}
