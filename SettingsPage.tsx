@@ -5,13 +5,7 @@ import {
 } from '@react-navigation/native'
 import {format} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
-import {
-  DeviceEventEmitter,
-  FlatList,
-  NativeModules,
-  Platform,
-  View,
-} from 'react-native'
+import {DeviceEventEmitter, NativeModules, Platform, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Dirs, FileSystem} from 'react-native-file-access'
 import {Button, Subheading} from 'react-native-paper'
@@ -198,7 +192,7 @@ export default function SettingsPage() {
   )
 
   const renderSwitch = useCallback(
-    ({item}: {item: Input<boolean>}) => (
+    (item: Input<boolean>) => (
       <Switch
         onPress={() => item.onChange(!item.value)}
         key={item.name}
@@ -236,7 +230,7 @@ export default function SettingsPage() {
   ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase()))
 
   const renderSelect = useCallback(
-    ({item}: {item: Input<string>}) => (
+    (item: Input<string>) => (
       <Select
         value={item.value}
         onChange={item.onChange}
@@ -272,12 +266,10 @@ export default function SettingsPage() {
     <>
       <DrawerHeader name="Settings" />
       <Page term={term} search={setTerm} style={{flexGrow: 0}}>
-        <FlatList
-          style={{marginTop: MARGIN}}
-          data={switches}
-          renderItem={renderSwitch}
-        />
-        <FlatList data={selects} renderItem={renderSelect} />
+        <View style={{marginTop: MARGIN}}>
+          {switches.map(s => renderSwitch(s))}
+        </View>
+        <>{selects.map(s => renderSelect(s))}</>
         {'alarm sound'.includes(term.toLowerCase()) && (
           <View
             style={{
