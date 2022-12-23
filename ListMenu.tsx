@@ -67,15 +67,15 @@ export default function ListMenu({
         disabled={ids?.length === 0}
       />
       <Menu.Item
-        icon="content-copy"
-        title="Copy"
-        onPress={copy}
-        disabled={ids?.length === 0}
-      />
-      <Menu.Item
         icon="clear"
         title="Clear"
         onPress={clear}
+        disabled={ids?.length === 0}
+      />
+      <Menu.Item
+        icon="content-copy"
+        title="Copy"
+        onPress={copy}
         disabled={ids?.length === 0}
       />
       <Divider />
