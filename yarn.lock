@@ -2200,16 +2200,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-picker/picker@npm:^2.4.4":
-  version: 2.4.8
-  resolution: "@react-native-picker/picker@npm:2.4.8"
-  peerDependencies:
-    react: ">=16"
-    react-native: ">=0.57"
-  checksum: c2ac00b379a9a43188be53ce8e4eb849e6d02ad8a3afe18a88416d8d0d433ac33396eea34a6fdad27f8b4f8c88bc77b4a87fec146c99d987bd91244980762879
-  languageName: node
-  linkType: hard
-
 "@react-native/assets@npm:1.0.0":
   version: 1.0.0
   resolution: "@react-native/assets@npm:1.0.0"
@@ -7282,7 +7272,6 @@ __metadata:
     "@babel/runtime": ^7.12.5
     "@react-native-community/eslint-config": ^2.0.0
     "@react-native-masked-view/masked-view": ^0.2.7
-    "@react-native-picker/picker": ^2.4.4
     "@react-navigation/drawer": ^6.5.0
     "@react-navigation/native": ^6.0.13
     "@react-navigation/stack": ^6.3.0
