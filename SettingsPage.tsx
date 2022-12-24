@@ -41,6 +41,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (Object.keys(settings).length === 0) return
+    console.log(`${SettingsPage.name}.update`)
     settingsRepo.update({}, settings)
     setLightColor(settings.lightColor)
     setDarkColor(settings.darkColor)
