@@ -192,11 +192,7 @@ export default function SettingsPage() {
 
   const renderSwitch = useCallback(
     (item: Input<boolean>) => (
-      <Switch
-        onPress={() => item.onChange(!item.value)}
-        key={item.name}
-        value={item.value}
-        onValueChange={item.onChange}>
+      <Switch key={item.name} value={item.value} onChange={item.onChange}>
         {item.name}
       </Switch>
     ),
