@@ -6,7 +6,7 @@ import {
 import {format} from 'date-fns'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {Controller, useForm} from 'react-hook-form'
-import {DeviceEventEmitter, NativeModules, Platform, View} from 'react-native'
+import {NativeModules, Platform, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Dirs, FileSystem} from 'react-native-file-access'
 import {Button, Subheading} from 'react-native-paper'
@@ -16,6 +16,7 @@ import {AppDataSource} from './data-source'
 import {setRepo, settingsRepo} from './db'
 import {DrawerParamList} from './drawer-param-list'
 import DrawerHeader from './DrawerHeader'
+import LabelledButton from './LabelledButton'
 import {darkOptions, lightOptions, themeOptions} from './options'
 import Page from './Page'
 import Select from './Select'
@@ -41,16 +42,12 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (Object.keys(settings).length === 0) return
-    console.log(`${SettingsPage.name}.update`)
+    console.log(`${SettingsPage.name}.update`, {settings})
     settingsRepo.update({}, settings)
     setLightColor(settings.lightColor)
     setDarkColor(settings.darkColor)
     setTheme(settings.theme)
     if (!settings.alarm || ignoring) return
-    DeviceEventEmitter.emit('toast', {
-      value: 'Timers will now run after each set',
-      timeout: 4000,
-    })
     NativeModules.SettingsModule.ignoreBattery()
     setIgnoring(true)
   }, [settings, setDarkColor, setLightColor, setTheme, ignoring])
@@ -86,21 +83,9 @@ export default function SettingsPage() {
 
   const renderSwitch = useCallback(
     (key: keyof Settings) => (
-      <Controller
-        key={key}
-        name={key}
-        control={control}
-        render={({field: {onChange, value}}) => (
-          <Switch
-            value={value as boolean}
-            onPress={() => {
-              onChange(!value)
-            }}
-            onChange={onChange}>
-            {toSentenceCase(key)}
-          </Switch>
-        )}
-      />
+      <Switch control={control} name={key}>
+        {toSentenceCase(key)}
+      </Switch>
     ),
     [control],
   )
@@ -185,48 +170,34 @@ export default function SettingsPage() {
     toast('Database exported. Check downloads.')
   }, [])
 
-  const buttons = useMemo(
-    () => [
-      {
-        name: 'Alarm sound',
-        element: (
-          <View
-            key="alarm-sound"
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingLeft: ITEM_PADDING,
-            }}>
-            <Subheading style={{width: 100}}>Alarm sound</Subheading>
-            <Button onPress={changeSound}>{soundString || 'Default'}</Button>
-          </View>
-        ),
-      },
-      {
-        name: 'Export database',
-        element: (
-          <Button
-            key="export-db"
-            style={{alignSelf: 'flex-start'}}
-            onPress={exportDatabase}>
-            Export database
-          </Button>
-        ),
-      },
-      {
-        name: 'Import database',
-        element: (
-          <Button
-            key="import-db"
-            style={{alignSelf: 'flex-start'}}
-            onPress={() => setImporting(true)}>
-            Import database
-          </Button>
-        ),
-      },
-    ],
-    [changeSound, exportDatabase, soundString],
-  )
+  const buttons = [
+    {
+      name: 'Alarm sound',
+      element: (
+        <LabelledButton label="Alarm sound" onPress={changeSound}>
+          {soundString || 'Default'}
+        </LabelledButton>
+      ),
+    },
+    {
+      name: 'Export database',
+      element: (
+        <Button style={{alignSelf: 'flex-start'}} onPress={exportDatabase}>
+          Export database
+        </Button>
+      ),
+    },
+    {
+      name: 'Import database',
+      element: (
+        <Button
+          style={{alignSelf: 'flex-start'}}
+          onPress={() => setImporting(true)}>
+          Import database
+        </Button>
+      ),
+    },
+  ]
 
   return (
     <>
