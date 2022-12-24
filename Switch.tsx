@@ -4,20 +4,18 @@ import {MARGIN} from './constants'
 
 export default function Switch({
   value,
-  onValueChange,
-  onPress,
+  onChange,
   children,
 }: {
   value?: boolean
-  onValueChange: (value: boolean) => void
-  onPress: () => void
+  onChange: (value: boolean) => void
   children: string
 }) {
   const {colors} = useTheme()
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => onChange(!value)}
       style={{
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -28,7 +26,7 @@ export default function Switch({
         color={colors.primary}
         style={{marginRight: MARGIN}}
         value={value}
-        onValueChange={onValueChange}
+        onValueChange={onChange}
       />
       <Text>{children}</Text>
     </Pressable>

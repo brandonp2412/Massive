@@ -5,13 +5,7 @@ import {
 } from '@react-navigation/native'
 import {format} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
-import {
-  DeviceEventEmitter,
-  FlatList,
-  NativeModules,
-  Platform,
-  View,
-} from 'react-native'
+import {DeviceEventEmitter, NativeModules, Platform, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Dirs, FileSystem} from 'react-native-file-access'
 import {Button, Subheading} from 'react-native-paper'
@@ -54,7 +48,6 @@ export default function SettingsPage() {
   useFocusEffect(
     useCallback(() => {
       settingsRepo.findOne({where: {}}).then(settings => {
-        console.log(`${SettingsPage.name}.focus:`, settings)
         setAlarm(settings.alarm)
         setVibrate(settings.vibrate)
         setSound(settings.sound)
@@ -198,12 +191,8 @@ export default function SettingsPage() {
   )
 
   const renderSwitch = useCallback(
-    ({item}: {item: Input<boolean>}) => (
-      <Switch
-        onPress={() => item.onChange(!item.value)}
-        key={item.name}
-        value={item.value}
-        onValueChange={item.onChange}>
+    (item: Input<boolean>) => (
+      <Switch key={item.name} value={item.value} onChange={item.onChange}>
         {item.name}
       </Switch>
     ),
@@ -236,8 +225,9 @@ export default function SettingsPage() {
   ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase()))
 
   const renderSelect = useCallback(
-    ({item}: {item: Input<string>}) => (
+    (item: Input<string>) => (
       <Select
+        key={item.name}
         value={item.value}
         onChange={item.onChange}
         label={item.name}
@@ -268,39 +258,60 @@ export default function SettingsPage() {
     toast('Database exported. Check downloads.')
   }, [])
 
+  const buttons = useMemo(
+    () =>
+      [
+        {
+          name: 'Alarm sound',
+          element: (
+            <View
+              key="alarm-sound"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingLeft: ITEM_PADDING,
+              }}>
+              <Subheading style={{width: 100}}>Alarm sound</Subheading>
+              <Button onPress={changeSound}>{soundString || 'Default'}</Button>
+            </View>
+          ),
+        },
+        {
+          name: 'Export database',
+          element: (
+            <Button
+              key="export-db"
+              style={{alignSelf: 'flex-start'}}
+              onPress={exportDatabase}>
+              Export database
+            </Button>
+          ),
+        },
+        {
+          name: 'Import database',
+          element: (
+            <Button
+              key="import-db"
+              style={{alignSelf: 'flex-start'}}
+              onPress={() => setImporting(true)}>
+              Import database
+            </Button>
+          ),
+        },
+      ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase())),
+    [changeSound, exportDatabase, soundString, term],
+  )
+
   return (
     <>
       <DrawerHeader name="Settings" />
+
       <Page term={term} search={setTerm} style={{flexGrow: 0}}>
-        <FlatList
-          style={{marginTop: MARGIN}}
-          data={switches}
-          renderItem={renderSwitch}
-        />
-        <FlatList data={selects} renderItem={renderSelect} />
-        {'alarm sound'.includes(term.toLowerCase()) && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingLeft: ITEM_PADDING,
-            }}>
-            <Subheading style={{width: 100}}>Alarm sound</Subheading>
-            <Button onPress={changeSound}>{soundString || 'Default'}</Button>
-          </View>
-        )}
-        {'export database'.includes(term.toLowerCase()) && (
-          <Button style={{alignSelf: 'flex-start'}} onPress={exportDatabase}>
-            Export database
-          </Button>
-        )}
-        {'import database'.includes(term.toLowerCase()) && (
-          <Button
-            style={{alignSelf: 'flex-start'}}
-            onPress={() => setImporting(true)}>
-            Import database
-          </Button>
-        )}
+        <View style={{marginTop: MARGIN}}>
+          {switches.map(s => renderSwitch(s))}
+          {selects.map(s => renderSelect(s))}
+          {buttons.map(b => b.element)}
+        </View>
       </Page>
 
       <ConfirmDialog
