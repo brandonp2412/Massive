@@ -61,15 +61,15 @@ export default function ListMenu({
       }>
       <Menu.Item icon="done-all" title="Select all" onPress={select} />
       <Menu.Item
-        icon="edit"
-        title="Edit"
-        onPress={edit}
-        disabled={ids?.length === 0}
-      />
-      <Menu.Item
         icon="clear"
         title="Clear"
         onPress={clear}
+        disabled={ids?.length === 0}
+      />
+      <Menu.Item
+        icon="edit"
+        title="Edit"
+        onPress={edit}
         disabled={ids?.length === 0}
       />
       <Menu.Item
