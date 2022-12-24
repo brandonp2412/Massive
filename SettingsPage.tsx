@@ -48,7 +48,6 @@ export default function SettingsPage() {
   useFocusEffect(
     useCallback(() => {
       settingsRepo.findOne({where: {}}).then(settings => {
-        console.log(`${SettingsPage.name}.focus:`, settings)
         setAlarm(settings.alarm)
         setVibrate(settings.vibrate)
         setSound(settings.sound)
@@ -232,6 +231,7 @@ export default function SettingsPage() {
   const renderSelect = useCallback(
     (item: Input<string>) => (
       <Select
+        key={item.name}
         value={item.value}
         onChange={item.onChange}
         label={item.name}
