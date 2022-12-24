@@ -79,7 +79,7 @@ export default function EditPlan() {
           {DAYS.map(day => (
             <Switch
               key={day}
-              onValueChange={value => toggleDay(value, day)}
+              onChange={value => toggleDay(value, day)}
               onPress={() => toggleDay(!days.includes(day), day)}
               value={days.includes(day)}>
               {day}
@@ -94,7 +94,7 @@ export default function EditPlan() {
             names.map(name => (
               <Switch
                 key={name}
-                onValueChange={value => toggleWorkout(value, name)}
+                onChange={value => toggleWorkout(value, name)}
                 value={workouts.includes(name)}
                 onPress={() => toggleWorkout(!workouts.includes(name), name)}>
                 {name}

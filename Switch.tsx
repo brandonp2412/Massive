@@ -4,12 +4,12 @@ import {MARGIN} from './constants'
 
 export default function Switch({
   value,
-  onValueChange,
+  onChange,
   onPress,
   children,
 }: {
   value?: boolean
-  onValueChange: (value: boolean) => void
+  onChange: (value: boolean) => void
   onPress: () => void
   children: string
 }) {
@@ -28,7 +28,7 @@ export default function Switch({
         color={colors.primary}
         style={{marginRight: MARGIN}}
         value={value}
-        onValueChange={onValueChange}
+        onValueChange={onChange}
       />
       <Text>{children}</Text>
     </Pressable>

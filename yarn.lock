@@ -7306,6 +7306,7 @@ __metadata:
     jest: ^29.2.2
     metro-react-native-babel-preset: ^0.73.3
     react: ^18.2.0
+    react-hook-form: ^7.41.1
     react-native: ^0.70.5
     react-native-document-picker: ^8.1.2
     react-native-file-access: ^2.5.0
@@ -8759,6 +8760,15 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
   checksum: 4258eabdbbf74aaebc38ad1fd7cfdc1984d2a844a2247b39a341c55c1beb02d5e855e6473ec5683205a52b2251d0f7dffa07cd8100f402dd2698af88b932d946
+  languageName: node
+  linkType: hard
+
+"react-hook-form@npm:^7.41.1":
+  version: 7.41.1
+  resolution: "react-hook-form@npm:7.41.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18
+  checksum: 30f7ea67e29c3527d25f87b9ea8789f6722780759adf0718a0dadc6160227ae763c68ddedf63d8311f0902e4ce27225eff37b93a82eac868fc5e0a0d00dbbd14
   languageName: node
   linkType: hard
 
