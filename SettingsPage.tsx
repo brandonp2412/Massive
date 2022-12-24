@@ -94,7 +94,6 @@ export default function SettingsPage() {
           <Switch
             value={value as boolean}
             onPress={() => {
-              console.log({value})
               onChange(!value)
             }}
             onChange={onChange}>
