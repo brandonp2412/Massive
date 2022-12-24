@@ -262,16 +262,13 @@ export default function SettingsPage() {
     toast('Database exported. Check downloads.')
   }, [])
 
-  return (
-    <>
-      <DrawerHeader name="Settings" />
-      <Page term={term} search={setTerm} style={{flexGrow: 0}}>
-        <View style={{marginTop: MARGIN}}>
-          {switches.map(s => renderSwitch(s))}
-        </View>
-        <>{selects.map(s => renderSelect(s))}</>
-        {'alarm sound'.includes(term.toLowerCase()) && (
+  const buttons = useMemo(
+    () => [
+      {
+        name: 'Alarm sound',
+        element: (
           <View
+            key="alarm-sound"
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -280,19 +277,46 @@ export default function SettingsPage() {
             <Subheading style={{width: 100}}>Alarm sound</Subheading>
             <Button onPress={changeSound}>{soundString || 'Default'}</Button>
           </View>
-        )}
-        {'export database'.includes(term.toLowerCase()) && (
-          <Button style={{alignSelf: 'flex-start'}} onPress={exportDatabase}>
+        ),
+      },
+      {
+        name: 'Export database',
+        element: (
+          <Button
+            key="export-db"
+            style={{alignSelf: 'flex-start'}}
+            onPress={exportDatabase}>
             Export database
           </Button>
-        )}
-        {'import database'.includes(term.toLowerCase()) && (
+        ),
+      },
+      {
+        name: 'Import database',
+        element: (
           <Button
+            key="import-db"
             style={{alignSelf: 'flex-start'}}
             onPress={() => setImporting(true)}>
             Import database
           </Button>
-        )}
+        ),
+      },
+    ],
+    [changeSound, exportDatabase, soundString],
+  )
+
+  return (
+    <>
+      <DrawerHeader name="Settings" />
+
+      <Page term={term} search={setTerm} style={{flexGrow: 0}}>
+        <View style={{marginTop: MARGIN}}>
+          {switches.map(s => renderSwitch(s))}
+          {selects.map(s => renderSelect(s))}
+          {buttons
+            .filter(b => b.name.includes(term.toLowerCase()))
+            .map(b => b.element)}
+        </View>
       </Page>
 
       <ConfirmDialog
