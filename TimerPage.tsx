@@ -41,7 +41,7 @@ export default function TimerPage() {
   }, [minutes, seconds])
 
   const left = useMemo(() => {
-    return Dimensions.get('screen').width * 0.5 - 85
+    return Dimensions.get('screen').width * 0.5 - 60
   }, [])
 
   return (
@@ -54,13 +54,11 @@ export default function TimerPage() {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <View>
-            <Text style={{fontSize: 70, top: 150}}>
-              {minutes}:{seconds}
-            </Text>
-          </View>
+          <Text style={{fontSize: 70, position: 'absolute'}}>
+            {minutes}:{seconds}
+          </Text>
           <ProgressCircle
-            style={{height: 300, width: 500, marginBottom: MARGIN, top: -50}}
+            style={{height: 300, width: 300, marginBottom: MARGIN}}
             progress={progress}
             strokeWidth={10}
             progressColor={colors.text}
@@ -68,9 +66,7 @@ export default function TimerPage() {
           />
         </View>
       </View>
-      <Button
-        onPress={add}
-        style={{position: 'absolute', top: '85%', left: left + 25}}>
+      <Button onPress={add} style={{position: 'absolute', top: '82%', left}}>
         Add 1 min
       </Button>
       <MassiveFab icon="stop" onPress={stop} />
