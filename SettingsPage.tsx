@@ -259,46 +259,47 @@ export default function SettingsPage() {
   }, [])
 
   const buttons = useMemo(
-    () => [
-      {
-        name: 'Alarm sound',
-        element: (
-          <View
-            key="alarm-sound"
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingLeft: ITEM_PADDING,
-            }}>
-            <Subheading style={{width: 100}}>Alarm sound</Subheading>
-            <Button onPress={changeSound}>{soundString || 'Default'}</Button>
-          </View>
-        ),
-      },
-      {
-        name: 'Export database',
-        element: (
-          <Button
-            key="export-db"
-            style={{alignSelf: 'flex-start'}}
-            onPress={exportDatabase}>
-            Export database
-          </Button>
-        ),
-      },
-      {
-        name: 'Import database',
-        element: (
-          <Button
-            key="import-db"
-            style={{alignSelf: 'flex-start'}}
-            onPress={() => setImporting(true)}>
-            Import database
-          </Button>
-        ),
-      },
-    ],
-    [changeSound, exportDatabase, soundString],
+    () =>
+      [
+        {
+          name: 'Alarm sound',
+          element: (
+            <View
+              key="alarm-sound"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingLeft: ITEM_PADDING,
+              }}>
+              <Subheading style={{width: 100}}>Alarm sound</Subheading>
+              <Button onPress={changeSound}>{soundString || 'Default'}</Button>
+            </View>
+          ),
+        },
+        {
+          name: 'Export database',
+          element: (
+            <Button
+              key="export-db"
+              style={{alignSelf: 'flex-start'}}
+              onPress={exportDatabase}>
+              Export database
+            </Button>
+          ),
+        },
+        {
+          name: 'Import database',
+          element: (
+            <Button
+              key="import-db"
+              style={{alignSelf: 'flex-start'}}
+              onPress={() => setImporting(true)}>
+              Import database
+            </Button>
+          ),
+        },
+      ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase())),
+    [changeSound, exportDatabase, soundString, term],
   )
 
   return (
@@ -309,9 +310,7 @@ export default function SettingsPage() {
         <View style={{marginTop: MARGIN}}>
           {switches.map(s => renderSwitch(s))}
           {selects.map(s => renderSelect(s))}
-          {buttons
-            .filter(b => b.name.includes(term.toLowerCase()))
-            .map(b => b.element)}
+          {buttons.map(b => b.element)}
         </View>
       </Page>
 
