@@ -1,24 +1,15 @@
-import {MigrationInterface, QueryRunner, TableColumn} from 'typeorm'
+import {MigrationInterface, QueryRunner} from 'typeorm'
 
 export class splitColor1669420187764 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.addColumn(
-      'settings',
-      new TableColumn({name: 'lightColor', type: 'text', isNullable: true}),
-    )
-    await queryRunner.addColumn(
-      'settings',
-      new TableColumn({name: 'darkColor', type: 'text', isNullable: true}),
-    )
-    await queryRunner.dropColumn('settings', 'color')
+    await queryRunner.query('ALTER TABLE settings ADD lightColor TEXT')
+    await queryRunner.query('ALTER TABLE settings ADD darkColor TEXT')
+    await queryRunner.dropColumn('settings', 'color').catch(console.error)
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropColumn('settings', 'darkColor')
     await queryRunner.dropColumn('settings', 'lightColor')
-    await queryRunner.addColumn(
-      'settings',
-      new TableColumn({name: 'color', type: 'text', isNullable: true}),
-    )
+    await queryRunner.query('ALTER TABLE settings ADD color TEXT')
   }
 }
