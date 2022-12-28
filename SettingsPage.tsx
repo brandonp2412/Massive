@@ -174,12 +174,14 @@ export default function SettingsPage() {
   const changeDate = useCallback((value: string) => {
     settingsRepo.update({}, {date: value})
     setDate(value)
+    toast('Changed date format.')
   }, [])
 
   const changeDarkColor = useCallback(
     (value: string) => {
       setDarkColor(value)
       settingsRepo.update({}, {darkColor: value})
+      toast('Set primary color for dark mode.')
     },
     [setDarkColor],
   )
@@ -188,6 +190,7 @@ export default function SettingsPage() {
     (value: string) => {
       setLightColor(value)
       settingsRepo.update({}, {lightColor: value})
+      toast('Set primary color for light mode.')
     },
     [setLightColor],
   )
