@@ -69,6 +69,12 @@ export default function SettingsPage() {
     }, []),
   )
 
+  const soundString = useMemo(() => {
+    if (!sound) return null
+    const split = sound.split('/')
+    return split.pop()
+  }, [sound])
+
   const changeAlarmEnabled = useCallback(
     (enabled: boolean) => {
       if (enabled)
@@ -99,7 +105,7 @@ export default function SettingsPage() {
     if (!fileCopyUri) return
     settingsRepo.update({}, {sound: fileCopyUri})
     setSound(fileCopyUri)
-    toast('This song will now play after rest timers complete.')
+    toast('Sound will play after rest timers.')
   }, [])
 
   const changeNotify = useCallback((enabled: boolean) => {
@@ -167,12 +173,6 @@ export default function SettingsPage() {
     settingsRepo.update({}, {date: value})
     setDate(value)
   }, [])
-
-  const soundString = useMemo(() => {
-    if (!sound) return null
-    const split = sound.split('/')
-    return split.pop()
-  }, [sound])
 
   const changeDarkColor = useCallback(
     (value: string) => {
