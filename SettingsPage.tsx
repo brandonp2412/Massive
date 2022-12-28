@@ -58,9 +58,12 @@ export default function SettingsPage() {
         setDate(settings.date)
         setShowDate(settings.showDate)
         setNoSound(settings.noSound)
+        if (Platform.OS !== 'android') return
+        NativeModules.SettingsModule.ignoringBattery((isIgnoring: boolean) => {
+          if (!isIgnoring && settings.alarm) setAlarm(false)
+          setIgnoring(isIgnoring)
+        })
       })
-      if (Platform.OS !== 'android') return
-      NativeModules.SettingsModule.ignoringBattery(setIgnoring)
       NativeModules.SettingsModule.is24().then((is24: boolean) => {
         console.log(`${SettingsPage.name}.focus:`, {is24})
         if (is24) setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
