@@ -38,7 +38,6 @@ export default function StartPlan() {
     const questions = workouts
       .map((workout, index) => `('${workout}',${index})`)
       .join(',')
-    console.log({questions, workouts})
     const select = `
       SELECT workouts.name, COUNT(sets.id) as total, sets.sets
       FROM (select 0 as name, 0 as sequence union values ${questions}) as workouts 
