@@ -58,7 +58,6 @@ export default function SettingsPage() {
         setDate(settings.date)
         setShowDate(settings.showDate)
         setNoSound(settings.noSound)
-        if (Platform.OS !== 'android') return
         NativeModules.SettingsModule.ignoringBattery((isIgnoring: boolean) => {
           if (!isIgnoring && settings.alarm) setAlarm(false)
           setIgnoring(isIgnoring)
