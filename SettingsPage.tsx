@@ -50,27 +50,6 @@ export default function SettingsPage() {
     return split.pop()
   }, [settings.sound])
 
-  const changeAlarmEnabled = useCallback(
-    async (enabled: boolean) => {
-      if (enabled) toast('Timers will now run after each set.')
-      else toast('Stopped timers running after each set.')
-      if (enabled && !ignoring) NativeModules.SettingsModule.ignoreBattery()
-      const updated = await settingsRepo.save({...settings, alarm: enabled})
-      setSettings(updated)
-    },
-    [settings, ignoring],
-  )
-
-  const changeVibrate = useCallback(
-    async (enabled: boolean) => {
-      if (enabled) toast('When a timer completes, vibrate your phone.')
-      else toast('Stop vibrating at the end of timers.')
-      const updated = await settingsRepo.save({...settings, vibrate: enabled})
-      setSettings(updated)
-    },
-    [settings],
-  )
-
   const changeSound = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
       type: 'audio/*',
@@ -82,157 +61,136 @@ export default function SettingsPage() {
     toast('Sound will play after rest timers.')
   }, [settings])
 
-  const changeNotify = useCallback(
-    async (enabled: boolean) => {
-      const updated = await settingsRepo.save({...settings, notify: enabled})
-      setSettings(updated)
-      if (enabled) toast('Show when a set is a new record.')
-      else toast('Stopped showing notifications for new records.')
-    },
-    [settings],
-  )
-
-  const changeImages = useCallback(
-    async (enabled: boolean) => {
-      const updated = await settingsRepo.save({...settings, images: enabled})
-      setSettings(updated)
-      if (enabled) toast('Show images for sets.')
-      else toast('Stopped showing images for sets.')
-    },
-    [settings],
-  )
-
-  const changeUnit = useCallback(
-    async (enabled: boolean) => {
-      const updated = await settingsRepo.save({...settings, showUnit: enabled})
-      setSettings(updated)
-      if (enabled) toast('Show option to select unit for sets.')
-      else toast('Hid unit option for sets.')
-    },
-    [settings],
-  )
-
-  const changeSteps = useCallback(
-    async (enabled: boolean) => {
-      const updated = await settingsRepo.save({...settings, steps: enabled})
-      setSettings(updated)
-      if (enabled) toast('Show steps for a workout.')
-      else toast('Stopped showing steps for workouts.')
-    },
-    [settings],
-  )
-
-  const changeShowDate = useCallback(
-    async (enabled: boolean) => {
-      const updated = await settingsRepo.save({...settings, showDate: enabled})
-      setSettings(updated)
-      if (enabled) toast('Show date for sets by default.')
-      else toast('Stopped showing date for sets by default.')
-    },
-    [settings],
-  )
-
-  const changeNoSound = useCallback(
-    async (enabled: boolean) => {
-      const updated = await settingsRepo.save({...settings, noSound: enabled})
-      setSettings(updated)
-      if (enabled) toast('Disable sound on rest timer alarms.')
-      else toast('Enabled sound for rest timer alarms.')
-    },
-    [settings],
-  )
-
   const switches: Input<boolean>[] = [
-    {name: 'Rest timers', value: settings.alarm, onChange: changeAlarmEnabled},
-    {name: 'Vibrate', value: settings.vibrate, onChange: changeVibrate},
-    {name: 'Disable sound', value: settings.noSound, onChange: changeNoSound},
-    {name: 'Notifications', value: settings.notify, onChange: changeNotify},
-    {name: 'Show images', value: settings.images, onChange: changeImages},
-    {name: 'Show unit', value: settings.showUnit, onChange: changeUnit},
-    {name: 'Show steps', value: settings.steps, onChange: changeSteps},
-    {name: 'Show date', value: settings.showDate, onChange: changeShowDate},
-  ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase()))
+    {name: 'Rest timers', value: settings.alarm, key: 'alarm'},
+    {name: 'Vibrate', value: settings.vibrate, key: 'vibrate'},
+    {name: 'Disable sound', value: settings.noSound, key: 'noSound'},
+    {name: 'Notifications', value: settings.notify, key: 'notify'},
+    {name: 'Show images', value: settings.images, key: 'images'},
+    {name: 'Show unit', value: settings.showUnit, key: 'showUnit'},
+    {name: 'Show steps', value: settings.steps, key: 'steps'},
+    {name: 'Show date', value: settings.showDate, key: 'showDate'},
+  ]
 
-  const changeTheme = useCallback(
-    (value: string) => {
-      settingsRepo.update({}, {theme: value})
-      setTheme(value)
-    },
-    [setTheme],
-  )
-
-  const changeDate = useCallback(
-    async (value: string) => {
-      const updated = await settingsRepo.save({...settings, date: value})
+  const changeString = useCallback(
+    async (key: keyof Settings, value: string) => {
+      const updated = await settingsRepo.save({...settings, [key]: value})
       setSettings(updated)
-      toast('Changed date format.')
+      switch (key) {
+        case 'date':
+          return toast('Changed date format')
+        case 'darkColor':
+          setDarkColor(value)
+          return toast('Set primary color for dark mode.')
+        case 'lightColor':
+          setLightColor(value)
+          return toast('Set primary color for light mode.')
+        case 'vibrate':
+          return toast('Set primary color for light mode.')
+        case 'sound':
+          return toast('Sound will play after rest timers.')
+        case 'theme':
+          setTheme(value as string)
+          if (value === 'dark') toast('Theme will always be dark.')
+          else if (value === 'light') toast('Theme will always be light.')
+          else if (value === 'system') toast('Theme will follow system.')
+          return
+      }
     },
-    [settings],
+    [settings, setTheme, setDarkColor, setLightColor],
   )
 
-  const changeDarkColor = useCallback(
-    (value: string) => {
-      setDarkColor(value)
-      settingsRepo.update({}, {darkColor: value})
-      toast('Set primary color for dark mode.')
+  const changeBoolean = useCallback(
+    async (key: keyof Settings, value: boolean) => {
+      const updated = await settingsRepo.save({...settings, [key]: value})
+      setSettings(updated)
+      switch (key) {
+        case 'alarm':
+          if (value) toast('Timers will now run after each set.')
+          else toast('Stopped timers running after each set.')
+          if (value && !ignoring) NativeModules.SettingsModule.ignoreBattery()
+          return
+        case 'vibrate':
+          if (value) toast('Alarms will now vibrate.')
+          else toast('Alarms will no longer vibrate.')
+          return
+        case 'notify':
+          if (value) toast('Show notifications for new records.')
+          else toast('Stopped notifications for new records.')
+          return
+        case 'images':
+          if (value) toast('Show images for sets.')
+          else toast('Hid images for sets.')
+          return
+        case 'showUnit':
+          if (value) toast('Show option to select unit for sets.')
+          else toast('Hid unit option for sets.')
+          return
+        case 'steps':
+          if (value) toast('Show steps for a workout.')
+          else toast('Hid steps for workouts.')
+          return
+        case 'showDate':
+          if (value) toast('Show date for sets.')
+          else toast('Hid date on sets.')
+          return
+        case 'noSound':
+          if (value) toast('Disable sound on rest timer alarms.')
+          else toast('Enabled sound for rest timer alarms.')
+          return
+      }
     },
-    [setDarkColor],
-  )
-
-  const changeLightColor = useCallback(
-    (value: string) => {
-      setLightColor(value)
-      settingsRepo.update({}, {lightColor: value})
-      toast('Set primary color for light mode.')
-    },
-    [setLightColor],
+    [settings, ignoring],
   )
 
   const renderSwitch = useCallback(
     (item: Input<boolean>) => (
-      <Switch key={item.name} value={item.value} onChange={item.onChange}>
+      <Switch
+        key={item.name}
+        value={item.value}
+        onChange={value => changeBoolean(item.key, value)}>
         {item.name}
       </Switch>
     ),
-    [],
+    [changeBoolean],
   )
 
   const selects: Input<string>[] = [
-    {name: 'Theme', value: theme, onChange: changeTheme, items: themeOptions},
+    {name: 'Theme', value: theme, items: themeOptions, key: 'theme'},
     {
       name: 'Dark color',
       value: darkColor,
-      onChange: changeDarkColor,
       items: lightOptions,
+      key: 'darkColor',
     },
     {
       name: 'Light color',
       value: lightColor,
-      onChange: changeLightColor,
       items: darkOptions,
+      key: 'lightColor',
     },
     {
       name: 'Date format',
       value: settings.date,
-      onChange: changeDate,
       items: formatOptions.map(option => ({
         label: format(today, option),
         value: option,
       })),
+      key: 'date',
     },
-  ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase()))
+  ]
 
   const renderSelect = useCallback(
     (item: Input<string>) => (
       <Select
         key={item.name}
         value={item.value}
-        onChange={item.onChange}
+        onChange={value => changeString(item.key, value)}
         label={item.name}
         items={item.items}
       />
     ),
-    [],
+    [changeString],
   )
 
   const confirmImport = useCallback(async () => {
