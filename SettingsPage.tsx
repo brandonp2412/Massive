@@ -25,13 +25,14 @@ const defaultFormats = ['P', 'Pp', 'ccc p', 'p']
 export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
-  const {theme, setTheme, lightColor, setLightColor, darkColor, setDarkColor} =
-    useTheme()
   const [formatOptions, setFormatOptions] = useState<string[]>(defaultFormats)
   const [importing, setImporting] = useState(false)
   const [settings, setSettings] = useState(new Settings())
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
   const today = new Date()
+
+  const {theme, setTheme, lightColor, setLightColor, darkColor, setDarkColor} =
+    useTheme()
 
   useEffect(() => {
     settingsRepo.findOne({where: {}}).then(setSettings)
