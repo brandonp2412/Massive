@@ -1,11 +1,7 @@
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native'
+import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {format} from 'date-fns'
-import {useCallback, useMemo, useState} from 'react'
-import {DeviceEventEmitter, NativeModules, Platform, View} from 'react-native'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {NativeModules, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Dirs, FileSystem} from 'react-native-file-access'
 import {Button, Subheading} from 'react-native-paper'
@@ -19,6 +15,7 @@ import Input from './input'
 import {darkOptions, lightOptions, themeOptions} from './options'
 import Page from './Page'
 import Select from './Select'
+import Settings from './settings'
 import Switch from './Switch'
 import {toast} from './toast'
 import {useTheme} from './use-theme'
@@ -28,76 +25,50 @@ const defaultFormats = ['P', 'Pp', 'ccc p', 'p']
 export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
-  const [vibrate, setVibrate] = useState(false)
-  const [alarm, setAlarm] = useState(false)
-  const [sound, setSound] = useState('')
-  const [notify, setNotify] = useState(false)
-  const [images, setImages] = useState(false)
-  const [showUnit, setShowUnit] = useState(false)
-  const [steps, setSteps] = useState(false)
-  const [date, setDate] = useState('P')
   const {theme, setTheme, lightColor, setLightColor, darkColor, setDarkColor} =
     useTheme()
-  const [showDate, setShowDate] = useState(false)
-  const [noSound, setNoSound] = useState(false)
   const [formatOptions, setFormatOptions] = useState<string[]>(defaultFormats)
   const [importing, setImporting] = useState(false)
+  const [settings, setSettings] = useState(new Settings())
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
   const today = new Date()
 
-  useFocusEffect(
-    useCallback(() => {
-      settingsRepo.findOne({where: {}}).then(settings => {
-        setAlarm(settings.alarm)
-        setVibrate(settings.vibrate)
-        setSound(settings.sound)
-        setNotify(settings.notify)
-        setImages(settings.images)
-        setShowUnit(settings.showUnit)
-        setSteps(settings.steps)
-        setDate(settings.date)
-        setShowDate(settings.showDate)
-        setNoSound(settings.noSound)
-        NativeModules.SettingsModule.ignoringBattery((isIgnoring: boolean) => {
-          if (!isIgnoring && settings.alarm) setAlarm(false)
-          setIgnoring(isIgnoring)
-        })
-      })
-      NativeModules.SettingsModule.is24().then((is24: boolean) => {
-        console.log(`${SettingsPage.name}.focus:`, {is24})
-        if (is24) setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
-        else setFormatOptions(defaultFormats)
-      })
-    }, []),
-  )
+  useEffect(() => {
+    settingsRepo.findOne({where: {}}).then(setSettings)
+    NativeModules.SettingsModule.ignoringBattery(setIgnoring)
+    NativeModules.SettingsModule.is24().then((is24: boolean) => {
+      console.log(`${SettingsPage.name}.focus:`, {is24})
+      if (is24) setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
+      else setFormatOptions(defaultFormats)
+    })
+  }, [])
 
   const soundString = useMemo(() => {
-    if (!sound) return null
-    const split = sound.split('/')
+    if (!settings.sound) return null
+    const split = settings.sound.split('/')
     return split.pop()
-  }, [sound])
+  }, [settings.sound])
 
   const changeAlarmEnabled = useCallback(
-    (enabled: boolean) => {
-      if (enabled)
-        DeviceEventEmitter.emit('toast', {
-          value: 'Timers will now run after each set',
-          timeout: 4000,
-        })
+    async (enabled: boolean) => {
+      if (enabled) toast('Timers will now run after each set.')
       else toast('Stopped timers running after each set.')
       if (enabled && !ignoring) NativeModules.SettingsModule.ignoreBattery()
-      setAlarm(enabled)
-      settingsRepo.update({}, {alarm: enabled})
+      const updated = await settingsRepo.save({...settings, alarm: enabled})
+      setSettings(updated)
     },
-    [ignoring],
+    [settings, ignoring],
   )
 
-  const changeVibrate = useCallback((enabled: boolean) => {
-    if (enabled) toast('When a timer completes, vibrate your phone.')
-    else toast('Stop vibrating at the end of timers.')
-    setVibrate(enabled)
-    settingsRepo.update({}, {vibrate: enabled})
-  }, [])
+  const changeVibrate = useCallback(
+    async (enabled: boolean) => {
+      if (enabled) toast('When a timer completes, vibrate your phone.')
+      else toast('Stop vibrating at the end of timers.')
+      const updated = await settingsRepo.save({...settings, vibrate: enabled})
+      setSettings(updated)
+    },
+    [settings],
+  )
 
   const changeSound = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
@@ -105,62 +76,80 @@ export default function SettingsPage() {
       copyTo: 'documentDirectory',
     })
     if (!fileCopyUri) return
-    settingsRepo.update({}, {sound: fileCopyUri})
-    setSound(fileCopyUri)
+    const updated = await settingsRepo.save({...settings, sound: fileCopyUri})
+    setSettings(updated)
     toast('Sound will play after rest timers.')
-  }, [])
+  }, [settings])
 
-  const changeNotify = useCallback((enabled: boolean) => {
-    setNotify(enabled)
-    settingsRepo.update({}, {notify: enabled})
-    if (enabled) toast('Show when a set is a new record.')
-    else toast('Stopped showing notifications for new records.')
-  }, [])
+  const changeNotify = useCallback(
+    async (enabled: boolean) => {
+      const updated = await settingsRepo.save({...settings, notify: enabled})
+      setSettings(updated)
+      if (enabled) toast('Show when a set is a new record.')
+      else toast('Stopped showing notifications for new records.')
+    },
+    [settings],
+  )
 
-  const changeImages = useCallback((enabled: boolean) => {
-    setImages(enabled)
-    settingsRepo.update({}, {images: enabled})
-    if (enabled) toast('Show images for sets.')
-    else toast('Stopped showing images for sets.')
-  }, [])
+  const changeImages = useCallback(
+    async (enabled: boolean) => {
+      const updated = await settingsRepo.save({...settings, images: enabled})
+      setSettings(updated)
+      if (enabled) toast('Show images for sets.')
+      else toast('Stopped showing images for sets.')
+    },
+    [settings],
+  )
 
-  const changeUnit = useCallback((enabled: boolean) => {
-    setShowUnit(enabled)
-    settingsRepo.update({}, {showUnit: enabled})
-    if (enabled) toast('Show option to select unit for sets.')
-    else toast('Hid unit option for sets.')
-  }, [])
+  const changeUnit = useCallback(
+    async (enabled: boolean) => {
+      const updated = await settingsRepo.save({...settings, showUnit: enabled})
+      setSettings(updated)
+      if (enabled) toast('Show option to select unit for sets.')
+      else toast('Hid unit option for sets.')
+    },
+    [settings],
+  )
 
-  const changeSteps = useCallback((enabled: boolean) => {
-    setSteps(enabled)
-    settingsRepo.update({}, {steps: enabled})
-    if (enabled) toast('Show steps for a workout.')
-    else toast('Stopped showing steps for workouts.')
-  }, [])
+  const changeSteps = useCallback(
+    async (enabled: boolean) => {
+      const updated = await settingsRepo.save({...settings, steps: enabled})
+      setSettings(updated)
+      if (enabled) toast('Show steps for a workout.')
+      else toast('Stopped showing steps for workouts.')
+    },
+    [settings],
+  )
 
-  const changeShowDate = useCallback((enabled: boolean) => {
-    setShowDate(enabled)
-    settingsRepo.update({}, {showDate: enabled})
-    if (enabled) toast('Show date for sets by default.')
-    else toast('Stopped showing date for sets by default.')
-  }, [])
+  const changeShowDate = useCallback(
+    async (enabled: boolean) => {
+      const updated = await settingsRepo.save({...settings, showDate: enabled})
+      setSettings(updated)
+      if (enabled) toast('Show date for sets by default.')
+      else toast('Stopped showing date for sets by default.')
+    },
+    [settings],
+  )
 
-  const changeNoSound = useCallback((enabled: boolean) => {
-    setNoSound(enabled)
-    settingsRepo.update({}, {noSound: enabled})
-    if (enabled) toast('Disable sound on rest timer alarms.')
-    else toast('Enabled sound for rest timer alarms.')
-  }, [])
+  const changeNoSound = useCallback(
+    async (enabled: boolean) => {
+      const updated = await settingsRepo.save({...settings, noSound: enabled})
+      setSettings(updated)
+      if (enabled) toast('Disable sound on rest timer alarms.')
+      else toast('Enabled sound for rest timer alarms.')
+    },
+    [settings],
+  )
 
   const switches: Input<boolean>[] = [
-    {name: 'Rest timers', value: alarm, onChange: changeAlarmEnabled},
-    {name: 'Vibrate', value: vibrate, onChange: changeVibrate},
-    {name: 'Disable sound', value: noSound, onChange: changeNoSound},
-    {name: 'Notifications', value: notify, onChange: changeNotify},
-    {name: 'Show images', value: images, onChange: changeImages},
-    {name: 'Show unit', value: showUnit, onChange: changeUnit},
-    {name: 'Show steps', value: steps, onChange: changeSteps},
-    {name: 'Show date', value: showDate, onChange: changeShowDate},
+    {name: 'Rest timers', value: settings.alarm, onChange: changeAlarmEnabled},
+    {name: 'Vibrate', value: settings.vibrate, onChange: changeVibrate},
+    {name: 'Disable sound', value: settings.noSound, onChange: changeNoSound},
+    {name: 'Notifications', value: settings.notify, onChange: changeNotify},
+    {name: 'Show images', value: settings.images, onChange: changeImages},
+    {name: 'Show unit', value: settings.showUnit, onChange: changeUnit},
+    {name: 'Show steps', value: settings.steps, onChange: changeSteps},
+    {name: 'Show date', value: settings.showDate, onChange: changeShowDate},
   ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase()))
 
   const changeTheme = useCallback(
@@ -171,11 +160,14 @@ export default function SettingsPage() {
     [setTheme],
   )
 
-  const changeDate = useCallback((value: string) => {
-    settingsRepo.update({}, {date: value})
-    setDate(value)
-    toast('Changed date format.')
-  }, [])
+  const changeDate = useCallback(
+    async (value: string) => {
+      const updated = await settingsRepo.save({...settings, date: value})
+      setSettings(updated)
+      toast('Changed date format.')
+    },
+    [settings],
+  )
 
   const changeDarkColor = useCallback(
     (value: string) => {
@@ -220,7 +212,7 @@ export default function SettingsPage() {
     },
     {
       name: 'Date format',
-      value: date,
+      value: settings.date,
       onChange: changeDate,
       items: formatOptions.map(option => ({
         label: format(today, option),
