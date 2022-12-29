@@ -14,7 +14,7 @@ import {MARGIN, PADDING} from './constants'
 import {setRepo, settingsRepo} from './db'
 import GymSet from './gym-set'
 import {HomePageParams} from './home-page-params'
-import MassiveInput from './MassiveInput'
+import AppInput from './AppInput'
 import Settings from './settings'
 import StackHeader from './StackHeader'
 
@@ -81,7 +81,7 @@ export default function EditSets() {
       <StackHeader title={`Edit ${ids.length} sets`} />
 
       <View style={{padding: PADDING, flex: 1}}>
-        <MassiveInput
+        <AppInput
           label={`Names: ${names}`}
           value={name}
           onChangeText={setName}
@@ -89,7 +89,7 @@ export default function EditSets() {
           autoFocus={!name}
         />
 
-        <MassiveInput
+        <AppInput
           label={`Reps: ${oldReps}`}
           keyboardType="numeric"
           value={reps}
@@ -99,7 +99,7 @@ export default function EditSets() {
           autoFocus={!!name}
         />
 
-        <MassiveInput
+        <AppInput
           label={`Weights: ${weights}`}
           keyboardType="numeric"
           value={weight}
@@ -108,7 +108,7 @@ export default function EditSets() {
         />
 
         {settings.showUnit && (
-          <MassiveInput
+          <AppInput
             autoCapitalize="none"
             label={`Units: ${units}`}
             value={unit}

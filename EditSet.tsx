@@ -14,7 +14,7 @@ import {MARGIN, PADDING} from './constants'
 import {getNow, setRepo, settingsRepo} from './db'
 import GymSet from './gym-set'
 import {HomePageParams} from './home-page-params'
-import MassiveInput from './MassiveInput'
+import AppInput from './AppInput'
 import Settings from './settings'
 import StackHeader from './StackHeader'
 import {toast} from './toast'
@@ -118,7 +118,7 @@ export default function EditSet() {
       <StackHeader title="Edit set" />
 
       <View style={{padding: PADDING, flex: 1}}>
-        <MassiveInput
+        <AppInput
           label="Name"
           value={name}
           onChangeText={setName}
@@ -127,7 +127,7 @@ export default function EditSet() {
           onSubmitEditing={() => repsRef.current?.focus()}
         />
 
-        <MassiveInput
+        <AppInput
           label="Reps"
           keyboardType="numeric"
           value={reps}
@@ -139,7 +139,7 @@ export default function EditSet() {
           innerRef={repsRef}
         />
 
-        <MassiveInput
+        <AppInput
           label="Weight"
           keyboardType="numeric"
           value={weight}
@@ -149,7 +149,7 @@ export default function EditSet() {
         />
 
         {settings.showUnit && (
-          <MassiveInput
+          <AppInput
             autoCapitalize="none"
             label="Unit"
             value={unit}
@@ -159,7 +159,7 @@ export default function EditSet() {
         )}
 
         {typeof set.id === 'number' && settings.showDate && (
-          <MassiveInput
+          <AppInput
             label="Created"
             disabled
             value={format(new Date(set.created), settings.date)}

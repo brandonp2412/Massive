@@ -3,7 +3,7 @@ import {FAB, useTheme} from 'react-native-paper'
 import {CombinedDarkTheme, CombinedDefaultTheme} from './App'
 import {lightColors} from './colors'
 
-export default function MassiveFab(props: Partial<ComponentProps<typeof FAB>>) {
+export default function AppFab(props: Partial<ComponentProps<typeof FAB>>) {
   const {colors} = useTheme()
 
   const fabColor = useMemo(

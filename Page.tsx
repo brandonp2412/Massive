@@ -1,7 +1,7 @@
 import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native'
 import {Searchbar} from 'react-native-paper'
+import AppFab from './AppFab'
 import {PADDING} from './constants'
-import MassiveFab from './MassiveFab'
 
 export default function Page({
   onAdd,
@@ -26,7 +26,7 @@ export default function Page({
         clearIcon="clear"
       />
       {children}
-      {onAdd && <MassiveFab onPress={onAdd} />}
+      {onAdd && <AppFab onPress={onAdd} />}
     </View>
   )
 }

@@ -12,7 +12,7 @@ import ConfirmDialog from './ConfirmDialog'
 import {MARGIN, PADDING} from './constants'
 import {getNow, planRepo, setRepo, settingsRepo} from './db'
 import {defaultSet} from './gym-set'
-import MassiveInput from './MassiveInput'
+import AppInput from './AppInput'
 import Settings from './settings'
 import StackHeader from './StackHeader'
 import {WorkoutsPageParams} from './WorkoutsPage'
@@ -110,7 +110,7 @@ export default function EditWorkout() {
       <StackHeader title="Edit workout" />
       <View style={{padding: PADDING, flex: 1}}>
         <ScrollView style={{flex: 1}}>
-          <MassiveInput
+          <AppInput
             autoFocus
             label="Name"
             value={name}
@@ -118,7 +118,7 @@ export default function EditWorkout() {
             onSubmitEditing={submitName}
           />
           {settings?.steps && (
-            <MassiveInput
+            <AppInput
               innerRef={stepsRef}
               selectTextOnFocus={false}
               value={steps}
@@ -128,7 +128,7 @@ export default function EditWorkout() {
               onSubmitEditing={() => setsRef.current?.focus()}
             />
           )}
-          <MassiveInput
+          <AppInput
             innerRef={setsRef}
             value={sets}
             onChangeText={setSets}
@@ -138,7 +138,7 @@ export default function EditWorkout() {
           />
           {settings?.alarm && (
             <>
-              <MassiveInput
+              <AppInput
                 innerRef={minutesRef}
                 onSubmitEditing={() => secondsRef.current?.focus()}
                 value={minutes}
@@ -146,7 +146,7 @@ export default function EditWorkout() {
                 label="Rest minutes"
                 keyboardType="numeric"
               />
-              <MassiveInput
+              <AppInput
                 innerRef={secondsRef}
                 value={seconds}
                 onChangeText={setSeconds}

@@ -3,10 +3,10 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {Dimensions, NativeModules, View} from 'react-native'
 import {Button, Text, useTheme} from 'react-native-paper'
 import {ProgressCircle} from 'react-native-svg-charts'
+import AppFab from './AppFab'
 import {MARGIN, PADDING} from './constants'
 import {settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
-import MassiveFab from './MassiveFab'
 import Settings from './settings'
 import useTimer from './use-timer'
 
@@ -69,7 +69,7 @@ export default function TimerPage() {
       <Button onPress={add} style={{position: 'absolute', top: '82%', left}}>
         Add 1 min
       </Button>
-      <MassiveFab icon="stop" onPress={stop} />
+      <AppFab icon="stop" onPress={stop} />
     </>
   )
 }

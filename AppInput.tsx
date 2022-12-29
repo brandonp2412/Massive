@@ -4,7 +4,7 @@ import {CombinedDefaultTheme} from './App'
 import {MARGIN} from './constants'
 import useDark from './use-dark'
 
-export default function MassiveInput(
+export default function AppInput(
   props: Partial<ComponentProps<typeof TextInput>> & {
     innerRef?: Ref<any>
   },

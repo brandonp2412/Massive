@@ -9,7 +9,7 @@ import CountMany from './count-many'
 import {AppDataSource} from './data-source'
 import {getNow, setRepo, settingsRepo} from './db'
 import GymSet from './gym-set'
-import MassiveInput from './MassiveInput'
+import AppInput from './AppInput'
 import {PlanPageParams} from './plan-page-params'
 import Settings from './settings'
 import StackHeader from './StackHeader'
@@ -111,7 +111,7 @@ export default function StartPlan() {
       <StackHeader title={params.plan.days.replace(/,/g, ', ')} />
       <View style={{padding: PADDING, flex: 1, flexDirection: 'column'}}>
         <View style={{flex: 1}}>
-          <MassiveInput
+          <AppInput
             label="Reps"
             keyboardType="numeric"
             value={reps}
@@ -121,7 +121,7 @@ export default function StartPlan() {
             onSelectionChange={e => setSelection(e.nativeEvent.selection)}
             innerRef={repsRef}
           />
-          <MassiveInput
+          <AppInput
             label="Weight"
             keyboardType="numeric"
             value={weight}
@@ -131,7 +131,7 @@ export default function StartPlan() {
             blurOnSubmit
           />
           {settings?.showUnit && (
-            <MassiveInput
+            <AppInput
               autoCapitalize="none"
               label="Unit"
               value={unit}
