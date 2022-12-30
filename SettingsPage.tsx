@@ -61,8 +61,8 @@ export default function SettingsPage() {
       copyTo: 'documentDirectory',
     })
     if (!fileCopyUri) return
-    await settingsRepo.save({...settings, sound: fileCopyUri})
     setValue('sound', fileCopyUri)
+    await settingsRepo.save({...settings, sound: fileCopyUri})
     toast('Sound will play after rest timers.')
   }, [settings, setValue])
 
