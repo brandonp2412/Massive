@@ -219,6 +219,11 @@ export default function SettingsPage() {
     toast('Database exported. Check downloads.')
   }, [])
 
+  const filter = useCallback(
+    ({name}) => name.toLowerCase().includes(term.toLowerCase()),
+    [term],
+  )
+
   const buttons = useMemo(
     () =>
       [
@@ -259,8 +264,8 @@ export default function SettingsPage() {
             </Button>
           ),
         },
-      ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase())),
-    [changeSound, exportDatabase, soundString, term],
+      ].filter(filter),
+    [changeSound, exportDatabase, soundString, filter],
   )
 
   return (
@@ -269,8 +274,8 @@ export default function SettingsPage() {
 
       <Page term={term} search={setTerm} style={{flexGrow: 0}}>
         <View style={{marginTop: MARGIN}}>
-          {switches.map(s => renderSwitch(s))}
-          {selects.map(s => renderSelect(s))}
+          {switches.filter(filter).map(s => renderSwitch(s))}
+          {selects.filter(filter).map(s => renderSelect(s))}
           {buttons.map(b => b.element)}
         </View>
       </Page>
