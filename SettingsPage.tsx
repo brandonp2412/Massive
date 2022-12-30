@@ -19,6 +19,7 @@ import Settings from './settings'
 import Switch from './Switch'
 import {toast} from './toast'
 import {useTheme} from './use-theme'
+import {useForm} from 'react-hook-form'
 
 const twelveHours = ['P', 'Pp', 'ccc p', 'p', 'yyyy-MM-d', 'yyyy.MM.d']
 const twentyFours = ['P', 'P, k:m', 'ccc k:m', 'k:m', 'yyyy-MM-d', 'yyyy.MM.d']
@@ -28,15 +29,18 @@ export default function SettingsPage() {
   const [term, setTerm] = useState('')
   const [formatOptions, setFormatOptions] = useState<string[]>(twelveHours)
   const [importing, setImporting] = useState(false)
-  const [settings, setSettings] = useState(new Settings())
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
   const today = new Date()
+
+  const {watch, setValue} = useForm<Settings>({
+    defaultValues: () => settingsRepo.findOne({where: {}}),
+  })
+  const settings = watch()
 
   const {theme, setTheme, lightColor, setLightColor, darkColor, setDarkColor} =
     useTheme()
 
   useEffect(() => {
-    settingsRepo.findOne({where: {}}).then(setSettings)
     NativeModules.SettingsModule.ignoringBattery(setIgnoring)
     NativeModules.SettingsModule.is24().then((is24: boolean) => {
       console.log(`${SettingsPage.name}.focus:`, {is24})
@@ -57,10 +61,10 @@ export default function SettingsPage() {
       copyTo: 'documentDirectory',
     })
     if (!fileCopyUri) return
-    const updated = await settingsRepo.save({...settings, sound: fileCopyUri})
-    setSettings(updated)
+    await settingsRepo.save({...settings, sound: fileCopyUri})
+    setValue('sound', fileCopyUri)
     toast('Sound will play after rest timers.')
-  }, [settings])
+  }, [settings, setValue])
 
   const switches: Input<boolean>[] = [
     {name: 'Rest timers', value: settings.alarm, key: 'alarm'},
@@ -75,8 +79,8 @@ export default function SettingsPage() {
 
   const changeString = useCallback(
     async (key: keyof Settings, value: string) => {
-      const updated = await settingsRepo.save({...settings, [key]: value})
-      setSettings(updated)
+      await settingsRepo.save({...settings, [key]: value})
+      setValue(key, value)
       switch (key) {
         case 'date':
           return toast('Changed date format')
@@ -98,13 +102,13 @@ export default function SettingsPage() {
           return
       }
     },
-    [settings, setTheme, setDarkColor, setLightColor],
+    [settings, setTheme, setDarkColor, setLightColor, setValue],
   )
 
   const changeBoolean = useCallback(
     async (key: keyof Settings, value: boolean) => {
-      const updated = await settingsRepo.save({...settings, [key]: value})
-      setSettings(updated)
+      await settingsRepo.save({...settings, [key]: value})
+      setValue(key, value)
       switch (key) {
         case 'alarm':
           if (value) toast('Timers will now run after each set.')
@@ -141,7 +145,7 @@ export default function SettingsPage() {
           return
       }
     },
-    [settings, ignoring],
+    [settings, ignoring, setValue],
   )
 
   const renderSwitch = useCallback(
