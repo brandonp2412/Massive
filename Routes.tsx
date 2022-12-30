@@ -36,22 +36,16 @@ export default function Routes() {
         swipeEdgeWidth: 1000,
         headerShown: false,
       }}>
-      {}
-      {routes
-        .filter(route => {
-          if (Platform.OS === 'ios' && route.name === 'Timer') return false
-          return true
-        })
-        .map(route => (
-          <Drawer.Screen
-            key={route.name}
-            name={route.name}
-            component={route.component}
-            options={{
-              drawerIcon: () => <IconButton icon={route.icon} />,
-            }}
-          />
-        ))}
+      {routes.map(route => (
+        <Drawer.Screen
+          key={route.name}
+          name={route.name}
+          component={route.component}
+          options={{
+            drawerIcon: () => <IconButton icon={route.icon} />,
+          }}
+        />
+      ))}
     </Drawer.Navigator>
   )
 }

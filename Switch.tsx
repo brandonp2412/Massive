@@ -6,11 +6,11 @@ import {MARGIN} from './constants'
 function Switch({
   value,
   onChange,
-  children,
+  title,
 }: {
   value?: boolean
   onChange: (value: boolean) => void
-  children: string
+  title: string
 }) {
   const {colors} = useTheme()
 
@@ -30,7 +30,7 @@ function Switch({
         onValueChange={onChange}
         trackColor={{true: colors.primary + '80', false: colors.disabled}}
       />
-      <Text>{children}</Text>
+      <Text>{title}</Text>
     </Pressable>
   )
 }

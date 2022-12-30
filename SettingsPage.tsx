@@ -153,9 +153,9 @@ export default function SettingsPage() {
       <Switch
         key={item.name}
         value={item.value}
-        onChange={value => changeBoolean(item.key, value)}>
-        {item.name}
-      </Switch>
+        onChange={value => changeBoolean(item.key, value)}
+        title={item.name}
+      />
     ),
     [changeBoolean],
   )
