@@ -20,12 +20,13 @@ import Switch from './Switch'
 import {toast} from './toast'
 import {useTheme} from './use-theme'
 
-const defaultFormats = ['P', 'Pp', 'ccc p', 'p']
+const twelveHours = ['P', 'Pp', 'ccc p', 'p', 'yyyy-MM-d', 'yyyy.MM.d']
+const twentyFours = ['P', 'P, k:m', 'ccc k:m', 'k:m', 'yyyy-MM-d', 'yyyy.MM.d']
 
 export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
-  const [formatOptions, setFormatOptions] = useState<string[]>(defaultFormats)
+  const [formatOptions, setFormatOptions] = useState<string[]>(twelveHours)
   const [importing, setImporting] = useState(false)
   const [settings, setSettings] = useState(new Settings())
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
@@ -39,8 +40,8 @@ export default function SettingsPage() {
     NativeModules.SettingsModule.ignoringBattery(setIgnoring)
     NativeModules.SettingsModule.is24().then((is24: boolean) => {
       console.log(`${SettingsPage.name}.focus:`, {is24})
-      if (is24) setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
-      else setFormatOptions(defaultFormats)
+      if (is24) setFormatOptions(twentyFours)
+      else setFormatOptions(twelveHours)
     })
   }, [])
 
