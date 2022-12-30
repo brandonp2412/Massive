@@ -7309,6 +7309,7 @@ __metadata:
     react-native-sqlite-storage: ^6.0.1
     react-native-svg: ^13.4.0
     react-native-svg-charts: ^5.4.0
+    react-native-testing-library: ^6.0.0
     react-native-vector-icons: ^9.2.0
     react-native-view-shot: ^3.4.0
     react-test-renderer: ^18.2.0
@@ -8612,7 +8613,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^26.5.2, pretty-format@npm:^26.6.2":
+"pretty-format@npm:^26.0.1, pretty-format@npm:^26.5.2, pretty-format@npm:^26.6.2":
   version: 26.6.2
   resolution: "pretty-format@npm:26.6.2"
   dependencies:
@@ -8977,6 +8978,18 @@ __metadata:
     react: "*"
     react-native: ">=0.50.0"
   checksum: 13f721581288cb23d630bdea2acb30b68b7cc69677cb31d7b3bbcb50a75e77eb2d37192949c282d131f4a738306d4dbe4e81d2134ec163edc4277e895ccdba0d
+  languageName: node
+  linkType: hard
+
+"react-native-testing-library@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "react-native-testing-library@npm:6.0.0"
+  dependencies:
+    pretty-format: ^26.0.1
+  peerDependencies:
+    react: ">=16.0.0"
+    react-test-renderer: ">=16.0.0"
+  checksum: 291c0e54f29e68733ec73a9ec201991a3ad7d14a8b624ce8e69fdd9306d63198511882a56d8d4ea40349c7a48468fc6eba5cf5043397cbe9974dd9fcd3d37e6a
   languageName: node
   linkType: hard
 

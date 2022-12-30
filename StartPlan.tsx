@@ -1,7 +1,6 @@
 import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {NativeModules, TextInput, View} from 'react-native'
-import {FlatList} from 'react-native-gesture-handler'
+import {FlatList, NativeModules, TextInput, View} from 'react-native'
 import {Button, ProgressBar} from 'react-native-paper'
 import {getBestSet} from './best.service'
 import {PADDING} from './constants'

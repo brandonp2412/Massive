@@ -27,7 +27,10 @@ export default function SetList() {
   const [ids, setIds] = useState<number[]>([])
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
+  console.log('Rendered SetList')
+
   const refresh = useCallback(async (value: string) => {
+    console.log('Getting sets...')
     const newSets = await setRepo.find({
       where: {name: Like(`%${value}%`), hidden: 0 as any},
       take: limit,
