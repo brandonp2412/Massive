@@ -1,4 +1,4 @@
-import {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {View} from 'react-native'
 import {Button, Menu, Subheading, useTheme} from 'react-native-paper'
 import {ITEM_PADDING} from './constants'
@@ -9,7 +9,7 @@ export interface Item {
   color?: string
 }
 
-export default function Select({
+function Select({
   value,
   onChange,
   items,
@@ -68,3 +68,5 @@ export default function Select({
     </View>
   )
 }
+
+export default React.memo(Select)
