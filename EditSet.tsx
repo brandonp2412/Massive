@@ -162,7 +162,7 @@ export default function EditSet() {
           <AppInput
             label="Created"
             disabled
-            value={format(new Date(set.created), settings.date)}
+            value={format(new Date(set.created), settings.date || 'P')}
           />
         )}
 
