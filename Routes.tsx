@@ -1,6 +1,5 @@
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {useMemo} from 'react'
-import {Platform} from 'react-native'
 import {IconButton} from 'react-native-paper'
 import BestPage from './BestPage'
 import {DrawerParamList} from './drawer-param-list'
