@@ -1,8 +1,9 @@
+import React from 'react'
 import {Platform, Pressable} from 'react-native'
 import {Switch as PaperSwitch, Text, useTheme} from 'react-native-paper'
 import {MARGIN} from './constants'
 
-export default function Switch({
+function Switch({
   value,
   onChange,
   children,
@@ -33,3 +34,5 @@ export default function Switch({
     </Pressable>
   )
 }
+
+export default React.memo(Switch)
