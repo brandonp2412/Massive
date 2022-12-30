@@ -79,8 +79,8 @@ export default function SettingsPage() {
 
   const changeString = useCallback(
     async (key: keyof Settings, value: string) => {
-      await settingsRepo.save({...settings, [key]: value})
       setValue(key, value)
+      await settingsRepo.save({...settings, [key]: value})
       switch (key) {
         case 'date':
           return toast('Changed date format')
@@ -107,8 +107,8 @@ export default function SettingsPage() {
 
   const changeBoolean = useCallback(
     async (key: keyof Settings, value: boolean) => {
-      await settingsRepo.save({...settings, [key]: value})
       setValue(key, value)
+      await settingsRepo.save({...settings, [key]: value})
       switch (key) {
         case 'alarm':
           if (value) toast('Timers will now run after each set.')
