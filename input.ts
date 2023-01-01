@@ -1,5 +1,5 @@
-import Settings from './settings'
 import {Item} from './Select'
+import Settings from './settings'
 
 export default interface Input<T> {
   name: string

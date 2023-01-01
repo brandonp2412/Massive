@@ -1,5 +1,5 @@
-import {useCallback, useState} from 'react'
 import {useFocusEffect} from '@react-navigation/native'
+import {useCallback, useState} from 'react'
 import {NativeEventEmitter} from 'react-native'
 import {TickEvent} from './TimerPage'
 

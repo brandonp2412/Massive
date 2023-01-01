@@ -6,14 +6,14 @@ import {
 import {useCallback, useState} from 'react'
 import {FlatList} from 'react-native'
 import {List} from 'react-native-paper'
+import {setRepo, settingsRepo} from './db'
 import DrawerHeader from './DrawerHeader'
-import Page from './Page'
 import GymSet from './gym-set'
+import Page from './Page'
 import SetList from './SetList'
+import Settings from './settings'
 import WorkoutItem from './WorkoutItem'
 import {WorkoutsPageParams} from './WorkoutsPage'
-import {setRepo, settingsRepo} from './db'
-import Settings from './settings'
 
 const limit = 15
 

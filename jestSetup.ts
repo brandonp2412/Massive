@@ -1,5 +1,5 @@
-import 'react-native-gesture-handler/jestSetup'
 import {NativeModules} from 'react-native'
+import 'react-native-gesture-handler/jestSetup'
 
 NativeModules.RNViewShot = NativeModules.RNViewShot || {
   captureScreen: jest.fn(),

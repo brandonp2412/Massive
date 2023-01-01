@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native'
-import Share from 'react-native-share'
 import {FileSystem} from 'react-native-file-access'
 import {Appbar, IconButton} from 'react-native-paper'
+import Share from 'react-native-share'
 import {captureScreen} from 'react-native-view-shot'
 import useDark from './use-dark'
 

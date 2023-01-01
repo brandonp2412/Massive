@@ -1,6 +1,7 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {format} from 'date-fns'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useForm} from 'react-hook-form'
 import {NativeModules, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Dirs, FileSystem} from 'react-native-file-access'
@@ -19,7 +20,6 @@ import Settings from './settings'
 import Switch from './Switch'
 import {toast} from './toast'
 import {useTheme} from './use-theme'
-import {useForm} from 'react-hook-form'
 
 const twelveHours = ['P', 'Pp', 'ccc p', 'p', 'yyyy-MM-d', 'yyyy.MM.d']
 const twentyFours = ['P', 'P, k:m', 'ccc k:m', 'k:m', 'yyyy-MM-d', 'yyyy.MM.d']
