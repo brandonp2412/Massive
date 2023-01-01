@@ -1,57 +1,27 @@
-import 'react-native'
 import React from 'react'
-import {render} from 'react-native-testing-library'
+import 'react-native'
+import {render, waitFor} from 'react-native-testing-library'
+import {Repository} from 'typeorm'
+import GymSet from '../gym-set'
 import HomePage from '../HomePage'
-import {NavigationContainer} from '@react-navigation/native'
-import {Provider} from 'react-native-paper'
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
-import SetList from '../SetList'
-import {Text} from 'react-native'
-import {AppDataSource} from '../data-source'
+import {MockProviders} from '../mock-providers'
+import Settings from '../settings'
 
-jest.mock('typeorm', () => ({
-  createConnection: jest.fn(() => ({
-    close: jest.fn(),
-  })),
-  Entity: (name: string) => {
-    return (target: any) => {
-      target.name = name
-    }
-  },
-  Column: (type: any) => {
-    return (target: any, propertyName: string) => {
-      target.columns = target.columns || []
-      target.columns.push({
-        propertyName,
-        type,
-      })
-    }
-  },
-  PrimaryColumn: () => {
-    return (target: any, propertyName: string) => {
-      target.primaryColumn = {
-        propertyName,
-      }
-    }
-  },
-  PrimaryGeneratedColumn: () => {
-    return (target: any, propertyName: string) => {
-      target.primaryColumn = {
-        propertyName,
-      }
-    }
+jest.mock('../db.ts', () => ({
+  setRepo: {find: () => Promise.resolve([])} as Repository<GymSet>,
+  settingsRepo: {
+    findOne: () => Promise.resolve({} as Settings),
   },
 }))
 
 describe('HomePage', () => {
   it('renders correctly', async () => {
     const {getByText} = render(
-      <Provider settings={{icon: props => <MaterialIcon {...props} />}}>
-        <NavigationContainer>
-          <SetList />
-        </NavigationContainer>
-      </Provider>,
+      <MockProviders>
+        <HomePage />
+      </MockProviders>,
     )
-    expect(getByText('Home')).toBeDefined()
+    const title = await waitFor(() => getByText('Home'))
+    expect(title).toBeDefined()
   })
 })
