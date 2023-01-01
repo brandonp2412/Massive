@@ -66,16 +66,19 @@ export default function SettingsPage() {
     toast('Sound will play after rest timers.')
   }, [settings, setValue])
 
-  const switches: Input<boolean>[] = [
-    {name: 'Rest timers', value: settings.alarm, key: 'alarm'},
-    {name: 'Vibrate', value: settings.vibrate, key: 'vibrate'},
-    {name: 'Disable sound', value: settings.noSound, key: 'noSound'},
-    {name: 'Notifications', value: settings.notify, key: 'notify'},
-    {name: 'Show images', value: settings.images, key: 'images'},
-    {name: 'Show unit', value: settings.showUnit, key: 'showUnit'},
-    {name: 'Show steps', value: settings.steps, key: 'steps'},
-    {name: 'Show date', value: settings.showDate, key: 'showDate'},
-  ]
+  const switches: Input<boolean>[] = useMemo(
+    () => [
+      {name: 'Rest timers', value: settings.alarm, key: 'alarm'},
+      {name: 'Vibrate', value: settings.vibrate, key: 'vibrate'},
+      {name: 'Disable sound', value: settings.noSound, key: 'noSound'},
+      {name: 'Notifications', value: settings.notify, key: 'notify'},
+      {name: 'Show images', value: settings.images, key: 'images'},
+      {name: 'Show unit', value: settings.showUnit, key: 'showUnit'},
+      {name: 'Show steps', value: settings.steps, key: 'steps'},
+      {name: 'Show date', value: settings.showDate, key: 'showDate'},
+    ],
+    [settings],
+  )
 
   const changeString = useCallback(
     async (key: keyof Settings, value: string) => {
