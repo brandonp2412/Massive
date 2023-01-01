@@ -27,21 +27,14 @@ export default function SetList() {
   const [ids, setIds] = useState<number[]>([])
   const navigation = useNavigation<NavigationProp<HomePageParams>>()
 
-  console.log('Rendered SetList')
-
   const refresh = useCallback(async (value: string) => {
-    console.log('Getting sets...')
     const newSets = await setRepo.find({
       where: {name: Like(`%${value}%`), hidden: 0 as any},
       take: limit,
       skip: 0,
       order: {created: 'DESC'},
     })
-    console.log(`${SetList.name}.refresh:`, {
-      value,
-      limit,
-      length: newSets.length,
-    })
+    console.log(`${SetList.name}.refresh:`, {value, limit})
     setSets(newSets)
     setOffset(0)
     setEnd(false)
