@@ -1,15 +1,16 @@
+import React from 'react'
 import {Platform, Pressable} from 'react-native'
 import {Switch as PaperSwitch, Text, useTheme} from 'react-native-paper'
 import {MARGIN} from './constants'
 
-export default function Switch({
+function Switch({
   value,
   onChange,
-  children,
+  title,
 }: {
   value?: boolean
   onChange: (value: boolean) => void
-  children: string
+  title: string
 }) {
   const {colors} = useTheme()
 
@@ -29,7 +30,9 @@ export default function Switch({
         onValueChange={onChange}
         trackColor={{true: colors.primary + '80', false: colors.disabled}}
       />
-      <Text>{children}</Text>
+      <Text>{title}</Text>
     </Pressable>
   )
 }
+
+export default React.memo(Switch)

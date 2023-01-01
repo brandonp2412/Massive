@@ -80,9 +80,9 @@ export default function EditPlan() {
             <Switch
               key={day}
               onChange={value => toggleDay(value, day)}
-              value={days.includes(day)}>
-              {day}
-            </Switch>
+              value={days.includes(day)}
+              title={day}
+            />
           ))}
           <Text style={[styles.title, {marginTop: MARGIN}]}>Workouts</Text>
           {names.length === 0 ? (
@@ -94,9 +94,9 @@ export default function EditPlan() {
               <Switch
                 key={name}
                 onChange={value => toggleWorkout(value, name)}
-                value={workouts.includes(name)}>
-                {name}
-              </Switch>
+                value={workouts.includes(name)}
+                title={name}
+              />
             ))
           )}
         </ScrollView>

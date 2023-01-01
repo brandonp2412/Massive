@@ -19,28 +19,32 @@ import Settings from './settings'
 import Switch from './Switch'
 import {toast} from './toast'
 import {useTheme} from './use-theme'
+import {useForm} from 'react-hook-form'
 
-const defaultFormats = ['P', 'Pp', 'ccc p', 'p']
+const twelveHours = ['P', 'Pp', 'ccc p', 'p', 'yyyy-MM-d', 'yyyy.MM.d']
+const twentyFours = ['P', 'P, k:m', 'ccc k:m', 'k:m', 'yyyy-MM-d', 'yyyy.MM.d']
 
 export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
   const [term, setTerm] = useState('')
-  const [formatOptions, setFormatOptions] = useState<string[]>(defaultFormats)
+  const [formatOptions, setFormatOptions] = useState<string[]>(twelveHours)
   const [importing, setImporting] = useState(false)
-  const [settings, setSettings] = useState(new Settings())
   const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
-  const today = new Date()
+
+  const {watch, setValue} = useForm<Settings>({
+    defaultValues: () => settingsRepo.findOne({where: {}}),
+  })
+  const settings = watch()
 
   const {theme, setTheme, lightColor, setLightColor, darkColor, setDarkColor} =
     useTheme()
 
   useEffect(() => {
-    settingsRepo.findOne({where: {}}).then(setSettings)
     NativeModules.SettingsModule.ignoringBattery(setIgnoring)
     NativeModules.SettingsModule.is24().then((is24: boolean) => {
       console.log(`${SettingsPage.name}.focus:`, {is24})
-      if (is24) setFormatOptions(['P', 'P, k:m', 'ccc k:m', 'k:m'])
-      else setFormatOptions(defaultFormats)
+      if (is24) setFormatOptions(twentyFours)
+      else setFormatOptions(twelveHours)
     })
   }, [])
 
@@ -56,54 +60,34 @@ export default function SettingsPage() {
       copyTo: 'documentDirectory',
     })
     if (!fileCopyUri) return
-    const updated = await settingsRepo.save({...settings, sound: fileCopyUri})
-    setSettings(updated)
+    setValue('sound', fileCopyUri)
+    await settingsRepo.save({...settings, sound: fileCopyUri})
     toast('Sound will play after rest timers.')
-  }, [settings])
+  }, [settings, setValue])
 
-  const switches: Input<boolean>[] = [
-    {name: 'Rest timers', value: settings.alarm, key: 'alarm'},
-    {name: 'Vibrate', value: settings.vibrate, key: 'vibrate'},
-    {name: 'Disable sound', value: settings.noSound, key: 'noSound'},
-    {name: 'Notifications', value: settings.notify, key: 'notify'},
-    {name: 'Show images', value: settings.images, key: 'images'},
-    {name: 'Show unit', value: settings.showUnit, key: 'showUnit'},
-    {name: 'Show steps', value: settings.steps, key: 'steps'},
-    {name: 'Show date', value: settings.showDate, key: 'showDate'},
-  ]
+  const switches: Input<boolean>[] = useMemo(
+    () => [
+      {name: 'Rest timers', value: settings.alarm, key: 'alarm'},
+      {name: 'Vibrate', value: settings.vibrate, key: 'vibrate'},
+      {name: 'Disable sound', value: settings.noSound, key: 'noSound'},
+      {name: 'Notifications', value: settings.notify, key: 'notify'},
+      {name: 'Show images', value: settings.images, key: 'images'},
+      {name: 'Show unit', value: settings.showUnit, key: 'showUnit'},
+      {name: 'Show steps', value: settings.steps, key: 'steps'},
+      {name: 'Show date', value: settings.showDate, key: 'showDate'},
+    ],
+    [settings],
+  )
 
-  const changeString = useCallback(
-    async (key: keyof Settings, value: string) => {
-      const updated = await settingsRepo.save({...settings, [key]: value})
-      setSettings(updated)
-      switch (key) {
-        case 'date':
-          return toast('Changed date format')
-        case 'darkColor':
-          setDarkColor(value)
-          return toast('Set primary color for dark mode.')
-        case 'lightColor':
-          setLightColor(value)
-          return toast('Set primary color for light mode.')
-        case 'vibrate':
-          return toast('Set primary color for light mode.')
-        case 'sound':
-          return toast('Sound will play after rest timers.')
-        case 'theme':
-          setTheme(value as string)
-          if (value === 'dark') toast('Theme will always be dark.')
-          else if (value === 'light') toast('Theme will always be light.')
-          else if (value === 'system') toast('Theme will follow system.')
-          return
-      }
-    },
-    [settings, setTheme, setDarkColor, setLightColor],
+  const filter = useCallback(
+    ({name}) => name.toLowerCase().includes(term.toLowerCase()),
+    [term],
   )
 
   const changeBoolean = useCallback(
     async (key: keyof Settings, value: boolean) => {
-      const updated = await settingsRepo.save({...settings, [key]: value})
-      setSettings(updated)
+      setValue(key, value)
+      await settingsRepo.save({...settings, [key]: value})
       switch (key) {
         case 'alarm':
           if (value) toast('Timers will now run after each set.')
@@ -140,7 +124,7 @@ export default function SettingsPage() {
           return
       }
     },
-    [settings, ignoring],
+    [settings, ignoring, setValue],
   )
 
   const renderSwitch = useCallback(
@@ -148,37 +132,73 @@ export default function SettingsPage() {
       <Switch
         key={item.name}
         value={item.value}
-        onChange={value => changeBoolean(item.key, value)}>
-        {item.name}
-      </Switch>
+        onChange={value => changeBoolean(item.key, value)}
+        title={item.name}
+      />
     ),
     [changeBoolean],
   )
 
-  const selects: Input<string>[] = [
-    {name: 'Theme', value: theme, items: themeOptions, key: 'theme'},
-    {
-      name: 'Dark color',
-      value: darkColor,
-      items: lightOptions,
-      key: 'darkColor',
+  const switchesMarkup = useMemo(
+    () => switches.filter(filter).map(s => renderSwitch(s)),
+    [filter, switches, renderSwitch],
+  )
+
+  const changeString = useCallback(
+    async (key: keyof Settings, value: string) => {
+      setValue(key, value)
+      await settingsRepo.save({...settings, [key]: value})
+      switch (key) {
+        case 'date':
+          return toast('Changed date format')
+        case 'darkColor':
+          setDarkColor(value)
+          return toast('Set primary color for dark mode.')
+        case 'lightColor':
+          setLightColor(value)
+          return toast('Set primary color for light mode.')
+        case 'vibrate':
+          return toast('Set primary color for light mode.')
+        case 'sound':
+          return toast('Sound will play after rest timers.')
+        case 'theme':
+          setTheme(value as string)
+          if (value === 'dark') toast('Theme will always be dark.')
+          else if (value === 'light') toast('Theme will always be light.')
+          else if (value === 'system') toast('Theme will follow system.')
+          return
+      }
     },
-    {
-      name: 'Light color',
-      value: lightColor,
-      items: darkOptions,
-      key: 'lightColor',
-    },
-    {
-      name: 'Date format',
-      value: settings.date,
-      items: formatOptions.map(option => ({
-        label: format(today, option),
-        value: option,
-      })),
-      key: 'date',
-    },
-  ]
+    [settings, setTheme, setDarkColor, setLightColor, setValue],
+  )
+
+  const selects: Input<string>[] = useMemo(() => {
+    const today = new Date()
+    return [
+      {name: 'Theme', value: theme, items: themeOptions, key: 'theme'},
+      {
+        name: 'Dark color',
+        value: darkColor,
+        items: lightOptions,
+        key: 'darkColor',
+      },
+      {
+        name: 'Light color',
+        value: lightColor,
+        items: darkOptions,
+        key: 'lightColor',
+      },
+      {
+        name: 'Date format',
+        value: settings.date,
+        items: formatOptions.map(option => ({
+          label: format(today, option),
+          value: option,
+        })),
+        key: 'date',
+      },
+    ]
+  }, [settings.date, darkColor, formatOptions, theme, lightColor])
 
   const renderSelect = useCallback(
     (item: Input<string>) => (
@@ -191,6 +211,11 @@ export default function SettingsPage() {
       />
     ),
     [changeString],
+  )
+
+  const selectsMarkup = useMemo(
+    () => selects.filter(filter).map(renderSelect),
+    [filter, selects, renderSelect],
   )
 
   const confirmImport = useCallback(async () => {
@@ -215,47 +240,51 @@ export default function SettingsPage() {
   }, [])
 
   const buttons = useMemo(
-    () =>
-      [
-        {
-          name: 'Alarm sound',
-          element: (
-            <View
-              key="alarm-sound"
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingLeft: ITEM_PADDING,
-              }}>
-              <Subheading style={{width: 100}}>Alarm sound</Subheading>
-              <Button onPress={changeSound}>{soundString || 'Default'}</Button>
-            </View>
-          ),
-        },
-        {
-          name: 'Export database',
-          element: (
-            <Button
-              key="export-db"
-              style={{alignSelf: 'flex-start'}}
-              onPress={exportDatabase}>
-              Export database
-            </Button>
-          ),
-        },
-        {
-          name: 'Import database',
-          element: (
-            <Button
-              key="import-db"
-              style={{alignSelf: 'flex-start'}}
-              onPress={() => setImporting(true)}>
-              Import database
-            </Button>
-          ),
-        },
-      ].filter(({name}) => name.toLowerCase().includes(term.toLowerCase())),
-    [changeSound, exportDatabase, soundString, term],
+    () => [
+      {
+        name: 'Alarm sound',
+        element: (
+          <View
+            key="alarm-sound"
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingLeft: ITEM_PADDING,
+            }}>
+            <Subheading style={{width: 100}}>Alarm sound</Subheading>
+            <Button onPress={changeSound}>{soundString || 'Default'}</Button>
+          </View>
+        ),
+      },
+      {
+        name: 'Export database',
+        element: (
+          <Button
+            key="export-db"
+            style={{alignSelf: 'flex-start'}}
+            onPress={exportDatabase}>
+            Export database
+          </Button>
+        ),
+      },
+      {
+        name: 'Import database',
+        element: (
+          <Button
+            key="import-db"
+            style={{alignSelf: 'flex-start'}}
+            onPress={() => setImporting(true)}>
+            Import database
+          </Button>
+        ),
+      },
+    ],
+    [changeSound, exportDatabase, soundString],
+  )
+
+  const buttonsMarkup = useMemo(
+    () => buttons.filter(filter).map(b => b.element),
+    [buttons, filter],
   )
 
   return (
@@ -264,9 +293,9 @@ export default function SettingsPage() {
 
       <Page term={term} search={setTerm} style={{flexGrow: 0}}>
         <View style={{marginTop: MARGIN}}>
-          {switches.map(s => renderSwitch(s))}
-          {selects.map(s => renderSelect(s))}
-          {buttons.map(b => b.element)}
+          {switchesMarkup}
+          {selectsMarkup}
+          {buttonsMarkup}
         </View>
       </Page>
 

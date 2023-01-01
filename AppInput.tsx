@@ -1,10 +1,10 @@
-import {ComponentProps, Ref} from 'react'
+import React, {ComponentProps, Ref} from 'react'
 import {TextInput} from 'react-native-paper'
 import {CombinedDefaultTheme} from './App'
 import {MARGIN} from './constants'
 import useDark from './use-dark'
 
-export default function AppInput(
+function AppInput(
   props: Partial<ComponentProps<typeof TextInput>> & {
     innerRef?: Ref<any>
   },
@@ -14,7 +14,6 @@ export default function AppInput(
   return (
     <TextInput
       selectionColor={dark ? '#2A2A2A' : CombinedDefaultTheme.colors.border}
-      mode="outlined"
       style={{marginBottom: MARGIN, minWidth: 100}}
       selectTextOnFocus
       ref={props.innerRef}
@@ -23,3 +22,5 @@ export default function AppInput(
     />
   )
 }
+
+export default React.memo(AppInput)
