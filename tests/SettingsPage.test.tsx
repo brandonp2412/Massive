@@ -14,19 +14,17 @@ jest.mock('../db.ts', () => ({
   },
 }))
 
-describe('PlanPage', () => {
-  it('renders correctly', async () => {
-    const {getByText, getAllByText} = render(
-      <MockProviders>
-        <SettingsPage />
-      </MockProviders>,
-    )
-    const title = await waitFor(() => getByText('Settings'))
-    expect(title).toBeDefined()
-    expect(getByText(/timers/i)).toBeDefined()
-    expect(getByText(/vibrate/i)).toBeDefined()
-    expect(getByText(/notifications/i)).toBeDefined()
-    expect(getByText(/images/i)).toBeDefined()
-    expect(getAllByText(/theme/i).length).toBeGreaterThan(0)
-  })
+it('renders correctly', async () => {
+  const {getByText, getAllByText} = render(
+    <MockProviders>
+      <SettingsPage />
+    </MockProviders>,
+  )
+  const title = await waitFor(() => getByText('Settings'))
+  expect(title).toBeDefined()
+  expect(getByText(/timers/i)).toBeDefined()
+  expect(getByText(/vibrate/i)).toBeDefined()
+  expect(getByText(/notifications/i)).toBeDefined()
+  expect(getByText(/images/i)).toBeDefined()
+  expect(getAllByText(/theme/i).length).toBeGreaterThan(0)
 })

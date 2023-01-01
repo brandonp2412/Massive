@@ -14,14 +14,12 @@ jest.mock('../db.ts', () => ({
   },
 }))
 
-describe('PlanPage', () => {
-  it('renders correctly', async () => {
-    const {getByText} = render(
-      <MockProviders>
-        <PlanPage />
-      </MockProviders>,
-    )
-    const title = await waitFor(() => getByText('Plans'))
-    expect(title).toBeDefined()
-  })
+it('renders correctly', async () => {
+  const {getByText} = render(
+    <MockProviders>
+      <PlanPage />
+    </MockProviders>,
+  )
+  const title = await waitFor(() => getByText('Plans'))
+  expect(title).toBeDefined()
 })

@@ -1,14 +1,12 @@
 import React from 'react'
 import 'react-native'
 import {render, waitFor} from 'react-native-testing-library'
-import {Repository} from 'typeorm'
-import GymSet from '../gym-set'
 import HomePage from '../HomePage'
 import {MockProviders} from '../mock-providers'
 import Settings from '../settings'
 
 jest.mock('../db.ts', () => ({
-  setRepo: {find: () => Promise.resolve([])} as Repository<GymSet>,
+  setRepo: {findOne: () => Promise.resolve({})},
   settingsRepo: {
     findOne: () => Promise.resolve({} as Settings),
   },
