@@ -17,6 +17,7 @@ export default function AppFab(props: Partial<ComponentProps<typeof FAB>>) {
   return (
     <FAB
       icon="add"
+      testID="add"
       color={fabColor}
       style={{
         position: 'absolute',
