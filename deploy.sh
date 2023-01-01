@@ -4,6 +4,7 @@ set -ex
 
 yarn tsc
 yarn lint
+yarn jest
 git push origin HEAD
 
 cd android || exit 1
