@@ -1,7 +1,7 @@
 import {createStackNavigator} from '@react-navigation/stack'
 import React from 'react'
 import 'react-native'
-import {render, waitFor} from 'react-native-testing-library'
+import {fireEvent, render, waitFor} from 'react-native-testing-library'
 import GymSet from '../gym-set'
 import {MockProviders} from '../mock-providers'
 import {Plan} from '../plan'
@@ -9,8 +9,16 @@ import {PlanPageParams} from '../plan-page-params'
 import Settings from '../settings'
 import StartPlan from '../StartPlan'
 
+jest.mock('../best.service.ts', () => ({
+  getBestSet: () => Promise.resolve({}),
+}))
+
 jest.mock('../db.ts', () => ({
-  setRepo: {findOne: () => Promise.resolve({})},
+  getNow: () => Promise.resolve([{now: new Date().toISOString()}]),
+  setRepo: {
+    findOne: () => Promise.resolve({}),
+    save: () => Promise.resolve(),
+  },
   settingsRepo: {
     findOne: () =>
       Promise.resolve({
@@ -63,4 +71,30 @@ it('renders correctly', async () => {
   expect(getAllByText('Rows').length).toBeGreaterThan(0)
   expect(getAllByText('Curls').length).toBeGreaterThan(0)
   expect(getAllByText('Save').length).toBeGreaterThan(0)
+})
+
+it('saves', async () => {
+  const Stack = createStackNavigator<PlanPageParams>()
+  const {getByText} = render(
+    <MockProviders>
+      <Stack.Navigator>
+        <Stack.Screen
+          initialParams={{
+            first: {reps: 0, weight: 0} as GymSet,
+            plan: {
+              workouts: 'Bench,Rows,Curls',
+              days: 'Monday,Tuesday,Thursday',
+            } as Plan,
+          }}
+          name="StartPlan"
+          component={StartPlan}
+        />
+      </Stack.Navigator>
+    </MockProviders>,
+  )
+  const save = await waitFor(() => getByText('Save'))
+  expect(save).toBeDefined()
+  fireEvent.press(save)
+  const save2 = await waitFor(() => getByText('Save'))
+  expect(save2).toBeDefined()
 })
