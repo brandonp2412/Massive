@@ -14,7 +14,6 @@ function AppInput(
   return (
     <TextInput
       selectionColor={dark ? '#2A2A2A' : CombinedDefaultTheme.colors.border}
-      mode="outlined"
       style={{marginBottom: MARGIN, minWidth: 100}}
       selectTextOnFocus
       ref={props.innerRef}
