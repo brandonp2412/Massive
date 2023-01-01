@@ -1,3 +1,3 @@
 #!/bin/sh
 
-organize-imports-cli *.ts* && prettier --write *.ts*
+organize-imports-cli *.ts* tests/*.ts* && prettier --write *.ts* tests/*.ts*
