@@ -19,7 +19,7 @@ import kotlin.math.floor
 class AlarmModule constructor(context: ReactApplicationContext?) :
     ReactContextBaseJavaModule(context) {
 
-    var countdownTimer: CountDownTimer? = null
+    private var countdownTimer: CountDownTimer? = null
     var currentMs: Long = 0
     var running = false
 
@@ -38,11 +38,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     private val addReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
-            val vibrate = intent?.extras?.getBoolean("vibrate") == true
-            val sound = intent?.extras?.getString("sound")
-            val noSound = intent?.extras?.getBoolean("noSound") == true
-            Log.d("AlarmModule", "vibrate=$vibrate,sound=$sound,noSound=$noSound")
-            add(vibrate, sound, noSound)
+            add()
         }
     }
 
@@ -59,11 +55,11 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
-    fun add(vibrate: Boolean, sound: String?, noSound: Boolean = false) {
+    fun add() {
         Log.d("AlarmModule", "Add 1 min to alarm.")
         countdownTimer?.cancel()
         val newMs = if (running) currentMs.toInt().plus(60000) else 60000
-        countdownTimer = getTimer(newMs, vibrate, sound, noSound)
+        countdownTimer = getTimer(newMs)
         countdownTimer?.start()
         running = true
         val manager = getManager()
@@ -94,14 +90,14 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
-    fun timer(milliseconds: Int, vibrate: Boolean, sound: String?, noSound: Boolean = false) {
+    fun timer(milliseconds: Int) {
         Log.d("AlarmModule", "Queue alarm for $milliseconds delay")
         val manager = getManager()
         manager.cancel(NOTIFICATION_ID_DONE)
         val intent = Intent(reactApplicationContext, AlarmService::class.java)
         reactApplicationContext.stopService(intent)
         countdownTimer?.cancel()
-        countdownTimer = getTimer(milliseconds, vibrate, sound, noSound)
+        countdownTimer = getTimer(milliseconds)
         countdownTimer?.start()
         running = true
     }
@@ -109,11 +105,8 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getTimer(
         endMs: Int,
-        vibrate: Boolean,
-        sound: String?,
-        noSound: Boolean
     ): CountDownTimer {
-        val builder = getBuilder(vibrate, sound, noSound)
+        val builder = getBuilder()
         return object : CountDownTimer(endMs.toLong(), 1000) {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onTick(current: Long) {
@@ -156,12 +149,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                 val manager = getManager()
                 manager.notify(NOTIFICATION_ID_DONE, builder.build())
                 manager.cancel(NOTIFICATION_ID_PENDING)
-                Log.d("AlarmModule", "Finished: vibrate=$vibrate,sound=$sound,noSound=$noSound")
-                val alarmIntent = Intent(context, AlarmService::class.java).apply {
-                    putExtra("vibrate", vibrate)
-                    putExtra("sound", sound)
-                    putExtra("noSound", noSound)
-                }
+                val alarmIntent = Intent(context, AlarmService::class.java)
                 context.startService(alarmIntent)
                 reactApplicationContext
                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
@@ -175,20 +163,13 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
 
     @SuppressLint("UnspecifiedImmutableFlag")
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getBuilder(
-        vibrate: Boolean,
-        sound: String?,
-        noSound: Boolean
-    ): NotificationCompat.Builder {
+    private fun getBuilder(): NotificationCompat.Builder {
         val context = reactApplicationContext
         val contentIntent = Intent(context, MainActivity::class.java)
         val pendingContent =
             PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
         val addBroadcast = Intent(ADD_BROADCAST).apply {
             setPackage(reactApplicationContext.packageName)
-            putExtra("vibrate", vibrate)
-            putExtra("sound", sound)
-            putExtra("noSound", noSound)
         }
         val pendingAdd =
             PendingIntent.getBroadcast(context, 0, addBroadcast, PendingIntent.FLAG_MUTABLE)

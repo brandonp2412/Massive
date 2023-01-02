@@ -1,27 +1,44 @@
 package com.massive
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
-import android.media.MediaPlayer.OnPreparedListener
-import android.media.MediaPlayer
-import androidx.annotation.RequiresApi
 import android.content.Intent
 import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.media.MediaPlayer.OnPreparedListener
 import android.net.Uri
 import android.os.*
+import android.util.Log
+import androidx.annotation.RequiresApi
 
 class AlarmService : Service(), OnPreparedListener {
-    var mediaPlayer: MediaPlayer? = null
+    private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
 
+    @SuppressLint("Recycle")
     @RequiresApi(api = Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (intent.action == "stop") {
             onDestroy()
             return START_STICKY
         }
-        val sound = intent.extras?.getString("sound")
-        val noSound = intent.extras?.getBoolean("noSound") == true
+
+        val db = DatabaseHelper(applicationContext).readableDatabase
+
+        val sound = db.rawQuery("SELECT sound FROM settings", null)
+            .let {
+                it.moveToFirst()
+                it.getString(0)
+            }
+        Log.d("AlarmService", "sound=$sound")
+
+        val noSound = db.rawQuery("SELECT noSound FROM settings", null)
+            .let {
+                it.moveToFirst()
+                it.getInt(0) == 1
+            }
+        Log.d("AlarmService", "noSound=$noSound")
 
         if (sound == null && !noSound) {
             mediaPlayer = MediaPlayer.create(applicationContext, R.raw.argon)
@@ -42,6 +59,13 @@ class AlarmService : Service(), OnPreparedListener {
             }
         }
 
+        val vibrate = db.rawQuery("SELECT vibrate FROM settings", null)
+            .let {
+                it.moveToFirst()
+                it.getInt(0) == 1
+            }
+        if (!vibrate) return START_STICKY
+
         val pattern = longArrayOf(0, 300, 1300, 300, 1300, 300)
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =
@@ -55,9 +79,7 @@ class AlarmService : Service(), OnPreparedListener {
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .setUsage(AudioAttributes.USAGE_ALARM)
             .build()
-        val vibrate = intent.extras!!.getBoolean("vibrate")
-        if (vibrate)
-            vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, 1), audioAttributes)
+        vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, 1), audioAttributes)
         return START_STICKY
     }
 

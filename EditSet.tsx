@@ -52,9 +52,7 @@ export default function EditSet() {
       const first = await setRepo.findOne({where: {name: value}})
       const milliseconds =
         (first?.minutes ?? 3) * 60 * 1000 + (first?.seconds ?? 0) * 1000
-      const {vibrate, sound, noSound} = settings
-      const args = [milliseconds, vibrate, sound, noSound]
-      NativeModules.AlarmModule.timer(...args)
+      NativeModules.AlarmModule.timer(milliseconds)
     },
     [settings],
   )

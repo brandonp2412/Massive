@@ -32,8 +32,7 @@ export default function TimerPage() {
 
   const add = async () => {
     console.log(`${TimerPage.name}.add:`, settings)
-    const params = [settings.vibrate, settings.sound, settings.noSound]
-    NativeModules.AlarmModule.add(...params)
+    NativeModules.AlarmModule.add()
   }
 
   const progress = useMemo(() => {
