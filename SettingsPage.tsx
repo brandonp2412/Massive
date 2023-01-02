@@ -291,8 +291,8 @@ export default function SettingsPage() {
     <>
       <DrawerHeader name="Settings" />
 
-      <Page term={term} search={setTerm} style={{flexGrow: 0}}>
-        <ScrollView style={{marginTop: MARGIN}}>
+      <Page term={term} search={setTerm} style={{flexGrow: 1}}>
+        <ScrollView style={{marginTop: MARGIN, flex: 1}}>
           {switchesMarkup}
           {selectsMarkup}
           {buttonsMarkup}
