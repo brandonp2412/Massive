@@ -54,7 +54,6 @@ const App = () => {
     const init = async () => {
       if (!AppDataSource.isInitialized) await AppDataSource.initialize()
       const settings = await settingsRepo.findOne({where: {}})
-      console.log(`${App.name}.useEffect:`, {gotSettings: settings})
       setTheme(settings.theme)
       if (settings.lightColor) setLightColor(settings.lightColor)
       if (settings.darkColor) setDarkColor(settings.darkColor)

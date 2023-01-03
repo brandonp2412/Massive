@@ -84,7 +84,7 @@ export default function PlanList() {
 
   return (
     <>
-      <DrawerHeader name="Plans">
+      <DrawerHeader name={ids.length > 0 ? `${ids.length} selected` : 'Plans'}>
         <ListMenu
           onClear={clear}
           onCopy={copy}

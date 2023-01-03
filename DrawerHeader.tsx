@@ -8,7 +8,7 @@ export default function DrawerHeader({
   name,
   children,
 }: {
-  name: keyof DrawerParamList
+  name: string
   children?: JSX.Element | JSX.Element[]
 }) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()

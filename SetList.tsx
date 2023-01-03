@@ -126,7 +126,7 @@ export default function SetList() {
 
   return (
     <>
-      <DrawerHeader name="Home">
+      <DrawerHeader name={ids.length > 0 ? `${ids.length} selected` : 'Home'}>
         <ListMenu
           onClear={clear}
           onCopy={copy}
