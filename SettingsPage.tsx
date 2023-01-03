@@ -48,6 +48,15 @@ export default function SettingsPage() {
     })
   }, [])
 
+  const update = useCallback((key: keyof Settings, value: unknown) => {
+    return settingsRepo
+      .createQueryBuilder()
+      .update()
+      .set({[key]: value})
+      .printSql()
+      .execute()
+  }, [])
+
   const soundString = useMemo(() => {
     if (!settings.sound) return null
     const split = settings.sound.split('/')
@@ -61,9 +70,9 @@ export default function SettingsPage() {
     })
     if (!fileCopyUri) return
     setValue('sound', fileCopyUri)
-    await settingsRepo.save({...settings, sound: fileCopyUri})
+    await update('sound', fileCopyUri)
     toast('Sound will play after rest timers.')
-  }, [settings, setValue])
+  }, [setValue, update])
 
   const switches: Input<boolean>[] = useMemo(
     () => [
@@ -87,7 +96,7 @@ export default function SettingsPage() {
   const changeBoolean = useCallback(
     async (key: keyof Settings, value: boolean) => {
       setValue(key, value)
-      await settingsRepo.save({...settings, [key]: value})
+      await update(key, value)
       switch (key) {
         case 'alarm':
           if (value) toast('Timers will now run after each set.')
@@ -124,7 +133,7 @@ export default function SettingsPage() {
           return
       }
     },
-    [settings, ignoring, setValue],
+    [ignoring, setValue, update],
   )
 
   const renderSwitch = useCallback(
@@ -147,7 +156,7 @@ export default function SettingsPage() {
   const changeString = useCallback(
     async (key: keyof Settings, value: string) => {
       setValue(key, value)
-      await settingsRepo.save({...settings, [key]: value})
+      await update(key, value)
       switch (key) {
         case 'date':
           return toast('Changed date format')
@@ -169,7 +178,7 @@ export default function SettingsPage() {
           return
       }
     },
-    [settings, setTheme, setDarkColor, setLightColor, setValue],
+    [update, setTheme, setDarkColor, setLightColor, setValue],
   )
 
   const selects: Input<string>[] = useMemo(() => {
@@ -225,13 +234,9 @@ export default function SettingsPage() {
     await FileSystem.cp(result.uri, Dirs.DatabaseDir + '/massive.db')
     await AppDataSource.initialize()
     await setRepo.createQueryBuilder().update().set({image: null}).execute()
-    await settingsRepo
-      .createQueryBuilder()
-      .update()
-      .set({sound: null})
-      .execute()
+    await update('sound', null)
     reset({index: 0, routes: [{name: 'Settings'}]})
-  }, [reset])
+  }, [reset, update])
 
   const exportDatabase = useCallback(async () => {
     const path = Dirs.DatabaseDir + '/massive.db'
