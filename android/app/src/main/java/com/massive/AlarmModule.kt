@@ -63,7 +63,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         countdownTimer?.start()
         running = true
         val manager = getManager()
-        manager.cancel(NOTIFICATION_ID_DONE)
+        manager.cancel(AlarmService.NOTIFICATION_ID_DONE)
         val intent = Intent(reactApplicationContext, AlarmService::class.java)
         reactApplicationContext.stopService(intent)
     }
@@ -77,7 +77,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         val intent = Intent(reactApplicationContext, AlarmService::class.java)
         reactApplicationContext?.stopService(intent)
         val manager = getManager()
-        manager.cancel(NOTIFICATION_ID_DONE)
+        manager.cancel(AlarmService.NOTIFICATION_ID_DONE)
         manager.cancel(NOTIFICATION_ID_PENDING)
         val params = Arguments.createMap().apply {
             putString("minutes", "00")
@@ -93,7 +93,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     fun timer(milliseconds: Int) {
         Log.d("AlarmModule", "Queue alarm for $milliseconds delay")
         val manager = getManager()
-        manager.cancel(NOTIFICATION_ID_DONE)
+        manager.cancel(AlarmService.NOTIFICATION_ID_DONE)
         val intent = Intent(reactApplicationContext, AlarmService::class.java)
         reactApplicationContext.stopService(intent)
         countdownTimer?.cancel()
@@ -133,25 +133,8 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onFinish() {
                 val context = reactApplicationContext
-                val finishIntent = Intent(context, StopAlarm::class.java)
-                val finishPending = PendingIntent.getActivity(
-                    context, 0, finishIntent, PendingIntent.FLAG_IMMUTABLE
-                )
-                val fullIntent = Intent(context, TimerDone::class.java)
-                val fullPending = PendingIntent.getActivity(
-                    context, 0, fullIntent, PendingIntent.FLAG_IMMUTABLE
-                )
-                builder.setContentText("Timer finished.").setProgress(0, 0, false)
-                    .setAutoCancel(true).setOngoing(true).setFullScreenIntent(fullPending, true)
-                    .setContentIntent(finishPending).setChannelId(CHANNEL_ID_DONE)
-                    .setCategory(NotificationCompat.CATEGORY_ALARM).priority =
-                    NotificationCompat.PRIORITY_HIGH
-                val manager = getManager()
-                manager.notify(NOTIFICATION_ID_DONE, builder.build())
-                manager.cancel(NOTIFICATION_ID_PENDING)
-                val alarmIntent = Intent(context, AlarmService::class.java)
-                context.startService(alarmIntent)
-                reactApplicationContext
+                context.startForegroundService(Intent(context, AlarmService::class.java))
+                context
                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
                     .emit("finish", Arguments.createMap().apply {
                         putString("minutes", "00")
@@ -169,12 +152,12 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         val pendingContent =
             PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE)
         val addBroadcast = Intent(ADD_BROADCAST).apply {
-            setPackage(reactApplicationContext.packageName)
+            setPackage(context.packageName)
         }
         val pendingAdd =
             PendingIntent.getBroadcast(context, 0, addBroadcast, PendingIntent.FLAG_MUTABLE)
         val stopBroadcast = Intent(STOP_BROADCAST)
-        stopBroadcast.setPackage(reactApplicationContext.packageName)
+        stopBroadcast.setPackage(context.packageName)
         val pendingStop =
             PendingIntent.getBroadcast(context, 0, stopBroadcast, PendingIntent.FLAG_IMMUTABLE)
         return NotificationCompat.Builder(context, CHANNEL_ID_PENDING)
@@ -187,16 +170,9 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getManager(): NotificationManager {
-        val alarmsChannel = NotificationChannel(
-            CHANNEL_ID_DONE, CHANNEL_ID_DONE, NotificationManager.IMPORTANCE_HIGH
-        )
-        alarmsChannel.description = "Alarms for rest timers."
-        alarmsChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        alarmsChannel.setSound(null, null)
         val notificationManager = reactApplicationContext.getSystemService(
             NotificationManager::class.java
         )
-        notificationManager.createNotificationChannel(alarmsChannel)
         val timersChannel = NotificationChannel(
             CHANNEL_ID_PENDING, CHANNEL_ID_PENDING, NotificationManager.IMPORTANCE_LOW
         )
@@ -210,8 +186,6 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         const val STOP_BROADCAST = "stop-timer-event"
         const val ADD_BROADCAST = "add-timer-event"
         const val CHANNEL_ID_PENDING = "Timer"
-        const val CHANNEL_ID_DONE = "Alarm"
         const val NOTIFICATION_ID_PENDING = 1
-        const val NOTIFICATION_ID_DONE = 2
     }
 }

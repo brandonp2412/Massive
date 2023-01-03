@@ -23,7 +23,7 @@ class TimerDone : AppCompatActivity() {
         Log.d("TimerDone", "Stopping...")
         applicationContext.stopService(Intent(applicationContext, AlarmService::class.java))
         val manager = getManager()
-        manager.cancel(AlarmModule.NOTIFICATION_ID_DONE)
+        manager.cancel(AlarmService.NOTIFICATION_ID_DONE)
         manager.cancel(AlarmModule.NOTIFICATION_ID_PENDING)
         val intent = Intent(applicationContext, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -33,8 +33,8 @@ class TimerDone : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun getManager(): NotificationManager {
         val alarmsChannel = NotificationChannel(
-            AlarmModule.CHANNEL_ID_DONE,
-            AlarmModule.CHANNEL_ID_DONE,
+            AlarmService.CHANNEL_ID_DONE,
+            AlarmService.CHANNEL_ID_DONE,
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
             description = "Alarms for rest timers."
