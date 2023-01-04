@@ -17,7 +17,7 @@ jest.mock('../data-source.ts', () => ({
   },
 }))
 
-it('renders correctly', async () => {
+test('renders correctly', async () => {
   const {getAllByText} = render(<App />)
   const title = await waitFor(() => getAllByText('Home'))
   expect(title.length).toBeGreaterThan(0)

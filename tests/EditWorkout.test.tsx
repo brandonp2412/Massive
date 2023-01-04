@@ -18,7 +18,7 @@ jest.mock('../db.ts', () => ({
   },
 }))
 
-it('renders correctly', async () => {
+test('renders correctly', async () => {
   const Stack = createStackNavigator<WorkoutsPageParams>()
   const {getByText, getAllByText} = render(
     <MockProviders>

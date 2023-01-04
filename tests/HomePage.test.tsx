@@ -14,7 +14,7 @@ jest.mock('../db.ts', () => ({
   },
 }))
 
-it('renders correctly', async () => {
+test('renders correctly', async () => {
   const {getByText} = render(
     <MockProviders>
       <HomePage />

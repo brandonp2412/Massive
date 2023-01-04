@@ -23,7 +23,7 @@ jest.mock('../db.ts', () => ({
   },
 }))
 
-it('renders correctly', async () => {
+test('renders correctly', async () => {
   const Stack = createStackNavigator<PlanPageParams>()
   const {getByText, getAllByText} = render(
     <MockProviders>

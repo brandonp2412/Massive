@@ -43,7 +43,7 @@ jest.mock('../data-source.ts', () => ({
   },
 }))
 
-it('renders correctly', async () => {
+test('renders correctly', async () => {
   const Stack = createStackNavigator<PlanPageParams>()
   const {getByText, getAllByText} = render(
     <MockProviders>
@@ -73,7 +73,7 @@ it('renders correctly', async () => {
   expect(getAllByText('Save').length).toBeGreaterThan(0)
 })
 
-it('saves', async () => {
+test('saves', async () => {
   const Stack = createStackNavigator<PlanPageParams>()
   const {getByText} = render(
     <MockProviders>
