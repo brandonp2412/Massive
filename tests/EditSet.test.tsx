@@ -10,7 +10,7 @@ import SetList from '../SetList'
 import Settings from '../settings'
 
 jest.mock('../db.ts', () => ({
-  getNow: () => Promise.resolve([{now: new Date().toISOString()}]),
+  getNow: () => Promise.resolve(new Date().toISOString()),
   setRepo: {
     findOne: () => Promise.resolve({}),
     save: jest.fn(() => Promise.resolve({})),

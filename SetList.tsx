@@ -79,7 +79,7 @@ export default function SetList() {
   }, [term, end, offset, sets])
 
   const onAdd = useCallback(async () => {
-    const [{now}] = await getNow()
+    const now = await getNow()
     let set = sets[0]
     if (!set) set = {...defaultSet}
     set.created = now

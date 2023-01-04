@@ -14,7 +14,7 @@ jest.mock('../best.service.ts', () => ({
 }))
 
 jest.mock('../db.ts', () => ({
-  getNow: () => Promise.resolve([{now: new Date().toISOString()}]),
+  getNow: () => Promise.resolve(new Date().toISOString()),
   setRepo: {
     findOne: () => Promise.resolve({}),
     save: () => Promise.resolve(),

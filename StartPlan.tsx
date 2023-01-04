@@ -78,7 +78,7 @@ export default function StartPlan() {
   )
 
   const handleSubmit = async () => {
-    const [{now}] = await getNow()
+    const now = await getNow()
     const workout = counts[selected]
     const best = await getBestSet(workout.name)
     delete best.id

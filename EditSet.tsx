@@ -79,7 +79,7 @@ export default function EditSet() {
       image = await setRepo.findOne({where: {name}}).then(s => s?.image)
 
     console.log(`${EditSet.name}.handleSubmit:`, {image})
-    const [{now}] = await getNow()
+    const now = await getNow()
     const saved = await setRepo.save({
       id: set.id,
       name,

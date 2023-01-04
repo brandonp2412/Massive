@@ -16,7 +16,7 @@ jest.mock('@react-navigation/native', () => ({
 }))
 
 jest.mock('../db.ts', () => ({
-  getNow: () => Promise.resolve([{now: new Date().toISOString()}]),
+  getNow: () => Promise.resolve(new Date().toISOString()),
   setRepo: {
     find: () =>
       Promise.resolve([

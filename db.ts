@@ -7,8 +7,9 @@ export const setRepo = AppDataSource.manager.getRepository(GymSet)
 export const planRepo = AppDataSource.manager.getRepository(Plan)
 export const settingsRepo = AppDataSource.manager.getRepository(Settings)
 
-export const getNow = (): Promise<{now: string}[]> => {
-  return AppDataSource.manager.query(
+export const getNow = async (): Promise<string> => {
+  const query = await AppDataSource.manager.query(
     "SELECT STRFTIME('%Y-%m-%dT%H:%M:%S','now','localtime') AS now",
   )
+  return query[0].now
 }

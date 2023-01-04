@@ -22,7 +22,7 @@ export default function StartPlanItem(props: Props) {
   const {navigate} = useNavigation<NavigationProp<PlanPageParams>>()
 
   const undo = useCallback(async () => {
-    const [{now}] = await getNow()
+    const now = await getNow()
     const created = now.split('T')[0]
     const first = await setRepo.findOne({
       where: {
@@ -47,7 +47,7 @@ export default function StartPlanItem(props: Props) {
   )
 
   const edit = async () => {
-    const [{now}] = await getNow()
+    const now = await getNow()
     const created = now.split('T')[0]
     const first = await setRepo.findOne({
       where: {

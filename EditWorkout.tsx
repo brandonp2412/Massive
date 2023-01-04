@@ -66,7 +66,7 @@ export default function EditWorkout() {
   }
 
   const add = async () => {
-    const [{now}] = await getNow()
+    const now = await getNow()
     await setRepo.save({
       ...defaultSet,
       name,
