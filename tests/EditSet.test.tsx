@@ -80,6 +80,8 @@ it('saves', async () => {
   fireEvent.changeText(reps[0], '10')
   const weights = await waitFor(() => getAllByText('Weight'))
   fireEvent.changeText(weights[0], '60')
+  const units = await waitFor(() => getAllByText('Unit'))
+  fireEvent.changeText(units[0], 'lb')
   const save = getByText('Save')
   fireEvent.press(save)
   const home = await waitFor(() => getByText('Home'))
