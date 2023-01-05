@@ -34,7 +34,7 @@ bundle install
 bundle exec fastlane supply --aab app/build/outputs/bundle/release/app-release.aab
 
 git add app/build.gradle ../package.json
-git commit --no-verify --message "Set versionCode=$versionCode"
+git commit --no-verify --message "Set versionCode=$versionCode,versionName=$major.$minor"
 git tag "$versionCode"
 git push origin HEAD &
 git push --tags
