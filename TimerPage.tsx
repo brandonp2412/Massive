@@ -60,8 +60,8 @@ export default function TimerPage() {
             style={{height: 300, width: 300, marginBottom: MARGIN}}
             progress={progress}
             strokeWidth={10}
-            progressColor={colors.text}
-            backgroundColor={colors.placeholder}
+            progressColor={colors.primary}
+            backgroundColor={colors.primary + '80'}
           />
         </View>
       </View>
