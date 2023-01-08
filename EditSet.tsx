@@ -1,3 +1,4 @@
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker'
 import {
   RouteProp,
   useFocusEffect,
@@ -29,6 +30,7 @@ export default function EditSet() {
   const [weight, setWeight] = useState(set.weight?.toString())
   const [newImage, setNewImage] = useState(set.image)
   const [unit, setUnit] = useState(set.unit)
+  const [created, setCreated] = useState(new Date(set.created))
   const [showRemove, setShowRemove] = useState(false)
   const [removeImage, setRemoveImage] = useState(false)
   const weightRef = useRef<TextInput>(null)
@@ -83,7 +85,7 @@ export default function EditSet() {
     const saved = await setRepo.save({
       id: set.id,
       name,
-      created: set.created || now,
+      created: created?.toISOString() || now,
       reps: Number(reps),
       weight: Number(weight),
       unit,
@@ -110,6 +112,22 @@ export default function EditSet() {
     setRemoveImage(true)
     setShowRemove(false)
   }, [])
+
+  const pickDate = useCallback(() => {
+    DateTimePickerAndroid.open({
+      value: created,
+      onChange: (_, date) => {
+        if (date === created) return
+        setCreated(date)
+        DateTimePickerAndroid.open({
+          value: date,
+          onChange: (__, time) => setCreated(time),
+          mode: 'time',
+        })
+      },
+      mode: 'date',
+    })
+  }, [created])
 
   return (
     <>
@@ -159,8 +177,8 @@ export default function EditSet() {
         {typeof set.id === 'number' && settings.showDate && (
           <AppInput
             label="Created"
-            disabled
-            value={format(new Date(set.created), settings.date || 'P')}
+            value={format(created, settings.date || 'P')}
+            onPressOut={pickDate}
           />
         )}
 

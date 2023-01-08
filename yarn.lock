@@ -2160,6 +2160,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/datetimepicker@npm:^6.7.1":
+  version: 6.7.1
+  resolution: "@react-native-community/datetimepicker@npm:6.7.1"
+  dependencies:
+    invariant: ^2.2.4
+  checksum: b2eadbf7080ce6d131200e0189b260a6991cba7ce2ddc7a1f23bbb2e15a77288b847109bdad43b09eac11d376c8bea3e0934143c661ef350e3fe3f716111ac75
+  languageName: node
+  linkType: hard
+
 "@react-native-community/eslint-config@npm:^2.0.0":
   version: 2.0.0
   resolution: "@react-native-community/eslint-config@npm:2.0.0"
@@ -7270,6 +7279,7 @@ __metadata:
     "@babel/plugin-transform-flow-strip-types": ^7.19.0
     "@babel/preset-env": ^7.19.1
     "@babel/runtime": ^7.12.5
+    "@react-native-community/datetimepicker": ^6.7.1
     "@react-native-community/eslint-config": ^2.0.0
     "@react-native-masked-view/masked-view": ^0.2.7
     "@react-navigation/drawer": ^6.5.0
