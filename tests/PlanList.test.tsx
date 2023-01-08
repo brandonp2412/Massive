@@ -63,5 +63,5 @@ test('adds', async () => {
     </MockProviders>,
   )
   fireEvent.press(await waitFor(() => getByTestId('add')))
-  expect(await waitFor(() => getByText('Edit plan'))).toBeDefined()
+  expect(await waitFor(() => getByText('Add plan'))).toBeDefined()
 })

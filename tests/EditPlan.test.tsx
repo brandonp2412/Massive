@@ -33,6 +33,7 @@ test('renders correctly', async () => {
             plan: {
               workouts: 'Bench,Rows,Curls',
               days: 'Monday,Tuesday,Thursday',
+              id: 1,
             } as Plan,
           }}
           name="EditPlan"

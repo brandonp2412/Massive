@@ -25,7 +25,7 @@ test('renders correctly', async () => {
       <Stack.Navigator>
         <Stack.Screen
           initialParams={{
-            value: {} as GymSet,
+            value: {name: 'Bench press'} as GymSet,
           }}
           name="EditWorkout"
           component={EditWorkout}
