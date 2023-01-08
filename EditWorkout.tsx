@@ -107,7 +107,7 @@ export default function EditWorkout() {
 
   return (
     <>
-      <StackHeader title="Edit workout" />
+      <StackHeader title={params.value.name ? 'Edit workout' : 'Add workout'} />
       <View style={{padding: PADDING, flex: 1}}>
         <ScrollView style={{flex: 1}}>
           <AppInput

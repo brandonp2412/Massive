@@ -131,7 +131,9 @@ export default function EditSet() {
 
   return (
     <>
-      <StackHeader title="Edit set" />
+      <StackHeader
+        title={typeof set.id === 'number' ? 'Edit set' : 'Add set'}
+      />
 
       <View style={{padding: PADDING, flex: 1}}>
         <AppInput

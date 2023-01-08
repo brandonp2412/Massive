@@ -72,7 +72,9 @@ export default function EditPlan() {
 
   return (
     <>
-      <StackHeader title="Edit plan" />
+      <StackHeader
+        title={typeof plan.id === 'number' ? 'Edit plan' : 'Add plan'}
+      />
       <View style={{padding: PADDING, flex: 1}}>
         <ScrollView style={{flex: 1}}>
           <Text style={styles.title}>Days</Text>
