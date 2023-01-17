@@ -30,7 +30,9 @@ export default function EditSet() {
   const [weight, setWeight] = useState(set.weight?.toString())
   const [newImage, setNewImage] = useState(set.image)
   const [unit, setUnit] = useState(set.unit)
-  const [created, setCreated] = useState(new Date(set.created))
+  const [created, setCreated] = useState(
+    set.created ? new Date(set.created) : new Date(),
+  )
   const [showRemove, setShowRemove] = useState(false)
   const [removeImage, setRemoveImage] = useState(false)
   const weightRef = useRef<TextInput>(null)
