@@ -2,10 +2,6 @@
 
 set -ex
 
-yarn tsc
-yarn lint
-yarn jest
-
 cd android || exit 1
 
 build=app/build.gradle
@@ -28,6 +24,9 @@ sed -i "s/\(^\s*\)versionName \"[0-9]*.[0-9]*\"$/\1versionName \"$major.$minor\"
 sed -i "s/\"version\": \"[0-9]*.[0-9]*\"/\"version\": \"$major.$minor\"/" ../package.json
 
 if [ "$1" != "-n" ]; then
+  yarn tsc
+  yarn lint
+  yarn jest
   ./gradlew bundleRelease
   bundle install
   bundle exec fastlane supply --aab app/build/outputs/bundle/release/app-release.aab
