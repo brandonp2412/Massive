@@ -16,8 +16,8 @@ import Volume from './volume'
 
 export default function ViewBest() {
   const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>()
-  const [weights, setWeights] = useState<GymSet[]>([])
-  const [volumes, setVolumes] = useState<Volume[]>([])
+  const [weights, setWeights] = useState<GymSet[]>()
+  const [volumes, setVolumes] = useState<Volume[]>()
   const [metric, setMetric] = useState(Metrics.Weight)
   const [period, setPeriod] = useState(Periods.Monthly)
 
@@ -64,12 +64,12 @@ export default function ViewBest() {
 
   const charts = useMemo(() => {
     if (
-      (metric === Metrics.Volume && volumes.length === 0) ||
-      (metric === Metrics.Weight && weights.length === 0) ||
-      (metric === Metrics.OneRepMax && weights.length === 0)
+      (metric === Metrics.Volume && volumes?.length === 0) ||
+      (metric === Metrics.Weight && weights?.length === 0) ||
+      (metric === Metrics.OneRepMax && weights?.length === 0)
     )
       return <List.Item title="No data yet." />
-    if (metric === Metrics.Volume)
+    if (metric === Metrics.Volume && volumes?.length && weights?.length)
       return (
         <Chart
           yData={volumes.map(v => v.value)}
@@ -87,11 +87,11 @@ export default function ViewBest() {
 
     return (
       <Chart
-        yData={weights.map(set => set.weight)}
-        yFormat={value => `${value}${weights[0].unit}`}
-        xData={weights}
+        yData={weights?.map(set => set.weight) || []}
+        yFormat={value => `${value}${weights?.[0].unit}`}
+        xData={weights || []}
         xFormat={(_value, index) =>
-          format(new Date(weights[index].created), 'd/M')
+          format(new Date(weights?.[index].created), 'd/M')
         }
       />
     )
