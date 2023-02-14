@@ -12,6 +12,7 @@ jest.mock('../db.ts', () => ({
       addSelect: jest.fn().mockReturnThis(),
       where: jest.fn().mockReturnThis(),
       andWhere: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
       groupBy: jest.fn().mockReturnThis(),
       distinct: jest.fn().mockReturnThis(),
       getRawMany: jest.fn(() =>

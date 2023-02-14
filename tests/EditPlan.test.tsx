@@ -12,6 +12,7 @@ jest.mock('../db.ts', () => ({
     createQueryBuilder: () => ({
       select: jest.fn().mockReturnThis(),
       distinct: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
       getRawMany: jest.fn(() =>
         Promise.resolve([
           {name: 'Bench press'},
