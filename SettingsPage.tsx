@@ -235,7 +235,13 @@ export default function SettingsPage() {
     await AppDataSource.initialize()
     await setRepo.createQueryBuilder().update().set({image: null}).execute()
     await update('sound', null)
-    reset({index: 0, routes: [{name: 'Settings'}]})
+    NativeModules.SettingsModule.ignoringBattery(
+      async (isIgnoring: boolean) => {
+        const {alarm} = await settingsRepo.findOne({where: {}})
+        if (alarm && !isIgnoring) NativeModules.SettingsModule.ignoreBattery()
+        reset({index: 0, routes: [{name: 'Settings'}]})
+      },
+    )
   }, [reset, update])
 
   const exportDatabase = useCallback(async () => {
