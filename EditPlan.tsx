@@ -32,6 +32,7 @@ export default function EditPlan() {
       .createQueryBuilder()
       .select('name')
       .distinct(true)
+      .orderBy('name')
       .getRawMany()
       .then(values => {
         console.log(EditPlan.name, {values})
