@@ -42,18 +42,24 @@ export default function ViewBest() {
       .addGroupBy(`STRFTIME('${group}', created)`)
     switch (metric) {
       case Metrics.Weight:
-        builder.addSelect('MAX(weight)', 'weight').getRawMany().then(setWeights)
+        builder
+          .addSelect('ROUND(MAX(weight), 2)', 'weight')
+          .getRawMany()
+          .then(setWeights)
         break
       case Metrics.Volume:
         builder
-          .addSelect('SUM(weight * reps)', 'value')
+          .addSelect('ROUND(SUM(weight * reps), 2)', 'value')
           .getRawMany()
           .then(setVolumes)
         break
       default:
         // Brzycki formula https://en.wikipedia.org/wiki/One-repetition_maximum#Brzycki
         builder
-          .addSelect('MAX(weight / (1.0278 - 0.0278 * reps))', 'weight')
+          .addSelect(
+            'ROUND(MAX(weight / (1.0278 - 0.0278 * reps)), 2)',
+            'weight',
+          )
           .getRawMany()
           .then(newWeights => {
             console.log({weights: newWeights})
