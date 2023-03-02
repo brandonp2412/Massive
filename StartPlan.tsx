@@ -3,7 +3,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import {FlatList, NativeModules, TextInput, View} from 'react-native'
 import {Button, ProgressBar} from 'react-native-paper'
 import AppInput from './AppInput'
-import {getBestSet} from './best.service'
+import {getBestSet, getLast} from './best.service'
 import {PADDING} from './constants'
 import CountMany from './count-many'
 import {AppDataSource} from './data-source'
@@ -59,13 +59,13 @@ export default function StartPlan() {
       if (!counts && !newCounts) return
       const workout = counts ? counts[index] : newCounts[index]
       console.log(`${StartPlan.name}.next:`, {workout})
-      const newBest = await getBestSet(workout.name)
-      if (!newBest) return
-      delete newBest.id
-      console.log(`${StartPlan.name}.next:`, {newBest})
-      setReps(newBest.reps.toString())
-      setWeight(newBest.weight.toString())
-      setUnit(newBest.unit)
+      const last = await getLast(workout.name)
+      if (!last) return
+      delete last.id
+      console.log(`${StartPlan.name}.select:`, {last})
+      setReps(last.reps.toString())
+      setWeight(last.weight.toString())
+      setUnit(last.unit)
     },
     [counts],
   )

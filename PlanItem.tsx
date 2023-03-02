@@ -6,7 +6,7 @@ import {
 import {useCallback, useMemo, useState} from 'react'
 import {Text} from 'react-native'
 import {List} from 'react-native-paper'
-import {getBestSet} from './best.service'
+import {getLast} from './best.service'
 import {DARK_RIPPLE, LIGHT_RIPPLE} from './constants'
 import {defaultSet} from './gym-set'
 import {Plan} from './plan'
@@ -37,7 +37,7 @@ export default function PlanItem({
 
   const start = useCallback(async () => {
     const workout = item.workouts.split(',')[0]
-    let first = await getBestSet(workout)
+    let first = await getLast(workout)
     if (!first) first = {...defaultSet, name: workout}
     delete first.id
     if (ids.length === 0)
