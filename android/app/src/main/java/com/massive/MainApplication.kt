@@ -1,70 +1,47 @@
 package com.massive
 
 import android.app.Application
-import android.content.Context
-import com.facebook.react.*
-import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.PackageList
+import com.facebook.react.ReactApplication
+import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactPackage
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
+import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
-import com.massive.newarchitecture.MainApplicationReactNativeHost
-import java.lang.reflect.InvocationTargetException
 
 class MainApplication : Application(), ReactApplication {
-    private val mReactNativeHost: ReactNativeHost = object : ReactNativeHost(this) {
+    private val mReactNativeHost: ReactNativeHost = object : DefaultReactNativeHost(this) {
         override fun getUseDeveloperSupport(): Boolean {
             return BuildConfig.DEBUG
         }
 
         override fun getPackages(): List<ReactPackage> {
-            val packages: MutableList<ReactPackage> = PackageList(this).packages
-            packages.add(MassivePackage())
-            return packages
+            // Packages that cannot be autolinked yet can be added manually here, for example:
+            // packages.add(new MyReactNativePackage());
+            return PackageList(this).packages
         }
 
         override fun getJSMainModuleName(): String {
             return "index"
         }
+
+        override val isNewArchEnabled: Boolean
+            protected get() = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+        override val isHermesEnabled: Boolean
+            protected get() = BuildConfig.IS_HERMES_ENABLED
     }
 
-    private val mNewArchitectureNativeHost: ReactNativeHost = MainApplicationReactNativeHost(this)
     override fun getReactNativeHost(): ReactNativeHost {
-        return if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-            mNewArchitectureNativeHost
-        } else {
-            mReactNativeHost
-        }
+        return mReactNativeHost
     }
 
     override fun onCreate() {
         super.onCreate()
-        ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-        SoLoader.init(this, false)
-        initializeFlipper(this, reactNativeHost.reactInstanceManager)
-    }
-
-    companion object {
-        private fun initializeFlipper(
-            context: Context, reactInstanceManager: ReactInstanceManager
-        ) {
-            if (BuildConfig.DEBUG) {
-                try {
-                    val aClass = Class.forName("com.massive.ReactNativeFlipper")
-                    aClass
-                        .getMethod(
-                            "initializeFlipper",
-                            Context::class.java,
-                            ReactInstanceManager::class.java
-                        )
-                        .invoke(null, context, reactInstanceManager)
-                } catch (e: ClassNotFoundException) {
-                    e.printStackTrace()
-                } catch (e: NoSuchMethodException) {
-                    e.printStackTrace()
-                } catch (e: IllegalAccessException) {
-                    e.printStackTrace()
-                } catch (e: InvocationTargetException) {
-                    e.printStackTrace()
-                }
-            }
+        SoLoader.init(this,  /* native exopackage */false)
+        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+            // If you opted-in for the New Architecture, we load the native entry point for this app.
+            load()
         }
+        ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
     }
 }
