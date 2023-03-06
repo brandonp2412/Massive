@@ -19,6 +19,7 @@ export const getLast = async (name: string): Promise<GymSet> => {
     .createQueryBuilder()
     .where('name = :name', {name})
     .andWhere('reps >= 5')
+    .andWhere("strftime('%Y-%m-%d', 'now', 'localtime') > created")
     .groupBy("STRFTIME('%Y-%m-%d', created)")
     .orderBy('created', 'DESC')
     .select('reps')

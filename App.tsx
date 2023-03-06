@@ -51,15 +51,14 @@ const App = () => {
   )
 
   useEffect(() => {
-    const init = async () => {
+    ;(async () => {
       if (!AppDataSource.isInitialized) await AppDataSource.initialize()
       const settings = await settingsRepo.findOne({where: {}})
       setTheme(settings.theme)
       if (settings.lightColor) setLightColor(settings.lightColor)
       if (settings.darkColor) setDarkColor(settings.darkColor)
       setInitialized(true)
-    }
-    init()
+    })()
     const description = DeviceEventEmitter.addListener(
       TOAST,
       ({value}: {value: string}) => {
