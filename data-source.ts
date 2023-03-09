@@ -24,6 +24,7 @@ import {addSetsCreated1667186451005} from './migrations/1667186451005-add-sets-c
 import {addNoSound1667186456118} from './migrations/1667186456118-add-no-sound'
 import {dropMigrations1667190214743} from './migrations/1667190214743-drop-migrations'
 import {splitColor1669420187764} from './migrations/1669420187764-split-color'
+import {addBackup1678334268359} from './migrations/1678334268359-add-backup'
 import {Plan} from './plan'
 import Settings from './settings'
 
@@ -59,5 +60,6 @@ export const AppDataSource = new DataSource({
     addNoSound1667186456118,
     dropMigrations1667190214743,
     splitColor1669420187764,
+    addBackup1678334268359,
   ],
 })

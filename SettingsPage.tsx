@@ -84,6 +84,7 @@ export default function SettingsPage() {
       {name: 'Show unit', value: settings.showUnit, key: 'showUnit'},
       {name: 'Show steps', value: settings.steps, key: 'steps'},
       {name: 'Show date', value: settings.showDate, key: 'showDate'},
+      {name: 'Automatic backup', value: settings.backup, key: 'backup'},
     ],
     [settings],
   )
@@ -130,6 +131,15 @@ export default function SettingsPage() {
         case 'noSound':
           if (value) toast('Disable sound on rest timer alarms.')
           else toast('Enabled sound for rest timer alarms.')
+          return
+        case 'backup':
+          if (value) {
+            toast('Backup database daily.')
+            NativeModules.BackupModule.start()
+          } else {
+            toast('Stopped backing up daily')
+            NativeModules.BackupModule.stop()
+          }
           return
       }
     },
@@ -207,7 +217,7 @@ export default function SettingsPage() {
         key: 'date',
       },
     ]
-  }, [settings.date, darkColor, formatOptions, theme, lightColor])
+  }, [settings, darkColor, formatOptions, theme, lightColor])
 
   const renderSelect = useCallback(
     (item: Input<string>) => (

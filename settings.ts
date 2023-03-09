@@ -43,4 +43,7 @@ export default class Settings {
 
   @Column('boolean')
   noSound: boolean
+
+  @Column('boolean')
+  backup: boolean
 }
