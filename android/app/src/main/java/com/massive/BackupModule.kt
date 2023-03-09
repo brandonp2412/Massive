@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Environment
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -24,6 +25,7 @@ class BackupModule constructor(context: ReactApplicationContext?) :
     private val copyReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d("BackupModule", "Backing up database...")
             val sourceFile = File(context?.getDatabasePath("massive.db")!!.path)
 
             val targetDir =
