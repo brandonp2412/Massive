@@ -7306,7 +7306,7 @@ __metadata:
     metro-react-native-babel-preset: ^0.73.3
     react: 18.1.0
     react-hook-form: ^7.41.2
-    react-native: 0.70.6
+    react-native: 0.70.7
     react-native-document-picker: ^8.1.2
     react-native-file-access: ^2.5.0
     react-native-gesture-handler: ^2.8.0
@@ -9036,9 +9036,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native@npm:0.70.6":
-  version: 0.70.6
-  resolution: "react-native@npm:0.70.6"
+"react-native@npm:0.70.7":
+  version: 0.70.7
+  resolution: "react-native@npm:0.70.7"
   dependencies:
     "@jest/create-cache-key-function": ^27.0.1
     "@react-native-community/cli": 9.3.2
@@ -9076,7 +9076,7 @@ __metadata:
     react: 18.1.0
   bin:
     react-native: cli.js
-  checksum: ae57e1b86f4e6950913f8b59732ab57d2dd1ee30af6c2ca68f88b03b8448cb01c51967b148550a8b8cb6d42ca9b73cead2e854b9ecc2f4b9d5d75fccff798846
+  checksum: ec4af6e06b42ca98f5c404ca554daec758054bdae9be2fc03524fa2af4fb3baf436f7c971784fa82915777abec8fadbf1c86d6073a3fffb4a61322dea89fff78
   languageName: node
   linkType: hard
 
