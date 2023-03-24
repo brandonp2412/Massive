@@ -10,6 +10,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.facebook.react.bridge.ReactApplicationContext
@@ -32,8 +33,7 @@ class BackupModule constructor(context: ReactApplicationContext?) :
             val sourceFile = File(context?.getDatabasePath("massive.db")!!.path)
             val targetDir =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            var targetFile = File(targetDir, "massive.db")
-            var count = 0
+            val targetFile = File(targetDir, "massive.db")
 
             try {
                 val input = FileInputStream(sourceFile)
@@ -42,15 +42,11 @@ class BackupModule constructor(context: ReactApplicationContext?) :
                 input.close()
                 output.close()
             } catch (e: IOException) {
-                while (targetFile.exists()) {
-                    count++
-                    targetFile = File(targetDir, "massive (${count}).db")
-                }
-                val input = FileInputStream(sourceFile)
-                val output = FileOutputStream(targetFile)
-                input.copyTo(output)
-                input.close()
-                output.close()
+                Toast.makeText(
+                    reactApplicationContext,
+                    "Access to massive.db is denied. Try deleting it first.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
