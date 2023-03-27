@@ -6,7 +6,6 @@ import {NativeModules, ScrollView, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Dirs, FileSystem} from 'react-native-file-access'
 import {Button, Subheading} from 'react-native-paper'
-import {PERMISSIONS, request} from 'react-native-permissions'
 import ConfirmDialog from './ConfirmDialog'
 import {ITEM_PADDING, MARGIN} from './constants'
 import {AppDataSource} from './data-source'
@@ -135,12 +134,7 @@ export default function SettingsPage() {
           return
         case 'backup':
           if (value) {
-            const granted = await request(
-              PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
-            )
-            if (!granted) return
             const result = await DocumentPicker.pickDirectory()
-            console.log(result.uri)
             toast('Backup database daily.')
             NativeModules.BackupModule.start(result.uri)
           } else {
@@ -247,14 +241,15 @@ export default function SettingsPage() {
   const confirmImport = useCallback(async () => {
     setImporting(false)
     await AppDataSource.destroy()
-    const result = await DocumentPicker.pickSingle()
-    await FileSystem.cp(result.uri, Dirs.DatabaseDir + '/massive.db')
+    const file = await DocumentPicker.pickSingle()
+    await FileSystem.cp(file.uri, Dirs.DatabaseDir + '/massive.db')
     await AppDataSource.initialize()
     await setRepo.createQueryBuilder().update().set({image: null}).execute()
     await update('sound', null)
     const {alarm, backup} = await settingsRepo.findOne({where: {}})
     console.log({backup})
-    if (backup) NativeModules.BackupModule.start()
+    const directory = await DocumentPicker.pickDirectory()
+    if (backup) NativeModules.BackupModule.start(directory.uri)
     else NativeModules.BackupModule.stop()
     NativeModules.SettingsModule.ignoringBattery(
       async (isIgnoring: boolean) => {

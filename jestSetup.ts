@@ -11,7 +11,6 @@ NativeModules.SettingsModule = NativeModules.SettingsModule || {
 
 jest.mock('react-native-file-access', () => jest.fn())
 jest.mock('react-native-share', () => jest.fn())
-jest.mock('react-native-permissions', () => jest.fn())
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
 jest.mock('react-native/Libraries/EventEmitter/NativeEventEmitter')
 
