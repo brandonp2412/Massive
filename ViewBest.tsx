@@ -2,7 +2,10 @@ import {RouteProp, useRoute} from '@react-navigation/native'
 import {format} from 'date-fns'
 import {useEffect, useMemo, useState} from 'react'
 import {View} from 'react-native'
-import {List} from 'react-native-paper'
+import {FileSystem} from 'react-native-file-access'
+import {IconButton, List} from 'react-native-paper'
+import Share from 'react-native-share'
+import {captureScreen} from 'react-native-view-shot'
 import {BestPageParams} from './BestPage'
 import Chart from './Chart'
 import {PADDING} from './constants'
@@ -12,6 +15,7 @@ import {Metrics} from './metrics'
 import {Periods} from './periods'
 import Select from './Select'
 import StackHeader from './StackHeader'
+import useDark from './use-dark'
 import Volume from './volume'
 
 export default function ViewBest() {
@@ -20,6 +24,7 @@ export default function ViewBest() {
   const [volumes, setVolumes] = useState<Volume[]>()
   const [metric, setMetric] = useState(Metrics.Weight)
   const [period, setPeriod] = useState(Periods.Monthly)
+  const dark = useDark()
 
   useEffect(() => {
     console.log(`${ViewBest.name}.useEffect`, {metric})
@@ -105,7 +110,22 @@ export default function ViewBest() {
 
   return (
     <>
-      <StackHeader title={params.best.name} />
+      <StackHeader title={params.best.name}>
+        <IconButton
+          color={dark ? 'white' : 'white'}
+          onPress={() =>
+            captureScreen().then(async uri => {
+              const base64 = await FileSystem.readFile(uri, 'base64')
+              const url = `data:image/jpeg;base64,${base64}`
+              Share.open({
+                type: 'image/jpeg',
+                url,
+              })
+            })
+          }
+          icon="share"
+        />
+      </StackHeader>
       <View style={{padding: PADDING}}>
         <Select
           label="Metric"
