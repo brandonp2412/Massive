@@ -1,75 +1,44 @@
 package com.massive
 
-import android.Manifest
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
+import android.content.*
+import android.net.Uri
 import android.os.Build
-import android.os.Environment
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
+import androidx.documentfile.provider.DocumentFile
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 import java.util.*
-
 
 class BackupModule constructor(context: ReactApplicationContext?) :
     ReactContextBaseJavaModule(context) {
     val context: ReactApplicationContext = reactApplicationContext
+    private var targetDir: String? = null
 
     private val copyReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
+            val treeUri: Uri = Uri.parse(targetDir)
+            val documentFile = context?.let { DocumentFile.fromTreeUri(it, treeUri) }
+            val file = documentFile?.createFile("application/octet-stream", "massive.db")
+            val output = context?.contentResolver?.openOutputStream(file!!.uri)
             val sourceFile = File(context?.getDatabasePath("massive.db")!!.path)
-            val targetDir =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val targetFile = File(targetDir, "massive.db")
-
-            try {
-                val input = FileInputStream(sourceFile)
-                val output = FileOutputStream(targetFile)
+            val input = FileInputStream(sourceFile)
+            if (output != null) {
                 input.copyTo(output)
-                input.close()
-                output.close()
-            } catch (e: IOException) {
-                Toast.makeText(
-                    reactApplicationContext,
-                    "Access to massive.db is denied. Try deleting it first.",
-                    Toast.LENGTH_LONG
-                ).show()
             }
+            output?.flush()
+            output?.close()
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     @ReactMethod
-    fun start() {
-        val permission: Int =
-            ActivityCompat.checkSelfPermission(
-                reactApplicationContext,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                currentActivity!!,
-                arrayOf<String>(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
-                1
-            )
-        }
-
+    fun start(baseUri: String) {
+        targetDir = baseUri
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(COPY_BROADCAST)
         val pendingIntent =

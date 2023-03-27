@@ -6,6 +6,7 @@ import {NativeModules, ScrollView, View} from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import {Dirs, FileSystem} from 'react-native-file-access'
 import {Button, Subheading} from 'react-native-paper'
+import {PERMISSIONS, request} from 'react-native-permissions'
 import ConfirmDialog from './ConfirmDialog'
 import {ITEM_PADDING, MARGIN} from './constants'
 import {AppDataSource} from './data-source'
@@ -134,8 +135,14 @@ export default function SettingsPage() {
           return
         case 'backup':
           if (value) {
+            const granted = await request(
+              PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
+            )
+            if (!granted) return
+            const result = await DocumentPicker.pickDirectory()
+            console.log(result.uri)
             toast('Backup database daily.')
-            NativeModules.BackupModule.start()
+            NativeModules.BackupModule.start(result.uri)
           } else {
             toast('Stopped backing up daily')
             NativeModules.BackupModule.stop()

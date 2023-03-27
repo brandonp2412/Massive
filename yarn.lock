@@ -7313,6 +7313,7 @@ __metadata:
     react-native-linear-gradient: ^2.6.2
     react-native-pager-view: ^6.0.1
     react-native-paper: ^4.12.5
+    react-native-permissions: ^3.8.0
     react-native-reanimated: ^2.12.0
     react-native-safe-area-context: ^4.4.1
     react-native-screens: ^3.18.2
@@ -8592,6 +8593,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pkg-dir@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "pkg-dir@npm:5.0.0"
+  dependencies:
+    find-up: ^5.0.0
+  checksum: b167bb8dac7bbf22b1d5e30ec223e6b064b84b63010c9d49384619a36734caf95ed23ad23d4f9bd975e8e8082b60a83395f43a89bb192df53a7c25a38ecb57d9
+  languageName: node
+  linkType: hard
+
 "posix-character-classes@npm:^0.1.0":
   version: 0.1.1
   resolution: "posix-character-classes@npm:0.1.1"
@@ -8895,6 +8905,23 @@ __metadata:
     react-native: "*"
     react-native-vector-icons: "*"
   checksum: 016236b716180025f56642185b53fcf39f795f3da4db8690d34027054ca80e20820423abd77ad4cf386fd759541dfe36a0207e48e62a46e4eb170f55556ab327
+  languageName: node
+  linkType: hard
+
+"react-native-permissions@npm:^3.8.0":
+  version: 3.8.0
+  resolution: "react-native-permissions@npm:3.8.0"
+  dependencies:
+    picocolors: ^1.0.0
+    pkg-dir: ^5.0.0
+  peerDependencies:
+    react: ">=16.13.1"
+    react-native: ">=0.63.3"
+    react-native-windows: ">=0.62.0"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: acbd8605adabfc48e19fbc468a3a143fb85bd34d3ed0fe6a4b52f16304591b8a4b3c561a507c11643fcc8ce1b4dc09e31f149387d1ea461098a2e40c43989f7c
   languageName: node
   linkType: hard
 
