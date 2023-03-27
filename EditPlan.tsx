@@ -6,14 +6,16 @@ import {
 } from '@react-navigation/native'
 import {useCallback, useEffect, useState} from 'react'
 import {ScrollView, StyleSheet, View} from 'react-native'
-import {Button, Text} from 'react-native-paper'
+import {Button, IconButton, Text} from 'react-native-paper'
+import {getLast} from './best.service'
 import {MARGIN, PADDING} from './constants'
 import {planRepo, setRepo} from './db'
-import {DrawerParamList} from './drawer-param-list'
+import {defaultSet} from './gym-set'
 import {PlanPageParams} from './plan-page-params'
 import StackHeader from './StackHeader'
 import Switch from './Switch'
 import {DAYS} from './time'
+import useDark from './use-dark'
 
 export default function EditPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>()
@@ -25,7 +27,8 @@ export default function EditPlan() {
     plan.workouts ? plan.workouts.split(',') : [],
   )
   const [names, setNames] = useState<string[]>([])
-  const navigation = useNavigation<NavigationProp<DrawerParamList>>()
+  const navigation = useNavigation<NavigationProp<PlanPageParams>>()
+  const dark = useDark()
 
   useEffect(() => {
     setRepo
@@ -74,8 +77,18 @@ export default function EditPlan() {
   return (
     <>
       <StackHeader
-        title={typeof plan.id === 'number' ? 'Edit plan' : 'Add plan'}
-      />
+        title={typeof plan.id === 'number' ? 'Edit plan' : 'Add plan'}>
+        <IconButton
+          color={dark ? 'white' : 'white'}
+          onPress={async () => {
+            let first = await getLast(workouts[0])
+            if (!first) first = {...defaultSet, name: workouts[0]}
+            delete first.id
+            navigation.navigate('StartPlan', {plan: params.plan, first})
+          }}
+          icon="play-arrow"
+        />
+      </StackHeader>
       <View style={{padding: PADDING, flex: 1}}>
         <ScrollView style={{flex: 1}}>
           <Text style={styles.title}>Days</Text>

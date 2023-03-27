@@ -1,7 +1,13 @@
-import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native'
+import {
+  NavigationProp,
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {FlatList, NativeModules, TextInput, View} from 'react-native'
-import {Button, ProgressBar} from 'react-native-paper'
+import {Button, IconButton, ProgressBar} from 'react-native-paper'
 import AppInput from './AppInput'
 import {getBestSet, getLast} from './best.service'
 import {PADDING} from './constants'
@@ -14,6 +20,7 @@ import Settings from './settings'
 import StackHeader from './StackHeader'
 import StartPlanItem from './StartPlanItem'
 import {toast} from './toast'
+import useDark from './use-dark'
 
 export default function StartPlan() {
   const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
@@ -27,6 +34,8 @@ export default function StartPlan() {
   const repsRef = useRef<TextInput>(null)
   const unitRef = useRef<TextInput>(null)
   const workouts = useMemo(() => params.plan.workouts.split(','), [params])
+  const dark = useDark()
+  const navigation = useNavigation<NavigationProp<PlanPageParams>>()
 
   const [selection, setSelection] = useState({
     start: 0,
@@ -105,7 +114,13 @@ export default function StartPlan() {
 
   return (
     <>
-      <StackHeader title={params.plan.days.replace(/,/g, ', ')} />
+      <StackHeader title={params.plan.days.replace(/,/g, ', ')}>
+        <IconButton
+          color={dark ? 'white' : 'white'}
+          onPress={() => navigation.navigate('EditPlan', {plan: params.plan})}
+          icon="edit"
+        />
+      </StackHeader>
       <View style={{padding: PADDING, flex: 1, flexDirection: 'column'}}>
         <View style={{flex: 1}}>
           <AppInput
