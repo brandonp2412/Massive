@@ -65,7 +65,7 @@ export default function SettingsPage() {
 
   const changeSound = useCallback(async () => {
     const {fileCopyUri} = await DocumentPicker.pickSingle({
-      type: 'audio/*',
+      type: DocumentPicker.types.audio,
       copyTo: 'documentDirectory',
     })
     if (!fileCopyUri) return
