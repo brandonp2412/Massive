@@ -29,7 +29,7 @@ export default function WorkoutList() {
     const newWorkouts = await setRepo
       .createQueryBuilder()
       .select()
-      .where('name LIKE :name', {name: `%${value}%`})
+      .where('name LIKE :name', {name: `%${value.trim()}%`})
       .groupBy('name')
       .orderBy('name')
       .limit(limit)
@@ -71,7 +71,7 @@ export default function WorkoutList() {
     const newWorkouts = await setRepo
       .createQueryBuilder()
       .select()
-      .where('name LIKE :name', {name: `%${term}%`})
+      .where('name LIKE :name', {name: `%${term.trim()}%`})
       .groupBy('name')
       .orderBy('name')
       .limit(limit)

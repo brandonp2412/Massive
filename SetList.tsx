@@ -29,7 +29,7 @@ export default function SetList() {
 
   const refresh = useCallback(async (value: string) => {
     const newSets = await setRepo.find({
-      where: {name: Like(`%${value}%`), hidden: 0 as any},
+      where: {name: Like(`%${value.trim()}%`), hidden: 0 as any},
       take: limit,
       skip: 0,
       order: {created: 'DESC'},

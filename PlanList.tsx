@@ -24,7 +24,10 @@ export default function PlanList() {
   const refresh = useCallback(async (value: string) => {
     planRepo
       .find({
-        where: [{days: Like(`%${value}%`)}, {workouts: Like(`%${value}%`)}],
+        where: [
+          {days: Like(`%${value.trim()}%`)},
+          {workouts: Like(`%${value.trim()}%`)},
+        ],
       })
       .then(setPlans)
   }, [])

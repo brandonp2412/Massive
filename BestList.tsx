@@ -30,7 +30,7 @@ export default function BestList() {
       .createQueryBuilder()
       .select()
       .addSelect('MAX(weight)', 'weight')
-      .where('name LIKE :name', {name: `%${value}%`})
+      .where('name LIKE :name', {name: `%${value.trim()}%`})
       .andWhere('NOT hidden')
       .groupBy('name')
       .getMany()
