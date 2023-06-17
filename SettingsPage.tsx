@@ -21,8 +21,24 @@ import Switch from './Switch'
 import {toast} from './toast'
 import {useTheme} from './use-theme'
 
-const twelveHours = ['P', 'Pp', 'ccc p', 'p', 'yyyy-MM-d', 'yyyy.MM.d']
-const twentyFours = ['P', 'P, k:m', 'ccc k:m', 'k:m', 'yyyy-MM-d', 'yyyy.MM.d']
+const twelveHours = [
+  'dd/LL/yyyy',
+  'dd/LL/yyyy, p',
+  'ccc p',
+  'p',
+  'yyyy-MM-d',
+  'yyyy-MM-d, p',
+  'yyyy.MM.d',
+]
+const twentyFours = [
+  'dd/LL/yyyy',
+  'dd/LL/yyyy, k:m',
+  'ccc k:m',
+  'k:m',
+  'yyyy-MM-d',
+  'yyyy-MM-d, k:m',
+  'yyyy.MM.d',
+]
 
 export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false)
