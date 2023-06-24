@@ -27,8 +27,6 @@ export default function ViewBest() {
   const dark = useDark()
 
   useEffect(() => {
-    console.log(`${ViewBest.name}.useEffect`, {metric})
-    console.log(`${ViewBest.name}.useEffect`, {period})
     let difference = '-7 days'
     if (period === Periods.Monthly) difference = '-1 months'
     else if (period === Periods.Yearly) difference = '-1 years'
