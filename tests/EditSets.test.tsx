@@ -1,10 +1,10 @@
-import {createStackNavigator} from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import 'react-native'
-import {fireEvent, render, waitFor} from 'react-native-testing-library'
+import { fireEvent, render, waitFor } from 'react-native-testing-library'
 import EditSets from '../EditSets'
-import {HomePageParams} from '../home-page-params'
-import {MockProviders} from '../mock-providers'
+import { HomePageParams } from '../home-page-params'
+import { MockProviders } from '../mock-providers'
 
 const mockGoBack = jest.fn()
 
@@ -20,9 +20,9 @@ jest.mock('../db.ts', () => ({
   setRepo: {
     find: () =>
       Promise.resolve([
-        {name: 'Bench press', reps: 8, weight: 60, id: 1},
-        {name: 'Bench press', reps: 6, weight: 70, id: 2},
-        {name: 'Bench press', reps: 4, weight: 85, id: 3},
+        { name: 'Bench press', reps: 8, weight: 60, id: 1 },
+        { name: 'Bench press', reps: 6, weight: 70, id: 2 },
+        { name: 'Bench press', reps: 4, weight: 85, id: 3 },
       ]),
     update: jest.fn(() => Promise.resolve()),
   },
@@ -38,12 +38,12 @@ jest.mock('../db.ts', () => ({
 
 test('renders correctly', async () => {
   const Stack = createStackNavigator<HomePageParams>()
-  const {getByText, getAllByText} = render(
+  const { getByText, getAllByText } = render(
     <MockProviders>
       <Stack.Navigator>
         <Stack.Screen
-          initialParams={{ids: [1, 2, 3]}}
-          name="EditSets"
+          initialParams={{ ids: [1, 2, 3] }}
+          name='EditSets'
           component={EditSets}
         />
       </Stack.Navigator>
@@ -60,12 +60,12 @@ test('renders correctly', async () => {
 
 test('saves', async () => {
   const Stack = createStackNavigator<HomePageParams>()
-  const {getByText, getAllByText} = render(
+  const { getByText, getAllByText } = render(
     <MockProviders>
       <Stack.Navigator>
         <Stack.Screen
-          initialParams={{ids: [1, 2, 3]}}
-          name="EditSets"
+          initialParams={{ ids: [1, 2, 3] }}
+          name='EditSets'
           component={EditSets}
         />
       </Stack.Navigator>

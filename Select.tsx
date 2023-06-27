@@ -1,7 +1,7 @@
-import React, {useCallback, useMemo, useState} from 'react'
-import {View} from 'react-native'
-import {Button, Menu, Subheading, useTheme} from 'react-native-paper'
-import {ITEM_PADDING} from './constants'
+import React, { useCallback, useMemo, useState } from 'react'
+import { View } from 'react-native'
+import { Button, Menu, Subheading, useTheme } from 'react-native-paper'
+import { ITEM_PADDING } from './constants'
 
 export interface Item {
   value: string
@@ -21,10 +21,10 @@ function Select({
   label?: string
 }) {
   const [show, setShow] = useState(false)
-  const {colors} = useTheme()
+  const { colors } = useTheme()
 
   const selected = useMemo(
-    () => items.find(item => item.value === value) || items[0],
+    () => items.find((item) => item.value === value) || items[0],
     [items, value],
   )
 
@@ -42,8 +42,9 @@ function Select({
         flexDirection: 'row',
         alignItems: 'center',
         paddingLeft: ITEM_PADDING,
-      }}>
-      {label && <Subheading style={{width: 100}}>{label}</Subheading>}
+      }}
+    >
+      {label && <Subheading style={{ width: 100 }}>{label}</Subheading>}
       <Menu
         visible={show}
         onDismiss={() => setShow(false)}
@@ -52,14 +53,16 @@ function Select({
             onPress={() => setShow(true)}
             style={{
               alignSelf: 'flex-start',
-            }}>
+            }}
+          >
             {selected?.label}
           </Button>
-        }>
-        {items.map(item => (
+        }
+      >
+        {items.map((item) => (
           <Menu.Item
             key={item.value}
-            titleStyle={{color: item.color || colors.text}}
+            titleStyle={{ color: item.color || colors.text }}
             title={item.label}
             onPress={() => handlePress(item.value)}
           />

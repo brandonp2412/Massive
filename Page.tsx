@@ -1,7 +1,7 @@
-import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native'
-import {Searchbar} from 'react-native-paper'
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native'
+import { Searchbar } from 'react-native-paper'
 import AppFab from './AppFab'
-import {PADDING} from './constants'
+import { PADDING } from './constants'
 
 export default function Page({
   onAdd,
@@ -19,11 +19,11 @@ export default function Page({
   return (
     <View style={[styles.view, style]}>
       <Searchbar
-        placeholder="Search"
+        placeholder='Search'
         value={term}
         onChangeText={search}
-        icon="search"
-        clearIcon="clear"
+        icon='search'
+        clearIcon='clear'
       />
       {children}
       {onAdd && <AppFab onPress={onAdd} />}

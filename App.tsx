@@ -3,8 +3,8 @@ import {
   DefaultTheme as NavigationDefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native'
-import React, {useEffect, useMemo, useState} from 'react'
-import {DeviceEventEmitter, useColorScheme} from 'react-native'
+import React, { useEffect, useMemo, useState } from 'react'
+import { DeviceEventEmitter, useColorScheme } from 'react-native'
 import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
@@ -12,11 +12,11 @@ import {
   Snackbar,
 } from 'react-native-paper'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
-import {AppDataSource} from './data-source'
-import {settingsRepo} from './db'
+import { AppDataSource } from './data-source'
+import { settingsRepo } from './db'
 import Routes from './Routes'
-import {TOAST} from './toast'
-import {ThemeContext} from './use-theme'
+import { TOAST } from './toast'
+import { ThemeContext } from './use-theme'
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -53,7 +53,7 @@ const App = () => {
   useEffect(() => {
     ;(async () => {
       if (!AppDataSource.isInitialized) await AppDataSource.initialize()
-      const settings = await settingsRepo.findOne({where: {}})
+      const settings = await settingsRepo.findOne({ where: {} })
       setTheme(settings.theme)
       if (settings.lightColor) setLightColor(settings.lightColor)
       if (settings.darkColor) setDarkColor(settings.darkColor)
@@ -61,7 +61,7 @@ const App = () => {
     })()
     const description = DeviceEventEmitter.addListener(
       TOAST,
-      ({value}: {value: string}) => {
+      ({ value }: { value: string }) => {
         setSnackbar(value)
       },
     )
@@ -71,15 +71,15 @@ const App = () => {
   const paperTheme = useMemo(() => {
     const darkTheme = lightColor
       ? {
-          ...CombinedDarkTheme,
-          colors: {...CombinedDarkTheme.colors, primary: darkColor},
-        }
+        ...CombinedDarkTheme,
+        colors: { ...CombinedDarkTheme.colors, primary: darkColor },
+      }
       : CombinedDarkTheme
     const lightTheme = lightColor
       ? {
-          ...CombinedDefaultTheme,
-          colors: {...CombinedDefaultTheme.colors, primary: lightColor},
-        }
+        ...CombinedDefaultTheme,
+        colors: { ...CombinedDefaultTheme.colors, primary: lightColor },
+      }
       : CombinedDefaultTheme
     let value = isDark ? darkTheme : lightTheme
     if (theme === 'dark') value = darkTheme
@@ -99,7 +99,8 @@ const App = () => {
   return (
     <PaperProvider
       theme={paperTheme}
-      settings={{icon: props => <MaterialIcon {...props} />}}>
+      settings={{ icon: (props) => <MaterialIcon {...props} /> }}
+    >
       <NavigationContainer theme={paperTheme}>
         {initialized && (
           <ThemeContext.Provider
@@ -110,7 +111,8 @@ const App = () => {
               setLightColor,
               darkColor,
               setDarkColor,
-            }}>
+            }}
+          >
             <Routes />
           </ThemeContext.Provider>
         )}
@@ -120,7 +122,8 @@ const App = () => {
         duration={3000}
         onDismiss={() => setSnackbar('')}
         visible={!!snackbar}
-        action={action}>
+        action={action}
+      >
         {snackbar}
       </Snackbar>
     </PaperProvider>

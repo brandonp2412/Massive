@@ -1,8 +1,8 @@
 import React from 'react'
 import 'react-native'
-import {fireEvent, render, waitFor} from 'react-native-testing-library'
+import { fireEvent, render, waitFor } from 'react-native-testing-library'
 import BestPage from '../BestPage'
-import {MockProviders} from '../mock-providers'
+import { MockProviders } from '../mock-providers'
 import Settings from '../settings'
 
 jest.mock('../db.ts', () => ({
@@ -34,17 +34,17 @@ jest.mock('../db.ts', () => ({
             reps: 10,
             image: 'https://picsum.photos/id/1/1000/600',
           },
-        ]),
+        ])
       ),
     }),
   },
   settingsRepo: {
-    findOne: () => Promise.resolve({images: true} as Settings),
+    findOne: () => Promise.resolve({ images: true } as Settings),
   },
 }))
 
 test('renders correctly', async () => {
-  const {getByText} = render(
+  const { getByText } = render(
     <MockProviders>
       <BestPage />
     </MockProviders>,
@@ -54,7 +54,7 @@ test('renders correctly', async () => {
 })
 
 test('searches', async () => {
-  const {getByDisplayValue, getByPlaceholder} = render(
+  const { getByDisplayValue, getByPlaceholder } = render(
     <MockProviders>
       <BestPage />
     </MockProviders>,

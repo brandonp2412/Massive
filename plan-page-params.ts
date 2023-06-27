@@ -1,5 +1,5 @@
 import GymSet from './gym-set'
-import {Plan} from './plan'
+import { Plan } from './plan'
 
 export type PlanPageParams = {
   PlanList: {}

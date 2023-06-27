@@ -1,6 +1,6 @@
-import {PermissionsAndroid, Platform} from 'react-native'
-import {Dirs, FileSystem} from 'react-native-file-access'
-import {toast} from './toast'
+import { PermissionsAndroid, Platform } from 'react-native'
+import { Dirs, FileSystem } from 'react-native-file-access'
+import { toast } from './toast'
 
 export const write = async (name: string, data: string) => {
   const filePath = `${Dirs.DocumentDir}/${name}`
@@ -14,7 +14,8 @@ export const write = async (name: string, data: string) => {
   const granted = await permission()
   if (!granted) return
   await FileSystem.writeFile(filePath, data)
-  if (Platform.OS === 'android')
+  if (Platform.OS === 'android') {
     await FileSystem.cpExternal(filePath, name, 'downloads')
+  }
   toast(`Downloaded ${name}`)
 }

@@ -4,22 +4,22 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native'
-import {useCallback, useEffect, useState} from 'react'
-import {ScrollView, StyleSheet, View} from 'react-native'
-import {Button, IconButton, Text} from 'react-native-paper'
-import {getLast} from './best.service'
-import {MARGIN, PADDING} from './constants'
-import {planRepo, setRepo} from './db'
-import {defaultSet} from './gym-set'
-import {PlanPageParams} from './plan-page-params'
+import { useCallback, useEffect, useState } from 'react'
+import { ScrollView, StyleSheet, View } from 'react-native'
+import { Button, IconButton, Text } from 'react-native-paper'
+import { getLast } from './best.service'
+import { MARGIN, PADDING } from './constants'
+import { planRepo, setRepo } from './db'
+import { defaultSet } from './gym-set'
+import { PlanPageParams } from './plan-page-params'
 import StackHeader from './StackHeader'
 import Switch from './Switch'
-import {DAYS} from './time'
+import { DAYS } from './time'
 import useDark from './use-dark'
 
 export default function EditPlan() {
-  const {params} = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>()
-  const {plan} = params
+  const { params } = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>()
+  const { plan } = params
   const [days, setDays] = useState<string[]>(
     plan.days ? plan.days.split(',') : [],
   )
@@ -37,18 +37,18 @@ export default function EditPlan() {
       .distinct(true)
       .orderBy('name')
       .getRawMany()
-      .then(values => {
-        console.log(EditPlan.name, {values})
-        setNames(values.map(value => value.name))
+      .then((values) => {
+        console.log(EditPlan.name, { values })
+        setNames(values.map((value) => value.name))
       })
   }, [])
 
   const save = useCallback(async () => {
-    console.log(`${EditPlan.name}.save`, {days, workouts, plan})
+    console.log(`${EditPlan.name}.save`, { days, workouts, plan })
     if (!days || !workouts) return
-    const newWorkouts = workouts.filter(workout => workout).join(',')
-    const newDays = days.filter(day => day).join(',')
-    await planRepo.save({days: newDays, workouts: newWorkouts, id: plan.id})
+    const newWorkouts = workouts.filter((workout) => workout).join(',')
+    const newDays = days.filter((day) => day).join(',')
+    await planRepo.save({ days: newDays, workouts: newWorkouts, id: plan.id })
     navigation.goBack()
   }, [days, workouts, plan, navigation])
 
@@ -57,7 +57,7 @@ export default function EditPlan() {
       if (on) {
         setWorkouts([...workouts, name])
       } else {
-        setWorkouts(workouts.filter(workout => workout !== name))
+        setWorkouts(workouts.filter((workout) => workout !== name))
       }
     },
     [setWorkouts, workouts],
@@ -68,7 +68,7 @@ export default function EditPlan() {
       if (on) {
         setDays([...days, day])
       } else {
-        setDays(days.filter(d => d !== day))
+        setDays(days.filter((d) => d !== day))
       }
     },
     [setDays, days],
@@ -77,52 +77,56 @@ export default function EditPlan() {
   return (
     <>
       <StackHeader
-        title={typeof plan.id === 'number' ? 'Edit plan' : 'Add plan'}>
+        title={typeof plan.id === 'number' ? 'Edit plan' : 'Add plan'}
+      >
         <IconButton
           color={dark ? 'white' : 'white'}
           onPress={async () => {
             let first = await getLast(workouts[0])
-            if (!first) first = {...defaultSet, name: workouts[0]}
+            if (!first) first = { ...defaultSet, name: workouts[0] }
             delete first.id
-            navigation.navigate('StartPlan', {plan: params.plan, first})
+            navigation.navigate('StartPlan', { plan: params.plan, first })
           }}
-          icon="play-arrow"
+          icon='play-arrow'
         />
       </StackHeader>
-      <View style={{padding: PADDING, flex: 1}}>
-        <ScrollView style={{flex: 1}}>
+      <View style={{ padding: PADDING, flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
           <Text style={styles.title}>Days</Text>
-          {DAYS.map(day => (
+          {DAYS.map((day) => (
             <Switch
               key={day}
-              onChange={value => toggleDay(value, day)}
+              onChange={(value) => toggleDay(value, day)}
               value={days.includes(day)}
               title={day}
             />
           ))}
-          <Text style={[styles.title, {marginTop: MARGIN}]}>Workouts</Text>
-          {names.length === 0 ? (
-            <View>
-              <Text>No workouts found.</Text>
-            </View>
-          ) : (
-            names.map(name => (
-              <Switch
-                key={name}
-                onChange={value => toggleWorkout(value, name)}
-                value={workouts.includes(name)}
-                title={name}
-              />
-            ))
-          )}
+          <Text style={[styles.title, { marginTop: MARGIN }]}>Workouts</Text>
+          {names.length === 0
+            ? (
+              <View>
+                <Text>No workouts found.</Text>
+              </View>
+            )
+            : (
+              names.map((name) => (
+                <Switch
+                  key={name}
+                  onChange={(value) => toggleWorkout(value, name)}
+                  value={workouts.includes(name)}
+                  title={name}
+                />
+              ))
+            )}
         </ScrollView>
 
         <Button
           disabled={workouts.length === 0 && days.length === 0}
           style={styles.button}
-          mode="contained"
-          icon="save"
-          onPress={save}>
+          mode='contained'
+          icon='save'
+          onPress={save}
+        >
           Save
         </Button>
       </View>

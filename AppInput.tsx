@@ -1,7 +1,7 @@
-import React, {ComponentProps, Ref} from 'react'
-import {TextInput} from 'react-native-paper'
-import {CombinedDefaultTheme} from './App'
-import {MARGIN} from './constants'
+import React, { ComponentProps, Ref } from 'react'
+import { TextInput } from 'react-native-paper'
+import { CombinedDefaultTheme } from './App'
+import { MARGIN } from './constants'
 import useDark from './use-dark'
 
 function AppInput(
@@ -14,7 +14,7 @@ function AppInput(
   return (
     <TextInput
       selectionColor={dark ? '#2A2A2A' : CombinedDefaultTheme.colors.border}
-      style={{marginBottom: MARGIN, minWidth: 100}}
+      style={{ marginBottom: MARGIN, minWidth: 100 }}
       selectTextOnFocus
       ref={props.innerRef}
       blurOnSubmit={false}

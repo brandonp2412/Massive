@@ -1,25 +1,25 @@
-import {RouteProp, useRoute} from '@react-navigation/native'
-import {format} from 'date-fns'
-import {useEffect, useMemo, useState} from 'react'
-import {View} from 'react-native'
-import {FileSystem} from 'react-native-file-access'
-import {IconButton, List} from 'react-native-paper'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import { format } from 'date-fns'
+import { useEffect, useMemo, useState } from 'react'
+import { View } from 'react-native'
+import { FileSystem } from 'react-native-file-access'
+import { IconButton, List } from 'react-native-paper'
 import Share from 'react-native-share'
-import {captureScreen} from 'react-native-view-shot'
-import {BestPageParams} from './BestPage'
+import { captureScreen } from 'react-native-view-shot'
+import { BestPageParams } from './BestPage'
 import Chart from './Chart'
-import {PADDING} from './constants'
-import {setRepo} from './db'
+import { PADDING } from './constants'
+import { setRepo } from './db'
 import GymSet from './gym-set'
-import {Metrics} from './metrics'
-import {Periods} from './periods'
+import { Metrics } from './metrics'
+import { Periods } from './periods'
 import Select from './Select'
 import StackHeader from './StackHeader'
 import useDark from './use-dark'
 import Volume from './volume'
 
 export default function ViewBest() {
-  const {params} = useRoute<RouteProp<BestPageParams, 'ViewBest'>>()
+  const { params } = useRoute<RouteProp<BestPageParams, 'ViewBest'>>()
   const [weights, setWeights] = useState<GymSet[]>()
   const [volumes, setVolumes] = useState<Volume[]>()
   const [metric, setMetric] = useState(Metrics.Weight)
@@ -34,11 +34,11 @@ export default function ViewBest() {
     if (period === Periods.Yearly) group = '%Y-%m'
     const builder = setRepo
       .createQueryBuilder()
-      .select("STRFTIME('%Y-%m-%d', created)", 'created')
+      .select('STRFTIME(\'%Y-%m-%d\', created)', 'created')
       .addSelect('unit')
-      .where('name = :name', {name: params.best.name})
+      .where('name = :name', { name: params.best.name })
       .andWhere('NOT hidden')
-      .andWhere("DATE(created) >= DATE('now', 'weekday 0', :difference)", {
+      .andWhere('DATE(created) >= DATE(\'now\', \'weekday 0\', :difference)', {
         difference,
       })
       .groupBy('name')
@@ -64,8 +64,8 @@ export default function ViewBest() {
             'weight',
           )
           .getRawMany()
-          .then(newWeights => {
-            console.log({weights: newWeights})
+          .then((newWeights) => {
+            console.log({ weights: newWeights })
             setWeights(newWeights)
           })
     }
@@ -76,32 +76,31 @@ export default function ViewBest() {
       (metric === Metrics.Volume && volumes?.length === 0) ||
       (metric === Metrics.Weight && weights?.length === 0) ||
       (metric === Metrics.OneRepMax && weights?.length === 0)
-    )
-      return <List.Item title="No data yet." />
-    if (metric === Metrics.Volume && volumes?.length && weights?.length)
+    ) {
+      return <List.Item title='No data yet.' />
+    }
+    if (metric === Metrics.Volume && volumes?.length && weights?.length) {
       return (
         <Chart
-          yData={volumes.map(v => v.value)}
+          yData={volumes.map((v) => v.value)}
           yFormat={(value: number) =>
             `${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${
               volumes[0].unit || 'kg'
-            }`
-          }
+            }`}
           xData={weights}
           xFormat={(_value, index) =>
-            format(new Date(weights[index].created), 'd/M')
-          }
+            format(new Date(weights[index].created), 'd/M')}
         />
       )
+    }
 
     return (
       <Chart
-        yData={weights?.map(set => set.weight) || []}
-        yFormat={value => `${value}${weights?.[0].unit}`}
+        yData={weights?.map((set) => set.weight) || []}
+        yFormat={(value) => `${value}${weights?.[0].unit}`}
         xData={weights || []}
         xFormat={(_value, index) =>
-          format(new Date(weights?.[index].created), 'd/M')
-        }
+          format(new Date(weights?.[index].created), 'd/M')}
       />
     )
   }, [volumes, weights, metric])
@@ -112,40 +111,39 @@ export default function ViewBest() {
         <IconButton
           color={dark ? 'white' : 'white'}
           onPress={() =>
-            captureScreen().then(async uri => {
+            captureScreen().then(async (uri) => {
               const base64 = await FileSystem.readFile(uri, 'base64')
               const url = `data:image/jpeg;base64,${base64}`
               Share.open({
                 type: 'image/jpeg',
                 url,
               })
-            })
-          }
-          icon="share"
+            })}
+          icon='share'
         />
       </StackHeader>
-      <View style={{padding: PADDING}}>
+      <View style={{ padding: PADDING }}>
         <Select
-          label="Metric"
+          label='Metric'
           items={[
-            {value: Metrics.Volume, label: Metrics.Volume},
-            {value: Metrics.OneRepMax, label: Metrics.OneRepMax},
+            { value: Metrics.Volume, label: Metrics.Volume },
+            { value: Metrics.OneRepMax, label: Metrics.OneRepMax },
             {
               label: Metrics.Weight,
               value: Metrics.Weight,
             },
           ]}
-          onChange={value => setMetric(value as Metrics)}
+          onChange={(value) => setMetric(value as Metrics)}
           value={metric}
         />
         <Select
-          label="Period"
+          label='Period'
           items={[
-            {value: Periods.Weekly, label: Periods.Weekly},
-            {value: Periods.Monthly, label: Periods.Monthly},
-            {value: Periods.Yearly, label: Periods.Yearly},
+            { value: Periods.Weekly, label: Periods.Weekly },
+            { value: Periods.Monthly, label: Periods.Monthly },
+            { value: Periods.Yearly, label: Periods.Yearly },
           ]}
-          onChange={value => setPeriod(value as Periods)}
+          onChange={(value) => setPeriod(value as Periods)}
           value={period}
         />
         {charts}

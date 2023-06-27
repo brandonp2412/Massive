@@ -1,6 +1,6 @@
 import React from 'react'
 import 'react-native'
-import {render, waitFor} from 'react-native-testing-library'
+import { render, waitFor } from 'react-native-testing-library'
 import App from '../App'
 import Settings from '../settings'
 
@@ -18,7 +18,7 @@ jest.mock('../data-source.ts', () => ({
 }))
 
 test('renders correctly', async () => {
-  const {getAllByText} = render(<App />)
+  const { getAllByText } = render(<App />)
   const title = await waitFor(() => getAllByText('Home'))
   expect(title.length).toBeGreaterThan(0)
 })

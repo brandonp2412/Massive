@@ -1,11 +1,11 @@
-import {NavigationProp, useNavigation} from '@react-navigation/native'
-import {useCallback, useMemo, useState} from 'react'
-import {GestureResponderEvent, Image} from 'react-native'
-import {List, Menu, Text} from 'react-native-paper'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
+import { useCallback, useMemo, useState } from 'react'
+import { GestureResponderEvent, Image } from 'react-native'
+import { List, Menu, Text } from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
-import {setRepo} from './db'
+import { setRepo } from './db'
 import GymSet from './gym-set'
-import {WorkoutsPageParams} from './WorkoutsPage'
+import { WorkoutsPageParams } from './WorkoutsPage'
 
 export default function WorkoutItem({
   item,
@@ -17,19 +17,19 @@ export default function WorkoutItem({
   images: boolean
 }) {
   const [showMenu, setShowMenu] = useState(false)
-  const [anchor, setAnchor] = useState({x: 0, y: 0})
+  const [anchor, setAnchor] = useState({ x: 0, y: 0 })
   const [showRemove, setShowRemove] = useState('')
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>()
 
   const remove = useCallback(async () => {
-    await setRepo.delete({name: item.name})
+    await setRepo.delete({ name: item.name })
     setShowMenu(false)
     onRemove()
   }, [setShowMenu, onRemove, item.name])
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {
-      setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY})
+      setAnchor({ x: e.nativeEvent.pageX, y: e.nativeEvent.pageY })
       setShowMenu(true)
     },
     [setShowMenu, setAnchor],
@@ -43,32 +43,36 @@ export default function WorkoutItem({
   return (
     <>
       <List.Item
-        onPress={() => navigation.navigate('EditWorkout', {value: item})}
+        onPress={() => navigation.navigate('EditWorkout', { value: item })}
         title={item.name}
         description={description}
         onLongPress={longPress}
         left={() =>
           images &&
           item.image && (
-            <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
-          )
-        }
+            <Image
+              source={{ uri: item.image }}
+              style={{ height: 75, width: 75 }}
+            />
+          )}
         right={() => (
           <Text
             style={{
               alignSelf: 'center',
-            }}>
+            }}
+          >
             <Menu
               anchor={anchor}
               visible={showMenu}
-              onDismiss={() => setShowMenu(false)}>
+              onDismiss={() => setShowMenu(false)}
+            >
               <Menu.Item
-                icon="delete"
+                icon='delete'
                 onPress={() => {
                   setShowRemove(item.name)
                   setShowMenu(false)
                 }}
-                title="Delete"
+                title='Delete'
               />
             </Menu>
           </Text>
@@ -77,8 +81,9 @@ export default function WorkoutItem({
       <ConfirmDialog
         title={`Delete ${showRemove}`}
         show={!!showRemove}
-        setShow={show => (show ? null : setShowRemove(''))}
-        onOk={remove}>
+        setShow={(show) => (show ? null : setShowRemove(''))}
+        onOk={remove}
+      >
         This irreversibly deletes ALL sets related to this workout. Are you
         sure?
       </ConfirmDialog>

@@ -1,7 +1,7 @@
 import React from 'react'
-import {Platform, Pressable} from 'react-native'
-import {Switch as PaperSwitch, Text, useTheme} from 'react-native-paper'
-import {MARGIN} from './constants'
+import { Platform, Pressable } from 'react-native'
+import { Switch as PaperSwitch, Text, useTheme } from 'react-native-paper'
+import { MARGIN } from './constants'
 
 function Switch({
   value,
@@ -12,7 +12,7 @@ function Switch({
   onChange: (value: boolean) => void
   title: string
 }) {
-  const {colors} = useTheme()
+  const { colors } = useTheme()
 
   return (
     <Pressable
@@ -22,13 +22,14 @@ function Switch({
         flexWrap: 'wrap',
         alignItems: 'center',
         marginBottom: Platform.OS === 'ios' ? MARGIN : null,
-      }}>
+      }}
+    >
       <PaperSwitch
         color={colors.primary}
-        style={{marginRight: MARGIN}}
+        style={{ marginRight: MARGIN }}
         value={value}
         onValueChange={onChange}
-        trackColor={{true: colors.primary + '80', false: colors.disabled}}
+        trackColor={{ true: colors.primary + '80', false: colors.disabled }}
       />
       <Text>{title}</Text>
     </Pressable>

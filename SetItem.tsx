@@ -1,11 +1,11 @@
-import {NavigationProp, useNavigation} from '@react-navigation/native'
-import {format} from 'date-fns'
-import {useCallback, useMemo} from 'react'
-import {Image} from 'react-native'
-import {List, Text} from 'react-native-paper'
-import {DARK_RIPPLE, LIGHT_RIPPLE} from './constants'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
+import { format } from 'date-fns'
+import { useCallback, useMemo } from 'react'
+import { Image } from 'react-native'
+import { List, Text } from 'react-native-paper'
+import { DARK_RIPPLE, LIGHT_RIPPLE } from './constants'
 import GymSet from './gym-set'
-import {HomePageParams} from './home-page-params'
+import { HomePageParams } from './home-page-params'
 import Settings from './settings'
 import useDark from './use-dark'
 
@@ -30,9 +30,9 @@ export default function SetItem({
   }, [ids.length, item.id, setIds])
 
   const press = useCallback(() => {
-    if (ids.length === 0) return navigation.navigate('EditSet', {set: item})
-    const removing = ids.find(id => id === item.id)
-    if (removing) setIds(ids.filter(id => id !== item.id))
+    if (ids.length === 0) return navigation.navigate('EditSet', { set: item })
+    const removing = ids.find((id) => id === item.id)
+    if (removing) setIds(ids.filter((id) => id !== item.id))
     else setIds([...ids, item.id])
   }, [ids, item, navigation, setIds])
 
@@ -49,13 +49,15 @@ export default function SetItem({
         title={item.name}
         description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
         onLongPress={longPress}
-        style={{backgroundColor}}
+        style={{ backgroundColor }}
         left={() =>
           settings.images &&
           item.image && (
-            <Image source={{uri: item.image}} style={{height: 75, width: 75}} />
-          )
-        }
+            <Image
+              source={{ uri: item.image }}
+              style={{ height: 75, width: 75 }}
+            />
+          )}
         right={() => (
           <>
             {settings.showDate && (
@@ -63,7 +65,8 @@ export default function SetItem({
                 style={{
                   alignSelf: 'center',
                   color: dark ? '#909090ff' : '#717171ff',
-                }}>
+                }}
+              >
                 {format(new Date(item.created), settings.date || 'P')}
               </Text>
             )}

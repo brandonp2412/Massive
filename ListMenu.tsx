@@ -1,5 +1,5 @@
-import {useState} from 'react'
-import {Divider, IconButton, Menu} from 'react-native-paper'
+import { useState } from 'react'
+import { Divider, IconButton, Menu } from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
 import useDark from './use-dark'
 
@@ -55,45 +55,45 @@ export default function ListMenu({
         <IconButton
           color={dark ? 'white' : 'white'}
           onPress={() => setShowMenu(true)}
-          icon="more-vert"
+          icon='more-vert'
         />
-      }>
-      <Menu.Item icon="done-all" title="Select all" onPress={select} />
+      }
+    >
+      <Menu.Item icon='done-all' title='Select all' onPress={select} />
       <Menu.Item
-        icon="clear"
-        title="Clear"
+        icon='clear'
+        title='Clear'
         onPress={clear}
         disabled={ids?.length === 0}
       />
       <Menu.Item
-        icon="edit"
-        title="Edit"
+        icon='edit'
+        title='Edit'
         onPress={edit}
         disabled={ids?.length === 0}
       />
       <Menu.Item
-        icon="content-copy"
-        title="Copy"
+        icon='content-copy'
+        title='Copy'
         onPress={copy}
         disabled={ids?.length === 0}
       />
       <Divider />
       <Menu.Item
-        icon="delete"
+        icon='delete'
         onPress={() => setShowRemove(true)}
-        title="Delete"
+        title='Delete'
       />
       <ConfirmDialog
         title={ids?.length === 0 ? 'Delete all' : 'Delete selected'}
         show={showRemove}
         setShow={setShowRemove}
         onOk={remove}
-        onCancel={() => setShowMenu(false)}>
-        {ids?.length === 0 ? (
-          <>This irreversibly deletes records from the app. Are you sure?</>
-        ) : (
-          <>This will delete {ids?.length} record(s). Are you sure?</>
-        )}
+        onCancel={() => setShowMenu(false)}
+      >
+        {ids?.length === 0
+          ? <>This irreversibly deletes records from the app. Are you sure?</>
+          : <>This will delete {ids?.length} record(s). Are you sure?</>}
       </ConfirmDialog>
     </Menu>
   )

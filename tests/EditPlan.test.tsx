@@ -1,11 +1,11 @@
-import {createStackNavigator} from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import 'react-native'
-import {render, waitFor} from 'react-native-testing-library'
+import { render, waitFor } from 'react-native-testing-library'
 import EditPlan from '../EditPlan'
-import {MockProviders} from '../mock-providers'
-import {Plan} from '../plan'
-import {PlanPageParams} from '../plan-page-params'
+import { MockProviders } from '../mock-providers'
+import { Plan } from '../plan'
+import { PlanPageParams } from '../plan-page-params'
 
 jest.mock('../db.ts', () => ({
   setRepo: {
@@ -15,10 +15,10 @@ jest.mock('../db.ts', () => ({
       orderBy: jest.fn().mockReturnThis(),
       getRawMany: jest.fn(() =>
         Promise.resolve([
-          {name: 'Bench press'},
-          {name: 'Bicep curls'},
-          {name: 'Rows'},
-        ]),
+          { name: 'Bench press' },
+          { name: 'Bicep curls' },
+          { name: 'Rows' },
+        ])
       ),
     }),
   },
@@ -26,7 +26,7 @@ jest.mock('../db.ts', () => ({
 
 test('renders correctly', async () => {
   const Stack = createStackNavigator<PlanPageParams>()
-  const {getByText, getAllByText} = render(
+  const { getByText, getAllByText } = render(
     <MockProviders>
       <Stack.Navigator>
         <Stack.Screen
@@ -37,7 +37,7 @@ test('renders correctly', async () => {
               id: 1,
             } as Plan,
           }}
-          name="EditPlan"
+          name='EditPlan'
           component={EditPlan}
         />
       </Stack.Navigator>

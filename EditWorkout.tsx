@@ -4,21 +4,21 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native'
-import {useCallback, useRef, useState} from 'react'
-import {ScrollView, TextInput, View} from 'react-native'
+import { useCallback, useRef, useState } from 'react'
+import { ScrollView, TextInput, View } from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
-import {Button, Card, TouchableRipple} from 'react-native-paper'
+import { Button, Card, TouchableRipple } from 'react-native-paper'
 import AppInput from './AppInput'
 import ConfirmDialog from './ConfirmDialog'
-import {MARGIN, PADDING} from './constants'
-import {getNow, planRepo, setRepo, settingsRepo} from './db'
-import {defaultSet} from './gym-set'
+import { MARGIN, PADDING } from './constants'
+import { getNow, planRepo, setRepo, settingsRepo } from './db'
+import { defaultSet } from './gym-set'
 import Settings from './settings'
 import StackHeader from './StackHeader'
-import {WorkoutsPageParams} from './WorkoutsPage'
+import { WorkoutsPageParams } from './WorkoutsPage'
 
 export default function EditWorkout() {
-  const {params} = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>()
+  const { params } = useRoute<RouteProp<WorkoutsPageParams, 'EditWorkout'>>()
   const [removeImage, setRemoveImage] = useState(false)
   const [showRemove, setShowRemove] = useState(false)
   const [name, setName] = useState(params.value.name)
@@ -40,13 +40,13 @@ export default function EditWorkout() {
 
   useFocusEffect(
     useCallback(() => {
-      settingsRepo.findOne({where: {}}).then(setSettings)
+      settingsRepo.findOne({ where: {} }).then(setSettings)
     }, []),
   )
 
   const update = async () => {
     await setRepo.update(
-      {name: params.value.name},
+      { name: params.value.name },
       {
         name: name || params.value.name,
         sets: Number(sets),
@@ -87,7 +87,7 @@ export default function EditWorkout() {
   }
 
   const changeImage = useCallback(async () => {
-    const {fileCopyUri} = await DocumentPicker.pickSingle({
+    const { fileCopyUri } = await DocumentPicker.pickSingle({
       type: DocumentPicker.types.images,
       copyTo: 'documentDirectory',
     })
@@ -108,11 +108,11 @@ export default function EditWorkout() {
   return (
     <>
       <StackHeader title={params.value.name ? 'Edit workout' : 'Add workout'} />
-      <View style={{padding: PADDING, flex: 1}}>
-        <ScrollView style={{flex: 1}}>
+      <View style={{ padding: PADDING, flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
           <AppInput
             autoFocus
-            label="Name"
+            label='Name'
             value={name}
             onChangeText={setName}
             onSubmitEditing={submitName}
@@ -123,7 +123,7 @@ export default function EditWorkout() {
               selectTextOnFocus={false}
               value={steps}
               onChangeText={setSteps}
-              label="Steps"
+              label='Steps'
               multiline
               onSubmitEditing={() => setsRef.current?.focus()}
             />
@@ -132,8 +132,8 @@ export default function EditWorkout() {
             innerRef={setsRef}
             value={sets}
             onChangeText={setSets}
-            label="Sets per workout"
-            keyboardType="numeric"
+            label='Sets per workout'
+            keyboardType='numeric'
             onSubmitEditing={() => minutesRef.current?.focus()}
           />
           {settings?.alarm && (
@@ -143,44 +143,47 @@ export default function EditWorkout() {
                 onSubmitEditing={() => secondsRef.current?.focus()}
                 value={minutes}
                 onChangeText={setMinutes}
-                label="Rest minutes"
-                keyboardType="numeric"
+                label='Rest minutes'
+                keyboardType='numeric'
               />
               <AppInput
                 innerRef={secondsRef}
                 value={seconds}
                 onChangeText={setSeconds}
-                label="Rest seconds"
-                keyboardType="numeric"
+                label='Rest seconds'
+                keyboardType='numeric'
                 blurOnSubmit
               />
             </>
           )}
           {settings?.images && uri && (
             <TouchableRipple
-              style={{marginBottom: MARGIN}}
+              style={{ marginBottom: MARGIN }}
               onPress={changeImage}
-              onLongPress={() => setShowRemove(true)}>
-              <Card.Cover source={{uri}} />
+              onLongPress={() => setShowRemove(true)}
+            >
+              <Card.Cover source={{ uri }} />
             </TouchableRipple>
           )}
           {settings?.images && !uri && (
             <Button
-              style={{marginBottom: MARGIN}}
+              style={{ marginBottom: MARGIN }}
               onPress={changeImage}
-              icon="add-photo-alternate">
+              icon='add-photo-alternate'
+            >
               Image
             </Button>
           )}
         </ScrollView>
-        <Button disabled={!name} mode="contained" icon="save" onPress={save}>
+        <Button disabled={!name} mode='contained' icon='save' onPress={save}>
           Save
         </Button>
         <ConfirmDialog
-          title="Remove image"
+          title='Remove image'
           onOk={handleRemove}
           show={showRemove}
-          setShow={setShowRemove}>
+          setShow={setShowRemove}
+        >
           Are you sure you want to remove the image?
         </ConfirmDialog>
       </View>

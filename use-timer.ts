@@ -1,7 +1,7 @@
-import {useFocusEffect} from '@react-navigation/native'
-import {useCallback, useState} from 'react'
-import {NativeEventEmitter} from 'react-native'
-import {TickEvent} from './TimerPage'
+import { useFocusEffect } from '@react-navigation/native'
+import { useCallback, useState } from 'react'
+import { NativeEventEmitter } from 'react-native'
+import { TickEvent } from './TimerPage'
 
 export default function useTimer() {
   const [minutes, setMinutes] = useState('00')
@@ -13,7 +13,7 @@ export default function useTimer() {
       setSeconds('00')
       const emitter = new NativeEventEmitter()
       const listener = emitter.addListener('tick', (event: TickEvent) => {
-        console.log(`${useTimer.name}.tick:`, {event})
+        console.log(`${useTimer.name}.tick:`, { event })
         setMinutes(event.minutes)
         setSeconds(event.seconds)
       })
@@ -21,5 +21,5 @@ export default function useTimer() {
     }, []),
   )
 
-  return {minutes, seconds}
+  return { minutes, seconds }
 }

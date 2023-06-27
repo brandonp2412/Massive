@@ -3,16 +3,16 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native'
-import {useCallback, useState} from 'react'
-import {FlatList} from 'react-native'
-import {List} from 'react-native-paper'
-import {Like} from 'typeorm'
-import {planRepo} from './db'
+import { useCallback, useState } from 'react'
+import { FlatList } from 'react-native'
+import { List } from 'react-native-paper'
+import { Like } from 'typeorm'
+import { planRepo } from './db'
 import DrawerHeader from './DrawerHeader'
 import ListMenu from './ListMenu'
 import Page from './Page'
-import {Plan} from './plan'
-import {PlanPageParams} from './plan-page-params'
+import { Plan } from './plan'
+import { PlanPageParams } from './plan-page-params'
 import PlanItem from './PlanItem'
 
 export default function PlanList() {
@@ -25,8 +25,8 @@ export default function PlanList() {
     planRepo
       .find({
         where: [
-          {days: Like(`%${value.trim()}%`)},
-          {workouts: Like(`%${value.trim()}%`)},
+          { days: Like(`%${value.trim()}%`) },
+          { workouts: Like(`%${value.trim()}%`) },
         ],
       })
       .then(setPlans)
@@ -47,27 +47,27 @@ export default function PlanList() {
   )
 
   const renderItem = useCallback(
-    ({item}: {item: Plan}) => (
+    ({ item }: { item: Plan }) => (
       <PlanItem ids={ids} setIds={setIds} item={item} key={item.id} />
     ),
     [ids],
   )
 
   const onAdd = () =>
-    navigation.navigate('EditPlan', {plan: {days: '', workouts: ''}})
+    navigation.navigate('EditPlan', { plan: { days: '', workouts: '' } })
 
   const edit = useCallback(async () => {
-    const plan = await planRepo.findOne({where: {id: ids.pop()}})
-    navigation.navigate('EditPlan', {plan})
+    const plan = await planRepo.findOne({ where: { id: ids.pop() } })
+    navigation.navigate('EditPlan', { plan })
     setIds([])
   }, [ids, navigation])
 
   const copy = useCallback(async () => {
     const plan = await planRepo.findOne({
-      where: {id: ids.pop()},
+      where: { id: ids.pop() },
     })
     delete plan.id
-    navigation.navigate('EditPlan', {plan})
+    navigation.navigate('EditPlan', { plan })
     setIds([])
   }, [ids, navigation])
 
@@ -82,7 +82,7 @@ export default function PlanList() {
   }, [ids, refresh, term])
 
   const select = useCallback(() => {
-    setIds(plans.map(plan => plan.id))
+    setIds(plans.map((plan) => plan.id))
   }, [plans])
 
   return (
@@ -98,19 +98,21 @@ export default function PlanList() {
         />
       </DrawerHeader>
       <Page onAdd={onAdd} term={term} search={search}>
-        {plans?.length === 0 ? (
-          <List.Item
-            title="No plans yet"
-            description="A plan is a list of workouts for certain days."
-          />
-        ) : (
-          <FlatList
-            style={{flex: 1}}
-            data={plans}
-            renderItem={renderItem}
-            keyExtractor={set => set.id?.toString() || ''}
-          />
-        )}
+        {plans?.length === 0
+          ? (
+            <List.Item
+              title='No plans yet'
+              description='A plan is a list of workouts for certain days.'
+            />
+          )
+          : (
+            <FlatList
+              style={{ flex: 1 }}
+              data={plans}
+              renderItem={renderItem}
+              keyExtractor={(set) => set.id?.toString() || ''}
+            />
+          )}
       </Page>
     </>
   )

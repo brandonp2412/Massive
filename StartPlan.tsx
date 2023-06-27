@@ -5,25 +5,25 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native'
-import {useCallback, useMemo, useRef, useState} from 'react'
-import {FlatList, NativeModules, TextInput, View} from 'react-native'
-import {Button, IconButton, ProgressBar} from 'react-native-paper'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { FlatList, NativeModules, TextInput, View } from 'react-native'
+import { Button, IconButton, ProgressBar } from 'react-native-paper'
 import AppInput from './AppInput'
-import {getBestSet, getLast} from './best.service'
-import {PADDING} from './constants'
+import { getBestSet, getLast } from './best.service'
+import { PADDING } from './constants'
 import CountMany from './count-many'
-import {AppDataSource} from './data-source'
-import {getNow, setRepo, settingsRepo} from './db'
+import { AppDataSource } from './data-source'
+import { getNow, setRepo, settingsRepo } from './db'
 import GymSet from './gym-set'
-import {PlanPageParams} from './plan-page-params'
+import { PlanPageParams } from './plan-page-params'
 import Settings from './settings'
 import StackHeader from './StackHeader'
 import StartPlanItem from './StartPlanItem'
-import {toast} from './toast'
+import { toast } from './toast'
 import useDark from './use-dark'
 
 export default function StartPlan() {
-  const {params} = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
+  const { params } = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
   const [reps, setReps] = useState(params.first?.reps.toString() || '0')
   const [weight, setWeight] = useState(params.first?.weight.toString() || '0')
   const [unit, setUnit] = useState<string>(params.first?.unit || 'kg')
@@ -58,7 +58,7 @@ export default function StartPlan() {
       OFFSET 1
     `
     const newCounts = await AppDataSource.manager.query(select)
-    console.log(`${StartPlan.name}.focus:`, {newCounts})
+    console.log(`${StartPlan.name}.focus:`, { newCounts })
     setCounts(newCounts)
   }, [workouts])
 
@@ -67,11 +67,11 @@ export default function StartPlan() {
       setSelected(index)
       if (!counts && !newCounts) return
       const workout = counts ? counts[index] : newCounts[index]
-      console.log(`${StartPlan.name}.next:`, {workout})
+      console.log(`${StartPlan.name}.next:`, { workout })
       const last = await getLast(workout.name)
       if (!last) return
       delete last.id
-      console.log(`${StartPlan.name}.select:`, {last})
+      console.log(`${StartPlan.name}.select:`, { last })
       setReps(last.reps.toString())
       setWeight(last.weight.toString())
       setUnit(last.unit)
@@ -81,7 +81,7 @@ export default function StartPlan() {
 
   useFocusEffect(
     useCallback(() => {
-      settingsRepo.findOne({where: {}}).then(setSettings)
+      settingsRepo.findOne({ where: {} }).then(setSettings)
       refresh()
     }, [refresh]),
   )
@@ -104,11 +104,12 @@ export default function StartPlan() {
     if (
       settings.notify &&
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
-    )
-      toast("Great work King! That's a new record.")
+    ) {
+      toast('Great work King! That\'s a new record.')
+    }
     if (!settings.alarm) return
-    const milliseconds =
-      Number(best.minutes) * 60 * 1000 + Number(best.seconds) * 1000
+    const milliseconds = Number(best.minutes) * 60 * 1000 +
+      Number(best.seconds) * 1000
     NativeModules.AlarmModule.timer(milliseconds)
   }
 
@@ -117,25 +118,25 @@ export default function StartPlan() {
       <StackHeader title={params.plan.days.replace(/,/g, ', ')}>
         <IconButton
           color={dark ? 'white' : 'white'}
-          onPress={() => navigation.navigate('EditPlan', {plan: params.plan})}
-          icon="edit"
+          onPress={() => navigation.navigate('EditPlan', { plan: params.plan })}
+          icon='edit'
         />
       </StackHeader>
-      <View style={{padding: PADDING, flex: 1, flexDirection: 'column'}}>
-        <View style={{flex: 1}}>
+      <View style={{ padding: PADDING, flex: 1, flexDirection: 'column' }}>
+        <View style={{ flex: 1 }}>
           <AppInput
-            label="Reps"
-            keyboardType="numeric"
+            label='Reps'
+            keyboardType='numeric'
             value={reps}
             onChangeText={setReps}
             onSubmitEditing={() => weightRef.current?.focus()}
             selection={selection}
-            onSelectionChange={e => setSelection(e.nativeEvent.selection)}
+            onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
             innerRef={repsRef}
           />
           <AppInput
-            label="Weight"
-            keyboardType="numeric"
+            label='Weight'
+            keyboardType='numeric'
             value={weight}
             onChangeText={setWeight}
             onSubmitEditing={handleSubmit}
@@ -144,8 +145,8 @@ export default function StartPlan() {
           />
           {settings?.showUnit && (
             <AppInput
-              autoCapitalize="none"
-              label="Unit"
+              autoCapitalize='none'
+              label='Unit'
               value={unit}
               onChangeText={setUnit}
               innerRef={unitRef}
@@ -154,7 +155,7 @@ export default function StartPlan() {
           {counts && (
             <FlatList
               data={counts}
-              renderItem={props => (
+              renderItem={(props) => (
                 <View>
                   <StartPlanItem
                     {...props}
@@ -170,7 +171,7 @@ export default function StartPlan() {
             />
           )}
         </View>
-        <Button mode="contained" icon="save" onPress={handleSubmit}>
+        <Button mode='contained' icon='save' onPress={handleSubmit}>
           Save
         </Button>
       </View>

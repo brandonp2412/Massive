@@ -1,11 +1,11 @@
-import {createStackNavigator} from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import 'react-native'
-import {fireEvent, render, waitFor} from 'react-native-testing-library'
+import { fireEvent, render, waitFor } from 'react-native-testing-library'
 import GymSet from '../gym-set'
-import {MockProviders} from '../mock-providers'
-import {Plan} from '../plan'
-import {PlanPageParams} from '../plan-page-params'
+import { MockProviders } from '../mock-providers'
+import { Plan } from '../plan'
+import { PlanPageParams } from '../plan-page-params'
 import Settings from '../settings'
 import StartPlan from '../StartPlan'
 
@@ -34,10 +34,10 @@ jest.mock('../data-source.ts', () => ({
     manager: {
       query: jest.fn(() =>
         Promise.resolve([
-          {name: 'Bench', total: 0},
-          {name: 'Rows', total: 0},
-          {name: 'Curls', total: 0},
-        ]),
+          { name: 'Bench', total: 0 },
+          { name: 'Rows', total: 0 },
+          { name: 'Curls', total: 0 },
+        ])
       ),
     },
   },
@@ -45,18 +45,18 @@ jest.mock('../data-source.ts', () => ({
 
 test('renders correctly', async () => {
   const Stack = createStackNavigator<PlanPageParams>()
-  const {getByText, getAllByText} = render(
+  const { getByText, getAllByText } = render(
     <MockProviders>
       <Stack.Navigator>
         <Stack.Screen
           initialParams={{
-            first: {reps: 0, weight: 0} as GymSet,
+            first: { reps: 0, weight: 0 } as GymSet,
             plan: {
               workouts: 'Bench,Rows,Curls',
               days: 'Monday,Tuesday,Thursday',
             } as Plan,
           }}
-          name="StartPlan"
+          name='StartPlan'
           component={StartPlan}
         />
       </Stack.Navigator>
@@ -75,18 +75,18 @@ test('renders correctly', async () => {
 
 test('saves', async () => {
   const Stack = createStackNavigator<PlanPageParams>()
-  const {getByText} = render(
+  const { getByText } = render(
     <MockProviders>
       <Stack.Navigator>
         <Stack.Screen
           initialParams={{
-            first: {reps: 0, weight: 0} as GymSet,
+            first: { reps: 0, weight: 0 } as GymSet,
             plan: {
               workouts: 'Bench,Rows,Curls',
               days: 'Monday,Tuesday,Thursday',
             } as Plan,
           }}
-          name="StartPlan"
+          name='StartPlan'
           component={StartPlan}
         />
       </Stack.Navigator>

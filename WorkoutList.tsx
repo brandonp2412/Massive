@@ -3,17 +3,17 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native'
-import {useCallback, useState} from 'react'
-import {FlatList} from 'react-native'
-import {List} from 'react-native-paper'
-import {setRepo, settingsRepo} from './db'
+import { useCallback, useState } from 'react'
+import { FlatList } from 'react-native'
+import { List } from 'react-native-paper'
+import { setRepo, settingsRepo } from './db'
 import DrawerHeader from './DrawerHeader'
 import GymSet from './gym-set'
 import Page from './Page'
 import SetList from './SetList'
 import Settings from './settings'
 import WorkoutItem from './WorkoutItem'
-import {WorkoutsPageParams} from './WorkoutsPage'
+import { WorkoutsPageParams } from './WorkoutsPage'
 
 const limit = 15
 
@@ -29,12 +29,12 @@ export default function WorkoutList() {
     const newWorkouts = await setRepo
       .createQueryBuilder()
       .select()
-      .where('name LIKE :name', {name: `%${value.trim()}%`})
+      .where('name LIKE :name', { name: `%${value.trim()}%` })
       .groupBy('name')
       .orderBy('name')
       .limit(limit)
       .getMany()
-    console.log(`${WorkoutList.name}`, {newWorkout: newWorkouts[0]})
+    console.log(`${WorkoutList.name}`, { newWorkout: newWorkouts[0] })
     setWorkouts(newWorkouts)
     setOffset(0)
     setEnd(false)
@@ -43,12 +43,12 @@ export default function WorkoutList() {
   useFocusEffect(
     useCallback(() => {
       refresh(term)
-      settingsRepo.findOne({where: {}}).then(setSettings)
+      settingsRepo.findOne({ where: {} }).then(setSettings)
     }, [refresh, term]),
   )
 
   const renderItem = useCallback(
-    ({item}: {item: GymSet}) => (
+    ({ item }: { item: GymSet }) => (
       <WorkoutItem
         images={settings?.images}
         item={item}
@@ -71,7 +71,7 @@ export default function WorkoutList() {
     const newWorkouts = await setRepo
       .createQueryBuilder()
       .select()
-      .where('name LIKE :name', {name: `%${term.trim()}%`})
+      .where('name LIKE :name', { name: `%${term.trim()}%` })
       .groupBy('name')
       .orderBy('name')
       .limit(limit)
@@ -100,22 +100,24 @@ export default function WorkoutList() {
 
   return (
     <>
-      <DrawerHeader name="Workouts" />
+      <DrawerHeader name='Workouts' />
       <Page onAdd={onAdd} term={term} search={search}>
-        {workouts?.length === 0 ? (
-          <List.Item
-            title="No workouts yet."
-            description="A workout is something you do at the gym. For example Deadlifts are a workout."
-          />
-        ) : (
-          <FlatList
-            data={workouts}
-            style={{flex: 1}}
-            renderItem={renderItem}
-            keyExtractor={w => w.name}
-            onEndReached={next}
-          />
-        )}
+        {workouts?.length === 0
+          ? (
+            <List.Item
+              title='No workouts yet.'
+              description='A workout is something you do at the gym. For example Deadlifts are a workout.'
+            />
+          )
+          : (
+            <FlatList
+              data={workouts}
+              style={{ flex: 1 }}
+              renderItem={renderItem}
+              keyExtractor={(w) => w.name}
+              onEndReached={next}
+            />
+          )}
       </Page>
     </>
   )

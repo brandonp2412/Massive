@@ -1,5 +1,5 @@
-import {createContext, useContext} from 'react'
-import {DarkTheme, DefaultTheme} from 'react-native-paper'
+import { createContext, useContext } from 'react'
+import { DarkTheme, DefaultTheme } from 'react-native-paper'
 
 export const ThemeContext = createContext<{
   theme: string

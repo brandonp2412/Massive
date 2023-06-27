@@ -1,25 +1,25 @@
-import {NavigationProp, useNavigation} from '@react-navigation/native'
-import {format} from 'date-fns'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useForm} from 'react-hook-form'
-import {NativeModules, ScrollView, View} from 'react-native'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
+import { format } from 'date-fns'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { NativeModules, ScrollView, View } from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
-import {Dirs, FileSystem} from 'react-native-file-access'
-import {Button, Subheading} from 'react-native-paper'
+import { Dirs, FileSystem } from 'react-native-file-access'
+import { Button, Subheading } from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
-import {ITEM_PADDING, MARGIN} from './constants'
-import {AppDataSource} from './data-source'
-import {setRepo, settingsRepo} from './db'
-import {DrawerParamList} from './drawer-param-list'
+import { ITEM_PADDING, MARGIN } from './constants'
+import { AppDataSource } from './data-source'
+import { setRepo, settingsRepo } from './db'
+import { DrawerParamList } from './drawer-param-list'
 import DrawerHeader from './DrawerHeader'
 import Input from './input'
-import {darkOptions, lightOptions, themeOptions} from './options'
+import { darkOptions, lightOptions, themeOptions } from './options'
 import Page from './Page'
 import Select from './Select'
 import Settings from './settings'
 import Switch from './Switch'
-import {toast} from './toast'
-import {useTheme} from './use-theme'
+import { toast } from './toast'
+import { useTheme } from './use-theme'
 
 const twelveHours = [
   'dd/LL/yyyy',
@@ -45,20 +45,26 @@ export default function SettingsPage() {
   const [term, setTerm] = useState('')
   const [formatOptions, setFormatOptions] = useState<string[]>(twelveHours)
   const [importing, setImporting] = useState(false)
-  const {reset} = useNavigation<NavigationProp<DrawerParamList>>()
+  const { reset } = useNavigation<NavigationProp<DrawerParamList>>()
 
-  const {watch, setValue} = useForm<Settings>({
-    defaultValues: () => settingsRepo.findOne({where: {}}),
+  const { watch, setValue } = useForm<Settings>({
+    defaultValues: () => settingsRepo.findOne({ where: {} }),
   })
   const settings = watch()
 
-  const {theme, setTheme, lightColor, setLightColor, darkColor, setDarkColor} =
-    useTheme()
+  const {
+    theme,
+    setTheme,
+    lightColor,
+    setLightColor,
+    darkColor,
+    setDarkColor,
+  } = useTheme()
 
   useEffect(() => {
     NativeModules.SettingsModule.ignoringBattery(setIgnoring)
     NativeModules.SettingsModule.is24().then((is24: boolean) => {
-      console.log(`${SettingsPage.name}.focus:`, {is24})
+      console.log(`${SettingsPage.name}.focus:`, { is24 })
       if (is24) setFormatOptions(twentyFours)
       else setFormatOptions(twelveHours)
     })
@@ -68,7 +74,7 @@ export default function SettingsPage() {
     return settingsRepo
       .createQueryBuilder()
       .update()
-      .set({[key]: value})
+      .set({ [key]: value })
       .printSql()
       .execute()
   }, [])
@@ -80,7 +86,7 @@ export default function SettingsPage() {
   }, [settings.sound])
 
   const changeSound = useCallback(async () => {
-    const {fileCopyUri} = await DocumentPicker.pickSingle({
+    const { fileCopyUri } = await DocumentPicker.pickSingle({
       type: DocumentPicker.types.audio,
       copyTo: 'documentDirectory',
     })
@@ -92,21 +98,21 @@ export default function SettingsPage() {
 
   const switches: Input<boolean>[] = useMemo(
     () => [
-      {name: 'Rest timers', value: settings.alarm, key: 'alarm'},
-      {name: 'Vibrate', value: settings.vibrate, key: 'vibrate'},
-      {name: 'Disable sound', value: settings.noSound, key: 'noSound'},
-      {name: 'Notifications', value: settings.notify, key: 'notify'},
-      {name: 'Show images', value: settings.images, key: 'images'},
-      {name: 'Show unit', value: settings.showUnit, key: 'showUnit'},
-      {name: 'Show steps', value: settings.steps, key: 'steps'},
-      {name: 'Show date', value: settings.showDate, key: 'showDate'},
-      {name: 'Automatic backup', value: settings.backup, key: 'backup'},
+      { name: 'Rest timers', value: settings.alarm, key: 'alarm' },
+      { name: 'Vibrate', value: settings.vibrate, key: 'vibrate' },
+      { name: 'Disable sound', value: settings.noSound, key: 'noSound' },
+      { name: 'Notifications', value: settings.notify, key: 'notify' },
+      { name: 'Show images', value: settings.images, key: 'images' },
+      { name: 'Show unit', value: settings.showUnit, key: 'showUnit' },
+      { name: 'Show steps', value: settings.steps, key: 'steps' },
+      { name: 'Show date', value: settings.showDate, key: 'showDate' },
+      { name: 'Automatic backup', value: settings.backup, key: 'backup' },
     ],
     [settings],
   )
 
   const filter = useCallback(
-    ({name}) => name.toLowerCase().includes(term.toLowerCase()),
+    ({ name }) => name.toLowerCase().includes(term.toLowerCase()),
     [term],
   )
 
@@ -168,7 +174,7 @@ export default function SettingsPage() {
       <Switch
         key={item.name}
         value={item.value}
-        onChange={value => changeBoolean(item.key, value)}
+        onChange={(value) => changeBoolean(item.key, value)}
         title={item.name}
       />
     ),
@@ -176,7 +182,7 @@ export default function SettingsPage() {
   )
 
   const switchesMarkup = useMemo(
-    () => switches.filter(filter).map(s => renderSwitch(s)),
+    () => switches.filter(filter).map((s) => renderSwitch(s)),
     [filter, switches, renderSwitch],
   )
 
@@ -211,7 +217,7 @@ export default function SettingsPage() {
   const selects: Input<string>[] = useMemo(() => {
     const today = new Date()
     return [
-      {name: 'Theme', value: theme, items: themeOptions, key: 'theme'},
+      { name: 'Theme', value: theme, items: themeOptions, key: 'theme' },
       {
         name: 'Dark color',
         value: darkColor,
@@ -227,7 +233,7 @@ export default function SettingsPage() {
       {
         name: 'Date format',
         value: settings.date,
-        items: formatOptions.map(option => ({
+        items: formatOptions.map((option) => ({
           label: format(today, option),
           value: option,
         })),
@@ -241,7 +247,7 @@ export default function SettingsPage() {
       <Select
         key={item.name}
         value={item.value}
-        onChange={value => changeString(item.key, value)}
+        onChange={(value) => changeString(item.key, value)}
         label={item.name}
         items={item.items}
       />
@@ -260,17 +266,17 @@ export default function SettingsPage() {
     const file = await DocumentPicker.pickSingle()
     await FileSystem.cp(file.uri, Dirs.DatabaseDir + '/massive.db')
     await AppDataSource.initialize()
-    await setRepo.createQueryBuilder().update().set({image: null}).execute()
+    await setRepo.createQueryBuilder().update().set({ image: null }).execute()
     await update('sound', null)
-    const {alarm, backup} = await settingsRepo.findOne({where: {}})
-    console.log({backup})
+    const { alarm, backup } = await settingsRepo.findOne({ where: {} })
+    console.log({ backup })
     const directory = await DocumentPicker.pickDirectory()
     if (backup) NativeModules.BackupModule.start(directory.uri)
     else NativeModules.BackupModule.stop()
     NativeModules.SettingsModule.ignoringBattery(
       async (isIgnoring: boolean) => {
         if (alarm && !isIgnoring) NativeModules.SettingsModule.ignoreBattery()
-        reset({index: 0, routes: [{name: 'Settings'}]})
+        reset({ index: 0, routes: [{ name: 'Settings' }] })
       },
     )
   }, [reset, update])
@@ -287,13 +293,14 @@ export default function SettingsPage() {
         name: 'Alarm sound',
         element: (
           <View
-            key="alarm-sound"
+            key='alarm-sound'
             style={{
               flexDirection: 'row',
               alignItems: 'center',
               paddingLeft: ITEM_PADDING,
-            }}>
-            <Subheading style={{width: 100}}>Alarm sound</Subheading>
+            }}
+          >
+            <Subheading style={{ width: 100 }}>Alarm sound</Subheading>
             <Button onPress={changeSound}>{soundString || 'Default'}</Button>
           </View>
         ),
@@ -302,9 +309,10 @@ export default function SettingsPage() {
         name: 'Export database',
         element: (
           <Button
-            key="export-db"
-            style={{alignSelf: 'flex-start'}}
-            onPress={exportDatabase}>
+            key='export-db'
+            style={{ alignSelf: 'flex-start' }}
+            onPress={exportDatabase}
+          >
             Export database
           </Button>
         ),
@@ -313,9 +321,10 @@ export default function SettingsPage() {
         name: 'Import database',
         element: (
           <Button
-            key="import-db"
-            style={{alignSelf: 'flex-start'}}
-            onPress={() => setImporting(true)}>
+            key='import-db'
+            style={{ alignSelf: 'flex-start' }}
+            onPress={() => setImporting(true)}
+          >
             Import database
           </Button>
         ),
@@ -325,16 +334,16 @@ export default function SettingsPage() {
   )
 
   const buttonsMarkup = useMemo(
-    () => buttons.filter(filter).map(b => b.element),
+    () => buttons.filter(filter).map((b) => b.element),
     [buttons, filter],
   )
 
   return (
     <>
-      <DrawerHeader name="Settings" />
+      <DrawerHeader name='Settings' />
 
-      <Page term={term} search={setTerm} style={{flexGrow: 1}}>
-        <ScrollView style={{marginTop: MARGIN, flex: 1}}>
+      <Page term={term} search={setTerm} style={{ flexGrow: 1 }}>
+        <ScrollView style={{ marginTop: MARGIN, flex: 1 }}>
           {switchesMarkup}
           {selectsMarkup}
           {buttonsMarkup}
@@ -342,10 +351,11 @@ export default function SettingsPage() {
       </Page>
 
       <ConfirmDialog
-        title="Are you sure?"
+        title='Are you sure?'
         onOk={confirmImport}
         setShow={setImporting}
-        show={importing}>
+        show={importing}
+      >
         Importing a database overwrites your current data. This action cannot be
         reversed!
       </ConfirmDialog>

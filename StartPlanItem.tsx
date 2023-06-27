@@ -1,12 +1,12 @@
-import {NavigationProp, useNavigation} from '@react-navigation/native'
-import React, {useCallback, useState} from 'react'
-import {GestureResponderEvent, ListRenderItemInfo, View} from 'react-native'
-import {List, Menu, RadioButton, useTheme} from 'react-native-paper'
-import {Like} from 'typeorm'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
+import React, { useCallback, useState } from 'react'
+import { GestureResponderEvent, ListRenderItemInfo, View } from 'react-native'
+import { List, Menu, RadioButton, useTheme } from 'react-native-paper'
+import { Like } from 'typeorm'
 import CountMany from './count-many'
-import {getNow, setRepo} from './db'
-import {PlanPageParams} from './plan-page-params'
-import {toast} from './toast'
+import { getNow, setRepo } from './db'
+import { PlanPageParams } from './plan-page-params'
+import { toast } from './toast'
 
 interface Props extends ListRenderItemInfo<CountMany> {
   onSelect: (index: number) => void
@@ -15,11 +15,11 @@ interface Props extends ListRenderItemInfo<CountMany> {
 }
 
 export default function StartPlanItem(props: Props) {
-  const {index, item, onSelect, selected, onUndo} = props
-  const {colors} = useTheme()
-  const [anchor, setAnchor] = useState({x: 0, y: 0})
+  const { index, item, onSelect, selected, onUndo } = props
+  const { colors } = useTheme()
+  const [anchor, setAnchor] = useState({ x: 0, y: 0 })
   const [showMenu, setShowMenu] = useState(false)
-  const {navigate} = useNavigation<NavigationProp<PlanPageParams>>()
+  const { navigate } = useNavigation<NavigationProp<PlanPageParams>>()
 
   const undo = useCallback(async () => {
     const now = await getNow()
@@ -30,7 +30,7 @@ export default function StartPlanItem(props: Props) {
         hidden: 0 as any,
         created: Like(`${created}%`),
       },
-      order: {created: 'desc'},
+      order: { created: 'desc' },
     })
     setShowMenu(false)
     if (!first) return toast('Nothing to undo.')
@@ -40,7 +40,7 @@ export default function StartPlanItem(props: Props) {
 
   const longPress = useCallback(
     (e: GestureResponderEvent) => {
-      setAnchor({x: e.nativeEvent.pageX, y: e.nativeEvent.pageY})
+      setAnchor({ x: e.nativeEvent.pageX, y: e.nativeEvent.pageY })
       setShowMenu(true)
     },
     [setShowMenu, setAnchor],
@@ -55,25 +55,26 @@ export default function StartPlanItem(props: Props) {
         hidden: 0 as any,
         created: Like(`${created}%`),
       },
-      order: {created: 'desc'},
+      order: { created: 'desc' },
     })
     setShowMenu(false)
     if (!first) return toast('Nothing to edit.')
-    navigate('EditSet', {set: first})
+    navigate('EditSet', { set: first })
   }
 
   return (
     <List.Item
       onLongPress={longPress}
       title={item.name}
-      description={
-        item.sets ? `${item.total} / ${item.sets}` : item.total.toString()
-      }
+      description={item.sets
+        ? `${item.total} / ${item.sets}`
+        : item.total.toString()}
       onPress={() => onSelect(index)}
       left={() => (
-        <View style={{alignItems: 'center', justifyContent: 'center'}}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <RadioButton
-            onPress={() => onSelect(index)}
+            onPress={() =>
+              onSelect(index)}
             value={index.toString()}
             status={selected === index ? 'checked' : 'unchecked'}
             color={colors.primary}
@@ -85,13 +86,15 @@ export default function StartPlanItem(props: Props) {
           style={{
             width: '25%',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Menu
             anchor={anchor}
             visible={showMenu}
-            onDismiss={() => setShowMenu(false)}>
-            <Menu.Item icon="edit" onPress={edit} title="Edit" />
-            <Menu.Item icon="undo" onPress={undo} title="Undo" />
+            onDismiss={() => setShowMenu(false)}
+          >
+            <Menu.Item icon='edit' onPress={edit} title='Edit' />
+            <Menu.Item icon='undo' onPress={undo} title='Undo' />
           </Menu>
         </View>
       )}

@@ -1,12 +1,12 @@
-import {createStackNavigator} from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import 'react-native'
-import {render, waitFor} from 'react-native-testing-library'
+import { render, waitFor } from 'react-native-testing-library'
 import EditWorkout from '../EditWorkout'
 import GymSet from '../gym-set'
-import {MockProviders} from '../mock-providers'
+import { MockProviders } from '../mock-providers'
 import Settings from '../settings'
-import {WorkoutsPageParams} from '../WorkoutsPage'
+import { WorkoutsPageParams } from '../WorkoutsPage'
 
 jest.mock('../db.ts', () => ({
   settingsRepo: {
@@ -20,14 +20,14 @@ jest.mock('../db.ts', () => ({
 
 test('renders correctly', async () => {
   const Stack = createStackNavigator<WorkoutsPageParams>()
-  const {getByText, getAllByText} = render(
+  const { getByText, getAllByText } = render(
     <MockProviders>
       <Stack.Navigator>
         <Stack.Screen
           initialParams={{
-            value: {name: 'Bench press'} as GymSet,
+            value: { name: 'Bench press' } as GymSet,
           }}
-          name="EditWorkout"
+          name='EditWorkout'
           component={EditWorkout}
         />
       </Stack.Navigator>

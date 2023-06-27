@@ -3,15 +3,15 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native'
-import {useCallback, useMemo, useState} from 'react'
-import {Text} from 'react-native'
-import {List} from 'react-native-paper'
-import {getLast} from './best.service'
-import {DARK_RIPPLE, LIGHT_RIPPLE} from './constants'
-import {defaultSet} from './gym-set'
-import {Plan} from './plan'
-import {PlanPageParams} from './plan-page-params'
-import {DAYS} from './time'
+import { useCallback, useMemo, useState } from 'react'
+import { Text } from 'react-native'
+import { List } from 'react-native-paper'
+import { getLast } from './best.service'
+import { DARK_RIPPLE, LIGHT_RIPPLE } from './constants'
+import { defaultSet } from './gym-set'
+import { Plan } from './plan'
+import { PlanPageParams } from './plan-page-params'
+import { DAYS } from './time'
 import useDark from './use-dark'
 
 export default function PlanItem({
@@ -38,12 +38,13 @@ export default function PlanItem({
   const start = useCallback(async () => {
     const workout = item.workouts.split(',')[0]
     let first = await getLast(workout)
-    if (!first) first = {...defaultSet, name: workout}
+    if (!first) first = { ...defaultSet, name: workout }
     delete first.id
-    if (ids.length === 0)
-      return navigation.navigate('StartPlan', {plan: item, first})
-    const removing = ids.find(id => id === item.id)
-    if (removing) setIds(ids.filter(id => id !== item.id))
+    if (ids.length === 0) {
+      return navigation.navigate('StartPlan', { plan: item, first })
+    }
+    const removing = ids.find((id) => id === item.id)
+    if (removing) setIds(ids.filter((id) => id !== item.id))
     else setIds([...ids, item.id])
   }, [ids, setIds, item, navigation])
 
@@ -56,13 +57,17 @@ export default function PlanItem({
     () =>
       days.map((day, index) => (
         <Text key={day}>
-          {day === today ? (
-            <Text style={{fontWeight: 'bold', textDecorationLine: 'underline'}}>
-              {day}
-            </Text>
-          ) : (
-            day
-          )}
+          {day === today
+            ? (
+              <Text
+                style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}
+              >
+                {day}
+              </Text>
+            )
+            : (
+              day
+            )}
           {index === days.length - 1 ? '' : ', '}
         </Text>
       )),
@@ -86,7 +91,7 @@ export default function PlanItem({
       title={title}
       description={description}
       onLongPress={longPress}
-      style={{backgroundColor}}
+      style={{ backgroundColor }}
     />
   )
 }

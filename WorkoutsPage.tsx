@@ -1,4 +1,4 @@
-import {createStackNavigator} from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack'
 import EditWorkout from './EditWorkout'
 import GymSet from './gym-set'
 import WorkoutList from './WorkoutList'
@@ -15,9 +15,10 @@ const Stack = createStackNavigator<WorkoutsPageParams>()
 export default function WorkoutsPage() {
   return (
     <Stack.Navigator
-      screenOptions={{headerShown: false, animationEnabled: false}}>
-      <Stack.Screen name="WorkoutList" component={WorkoutList} />
-      <Stack.Screen name="EditWorkout" component={EditWorkout} />
+      screenOptions={{ headerShown: false, animationEnabled: false }}
+    >
+      <Stack.Screen name='WorkoutList' component={WorkoutList} />
+      <Stack.Screen name='EditWorkout' component={EditWorkout} />
     </Stack.Navigator>
   )
 }

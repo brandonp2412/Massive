@@ -1,4 +1,4 @@
-import {NativeModules} from 'react-native'
+import { NativeModules } from 'react-native'
 import 'react-native-gesture-handler/jestSetup'
 
 NativeModules.RNViewShot = NativeModules.RNViewShot || {

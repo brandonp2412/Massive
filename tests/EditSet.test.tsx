@@ -1,11 +1,11 @@
-import {createStackNavigator} from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import 'react-native'
-import {fireEvent, render, waitFor} from 'react-native-testing-library'
+import { fireEvent, render, waitFor } from 'react-native-testing-library'
 import EditSet from '../EditSet'
 import GymSet from '../gym-set'
-import {HomePageParams} from '../home-page-params'
-import {MockProviders} from '../mock-providers'
+import { HomePageParams } from '../home-page-params'
+import { MockProviders } from '../mock-providers'
 import SetList from '../SetList'
 import Settings from '../settings'
 
@@ -27,7 +27,7 @@ jest.mock('../db.ts', () => ({
 
 test('renders correctly', async () => {
   const Stack = createStackNavigator<HomePageParams>()
-  const {getByText, getAllByText} = render(
+  const { getByText, getAllByText } = render(
     <MockProviders>
       <Stack.Navigator>
         <Stack.Screen
@@ -37,7 +37,7 @@ test('renders correctly', async () => {
               id: 1,
             } as GymSet,
           }}
-          name="EditSet"
+          name='EditSet'
           component={EditSet}
         />
       </Stack.Navigator>
@@ -55,10 +55,10 @@ test('renders correctly', async () => {
 
 test('saves', async () => {
   const Stack = createStackNavigator<HomePageParams>()
-  const {getByText, getAllByText, getByTestId} = render(
+  const { getByText, getAllByText, getByTestId } = render(
     <MockProviders>
       <Stack.Navigator>
-        <Stack.Screen name="Sets" component={SetList} />
+        <Stack.Screen name='Sets' component={SetList} />
         <Stack.Screen
           initialParams={{
             set: {
@@ -66,7 +66,7 @@ test('saves', async () => {
               id: 1,
             } as GymSet,
           }}
-          name="EditSet"
+          name='EditSet'
           component={EditSet}
         />
       </Stack.Navigator>

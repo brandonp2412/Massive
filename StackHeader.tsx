@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native'
-import {Appbar, IconButton} from 'react-native-paper'
+import { useNavigation } from '@react-navigation/native'
+import { Appbar, IconButton } from 'react-native-paper'
 import useDark from './use-dark'
 
 export default function StackHeader({
@@ -16,7 +16,7 @@ export default function StackHeader({
     <Appbar.Header>
       <IconButton
         color={dark ? 'white' : 'white'}
-        icon="arrow-back"
+        icon='arrow-back'
         onPress={navigation.goBack}
       />
       <Appbar.Content title={title} />

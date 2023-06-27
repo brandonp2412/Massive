@@ -1,11 +1,11 @@
-import {useFocusEffect} from '@react-navigation/native'
-import React, {useCallback, useMemo, useState} from 'react'
-import {Dimensions, NativeModules, View} from 'react-native'
-import {Button, Text, useTheme} from 'react-native-paper'
-import {ProgressCircle} from 'react-native-svg-charts'
+import { useFocusEffect } from '@react-navigation/native'
+import React, { useCallback, useMemo, useState } from 'react'
+import { Dimensions, NativeModules, View } from 'react-native'
+import { Button, Text, useTheme } from 'react-native-paper'
+import { ProgressCircle } from 'react-native-svg-charts'
 import AppFab from './AppFab'
-import {MARGIN, PADDING} from './constants'
-import {settingsRepo} from './db'
+import { MARGIN, PADDING } from './constants'
+import { settingsRepo } from './db'
 import DrawerHeader from './DrawerHeader'
 import Settings from './settings'
 import useTimer from './use-timer'
@@ -16,13 +16,13 @@ export interface TickEvent {
 }
 
 export default function TimerPage() {
-  const {minutes, seconds} = useTimer()
+  const { minutes, seconds } = useTimer()
   const [settings, setSettings] = useState<Settings>()
-  const {colors} = useTheme()
+  const { colors } = useTheme()
 
   useFocusEffect(
     useCallback(() => {
-      settingsRepo.findOne({where: {}}).then(setSettings)
+      settingsRepo.findOne({ where: {} }).then(setSettings)
     }, []),
   )
 
@@ -45,19 +45,20 @@ export default function TimerPage() {
 
   return (
     <>
-      <DrawerHeader name="Timer" />
-      <View style={{flexGrow: 1, padding: PADDING}}>
+      <DrawerHeader name='Timer' />
+      <View style={{ flexGrow: 1, padding: PADDING }}>
         <View
           style={{
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-          }}>
-          <Text style={{fontSize: 70, position: 'absolute'}}>
+          }}
+        >
+          <Text style={{ fontSize: 70, position: 'absolute' }}>
             {minutes}:{seconds}
           </Text>
           <ProgressCircle
-            style={{height: 300, width: 300, marginBottom: MARGIN}}
+            style={{ height: 300, width: 300, marginBottom: MARGIN }}
             progress={progress}
             strokeWidth={10}
             progressColor={colors.primary}
@@ -65,10 +66,10 @@ export default function TimerPage() {
           />
         </View>
       </View>
-      <Button onPress={add} style={{position: 'absolute', top: '82%', left}}>
+      <Button onPress={add} style={{ position: 'absolute', top: '82%', left }}>
         Add 1 min
       </Button>
-      <AppFab icon="stop" onPress={stop} />
+      <AppFab icon='stop' onPress={stop} />
     </>
   )
 }

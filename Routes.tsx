@@ -1,7 +1,7 @@
-import {createDrawerNavigator} from '@react-navigation/drawer'
-import {IconButton} from 'react-native-paper'
+import { createDrawerNavigator } from '@react-navigation/drawer'
+import { IconButton } from 'react-native-paper'
 import BestPage from './BestPage'
-import {DrawerParamList} from './drawer-param-list'
+import { DrawerParamList } from './drawer-param-list'
 import HomePage from './HomePage'
 import PlanPage from './PlanPage'
 import SettingsPage from './SettingsPage'
@@ -20,36 +20,37 @@ export default function Routes() {
         headerTintColor: dark ? 'white' : 'black',
         swipeEdgeWidth: 1000,
         headerShown: false,
-      }}>
+      }}
+    >
       <Drawer.Screen
-        name="Home"
+        name='Home'
         component={HomePage}
-        options={{drawerIcon: () => <IconButton icon="home" />}}
+        options={{ drawerIcon: () => <IconButton icon='home' /> }}
       />
       <Drawer.Screen
-        name="Plans"
+        name='Plans'
         component={PlanPage}
-        options={{drawerIcon: () => <IconButton icon="event" />}}
+        options={{ drawerIcon: () => <IconButton icon='event' /> }}
       />
       <Drawer.Screen
-        name="Best"
+        name='Best'
         component={BestPage}
-        options={{drawerIcon: () => <IconButton icon="insights" />}}
+        options={{ drawerIcon: () => <IconButton icon='insights' /> }}
       />
       <Drawer.Screen
-        name="Workouts"
+        name='Workouts'
         component={WorkoutsPage}
-        options={{drawerIcon: () => <IconButton icon="fitness-center" />}}
+        options={{ drawerIcon: () => <IconButton icon='fitness-center' /> }}
       />
       <Drawer.Screen
-        name="Timer"
+        name='Timer'
         component={TimerPage}
-        options={{drawerIcon: () => <IconButton icon="access-time" />}}
+        options={{ drawerIcon: () => <IconButton icon='access-time' /> }}
       />
       <Drawer.Screen
-        name="Settings"
+        name='Settings'
         component={SettingsPage}
-        options={{drawerIcon: () => <IconButton icon="settings" />}}
+        options={{ drawerIcon: () => <IconButton icon='settings' /> }}
       />
     </Drawer.Navigator>
   )

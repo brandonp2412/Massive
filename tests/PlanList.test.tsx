@@ -1,8 +1,8 @@
 import React from 'react'
 import 'react-native'
-import {fireEvent, render, waitFor} from 'react-native-testing-library'
-import {MockProviders} from '../mock-providers'
-import {Plan} from '../plan'
+import { fireEvent, render, waitFor } from 'react-native-testing-library'
+import { MockProviders } from '../mock-providers'
+import { Plan } from '../plan'
 import PlanPage from '../PlanPage'
 
 jest.mock('../db.ts', () => ({
@@ -26,7 +26,7 @@ jest.mock('../db.ts', () => ({
           {
             name: 'Rows',
           },
-        ]),
+        ])
       ),
     }),
   },
@@ -48,7 +48,7 @@ jest.mock('../db.ts', () => ({
 }))
 
 test('renders correctly', async () => {
-  const {getByText} = render(
+  const { getByText } = render(
     <MockProviders>
       <PlanPage />
     </MockProviders>,
@@ -58,7 +58,7 @@ test('renders correctly', async () => {
 })
 
 test('adds', async () => {
-  const {getByTestId, getByText} = render(
+  const { getByTestId, getByText } = render(
     <MockProviders>
       <PlanPage />
     </MockProviders>,

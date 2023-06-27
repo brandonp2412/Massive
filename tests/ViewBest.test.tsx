@@ -1,8 +1,8 @@
 import React from 'react'
 import 'react-native'
-import {fireEvent, render, waitFor} from 'react-native-testing-library'
+import { fireEvent, render, waitFor } from 'react-native-testing-library'
 import BestPage from '../BestPage'
-import {MockProviders} from '../mock-providers'
+import { MockProviders } from '../mock-providers'
 import Settings from '../settings'
 
 jest.mock('../db.ts', () => ({
@@ -35,7 +35,7 @@ jest.mock('../db.ts', () => ({
             created: '2021-01-05T03:58:02.565Z',
             weight: 28,
           },
-        ]),
+        ])
       ),
       getMany: jest.fn(() =>
         Promise.resolve([
@@ -57,17 +57,17 @@ jest.mock('../db.ts', () => ({
             reps: 10,
             image: 'https://picsum.photos/id/1/1000/600',
           },
-        ]),
+        ])
       ),
     }),
   },
   settingsRepo: {
-    findOne: () => Promise.resolve({images: true} as Settings),
+    findOne: () => Promise.resolve({ images: true } as Settings),
   },
 }))
 
 test('renders correctly', async () => {
-  const {getAllByText, getByText} = render(
+  const { getAllByText, getByText } = render(
     <MockProviders>
       <BestPage />
     </MockProviders>,
@@ -81,7 +81,7 @@ test('renders correctly', async () => {
 })
 
 test('volume', async () => {
-  const {getAllByText, getByText} = render(
+  const { getAllByText, getByText } = render(
     <MockProviders>
       <BestPage />
     </MockProviders>,
@@ -97,7 +97,7 @@ test('volume', async () => {
 })
 
 test('one rep max', async () => {
-  const {getAllByText, getByText} = render(
+  const { getAllByText, getByText } = render(
     <MockProviders>
       <BestPage />
     </MockProviders>,
@@ -113,7 +113,7 @@ test('one rep max', async () => {
 })
 
 test('this week', async () => {
-  const {getAllByText, getByText} = render(
+  const { getAllByText, getByText } = render(
     <MockProviders>
       <BestPage />
     </MockProviders>,
@@ -127,7 +127,7 @@ test('this week', async () => {
 })
 
 test('this year', async () => {
-  const {getAllByText, getByText} = render(
+  const { getAllByText, getByText } = render(
     <MockProviders>
       <BestPage />
     </MockProviders>,

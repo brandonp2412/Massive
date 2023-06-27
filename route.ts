@@ -1,4 +1,4 @@
-import {DrawerParamList} from './drawer-param-list'
+import { DrawerParamList } from './drawer-param-list'
 
 export default interface Route {
   name: keyof DrawerParamList
