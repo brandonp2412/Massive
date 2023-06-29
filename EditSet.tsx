@@ -157,7 +157,6 @@ export default function EditSet() {
           onSubmitEditing={() => weightRef.current?.focus()}
           selection={selection}
           onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
-          autoFocus={!!name}
           innerRef={repsRef}
         />
 
