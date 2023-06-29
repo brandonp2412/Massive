@@ -2,12 +2,11 @@ import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { format } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { NativeModules, ScrollView, View } from 'react-native'
+import { NativeModules, ScrollView } from 'react-native'
 import DocumentPicker from 'react-native-document-picker'
 import { Dirs, FileSystem } from 'react-native-file-access'
-import { Button, Subheading } from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
-import { ITEM_PADDING, MARGIN } from './constants'
+import { MARGIN } from './constants'
 import { AppDataSource } from './data-source'
 import { setRepo, settingsRepo } from './db'
 import { DrawerParamList } from './drawer-param-list'
@@ -16,6 +15,7 @@ import Input from './input'
 import { darkOptions, lightOptions, themeOptions } from './options'
 import Page from './Page'
 import Select from './Select'
+import SettingButton from './SettingButton'
 import Settings from './settings'
 import Switch from './Switch'
 import { toast } from './toast'
@@ -45,6 +45,7 @@ export default function SettingsPage() {
   const [term, setTerm] = useState('')
   const [formatOptions, setFormatOptions] = useState<string[]>(twelveHours)
   const [importing, setImporting] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const { reset } = useNavigation<NavigationProp<DrawerParamList>>()
 
   const { watch, setValue } = useForm<Settings>({
@@ -260,6 +261,14 @@ export default function SettingsPage() {
     [filter, selects, renderSelect],
   )
 
+  const confirmDelete = useCallback(async() => {
+    setDeleting(false)
+    await AppDataSource.dropDatabase()
+    await AppDataSource.destroy()
+    await AppDataSource.initialize()
+    toast('Database deleted.')
+  }, [])
+
   const confirmImport = useCallback(async () => {
     setImporting(false)
     await AppDataSource.destroy()
@@ -274,7 +283,7 @@ export default function SettingsPage() {
     if (backup) NativeModules.BackupModule.start(directory.uri)
     else NativeModules.BackupModule.stop()
     NativeModules.SettingsModule.ignoringBattery(
-      async (isIgnoring: boolean) => {
+      (isIgnoring: boolean) => {
         if (alarm && !isIgnoring) NativeModules.SettingsModule.ignoreBattery()
         reset({ index: 0, routes: [{ name: 'Settings' }] })
       },
@@ -290,51 +299,22 @@ export default function SettingsPage() {
   const buttons = useMemo(
     () => [
       {
-        name: 'Alarm sound',
-        element: (
-          <View
-            key='alarm-sound'
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingLeft: ITEM_PADDING,
-            }}
-          >
-            <Subheading style={{ width: 100 }}>Alarm sound</Subheading>
-            <Button onPress={changeSound}>{soundString || 'Default'}</Button>
-          </View>
-        ),
+        name: soundString || 'Default',
+        onPress: changeSound,
+        label: 'Alarm sound',
       },
-      {
-        name: 'Export database',
-        element: (
-          <Button
-            key='export-db'
-            style={{ alignSelf: 'flex-start' }}
-            onPress={exportDatabase}
-          >
-            Export database
-          </Button>
-        ),
-      },
-      {
-        name: 'Import database',
-        element: (
-          <Button
-            key='import-db'
-            style={{ alignSelf: 'flex-start' }}
-            onPress={() => setImporting(true)}
-          >
-            Import database
-          </Button>
-        ),
-      },
+      { name: 'Export database', onPress: exportDatabase },
+      { name: 'Import database', onPress: () => setImporting(true) },
+      { name: 'Delete database', onPress: () => setDeleting(true) },
     ],
     [changeSound, exportDatabase, soundString],
   )
 
   const buttonsMarkup = useMemo(
-    () => buttons.filter(filter).map((b) => b.element),
+    () =>
+      buttons.filter(filter).map((button) => (
+        <SettingButton {...button} key={button.name} />
+      )),
     [buttons, filter],
   )
 
@@ -357,6 +337,16 @@ export default function SettingsPage() {
         show={importing}
       >
         Importing a database overwrites your current data. This action cannot be
+        reversed!
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        title='Are you sure?'
+        onOk={confirmDelete}
+        setShow={setDeleting}
+        show={deleting}
+      >
+        Deleting your database wipes your current data. This action cannot be
         reversed!
       </ConfirmDialog>
     </>
