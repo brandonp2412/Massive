@@ -79,16 +79,18 @@ export default function EditPlan() {
       <StackHeader
         title={typeof plan.id === 'number' ? 'Edit plan' : 'Add plan'}
       >
-        <IconButton
-          color={dark ? 'white' : 'white'}
-          onPress={async () => {
-            let first = await getLast(workouts[0])
-            if (!first) first = { ...defaultSet, name: workouts[0] }
-            delete first.id
-            navigation.navigate('StartPlan', { plan: params.plan, first })
-          }}
-          icon='play-arrow'
-        />
+        {typeof plan.id === 'number' && (
+          <IconButton
+            color={dark ? 'white' : 'white'}
+            onPress={async () => {
+              let first = await getLast(workouts[0])
+              if (!first) first = { ...defaultSet, name: workouts[0] }
+              delete first.id
+              navigation.navigate('StartPlan', { plan: params.plan, first })
+            }}
+            icon='play-arrow'
+          />
+        )}
       </StackHeader>
       <View style={{ padding: PADDING, flex: 1 }}>
         <ScrollView style={{ flex: 1 }}>
