@@ -6,17 +6,17 @@ import {
 import { useCallback, useState } from 'react'
 import { FlatList, Image } from 'react-native'
 import { List } from 'react-native-paper'
-import { BestPageParams } from './BestPage'
+import { GraphsPageParams } from './GraphsPage'
 import { setRepo, settingsRepo } from './db'
 import DrawerHeader from './DrawerHeader'
 import GymSet from './gym-set'
 import Page from './Page'
 import Settings from './settings'
 
-export default function BestList() {
+export default function GraphsList() {
   const [bests, setBests] = useState<GymSet[]>()
   const [term, setTerm] = useState('')
-  const navigation = useNavigation<NavigationProp<BestPageParams>>()
+  const navigation = useNavigation<NavigationProp<GraphsPageParams>>()
   const [settings, setSettings] = useState<Settings>()
 
   useFocusEffect(
@@ -34,7 +34,7 @@ export default function BestList() {
       .andWhere('NOT hidden')
       .groupBy('name')
       .getMany()
-    console.log(`${BestList.name}.refresh:`, { length: weights.length })
+    console.log(`${GraphsList.name}.refresh:`, { length: weights.length })
     let newBest: GymSet[] = []
     for (const set of weights) {
       const reps = await setRepo
@@ -70,7 +70,7 @@ export default function BestList() {
       key={item.name}
       title={item.name}
       description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
-      onPress={() => navigation.navigate('ViewBest', { best: item })}
+      onPress={() => navigation.navigate('ViewGraph', { best: item })}
       left={() =>
         (settings.images && item.image && (
           <Image
@@ -84,7 +84,7 @@ export default function BestList() {
 
   return (
     <>
-      <DrawerHeader name='Best' />
+      <DrawerHeader name='Graphs' />
       <Page term={term} search={search}>
         {bests?.length === 0
           ? (

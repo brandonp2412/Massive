@@ -1,7 +1,7 @@
 import React from 'react'
 import 'react-native'
 import { fireEvent, render, waitFor } from 'react-native-testing-library'
-import BestPage from '../BestPage'
+import GraphsPage from '../GraphsPage'
 import { MockProviders } from '../mock-providers'
 import Settings from '../settings'
 
@@ -69,7 +69,7 @@ jest.mock('../db.ts', () => ({
 test('renders correctly', async () => {
   const { getAllByText, getByText } = render(
     <MockProviders>
-      <BestPage />
+      <GraphsPage />
     </MockProviders>,
   )
   const benches = await waitFor(() => getAllByText('Bench press'))
@@ -83,7 +83,7 @@ test('renders correctly', async () => {
 test('volume', async () => {
   const { getAllByText, getByText } = render(
     <MockProviders>
-      <BestPage />
+      <GraphsPage />
     </MockProviders>,
   )
   const benches = await waitFor(() => getAllByText('Bench press'))
@@ -99,7 +99,7 @@ test('volume', async () => {
 test('one rep max', async () => {
   const { getAllByText, getByText } = render(
     <MockProviders>
-      <BestPage />
+      <GraphsPage />
     </MockProviders>,
   )
   const benches = await waitFor(() => getAllByText(/Bench press/i))
@@ -115,7 +115,7 @@ test('one rep max', async () => {
 test('this week', async () => {
   const { getAllByText, getByText } = render(
     <MockProviders>
-      <BestPage />
+      <GraphsPage />
     </MockProviders>,
   )
   const benches = await waitFor(() => getAllByText(/Bench press/i))
@@ -129,7 +129,7 @@ test('this week', async () => {
 test('this year', async () => {
   const { getAllByText, getByText } = render(
     <MockProviders>
-      <BestPage />
+      <GraphsPage />
     </MockProviders>,
   )
   const benches = await waitFor(() => getAllByText(/Bench press/i))

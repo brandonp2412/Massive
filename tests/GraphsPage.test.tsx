@@ -1,7 +1,7 @@
 import React from 'react'
 import 'react-native'
 import { fireEvent, render, waitFor } from 'react-native-testing-library'
-import BestPage from '../BestPage'
+import GraphsPage from '../GraphsPage'
 import { MockProviders } from '../mock-providers'
 import Settings from '../settings'
 
@@ -46,17 +46,17 @@ jest.mock('../db.ts', () => ({
 test('renders correctly', async () => {
   const { getByText } = render(
     <MockProviders>
-      <BestPage />
+      <GraphsPage />
     </MockProviders>,
   )
-  const title = await waitFor(() => getByText('Best'))
+  const title = await waitFor(() => getByText('Graphs'))
   expect(title).toBeDefined()
 })
 
 test('searches', async () => {
   const { getByDisplayValue, getByPlaceholder } = render(
     <MockProviders>
-      <BestPage />
+      <GraphsPage />
     </MockProviders>,
   )
   const search = await waitFor(() => getByPlaceholder('Search'))

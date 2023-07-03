@@ -6,7 +6,7 @@ import { FileSystem } from 'react-native-file-access'
 import { IconButton, List } from 'react-native-paper'
 import Share from 'react-native-share'
 import { captureScreen } from 'react-native-view-shot'
-import { BestPageParams } from './BestPage'
+import { GraphsPageParams } from './GraphsPage'
 import Chart from './Chart'
 import { PADDING } from './constants'
 import { setRepo } from './db'
@@ -18,8 +18,8 @@ import StackHeader from './StackHeader'
 import useDark from './use-dark'
 import Volume from './volume'
 
-export default function ViewBest() {
-  const { params } = useRoute<RouteProp<BestPageParams, 'ViewBest'>>()
+export default function ViewGraph() {
+  const { params } = useRoute<RouteProp<GraphsPageParams, 'ViewGraph'>>()
   const [weights, setWeights] = useState<GymSet[]>()
   const [volumes, setVolumes] = useState<Volume[]>()
   const [metric, setMetric] = useState(Metrics.Weight)

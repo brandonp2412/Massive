@@ -1,6 +1,6 @@
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import { IconButton } from 'react-native-paper'
-import BestPage from './BestPage'
+import GraphsPage from './GraphsPage'
 import { DrawerParamList } from './drawer-param-list'
 import HomePage from './HomePage'
 import PlanPage from './PlanPage'
@@ -33,8 +33,8 @@ export default function Routes() {
         options={{ drawerIcon: () => <IconButton icon='event' /> }}
       />
       <Drawer.Screen
-        name='Best'
-        component={BestPage}
+        name='Graphs'
+        component={GraphsPage}
         options={{ drawerIcon: () => <IconButton icon='insights' /> }}
       />
       <Drawer.Screen
