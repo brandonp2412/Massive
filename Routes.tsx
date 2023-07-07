@@ -48,6 +48,11 @@ export default function Routes() {
         options={{ drawerIcon: () => <IconButton icon='access-time' /> }}
       />
       <Drawer.Screen
+        name='Food'
+        component={TimerPage}
+        options={{ drawerIcon: () => <IconButton icon='restaurant' /> }}
+      />
+      <Drawer.Screen
         name='Settings'
         component={SettingsPage}
         options={{ drawerIcon: () => <IconButton icon='settings' /> }}
