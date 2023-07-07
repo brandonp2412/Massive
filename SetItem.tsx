@@ -43,36 +43,34 @@ export default function SetItem({
   }, [dark, ids, item.id])
 
   return (
-    <>
-      <List.Item
-        onPress={press}
-        title={item.name}
-        description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
-        onLongPress={longPress}
-        style={{ backgroundColor }}
-        left={() =>
-          settings.images &&
-          item.image && (
-            <Image
-              source={{ uri: item.image }}
-              style={{ height: 75, width: 75 }}
-            />
-          )}
-        right={() => (
-          <>
-            {settings.showDate && (
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  color: dark ? '#909090ff' : '#717171ff',
-                }}
-              >
-                {format(new Date(item.created), settings.date || 'P')}
-              </Text>
-            )}
-          </>
+    <List.Item
+      onPress={press}
+      title={item.name}
+      description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
+      onLongPress={longPress}
+      style={{ backgroundColor }}
+      left={() =>
+        settings.images &&
+        item.image && (
+          <Image
+            source={{ uri: item.image }}
+            style={{ height: 75, width: 75 }}
+          />
         )}
-      />
-    </>
+      right={() => (
+        <>
+          {settings.showDate && (
+            <Text
+              style={{
+                alignSelf: 'center',
+                color: dark ? '#909090ff' : '#717171ff',
+              }}
+            >
+              {format(new Date(item.created), settings.date || 'P')}
+            </Text>
+          )}
+        </>
+      )}
+    />
   )
 }
