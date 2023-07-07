@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import 'react-native'
-import { fireEvent, render, waitFor } from 'react-native-testing-library'
+import { fireEvent, render, waitFor } from '@testing-library/react-native'
 import EditSets from '../EditSets'
 import { HomePageParams } from '../home-page-params'
 import { MockProviders } from '../mock-providers'

@@ -5,7 +5,7 @@
     "jsx": "react-native",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "types": ["react-native", "jest"],
+    "types": ["react-native", "jest", "typeorm"],
     "resolveJsonModule": true,
     "allowJs": true,
     "noEmit": true,
@@ -23,5 +23,8 @@
     "babel.config.js",
     "metro.config.js",
     "jest.config.js"
+  ],
+  "paths": [
+    "typeorm": ["./node_modules/typeorm"]
   ]
 }

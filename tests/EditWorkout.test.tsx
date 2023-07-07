@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import 'react-native'
-import { render, waitFor } from 'react-native-testing-library'
+import { render, waitFor } from '@testing-library/react-native'
 import EditWorkout from '../EditWorkout'
 import GymSet from '../gym-set'
 import { MockProviders } from '../mock-providers'

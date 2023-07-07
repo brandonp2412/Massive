@@ -1,6 +1,6 @@
 import React from 'react'
 import 'react-native'
-import { fireEvent, render, waitFor } from 'react-native-testing-library'
+import { fireEvent, render, waitFor } from '@testing-library/react-native'
 import GraphsPage from '../GraphsPage'
 import { MockProviders } from '../mock-providers'
 import Settings from '../settings'

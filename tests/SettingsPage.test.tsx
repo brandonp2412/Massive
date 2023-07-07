@@ -1,6 +1,6 @@
 import React from 'react'
 import 'react-native'
-import { render, waitFor } from 'react-native-testing-library'
+import { render, waitFor } from '@testing-library/react-native'
 import { Repository } from 'typeorm'
 import GymSet from '../gym-set'
 import { MockProviders } from '../mock-providers'
