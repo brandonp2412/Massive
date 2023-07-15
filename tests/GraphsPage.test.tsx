@@ -54,12 +54,12 @@ test('renders correctly', async () => {
 })
 
 test('searches', async () => {
-  const { getByDisplayValue, getByPlaceholder } = render(
+  const { getByDisplayValue, getByPlaceholderText } = render(
     <MockProviders>
       <GraphsPage />
     </MockProviders>,
   )
-  const search = await waitFor(() => getByPlaceholder('Search'))
+  const search = await waitFor(() => getByPlaceholderText('Search'))
   expect(search).toBeDefined()
   fireEvent.changeText(search, 'SearchValue')
   const value = await waitFor(() => getByDisplayValue('SearchValue'))

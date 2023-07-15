@@ -6,16 +6,15 @@ import { FileSystem } from 'react-native-file-access'
 import { IconButton, List } from 'react-native-paper'
 import Share from 'react-native-share'
 import { captureScreen } from 'react-native-view-shot'
-import { GraphsPageParams } from './GraphsPage'
 import Chart from './Chart'
+import { GraphsPageParams } from './GraphsPage'
+import Select from './Select'
+import StackHeader from './StackHeader'
 import { PADDING } from './constants'
 import { setRepo } from './db'
 import GymSet from './gym-set'
 import { Metrics } from './metrics'
 import { Periods } from './periods'
-import Select from './Select'
-import StackHeader from './StackHeader'
-import useDark from './use-dark'
 import Volume from './volume'
 
 export default function ViewGraph() {
@@ -24,7 +23,6 @@ export default function ViewGraph() {
   const [volumes, setVolumes] = useState<Volume[]>()
   const [metric, setMetric] = useState(Metrics.Weight)
   const [period, setPeriod] = useState(Periods.Monthly)
-  const dark = useDark()
 
   useEffect(() => {
     let difference = '-7 days'
@@ -109,7 +107,6 @@ export default function ViewGraph() {
     <>
       <StackHeader title={params.best.name}>
         <IconButton
-          color={dark ? 'white' : 'white'}
           onPress={() =>
             captureScreen().then(async (uri) => {
               const base64 = await FileSystem.readFile(uri, 'base64')

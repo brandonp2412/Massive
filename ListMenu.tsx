@@ -53,34 +53,33 @@ export default function ListMenu({
       onDismiss={() => setShowMenu(false)}
       anchor={
         <IconButton
-          color={dark ? 'white' : 'white'}
           onPress={() => setShowMenu(true)}
           icon='more-vert'
         />
       }
     >
-      <Menu.Item icon='done-all' title='Select all' onPress={select} />
+      <Menu.Item leadingIcon='done-all' title='Select all' onPress={select} />
       <Menu.Item
-        icon='clear'
+        leadingIcon='clear'
         title='Clear'
         onPress={clear}
         disabled={ids?.length === 0}
       />
       <Menu.Item
-        icon='edit'
+        leadingIcon='edit'
         title='Edit'
         onPress={edit}
         disabled={ids?.length === 0}
       />
       <Menu.Item
-        icon='content-copy'
+        leadingIcon='content-copy'
         title='Copy'
         onPress={copy}
         disabled={ids?.length === 0}
       />
       <Divider />
       <Menu.Item
-        icon='delete'
+        leadingIcon='delete'
         onPress={() => setShowRemove(true)}
         title='Delete'
       />

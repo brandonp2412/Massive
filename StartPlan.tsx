@@ -20,7 +20,6 @@ import Settings from './settings'
 import StackHeader from './StackHeader'
 import StartPlanItem from './StartPlanItem'
 import { toast } from './toast'
-import useDark from './use-dark'
 
 export default function StartPlan() {
   const { params } = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
@@ -34,7 +33,6 @@ export default function StartPlan() {
   const repsRef = useRef<TextInput>(null)
   const unitRef = useRef<TextInput>(null)
   const workouts = useMemo(() => params.plan.workouts.split(','), [params])
-  const dark = useDark()
   const navigation = useNavigation<NavigationProp<PlanPageParams>>()
 
   const [selection, setSelection] = useState({
@@ -117,7 +115,6 @@ export default function StartPlan() {
     <>
       <StackHeader title={params.plan.days.replace(/,/g, ', ')}>
         <IconButton
-          color={dark ? 'white' : 'white'}
           onPress={() => navigation.navigate('EditPlan', { plan: params.plan })}
           icon='edit'
         />

@@ -2,7 +2,6 @@ import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { useNavigation } from '@react-navigation/native'
 import { Appbar, IconButton } from 'react-native-paper'
 import { DrawerParamList } from './drawer-param-list'
-import useDark from './use-dark'
 
 export default function DrawerHeader({
   name,
@@ -12,12 +11,10 @@ export default function DrawerHeader({
   children?: JSX.Element | JSX.Element[]
 }) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
-  const dark = useDark()
 
   return (
     <Appbar.Header>
       <IconButton
-        color={dark ? 'white' : 'white'}
         icon='menu'
         onPress={navigation.openDrawer}
       />

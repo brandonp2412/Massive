@@ -23,8 +23,5 @@
     "babel.config.js",
     "metro.config.js",
     "jest.config.js"
-  ],
-  "paths": [
-    "typeorm": ["./node_modules/typeorm"]
   ]
 }

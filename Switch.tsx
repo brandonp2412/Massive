@@ -29,7 +29,7 @@ function Switch({
         style={{ marginRight: MARGIN }}
         value={value}
         onValueChange={onChange}
-        trackColor={{ true: colors.primary + '80', false: colors.disabled }}
+        trackColor={{ true: colors.primary + '80', false: colors.surfaceDisabled }}
       />
       <Text>{title}</Text>
     </Pressable>

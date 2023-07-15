@@ -67,7 +67,7 @@ export default function WorkoutItem({
               onDismiss={() => setShowMenu(false)}
             >
               <Menu.Item
-                icon='delete'
+                leadingIcon='delete'
                 onPress={() => {
                   setShowRemove(item.name)
                   setShowMenu(false)

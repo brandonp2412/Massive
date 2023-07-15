@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native'
 import React from 'react'
 import {
-  DarkTheme,
+  MD3DarkTheme,
   DefaultTheme,
   Provider as PaperProvider,
 } from 'react-native-paper'
@@ -19,7 +19,7 @@ export const MockProviders = ({
         theme: 'system',
         setTheme: jest.fn(),
         lightColor: DefaultTheme.colors.primary,
-        darkColor: DarkTheme.colors.primary,
+        darkColor: MD3DarkTheme.colors.primary,
         setLightColor: jest.fn(),
         setDarkColor: jest.fn(),
       }}
