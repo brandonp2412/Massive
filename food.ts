@@ -22,6 +22,9 @@ export default class Food {
 
   @Column('number')
   calories: number
+
+  @Column('text')
+  image?: string
 }
 
 export const defaultFood: Food = {

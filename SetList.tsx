@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/native'
 import { useCallback, useState } from 'react'
 import { FlatList } from 'react-native'
-import { List } from 'react-native-paper'
+import { ActivityIndicator, List } from 'react-native-paper'
 import { Like } from 'typeorm'
 import { getNow, setRepo, settingsRepo } from './db'
 import DrawerHeader from './DrawerHeader'
@@ -95,7 +95,7 @@ export default function SetList() {
     [refresh],
   )
 
-  const edit = useCallback(() => {
+  const editSets = useCallback(() => {
     navigation.navigate('EditSets', { ids })
     setIds([])
   }, [ids, navigation])
@@ -124,6 +124,8 @@ export default function SetList() {
     setIds(sets.map((set) => set.id))
   }, [sets])
 
+  if (!settings) return <ActivityIndicator />
+
   return (
     <>
       <DrawerHeader name={ids.length > 0 ? `${ids.length} selected` : 'Home'}>
@@ -131,7 +133,7 @@ export default function SetList() {
           onClear={clear}
           onCopy={copy}
           onDelete={remove}
-          onEdit={edit}
+          onEdit={editSets}
           ids={ids}
           onSelect={select}
         />
@@ -146,14 +148,12 @@ export default function SetList() {
             />
           )
           : (
-            settings && (
-              <FlatList
-                data={sets}
-                style={{ flex: 1 }}
-                renderItem={renderItem}
-                onEndReached={next}
-              />
-            )
+            <FlatList
+              data={sets}
+              style={{ flex: 1 }}
+              renderItem={renderItem}
+              onEndReached={next}
+            />
           )}
       </Page>
     </>

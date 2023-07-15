@@ -8,6 +8,7 @@ import SettingsPage from './SettingsPage'
 import TimerPage from './TimerPage'
 import useDark from './use-dark'
 import WorkoutsPage from './WorkoutsPage'
+import FoodPage from './FoodPage'
 
 const Drawer = createDrawerNavigator<DrawerParamList>()
 
@@ -49,7 +50,7 @@ export default function Routes() {
       />
       <Drawer.Screen
         name='Food'
-        component={TimerPage}
+        component={FoodPage}
         options={{ drawerIcon: () => <IconButton icon='restaurant' /> }}
       />
       <Drawer.Screen

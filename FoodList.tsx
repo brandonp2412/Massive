@@ -1,20 +1,19 @@
 import {
-    NavigationProp,
-    useFocusEffect,
-    useNavigation,
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
 } from '@react-navigation/native'
 import { useCallback, useState } from 'react'
 import { FlatList } from 'react-native'
-import { List } from 'react-native-paper'
+import { ActivityIndicator, List } from 'react-native-paper'
 import { Like } from 'typeorm'
 import DrawerHeader from './DrawerHeader'
+import FoodItem from './FoodItem'
 import { FoodPageParams } from './FoodPage'
 import ListMenu from './ListMenu'
 import Page from './Page'
-import SetItem from './SetItem'
 import { foodRepo, getNow, settingsRepo } from './db'
 import Food, { defaultFood } from './food'
-import GymSet from './gym-set'
 import Settings from './settings'
 
 const limit = 15
@@ -29,14 +28,14 @@ export default function FoodList() {
   const navigation = useNavigation<NavigationProp<FoodPageParams>>()
 
   const refresh = useCallback(async (value: string) => {
-    const newSets = await foodRepo.find({
+    const newFoods = await foodRepo.find({
       where: { name: Like(`%${value.trim()}%`) },
       take: limit,
       skip: 0,
       order: { created: 'DESC' },
     })
     console.log(`${FoodList.name}.refresh:`, { value, limit })
-    setFoods(newSets)
+    setFoods(newFoods)
     setOffset(0)
     setEnd(false)
   }, [])
@@ -49,10 +48,10 @@ export default function FoodList() {
   )
 
   const renderItem = useCallback(
-    ({ item }: { item: GymSet }) => (
-      <SetItem
+    ({ item }: { item: Food }) => (
+      <FoodItem
         settings={settings}
-        item={item}
+        food={item}
         key={item.id}
         onRemove={() => refresh(term)}
         ids={ids}
@@ -66,16 +65,16 @@ export default function FoodList() {
     if (end) return
     const newOffset = offset + limit
     console.log(`${FoodList.name}.next:`, { offset, newOffset, term })
-    const newSets = await foodRepo.find({
+    const newFoods = await foodRepo.find({
       where: { name: Like(`%${term}%`) },
       take: limit,
       skip: newOffset,
       order: { created: 'DESC' },
     })
-    if (newSets.length === 0) return setEnd(true)
+    if (newFoods.length === 0) return setEnd(true)
     if (!foods) return
-    setFoods([...foods, ...newSets])
-    if (newSets.length < limit) return setEnd(true)
+    setFoods([...foods, ...newFoods])
+    if (newFoods.length < limit) return setEnd(true)
     setOffset(newOffset)
   }, [term, end, offset, foods])
 
@@ -96,8 +95,8 @@ export default function FoodList() {
     [refresh],
   )
 
-  const edit = useCallback(() => {
-    navigation.navigate('EditFood', { ids })
+  const editFoods = useCallback(() => {
+    navigation.navigate('EditFoods', { ids })
     setIds([])
   }, [ids, navigation])
 
@@ -125,14 +124,16 @@ export default function FoodList() {
     setIds(foods.map((set) => set.id))
   }, [foods])
 
+  if (!settings) return <ActivityIndicator />
+
   return (
     <>
-      <DrawerHeader name={ids.length > 0 ? `${ids.length} selected` : 'Home'}>
+      <DrawerHeader name={ids.length > 0 ? `${ids.length} selected` : 'Food'}>
         <ListMenu
           onClear={clear}
           onCopy={copy}
           onDelete={remove}
-          onEdit={edit}
+          onEdit={editFoods}
           ids={ids}
           onSelect={select}
         />
@@ -142,19 +143,17 @@ export default function FoodList() {
         {foods?.length === 0
           ? (
             <List.Item
-              title='No sets yet'
-              description='A set is a group of repetitions. E.g. 8 reps of Squats.'
+              title='No food yet'
+              description='Start by adding what you ate today.'
             />
           )
           : (
-            settings && (
-              <FlatList
-                data={foods}
-                style={{ flex: 1 }}
-                renderItem={renderItem}
-                onEndReached={next}
-              />
-            )
+            <FlatList
+              data={foods}
+              style={{ flex: 1 }}
+              renderItem={renderItem}
+              onEndReached={next}
+            />
           )}
       </Page>
     </>

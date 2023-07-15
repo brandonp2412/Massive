@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { useCallback, useMemo } from 'react'
 import { Image } from 'react-native'
 import { List, Text } from 'react-native-paper'
-import { DARK_RIPPLE, LIGHT_RIPPLE } from './constants'
+import { DARK_RIPPLE, DARK_TEXT, LIGHT_RIPPLE, LIGHT_TEXT } from './constants'
 import GymSet from './gym-set'
 import { HomePageParams } from './home-page-params'
 import Settings from './settings'
@@ -63,7 +63,7 @@ export default function SetItem({
             <Text
               style={{
                 alignSelf: 'center',
-                color: dark ? '#909090ff' : '#717171ff',
+                color: dark ? DARK_TEXT : LIGHT_TEXT,
               }}
             >
               {format(new Date(item.created), settings.date || 'P')}

@@ -4,9 +4,12 @@ import EditFood from './EditFood'
 import Food from './food'
 
 export type FoodPageParams = {
-  Food: {}
+  FoodList: {}
   EditFood: {
     food: Food
+  }
+  EditFoods: {
+    ids: number[]
   }
 }
 
@@ -17,7 +20,7 @@ export default function FoodPage() {
     <Stack.Navigator
       screenOptions={{ headerShown: false, animationEnabled: false }}
     >
-      <Stack.Screen name='Food' component={FoodList} />
+      <Stack.Screen name='FoodList' component={FoodList} />
       <Stack.Screen name='EditFood' component={EditFood} />
     </Stack.Navigator>
   )
