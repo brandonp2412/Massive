@@ -61,6 +61,7 @@ function Select({
       >
         {items.map((item) => (
           <Menu.Item
+            titleStyle={{color: item.color}}
             key={item.value}
             title={item.label}
             onPress={() => handlePress(item.value)}
