@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import { DarkTheme, DefaultTheme } from 'react-native-paper'
+import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper'
 
 export const ThemeContext = createContext<{
   theme: string
@@ -10,10 +10,10 @@ export const ThemeContext = createContext<{
   setDarkColor: (value: string) => void
 }>({
   theme: 'system',
-  lightColor: DefaultTheme.colors.primary,
+  lightColor: MD3DarkTheme.colors.primary,
   setTheme: () => null,
   setLightColor: () => null,
-  darkColor: DarkTheme.colors.primary,
+  darkColor: MD3LightTheme.colors.primary,
   setDarkColor: () => null,
 })
 

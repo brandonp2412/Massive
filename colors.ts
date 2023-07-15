@@ -1,7 +1,7 @@
-import { DarkTheme, DefaultTheme } from 'react-native-paper'
+import { DefaultTheme, MD3DarkTheme } from 'react-native-paper'
 
 export const lightColors = [
-  { hex: DarkTheme.colors.primary, name: 'Purple' },
+  { hex: MD3DarkTheme.colors.primary, name: 'Purple' },
   { hex: '#B3E5FC', name: 'Blue' },
   { hex: '#FA8072', name: 'Salmon' },
   { hex: '#FFC0CB', name: 'Pink' },

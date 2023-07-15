@@ -6,8 +6,8 @@ import {
 import React, { useEffect, useMemo, useState } from 'react'
 import { DeviceEventEmitter, useColorScheme } from 'react-native'
 import {
-  DarkTheme as PaperDarkTheme,
-  DefaultTheme as PaperDefaultTheme,
+  MD3DarkTheme as PaperDarkTheme,
+  MD3LightTheme as PaperDefaultTheme,
   Provider as PaperProvider,
   Snackbar,
 } from 'react-native-paper'
