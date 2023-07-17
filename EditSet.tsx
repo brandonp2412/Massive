@@ -179,7 +179,7 @@ export default function EditSet() {
           />
         )}
 
-        {typeof set.id === 'number' && settings.showDate && (
+        {settings.showDate && (
           <AppInput
             label='Created'
             value={format(created, settings.date || 'P')}
