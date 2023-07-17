@@ -37,10 +37,10 @@ export const CombinedDarkTheme = {
 }
 
 const App = () => {
-  const isDark = useColorScheme() === 'dark'
+  const phoneTheme = useColorScheme()
   const [initialized, setInitialized] = useState(false)
   const [snackbar, setSnackbar] = useState('')
-  const [theme, setTheme] = useState('system')
+  const [appTheme, setAppTheme] = useState('system')
 
   const [lightColor, setLightColor] = useState<string>(
     CombinedDefaultTheme.colors.primary,
@@ -54,7 +54,7 @@ const App = () => {
     ;(async () => {
       if (!AppDataSource.isInitialized) await AppDataSource.initialize()
       const settings = await settingsRepo.findOne({ where: {} })
-      setTheme(settings.theme)
+      setAppTheme(settings.theme)
       if (settings.lightColor) setLightColor(settings.lightColor)
       if (settings.darkColor) setDarkColor(settings.darkColor)
       setInitialized(true)
@@ -81,20 +81,11 @@ const App = () => {
         colors: { ...CombinedDefaultTheme.colors, primary: lightColor },
       }
       : CombinedDefaultTheme
-    let value = isDark ? darkTheme : lightTheme
-    if (theme === 'dark') value = darkTheme
-    else if (theme === 'light') value = lightTheme
+    let value = phoneTheme === 'dark' ? darkTheme : lightTheme
+    if (appTheme === 'dark') value = darkTheme
+    else if (appTheme === 'light') value = lightTheme
     return value
-  }, [isDark, theme, lightColor, darkColor])
-
-  const action = useMemo(
-    () => ({
-      label: 'Close',
-      onPress: () => setSnackbar(''),
-      color: paperTheme.colors.background,
-    }),
-    [paperTheme.colors.background],
-  )
+  }, [phoneTheme, appTheme, lightColor, darkColor])
 
   return (
     <PaperProvider
@@ -105,8 +96,8 @@ const App = () => {
         {initialized && (
           <ThemeContext.Provider
             value={{
-              theme,
-              setTheme,
+              theme: appTheme,
+              setTheme: setAppTheme,
               lightColor,
               setLightColor,
               darkColor,
@@ -122,7 +113,11 @@ const App = () => {
         duration={3000}
         onDismiss={() => setSnackbar('')}
         visible={!!snackbar}
-        action={action}
+        action={{
+          label: 'Close',
+          onPress: () => setSnackbar(''),
+          textColor: paperTheme.colors.background,
+        }}
       >
         {snackbar}
       </Snackbar>
