@@ -46,7 +46,7 @@ export default function StartPlanItem(props: Props) {
     [setShowMenu, setAnchor],
   )
 
-  const edit = async () => {
+  const edit = useCallback(async () => {
     const now = await getNow()
     const created = now.split('T')[0]
     const first = await setRepo.findOne({
@@ -60,7 +60,39 @@ export default function StartPlanItem(props: Props) {
     setShowMenu(false)
     if (!first) return toast('Nothing to edit.')
     navigate('EditSet', { set: first })
-  }
+  }, [item.name, navigate])
+
+  const left = useCallback(
+    () => (
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <RadioButton
+          onPress={() => onSelect(index)}
+          value={index.toString()}
+          status={selected === index ? 'checked' : 'unchecked'}
+          color={colors.primary}
+        />
+      </View>
+    ),
+    [index, selected, colors.primary, onSelect],
+  )
+
+  const right = useCallback(() => (
+    <View
+      style={{
+        width: '25%',
+        justifyContent: 'center',
+      }}
+    >
+      <Menu
+        anchor={anchor}
+        visible={showMenu}
+        onDismiss={() => setShowMenu(false)}
+      >
+        <Menu.Item leadingIcon='edit' onPress={edit} title='Edit' />
+        <Menu.Item leadingIcon='undo' onPress={undo} title='Undo' />
+      </Menu>
+    </View>
+  ), [anchor, showMenu, edit, undo])
 
   return (
     <List.Item
@@ -70,34 +102,8 @@ export default function StartPlanItem(props: Props) {
         ? `${item.total} / ${item.sets}`
         : item.total.toString()}
       onPress={() => onSelect(index)}
-      left={() => (
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <RadioButton
-            onPress={() =>
-              onSelect(index)}
-            value={index.toString()}
-            status={selected === index ? 'checked' : 'unchecked'}
-            color={colors.primary}
-          />
-        </View>
-      )}
-      right={() => (
-        <View
-          style={{
-            width: '25%',
-            justifyContent: 'center',
-          }}
-        >
-          <Menu
-            anchor={anchor}
-            visible={showMenu}
-            onDismiss={() => setShowMenu(false)}
-          >
-            <Menu.Item leadingIcon='edit' onPress={edit} title='Edit' />
-            <Menu.Item leadingIcon='undo' onPress={undo} title='Undo' />
-          </Menu>
-        </View>
-      )}
+      left={left}
+      right={right}
     />
   )
 }

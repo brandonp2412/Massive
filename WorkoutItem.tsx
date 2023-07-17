@@ -40,6 +40,41 @@ export default function WorkoutItem({
     return `${item.sets} x ${item.minutes || 0}:${seconds}`
   }, [item])
 
+  const left = useCallback(() => {
+    if (!images || !item.image) return null
+    return (
+      <Image
+        source={{ uri: item.image }}
+        style={{ height: 75, width: 75 }}
+      />
+    )
+  }, [item.image, images])
+
+  const right = useCallback(() => {
+    return (
+      <Text
+        style={{
+          alignSelf: 'center',
+        }}
+      >
+        <Menu
+          anchor={anchor}
+          visible={showMenu}
+          onDismiss={() => setShowMenu(false)}
+        >
+          <Menu.Item
+            leadingIcon='delete'
+            onPress={() => {
+              setShowRemove(item.name)
+              setShowMenu(false)
+            }}
+            title='Delete'
+          />
+        </Menu>
+      </Text>
+    )
+  }, [anchor, showMenu, item.name])
+
   return (
     <>
       <List.Item
@@ -47,36 +82,8 @@ export default function WorkoutItem({
         title={item.name}
         description={description}
         onLongPress={longPress}
-        left={() =>
-          images &&
-          item.image && (
-            <Image
-              source={{ uri: item.image }}
-              style={{ height: 75, width: 75 }}
-            />
-          )}
-        right={() => (
-          <Text
-            style={{
-              alignSelf: 'center',
-            }}
-          >
-            <Menu
-              anchor={anchor}
-              visible={showMenu}
-              onDismiss={() => setShowMenu(false)}
-            >
-              <Menu.Item
-                leadingIcon='delete'
-                onPress={() => {
-                  setShowRemove(item.name)
-                  setShowMenu(false)
-                }}
-                title='Delete'
-              />
-            </Menu>
-          </Text>
-        )}
+        left={left}
+        right={right}
       />
       <ConfirmDialog
         title={`Delete ${showRemove}`}
