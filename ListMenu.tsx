@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Divider, IconButton, Menu } from 'react-native-paper'
 import ConfirmDialog from './ConfirmDialog'
-import useDark from './use-dark'
 
 export default function ListMenu({
   onEdit,
@@ -20,7 +19,6 @@ export default function ListMenu({
 }) {
   const [showMenu, setShowMenu] = useState(false)
   const [showRemove, setShowRemove] = useState(false)
-  const dark = useDark()
 
   const edit = () => {
     setShowMenu(false)
