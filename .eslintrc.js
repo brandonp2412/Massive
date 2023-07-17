@@ -18,5 +18,5 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: ['coverage/'],
+  ignorePatterns: ['coverage/', 'mock-providers.tsx'],
 }
