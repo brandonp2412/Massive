@@ -168,7 +168,7 @@ export default function StartPlan() {
             />
           )}
         </View>
-        <Button mode='contained' icon='save' onPress={handleSubmit}>
+        <Button mode='outlined' icon='save' onPress={handleSubmit}>
           Save
         </Button>
       </View>

@@ -146,7 +146,7 @@ export default function EditSets() {
       </View>
 
       <Button
-        mode='contained'
+        mode='outlined'
         icon='save'
         style={{ margin: MARGIN }}
         onPress={handleSubmit}

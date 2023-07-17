@@ -122,7 +122,7 @@ export default function EditPlan() {
         <Button
           disabled={workouts.length === 0 && days.length === 0}
           style={styles.button}
-          mode='contained'
+          mode='outlined'
           icon='save'
           onPress={save}
         >

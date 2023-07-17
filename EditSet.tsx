@@ -210,7 +210,7 @@ export default function EditSet() {
 
       <Button
         disabled={!name}
-        mode='contained'
+        mode='outlined'
         icon='save'
         style={{ margin: MARGIN }}
         onPress={handleSubmit}
