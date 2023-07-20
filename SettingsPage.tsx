@@ -261,7 +261,7 @@ export default function SettingsPage() {
     [filter, selects, renderSelect],
   )
 
-  const confirmDelete = useCallback(async() => {
+  const confirmDelete = useCallback(async () => {
     setDeleting(false)
     await AppDataSource.dropDatabase()
     await AppDataSource.destroy()

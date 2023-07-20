@@ -1,8 +1,8 @@
 import { NavigationContainer } from '@react-navigation/native'
 import React from 'react'
 import {
-  MD3DarkTheme,
   DefaultTheme,
+  MD3DarkTheme,
   Provider as PaperProvider,
 } from 'react-native-paper'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
