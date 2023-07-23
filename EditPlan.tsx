@@ -7,7 +7,6 @@ import {
 import { useCallback, useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { Button, IconButton, Text } from 'react-native-paper'
-import { getLast } from './best.service'
 import { MARGIN, PADDING } from './constants'
 import { planRepo, setRepo } from './db'
 import { defaultSet } from './gym-set'
@@ -80,7 +79,10 @@ export default function EditPlan() {
         {typeof plan.id === 'number' && (
           <IconButton
             onPress={async () => {
-              let first = await getLast(workouts[0])
+              let first = await setRepo.findOne({
+                where: { name: workouts[0] },
+                order: { created: 'desc' },
+              })
               if (!first) first = { ...defaultSet, name: workouts[0] }
               delete first.id
               navigation.navigate('StartPlan', { plan: params.plan, first })

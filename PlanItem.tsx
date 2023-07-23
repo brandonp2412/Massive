@@ -6,8 +6,8 @@ import {
 import { useCallback, useMemo, useState } from 'react'
 import { Text } from 'react-native'
 import { List } from 'react-native-paper'
-import { getLast } from './best.service'
 import { DARK_RIPPLE, LIGHT_RIPPLE } from './constants'
+import { setRepo } from './db'
 import { defaultSet } from './gym-set'
 import { Plan } from './plan'
 import { PlanPageParams } from './plan-page-params'
@@ -37,7 +37,10 @@ export default function PlanItem({
 
   const start = useCallback(async () => {
     const workout = item.workouts.split(',')[0]
-    let first = await getLast(workout)
+    let first = await setRepo.findOne({
+      where: { name: workout },
+      order: { created: 'desc' },
+    })
     if (!first) first = { ...defaultSet, name: workout }
     delete first.id
     if (ids.length === 0) {

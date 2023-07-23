@@ -9,7 +9,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import { FlatList, NativeModules, TextInput, View } from 'react-native'
 import { Button, IconButton, ProgressBar } from 'react-native-paper'
 import AppInput from './AppInput'
-import { getBestSet, getLast } from './best.service'
+import { getBestSet } from './best.service'
 import { PADDING } from './constants'
 import CountMany from './count-many'
 import { AppDataSource } from './data-source'
@@ -66,7 +66,11 @@ export default function StartPlan() {
       if (!counts && !newCounts) return
       const workout = counts ? counts[index] : newCounts[index]
       console.log(`${StartPlan.name}.next:`, { workout })
-      const last = await getLast(workout.name)
+      const last = await setRepo.findOne({
+        where: { name: workout.name },
+        order: { created: 'desc' },
+      })
+      console.log({ last })
       if (!last) return
       delete last.id
       console.log(`${StartPlan.name}.select:`, { last })
