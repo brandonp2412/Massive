@@ -9,7 +9,7 @@ export const settingsRepo = AppDataSource.manager.getRepository(Settings)
 
 export const getNow = async (): Promise<string> => {
   const query = await AppDataSource.manager.query(
-    'SELECT STRFTIME(\'%Y-%m-%dT%H:%M:%S\',\'now\',\'localtime\') AS now',
+    "SELECT STRFTIME('%Y-%m-%dT%H:%M:%S','now','localtime') AS now",
   )
   return query[0].now
 }

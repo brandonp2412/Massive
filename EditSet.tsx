@@ -70,7 +70,7 @@ export default function EditSet() {
         value.weight > set.weight ||
         (value.reps > set.reps && value.weight === set.weight)
       ) {
-        toast('Great work King! That\'s a new record.')
+        toast("Great work King! That's a new record.")
       }
     },
     [startTimer, set, settings],

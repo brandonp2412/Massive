@@ -32,11 +32,11 @@ export default function ViewGraph() {
     if (period === Periods.Yearly) group = '%Y-%m'
     const builder = setRepo
       .createQueryBuilder()
-      .select('STRFTIME(\'%Y-%m-%d\', created)', 'created')
+      .select("STRFTIME('%Y-%m-%d', created)", 'created')
       .addSelect('unit')
       .where('name = :name', { name: params.best.name })
       .andWhere('NOT hidden')
-      .andWhere('DATE(created) >= DATE(\'now\', \'weekday 0\', :difference)', {
+      .andWhere("DATE(created) >= DATE('now', 'weekday 0', :difference)", {
         difference,
       })
       .groupBy('name')
