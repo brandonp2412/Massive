@@ -30,9 +30,10 @@ export default function EditSet() {
   const [weight, setWeight] = useState(set.weight?.toString())
   const [newImage, setNewImage] = useState(set.image)
   const [unit, setUnit] = useState(set.unit)
-  const [created, setCreated] = useState(
+  const [created, setCreated] = useState<Date>(
     set.created ? new Date(set.created) : new Date(),
   )
+  const [createdDirty, setCreatedDirty] = useState(false)
   const [showRemove, setShowRemove] = useState(false)
   const [removeImage, setRemoveImage] = useState(false)
   const weightRef = useRef<TextInput>(null)
@@ -70,35 +71,38 @@ export default function EditSet() {
         value.weight > set.weight ||
         (value.reps > set.reps && value.weight === set.weight)
       ) {
-        toast("Great work King! That's a new record.")
+        toast('Great work King! That\'s a new record.')
       }
     },
     [startTimer, set, settings],
   )
 
   const handleSubmit = async () => {
-    console.log(`${EditSet.name}.handleSubmit:`, { set, uri: newImage, name })
     if (!name) return
-    let image = newImage
-    if (!newImage && !removeImage) {
-      image = await setRepo.findOne({ where: { name } }).then((s) => s?.image)
-    }
 
-    console.log(`${EditSet.name}.handleSubmit:`, { image })
-    const now = await getNow()
-    const saved = await setRepo.save({
+    const newSet: Partial<GymSet> = {
       id: set.id,
       name,
-      created: created?.toISOString() || now,
       reps: Number(reps),
       weight: Number(weight),
       unit,
-      image,
       minutes: Number(set.minutes ?? 3),
       seconds: Number(set.seconds ?? 30),
       sets: set.sets ?? 3,
       hidden: false,
-    })
+    }
+
+    newSet.image = newImage
+    if (!newImage && !removeImage) {
+      newSet.image = await setRepo.findOne({ where: { name } }).then((s) =>
+        s?.image
+      )
+    }
+
+    if (createdDirty) newSet.created = created.toISOString()
+    if (typeof set.id !== 'number') newSet.created = await getNow()
+
+    const saved = await setRepo.save(newSet)
     if (typeof set.id !== 'number') added(saved)
     navigation.goBack()
   }
@@ -123,6 +127,7 @@ export default function EditSet() {
       onChange: (_, date) => {
         if (date === created) return
         setCreated(date)
+        setCreatedDirty(true)
         DateTimePickerAndroid.open({
           value: date,
           onChange: (__, time) => setCreated(time),
