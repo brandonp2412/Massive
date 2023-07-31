@@ -46,8 +46,7 @@ export default function EditPlan() {
     const newWorkouts = workouts.filter((workout) => workout).join(',')
     const newDays = days.filter((day) => day).join(',')
     await planRepo.save({ days: newDays, workouts: newWorkouts, id: plan.id })
-    navigation.goBack()
-  }, [days, workouts, plan, navigation])
+  }, [days, workouts, plan])
 
   const toggleWorkout = useCallback(
     (on: boolean, name: string) => {
@@ -79,13 +78,15 @@ export default function EditPlan() {
         {typeof plan.id === 'number' && (
           <IconButton
             onPress={async () => {
+              await save()
+              const newPlan = await planRepo.findOne({ where: { id: plan.id } })
               let first = await setRepo.findOne({
                 where: { name: workouts[0] },
                 order: { created: 'desc' },
               })
               if (!first) first = { ...defaultSet, name: workouts[0] }
               delete first.id
-              navigation.navigate('StartPlan', { plan: params.plan, first })
+              navigation.navigate('StartPlan', { plan: newPlan, first })
             }}
             icon='play-arrow'
           />
@@ -126,7 +127,10 @@ export default function EditPlan() {
           style={styles.button}
           mode='outlined'
           icon='save'
-          onPress={save}
+          onPress={async () => {
+            await save()
+            navigation.navigate('PlanList')
+          }}
         >
           Save
         </Button>
