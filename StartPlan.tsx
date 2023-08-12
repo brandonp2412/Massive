@@ -14,6 +14,7 @@ import { PADDING } from "./constants";
 import CountMany from "./count-many";
 import { AppDataSource } from "./data-source";
 import { getNow, setRepo, settingsRepo } from "./db";
+import { fixNumeric } from "./fix-numeric";
 import GymSet from "./gym-set";
 import { PlanPageParams } from "./plan-page-params";
 import Settings from "./settings";
@@ -129,7 +130,12 @@ export default function StartPlan() {
             label="Reps"
             keyboardType="numeric"
             value={reps}
-            onChangeText={setReps}
+            onChangeText={(newReps) => {
+              const fixed = fixNumeric(newReps);
+              setReps(fixed);
+              if (fixed.length !== newReps.length)
+                toast("Reps must be a number");
+            }}
             onSubmitEditing={() => weightRef.current?.focus()}
             selection={selection}
             onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
@@ -139,7 +145,12 @@ export default function StartPlan() {
             label="Weight"
             keyboardType="numeric"
             value={weight}
-            onChangeText={setWeight}
+            onChangeText={(newWeight) => {
+              const fixed = fixNumeric(newWeight);
+              setWeight(fixed);
+              if (fixed.length !== newWeight.length)
+                toast("Weight must be a number");
+            }}
             onSubmitEditing={handleSubmit}
             innerRef={weightRef}
             blurOnSubmit
