@@ -12,9 +12,11 @@ import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, planRepo, setRepo, settingsRepo } from "./db";
+import { fixNumeric } from "./fix-numeric";
 import { defaultSet } from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
+import { toast } from "./toast";
 import { WorkoutsPageParams } from "./WorkoutsPage";
 
 export default function EditWorkout() {
@@ -131,7 +133,12 @@ export default function EditWorkout() {
           <AppInput
             innerRef={setsRef}
             value={sets}
-            onChangeText={setSets}
+            onChangeText={(newSets) => {
+              const fixed = fixNumeric(newSets);
+              setSets(fixed);
+              if (fixed.length !== newSets.length)
+                toast("Sets must be a number");
+            }}
             label="Sets per workout"
             keyboardType="numeric"
             onSubmitEditing={() => minutesRef.current?.focus()}
@@ -142,7 +149,12 @@ export default function EditWorkout() {
                 innerRef={minutesRef}
                 onSubmitEditing={() => secondsRef.current?.focus()}
                 value={minutes}
-                onChangeText={setMinutes}
+                onChangeText={(newMinutes) => {
+                  const fixed = fixNumeric(newMinutes);
+                  setMinutes(fixed);
+                  if (fixed.length !== newMinutes.length)
+                    toast("Reps must be a number");
+                }}
                 label="Rest minutes"
                 keyboardType="numeric"
               />
