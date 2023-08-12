@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { Divider, IconButton, Menu } from 'react-native-paper'
-import ConfirmDialog from './ConfirmDialog'
+import { useState } from "react";
+import { Divider, IconButton, Menu } from "react-native-paper";
+import ConfirmDialog from "./ConfirmDialog";
 
 export default function ListMenu({
   onEdit,
@@ -10,88 +10,85 @@ export default function ListMenu({
   onSelect,
   ids,
 }: {
-  onEdit: () => void
-  onCopy: () => void
-  onClear: () => void
-  onDelete: () => void
-  onSelect: () => void
-  ids?: number[]
+  onEdit: () => void;
+  onCopy: () => void;
+  onClear: () => void;
+  onDelete: () => void;
+  onSelect: () => void;
+  ids?: number[];
 }) {
-  const [showMenu, setShowMenu] = useState(false)
-  const [showRemove, setShowRemove] = useState(false)
+  const [showMenu, setShowMenu] = useState(false);
+  const [showRemove, setShowRemove] = useState(false);
 
   const edit = () => {
-    setShowMenu(false)
-    onEdit()
-  }
+    setShowMenu(false);
+    onEdit();
+  };
 
   const copy = () => {
-    setShowMenu(false)
-    onCopy()
-  }
+    setShowMenu(false);
+    onCopy();
+  };
 
   const clear = () => {
-    setShowMenu(false)
-    onClear()
-  }
+    setShowMenu(false);
+    onClear();
+  };
 
   const remove = () => {
-    setShowMenu(false)
-    setShowRemove(false)
-    onDelete()
-  }
+    setShowMenu(false);
+    setShowRemove(false);
+    onDelete();
+  };
 
   const select = () => {
-    onSelect()
-  }
+    onSelect();
+  };
 
   return (
     <Menu
       visible={showMenu}
       onDismiss={() => setShowMenu(false)}
-      anchor={
-        <IconButton
-          onPress={() => setShowMenu(true)}
-          icon='more-vert'
-        />
-      }
+      anchor={<IconButton onPress={() => setShowMenu(true)} icon="more-vert" />}
     >
-      <Menu.Item leadingIcon='done-all' title='Select all' onPress={select} />
+      <Menu.Item leadingIcon="done-all" title="Select all" onPress={select} />
       <Menu.Item
-        leadingIcon='clear'
-        title='Clear'
+        leadingIcon="clear"
+        title="Clear"
         onPress={clear}
         disabled={ids?.length === 0}
       />
       <Menu.Item
-        leadingIcon='edit'
-        title='Edit'
+        leadingIcon="edit"
+        title="Edit"
         onPress={edit}
         disabled={ids?.length === 0}
       />
       <Menu.Item
-        leadingIcon='content-copy'
-        title='Copy'
+        leadingIcon="content-copy"
+        title="Copy"
         onPress={copy}
         disabled={ids?.length === 0}
       />
       <Divider />
       <Menu.Item
-        leadingIcon='delete'
+        leadingIcon="delete"
         onPress={() => setShowRemove(true)}
-        title='Delete'
+        title="Delete"
       />
       <ConfirmDialog
-        title={ids?.length === 0 ? 'Delete all' : 'Delete selected'}
+        title={ids?.length === 0 ? "Delete all" : "Delete selected"}
         show={showRemove}
         setShow={setShowRemove}
         onOk={remove}
         onCancel={() => setShowMenu(false)}
       >
-        {ids?.length === 0
-          ? <>This irreversibly deletes records from the app. Are you sure?</>
-          : <>This will delete {ids?.length} record(s). Are you sure?</>}
+        {ids?.length === 0 ? (
+          <>This irreversibly deletes records from the app. Are you sure?</>
+        ) : (
+          <>This will delete {ids?.length} record(s). Are you sure?</>
+        )}
       </ConfirmDialog>
     </Menu>
-  )
+  );
 }

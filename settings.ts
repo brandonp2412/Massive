@@ -1,49 +1,49 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
 export default class Settings {
-  @PrimaryColumn('boolean')
-  alarm: boolean
+  @PrimaryColumn("boolean")
+  alarm: boolean;
 
-  @Column('boolean')
-  vibrate: boolean
+  @Column("boolean")
+  vibrate: boolean;
 
-  @Column('text')
-  sound: string
+  @Column("text")
+  sound: string;
 
-  @Column('boolean')
-  notify: boolean
+  @Column("boolean")
+  notify: boolean;
 
-  @Column('boolean')
-  images: boolean
+  @Column("boolean")
+  images: boolean;
 
-  @Column('boolean')
-  showUnit: boolean
+  @Column("boolean")
+  showUnit: boolean;
 
-  @Column('text')
-  lightColor?: string
+  @Column("text")
+  lightColor?: string;
 
-  @Column('text')
-  darkColor?: string
+  @Column("text")
+  darkColor?: string;
 
-  @Column('boolean')
-  steps: boolean
+  @Column("boolean")
+  steps: boolean;
 
-  @Column('text')
-  date: string
+  @Column("text")
+  date: string;
 
-  @Column('boolean')
-  showDate: boolean
+  @Column("boolean")
+  showDate: boolean;
 
-  @Column('text')
-  theme: string
+  @Column("text")
+  theme: string;
 
-  @Column('boolean')
-  showSets: boolean
+  @Column("boolean")
+  showSets: boolean;
 
-  @Column('boolean')
-  noSound: boolean
+  @Column("boolean")
+  noSound: boolean;
 
-  @Column('boolean')
-  backup: boolean
+  @Column("boolean")
+  backup: boolean;
 }

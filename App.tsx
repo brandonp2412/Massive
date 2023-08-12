@@ -2,21 +2,21 @@ import {
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
   NavigationContainer,
-} from '@react-navigation/native'
-import React, { useEffect, useMemo, useState } from 'react'
-import { DeviceEventEmitter, useColorScheme } from 'react-native'
+} from "@react-navigation/native";
+import React, { useEffect, useMemo, useState } from "react";
+import { DeviceEventEmitter, useColorScheme } from "react-native";
 import {
   MD3DarkTheme as PaperDarkTheme,
   MD3LightTheme as PaperDefaultTheme,
   Provider as PaperProvider,
   Snackbar,
-} from 'react-native-paper'
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
-import { AppDataSource } from './data-source'
-import { settingsRepo } from './db'
-import Routes from './Routes'
-import { TOAST } from './toast'
-import { ThemeContext } from './use-theme'
+} from "react-native-paper";
+import MaterialIcon from "react-native-vector-icons/MaterialIcons";
+import { AppDataSource } from "./data-source";
+import { settingsRepo } from "./db";
+import Routes from "./Routes";
+import { TOAST } from "./toast";
+import { ThemeContext } from "./use-theme";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -25,7 +25,7 @@ export const CombinedDefaultTheme = {
     ...NavigationDefaultTheme.colors,
     ...PaperDefaultTheme.colors,
   },
-}
+};
 
 export const CombinedDarkTheme = {
   ...NavigationDarkTheme,
@@ -34,58 +34,58 @@ export const CombinedDarkTheme = {
     ...NavigationDarkTheme.colors,
     ...PaperDarkTheme.colors,
   },
-}
+};
 
 const App = () => {
-  const phoneTheme = useColorScheme()
-  const [initialized, setInitialized] = useState(false)
-  const [snackbar, setSnackbar] = useState('')
-  const [appTheme, setAppTheme] = useState('system')
+  const phoneTheme = useColorScheme();
+  const [initialized, setInitialized] = useState(false);
+  const [snackbar, setSnackbar] = useState("");
+  const [appTheme, setAppTheme] = useState("system");
 
   const [lightColor, setLightColor] = useState<string>(
-    CombinedDefaultTheme.colors.primary,
-  )
+    CombinedDefaultTheme.colors.primary
+  );
 
   const [darkColor, setDarkColor] = useState<string>(
-    CombinedDarkTheme.colors.primary,
-  )
+    CombinedDarkTheme.colors.primary
+  );
 
   useEffect(() => {
-    ;(async () => {
-      if (!AppDataSource.isInitialized) await AppDataSource.initialize()
-      const settings = await settingsRepo.findOne({ where: {} })
-      setAppTheme(settings.theme)
-      if (settings.lightColor) setLightColor(settings.lightColor)
-      if (settings.darkColor) setDarkColor(settings.darkColor)
-      setInitialized(true)
-    })()
+    (async () => {
+      if (!AppDataSource.isInitialized) await AppDataSource.initialize();
+      const settings = await settingsRepo.findOne({ where: {} });
+      setAppTheme(settings.theme);
+      if (settings.lightColor) setLightColor(settings.lightColor);
+      if (settings.darkColor) setDarkColor(settings.darkColor);
+      setInitialized(true);
+    })();
     const description = DeviceEventEmitter.addListener(
       TOAST,
       ({ value }: { value: string }) => {
-        setSnackbar(value)
-      },
-    )
-    return description.remove
-  }, [])
+        setSnackbar(value);
+      }
+    );
+    return description.remove;
+  }, []);
 
   const paperTheme = useMemo(() => {
     const darkTheme = lightColor
       ? {
-        ...CombinedDarkTheme,
-        colors: { ...CombinedDarkTheme.colors, primary: darkColor },
-      }
-      : CombinedDarkTheme
+          ...CombinedDarkTheme,
+          colors: { ...CombinedDarkTheme.colors, primary: darkColor },
+        }
+      : CombinedDarkTheme;
     const lightTheme = lightColor
       ? {
-        ...CombinedDefaultTheme,
-        colors: { ...CombinedDefaultTheme.colors, primary: lightColor },
-      }
-      : CombinedDefaultTheme
-    let value = phoneTheme === 'dark' ? darkTheme : lightTheme
-    if (appTheme === 'dark') value = darkTheme
-    else if (appTheme === 'light') value = lightTheme
-    return value
-  }, [phoneTheme, appTheme, lightColor, darkColor])
+          ...CombinedDefaultTheme,
+          colors: { ...CombinedDefaultTheme.colors, primary: lightColor },
+        }
+      : CombinedDefaultTheme;
+    let value = phoneTheme === "dark" ? darkTheme : lightTheme;
+    if (appTheme === "dark") value = darkTheme;
+    else if (appTheme === "light") value = lightTheme;
+    return value;
+  }, [phoneTheme, appTheme, lightColor, darkColor]);
 
   return (
     <PaperProvider
@@ -111,18 +111,18 @@ const App = () => {
 
       <Snackbar
         duration={3000}
-        onDismiss={() => setSnackbar('')}
+        onDismiss={() => setSnackbar("")}
         visible={!!snackbar}
         action={{
-          label: 'Close',
-          onPress: () => setSnackbar(''),
+          label: "Close",
+          onPress: () => setSnackbar(""),
           textColor: paperTheme.colors.background,
         }}
       >
         {snackbar}
       </Snackbar>
     </PaperProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

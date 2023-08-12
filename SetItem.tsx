@@ -1,13 +1,13 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native'
-import { format } from 'date-fns'
-import { useCallback, useMemo } from 'react'
-import { Image } from 'react-native'
-import { List, Text } from 'react-native-paper'
-import { DARK_RIPPLE, LIGHT_RIPPLE } from './constants'
-import GymSet from './gym-set'
-import { HomePageParams } from './home-page-params'
-import Settings from './settings'
-import useDark from './use-dark'
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { format } from "date-fns";
+import { useCallback, useMemo } from "react";
+import { Image } from "react-native";
+import { List, Text } from "react-native-paper";
+import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
+import GymSet from "./gym-set";
+import { HomePageParams } from "./home-page-params";
+import Settings from "./settings";
+import useDark from "./use-dark";
 
 export default function SetItem({
   item,
@@ -15,66 +15,63 @@ export default function SetItem({
   ids,
   setIds,
 }: {
-  item: GymSet
-  onRemove: () => void
-  settings: Settings
-  ids: number[]
-  setIds: (value: number[]) => void
+  item: GymSet;
+  onRemove: () => void;
+  settings: Settings;
+  ids: number[];
+  setIds: (value: number[]) => void;
 }) {
-  const dark = useDark()
-  const navigation = useNavigation<NavigationProp<HomePageParams>>()
+  const dark = useDark();
+  const navigation = useNavigation<NavigationProp<HomePageParams>>();
 
   const longPress = useCallback(() => {
-    if (ids.length > 0) return
-    setIds([item.id])
-  }, [ids.length, item.id, setIds])
+    if (ids.length > 0) return;
+    setIds([item.id]);
+  }, [ids.length, item.id, setIds]);
 
   const press = useCallback(() => {
-    if (ids.length === 0) return navigation.navigate('EditSet', { set: item })
-    const removing = ids.find((id) => id === item.id)
-    if (removing) setIds(ids.filter((id) => id !== item.id))
-    else setIds([...ids, item.id])
-  }, [ids, item, navigation, setIds])
+    if (ids.length === 0) return navigation.navigate("EditSet", { set: item });
+    const removing = ids.find((id) => id === item.id);
+    if (removing) setIds(ids.filter((id) => id !== item.id));
+    else setIds([...ids, item.id]);
+  }, [ids, item, navigation, setIds]);
 
   const backgroundColor = useMemo(() => {
-    if (!ids.includes(item.id)) return
-    if (dark) return DARK_RIPPLE
-    return LIGHT_RIPPLE
-  }, [dark, ids, item.id])
+    if (!ids.includes(item.id)) return;
+    if (dark) return DARK_RIPPLE;
+    return LIGHT_RIPPLE;
+  }, [dark, ids, item.id]);
 
   const left = useCallback(() => {
-    if (!settings.images || !item.image) return null
+    if (!settings.images || !item.image) return null;
     return (
-      <Image
-        source={{ uri: item.image }}
-        style={{ height: 75, width: 75 }}
-      />
-    )
-  }, [item.image, settings.images])
+      <Image source={{ uri: item.image }} style={{ height: 75, width: 75 }} />
+    );
+  }, [item.image, settings.images]);
 
   const right = useCallback(() => {
-    if (!settings.showDate) return null
+    if (!settings.showDate) return null;
     return (
       <Text
         style={{
-          alignSelf: 'center',
-          color: dark ? '#909090ff' : '#717171ff',
+          alignSelf: "center",
+          color: dark ? "#909090ff" : "#717171ff",
         }}
       >
-        {format(new Date(item.created), settings.date || 'P')}
+        {format(new Date(item.created), settings.date || "P")}
       </Text>
-    )
-  }, [settings.showDate, item.created, settings.date, dark])
+    );
+  }, [settings.showDate, item.created, settings.date, dark]);
 
   return (
     <List.Item
       onPress={press}
       title={item.name}
-      description={`${item.reps} x ${item.weight}${item.unit || 'kg'}`}
+      description={`${item.reps} x ${item.weight}${item.unit || "kg"}`}
       onLongPress={longPress}
       style={{ backgroundColor }}
       left={left}
       right={right}
     />
-  )
+  );
 }

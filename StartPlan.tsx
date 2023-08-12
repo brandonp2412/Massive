@@ -4,46 +4,46 @@ import {
   useFocusEffect,
   useNavigation,
   useRoute,
-} from '@react-navigation/native'
-import { useCallback, useMemo, useRef, useState } from 'react'
-import { FlatList, NativeModules, TextInput, View } from 'react-native'
-import { Button, IconButton, ProgressBar } from 'react-native-paper'
-import AppInput from './AppInput'
-import { getBestSet } from './best.service'
-import { PADDING } from './constants'
-import CountMany from './count-many'
-import { AppDataSource } from './data-source'
-import { getNow, setRepo, settingsRepo } from './db'
-import GymSet from './gym-set'
-import { PlanPageParams } from './plan-page-params'
-import Settings from './settings'
-import StackHeader from './StackHeader'
-import StartPlanItem from './StartPlanItem'
-import { toast } from './toast'
+} from "@react-navigation/native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { FlatList, NativeModules, TextInput, View } from "react-native";
+import { Button, IconButton, ProgressBar } from "react-native-paper";
+import AppInput from "./AppInput";
+import { getBestSet } from "./best.service";
+import { PADDING } from "./constants";
+import CountMany from "./count-many";
+import { AppDataSource } from "./data-source";
+import { getNow, setRepo, settingsRepo } from "./db";
+import GymSet from "./gym-set";
+import { PlanPageParams } from "./plan-page-params";
+import Settings from "./settings";
+import StackHeader from "./StackHeader";
+import StartPlanItem from "./StartPlanItem";
+import { toast } from "./toast";
 
 export default function StartPlan() {
-  const { params } = useRoute<RouteProp<PlanPageParams, 'StartPlan'>>()
-  const [reps, setReps] = useState(params.first?.reps.toString() || '0')
-  const [weight, setWeight] = useState(params.first?.weight.toString() || '0')
-  const [unit, setUnit] = useState<string>(params.first?.unit || 'kg')
-  const [selected, setSelected] = useState(0)
-  const [settings, setSettings] = useState<Settings>()
-  const [counts, setCounts] = useState<CountMany[]>()
-  const weightRef = useRef<TextInput>(null)
-  const repsRef = useRef<TextInput>(null)
-  const unitRef = useRef<TextInput>(null)
-  const workouts = useMemo(() => params.plan.workouts.split(','), [params])
-  const navigation = useNavigation<NavigationProp<PlanPageParams>>()
+  const { params } = useRoute<RouteProp<PlanPageParams, "StartPlan">>();
+  const [reps, setReps] = useState(params.first?.reps.toString() || "0");
+  const [weight, setWeight] = useState(params.first?.weight.toString() || "0");
+  const [unit, setUnit] = useState<string>(params.first?.unit || "kg");
+  const [selected, setSelected] = useState(0);
+  const [settings, setSettings] = useState<Settings>();
+  const [counts, setCounts] = useState<CountMany[]>();
+  const weightRef = useRef<TextInput>(null);
+  const repsRef = useRef<TextInput>(null);
+  const unitRef = useRef<TextInput>(null);
+  const workouts = useMemo(() => params.plan.workouts.split(","), [params]);
+  const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const [selection, setSelection] = useState({
     start: 0,
     end: 0,
-  })
+  });
 
   const refresh = useCallback(async () => {
     const questions = workouts
       .map((workout, index) => `('${workout}',${index})`)
-      .join(',')
+      .join(",");
     const select = `
       SELECT workouts.name, COUNT(sets.id) as total, sets.sets
       FROM (select 0 as name, 0 as sequence union values ${questions}) as workouts 
@@ -54,45 +54,45 @@ export default function StartPlan() {
       ORDER BY workouts.sequence
       LIMIT -1
       OFFSET 1
-    `
-    const newCounts = await AppDataSource.manager.query(select)
-    console.log(`${StartPlan.name}.focus:`, { newCounts })
-    setCounts(newCounts)
-  }, [workouts])
+    `;
+    const newCounts = await AppDataSource.manager.query(select);
+    console.log(`${StartPlan.name}.focus:`, { newCounts });
+    setCounts(newCounts);
+  }, [workouts]);
 
   const select = useCallback(
     async (index: number, newCounts?: CountMany[]) => {
-      setSelected(index)
-      if (!counts && !newCounts) return
-      const workout = counts ? counts[index] : newCounts[index]
-      console.log(`${StartPlan.name}.next:`, { workout })
+      setSelected(index);
+      if (!counts && !newCounts) return;
+      const workout = counts ? counts[index] : newCounts[index];
+      console.log(`${StartPlan.name}.next:`, { workout });
       const last = await setRepo.findOne({
         where: { name: workout.name },
-        order: { created: 'desc' },
-      })
-      console.log({ last })
-      if (!last) return
-      delete last.id
-      console.log(`${StartPlan.name}.select:`, { last })
-      setReps(last.reps.toString())
-      setWeight(last.weight.toString())
-      setUnit(last.unit)
+        order: { created: "desc" },
+      });
+      console.log({ last });
+      if (!last) return;
+      delete last.id;
+      console.log(`${StartPlan.name}.select:`, { last });
+      setReps(last.reps.toString());
+      setWeight(last.weight.toString());
+      setUnit(last.unit);
     },
-    [counts],
-  )
+    [counts]
+  );
 
   useFocusEffect(
     useCallback(() => {
-      settingsRepo.findOne({ where: {} }).then(setSettings)
-      refresh()
-    }, [refresh]),
-  )
+      settingsRepo.findOne({ where: {} }).then(setSettings);
+      refresh();
+    }, [refresh])
+  );
 
   const handleSubmit = async () => {
-    const now = await getNow()
-    const workout = counts[selected]
-    const best = await getBestSet(workout.name)
-    delete best.id
+    const now = await getNow();
+    const workout = counts[selected];
+    const best = await getBestSet(workout.name);
+    delete best.id;
     const newSet: GymSet = {
       ...best,
       weight: +weight,
@@ -100,34 +100,34 @@ export default function StartPlan() {
       unit,
       created: now,
       hidden: false,
-    }
-    await setRepo.save(newSet)
-    await refresh()
+    };
+    await setRepo.save(newSet);
+    await refresh();
     if (
       settings.notify &&
       (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
     ) {
-      toast("Great work King! That's a new record.")
+      toast("Great work King! That's a new record.");
     }
-    if (!settings.alarm) return
-    const milliseconds = Number(best.minutes) * 60 * 1000 +
-      Number(best.seconds) * 1000
-    NativeModules.AlarmModule.timer(milliseconds)
-  }
+    if (!settings.alarm) return;
+    const milliseconds =
+      Number(best.minutes) * 60 * 1000 + Number(best.seconds) * 1000;
+    NativeModules.AlarmModule.timer(milliseconds);
+  };
 
   return (
     <>
-      <StackHeader title={params.plan.days.replace(/,/g, ', ')}>
+      <StackHeader title={params.plan.days.replace(/,/g, ", ")}>
         <IconButton
-          onPress={() => navigation.navigate('EditPlan', { plan: params.plan })}
-          icon='edit'
+          onPress={() => navigation.navigate("EditPlan", { plan: params.plan })}
+          icon="edit"
         />
       </StackHeader>
-      <View style={{ padding: PADDING, flex: 1, flexDirection: 'column' }}>
+      <View style={{ padding: PADDING, flex: 1, flexDirection: "column" }}>
         <View style={{ flex: 1 }}>
           <AppInput
-            label='Reps'
-            keyboardType='numeric'
+            label="Reps"
+            keyboardType="numeric"
             value={reps}
             onChangeText={setReps}
             onSubmitEditing={() => weightRef.current?.focus()}
@@ -136,8 +136,8 @@ export default function StartPlan() {
             innerRef={repsRef}
           />
           <AppInput
-            label='Weight'
-            keyboardType='numeric'
+            label="Weight"
+            keyboardType="numeric"
             value={weight}
             onChangeText={setWeight}
             onSubmitEditing={handleSubmit}
@@ -146,8 +146,8 @@ export default function StartPlan() {
           />
           {settings?.showUnit && (
             <AppInput
-              autoCapitalize='none'
-              label='Unit'
+              autoCapitalize="none"
+              label="Unit"
               value={unit}
               onChangeText={setUnit}
               innerRef={unitRef}
@@ -172,10 +172,10 @@ export default function StartPlan() {
             />
           )}
         </View>
-        <Button mode='outlined' icon='save' onPress={handleSubmit}>
+        <Button mode="outlined" icon="save" onPress={handleSubmit}>
           Save
         </Button>
       </View>
     </>
-  )
+  );
 }

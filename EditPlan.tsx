@@ -3,92 +3,94 @@ import {
   RouteProp,
   useNavigation,
   useRoute,
-} from '@react-navigation/native'
-import { useCallback, useEffect, useState } from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
-import { Button, IconButton, Text } from 'react-native-paper'
-import { MARGIN, PADDING } from './constants'
-import { planRepo, setRepo } from './db'
-import { defaultSet } from './gym-set'
-import { PlanPageParams } from './plan-page-params'
-import StackHeader from './StackHeader'
-import Switch from './Switch'
-import { DAYS } from './time'
+} from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Button, IconButton, Text } from "react-native-paper";
+import { MARGIN, PADDING } from "./constants";
+import { planRepo, setRepo } from "./db";
+import { defaultSet } from "./gym-set";
+import { PlanPageParams } from "./plan-page-params";
+import StackHeader from "./StackHeader";
+import Switch from "./Switch";
+import { DAYS } from "./time";
 
 export default function EditPlan() {
-  const { params } = useRoute<RouteProp<PlanPageParams, 'EditPlan'>>()
-  const { plan } = params
+  const { params } = useRoute<RouteProp<PlanPageParams, "EditPlan">>();
+  const { plan } = params;
   const [days, setDays] = useState<string[]>(
-    plan.days ? plan.days.split(',') : [],
-  )
+    plan.days ? plan.days.split(",") : []
+  );
   const [workouts, setWorkouts] = useState<string[]>(
-    plan.workouts ? plan.workouts.split(',') : [],
-  )
-  const [names, setNames] = useState<string[]>([])
-  const navigation = useNavigation<NavigationProp<PlanPageParams>>()
+    plan.workouts ? plan.workouts.split(",") : []
+  );
+  const [names, setNames] = useState<string[]>([]);
+  const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   useEffect(() => {
     setRepo
       .createQueryBuilder()
-      .select('name')
+      .select("name")
       .distinct(true)
-      .orderBy('name')
+      .orderBy("name")
       .getRawMany()
       .then((values) => {
-        console.log(EditPlan.name, { values })
-        setNames(values.map((value) => value.name))
-      })
-  }, [])
+        console.log(EditPlan.name, { values });
+        setNames(values.map((value) => value.name));
+      });
+  }, []);
 
   const save = useCallback(async () => {
-    console.log(`${EditPlan.name}.save`, { days, workouts, plan })
-    if (!days || !workouts) return
-    const newWorkouts = workouts.filter((workout) => workout).join(',')
-    const newDays = days.filter((day) => day).join(',')
-    await planRepo.save({ days: newDays, workouts: newWorkouts, id: plan.id })
-  }, [days, workouts, plan])
+    console.log(`${EditPlan.name}.save`, { days, workouts, plan });
+    if (!days || !workouts) return;
+    const newWorkouts = workouts.filter((workout) => workout).join(",");
+    const newDays = days.filter((day) => day).join(",");
+    await planRepo.save({ days: newDays, workouts: newWorkouts, id: plan.id });
+  }, [days, workouts, plan]);
 
   const toggleWorkout = useCallback(
     (on: boolean, name: string) => {
       if (on) {
-        setWorkouts([...workouts, name])
+        setWorkouts([...workouts, name]);
       } else {
-        setWorkouts(workouts.filter((workout) => workout !== name))
+        setWorkouts(workouts.filter((workout) => workout !== name));
       }
     },
-    [setWorkouts, workouts],
-  )
+    [setWorkouts, workouts]
+  );
 
   const toggleDay = useCallback(
     (on: boolean, day: string) => {
       if (on) {
-        setDays([...days, day])
+        setDays([...days, day]);
       } else {
-        setDays(days.filter((d) => d !== day))
+        setDays(days.filter((d) => d !== day));
       }
     },
-    [setDays, days],
-  )
+    [setDays, days]
+  );
 
   return (
     <>
       <StackHeader
-        title={typeof plan.id === 'number' ? 'Edit plan' : 'Add plan'}
+        title={typeof plan.id === "number" ? "Edit plan" : "Add plan"}
       >
-        {typeof plan.id === 'number' && (
+        {typeof plan.id === "number" && (
           <IconButton
             onPress={async () => {
-              await save()
-              const newPlan = await planRepo.findOne({ where: { id: plan.id } })
+              await save();
+              const newPlan = await planRepo.findOne({
+                where: { id: plan.id },
+              });
               let first = await setRepo.findOne({
                 where: { name: workouts[0] },
-                order: { created: 'desc' },
-              })
-              if (!first) first = { ...defaultSet, name: workouts[0] }
-              delete first.id
-              navigation.navigate('StartPlan', { plan: newPlan, first })
+                order: { created: "desc" },
+              });
+              if (!first) first = { ...defaultSet, name: workouts[0] };
+              delete first.id;
+              navigation.navigate("StartPlan", { plan: newPlan, first });
             }}
-            icon='play-arrow'
+            icon="play-arrow"
           />
         )}
       </StackHeader>
@@ -104,39 +106,37 @@ export default function EditPlan() {
             />
           ))}
           <Text style={[styles.title, { marginTop: MARGIN }]}>Workouts</Text>
-          {names.length === 0
-            ? (
-              <View>
-                <Text>No workouts found.</Text>
-              </View>
-            )
-            : (
-              names.map((name) => (
-                <Switch
-                  key={name}
-                  onChange={(value) => toggleWorkout(value, name)}
-                  value={workouts.includes(name)}
-                  title={name}
-                />
-              ))
-            )}
+          {names.length === 0 ? (
+            <View>
+              <Text>No workouts found.</Text>
+            </View>
+          ) : (
+            names.map((name) => (
+              <Switch
+                key={name}
+                onChange={(value) => toggleWorkout(value, name)}
+                value={workouts.includes(name)}
+                title={name}
+              />
+            ))
+          )}
         </ScrollView>
 
         <Button
           disabled={workouts.length === 0 && days.length === 0}
           style={styles.button}
-          mode='outlined'
-          icon='save'
+          mode="outlined"
+          icon="save"
           onPress={async () => {
-            await save()
-            navigation.navigate('PlanList')
+            await save();
+            navigation.navigate("PlanList");
           }}
         >
           Save
         </Button>
       </View>
     </>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -145,4 +145,4 @@ const styles = StyleSheet.create({
     marginBottom: MARGIN,
   },
   button: {},
-})
+});

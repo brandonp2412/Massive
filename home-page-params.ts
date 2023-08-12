@@ -1,11 +1,11 @@
-import GymSet from './gym-set'
+import GymSet from "./gym-set";
 
 export type HomePageParams = {
-  Sets: {}
+  Sets: {};
   EditSet: {
-    set: GymSet
-  }
+    set: GymSet;
+  };
   EditSets: {
-    ids: number[]
-  }
-}
+    ids: number[];
+  };
+};

@@ -1,11 +1,11 @@
-import { useTheme } from '@react-navigation/native'
-import * as shape from 'd3-shape'
-import { View } from 'react-native'
-import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
-import { CombinedDarkTheme, CombinedDefaultTheme } from './App'
-import { MARGIN, PADDING } from './constants'
-import GymSet from './gym-set'
-import useDark from './use-dark'
+import { useTheme } from "@react-navigation/native";
+import * as shape from "d3-shape";
+import { View } from "react-native";
+import { Grid, LineChart, XAxis, YAxis } from "react-native-svg-charts";
+import { CombinedDarkTheme, CombinedDefaultTheme } from "./App";
+import { MARGIN, PADDING } from "./constants";
+import GymSet from "./gym-set";
+import useDark from "./use-dark";
 
 export default function Chart({
   yData,
@@ -13,21 +13,21 @@ export default function Chart({
   xData,
   yFormat,
 }: {
-  yData: number[]
-  xData: GymSet[]
-  xFormat: (value: any, index: number) => string
-  yFormat: (value: any) => string
+  yData: number[];
+  xData: GymSet[];
+  xFormat: (value: any, index: number) => string;
+  yFormat: (value: any) => string;
 }) {
-  const { colors } = useTheme()
-  const dark = useDark()
+  const { colors } = useTheme();
+  const dark = useDark();
   const axesSvg = {
     fontSize: 10,
     fill: dark
       ? CombinedDarkTheme.colors.text
       : CombinedDefaultTheme.colors.text,
-  }
-  const verticalContentInset = { top: 10, bottom: 10 }
-  const xAxisHeight = 30
+  };
+  const verticalContentInset = { top: 10, bottom: 10 };
+  const xAxisHeight = 30;
 
   return (
     <>
@@ -35,7 +35,7 @@ export default function Chart({
         style={{
           height: 300,
           padding: PADDING,
-          flexDirection: 'row',
+          flexDirection: "row",
         }}
       >
         <YAxis
@@ -66,5 +66,5 @@ export default function Chart({
         </View>
       </View>
     </>
-  )
+  );
 }

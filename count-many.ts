@@ -1,5 +1,5 @@
 export default interface CountMany {
-  name: string
-  total: number
-  sets?: number
+  name: string;
+  total: number;
+  sets?: number;
 }

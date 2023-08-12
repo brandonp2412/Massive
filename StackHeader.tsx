@@ -1,23 +1,20 @@
-import { useNavigation } from '@react-navigation/native'
-import { Appbar, IconButton } from 'react-native-paper'
+import { useNavigation } from "@react-navigation/native";
+import { Appbar, IconButton } from "react-native-paper";
 
 export default function StackHeader({
   title,
   children,
 }: {
-  title: string
-  children?: JSX.Element | JSX.Element[]
+  title: string;
+  children?: JSX.Element | JSX.Element[];
 }) {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   return (
     <Appbar.Header>
-      <IconButton
-        icon='arrow-back'
-        onPress={navigation.goBack}
-      />
+      <IconButton icon="arrow-back" onPress={navigation.goBack} />
       <Appbar.Content title={title} />
       {children}
     </Appbar.Header>
-  )
+  );
 }

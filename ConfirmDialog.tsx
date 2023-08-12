@@ -1,4 +1,4 @@
-import { Button, Dialog, Portal, Text } from 'react-native-paper'
+import { Button, Dialog, Portal, Text } from "react-native-paper";
 
 export default function ConfirmDialog({
   title,
@@ -8,17 +8,17 @@ export default function ConfirmDialog({
   setShow,
   onCancel,
 }: {
-  title: string
-  children: JSX.Element | JSX.Element[] | string
-  onOk: () => void
-  show: boolean
-  setShow: (show: boolean) => void
-  onCancel?: () => void
+  title: string;
+  children: JSX.Element | JSX.Element[] | string;
+  onOk: () => void;
+  show: boolean;
+  setShow: (show: boolean) => void;
+  onCancel?: () => void;
 }) {
   const cancel = () => {
-    setShow(false)
-    onCancel && onCancel()
-  }
+    setShow(false);
+    onCancel && onCancel();
+  };
 
   return (
     <Portal>
@@ -33,5 +33,5 @@ export default function ConfirmDialog({
         </Dialog.Actions>
       </Dialog>
     </Portal>
-  )
+  );
 }

@@ -3,78 +3,78 @@ import {
   useFocusEffect,
   useNavigation,
   useRoute,
-} from '@react-navigation/native'
-import { useCallback, useState } from 'react'
-import { View } from 'react-native'
-import DocumentPicker from 'react-native-document-picker'
-import { Button, Card, TouchableRipple } from 'react-native-paper'
-import { In } from 'typeorm'
-import AppInput from './AppInput'
-import ConfirmDialog from './ConfirmDialog'
-import { MARGIN, PADDING } from './constants'
-import { setRepo, settingsRepo } from './db'
-import GymSet from './gym-set'
-import { HomePageParams } from './home-page-params'
-import Settings from './settings'
-import StackHeader from './StackHeader'
+} from "@react-navigation/native";
+import { useCallback, useState } from "react";
+import { View } from "react-native";
+import DocumentPicker from "react-native-document-picker";
+import { Button, Card, TouchableRipple } from "react-native-paper";
+import { In } from "typeorm";
+import AppInput from "./AppInput";
+import ConfirmDialog from "./ConfirmDialog";
+import { MARGIN, PADDING } from "./constants";
+import { setRepo, settingsRepo } from "./db";
+import GymSet from "./gym-set";
+import { HomePageParams } from "./home-page-params";
+import Settings from "./settings";
+import StackHeader from "./StackHeader";
 
 export default function EditSets() {
-  const { params } = useRoute<RouteProp<HomePageParams, 'EditSets'>>()
-  const { ids } = params
-  const navigation = useNavigation()
-  const [settings, setSettings] = useState<Settings>({} as Settings)
-  const [name, setName] = useState('')
-  const [reps, setReps] = useState('')
-  const [weight, setWeight] = useState('')
-  const [newImage, setNewImage] = useState('')
-  const [unit, setUnit] = useState('')
-  const [showRemove, setShowRemove] = useState(false)
-  const [names, setNames] = useState('')
-  const [oldReps, setOldReps] = useState('')
-  const [weights, setWeights] = useState('')
-  const [units, setUnits] = useState('')
+  const { params } = useRoute<RouteProp<HomePageParams, "EditSets">>();
+  const { ids } = params;
+  const navigation = useNavigation();
+  const [settings, setSettings] = useState<Settings>({} as Settings);
+  const [name, setName] = useState("");
+  const [reps, setReps] = useState("");
+  const [weight, setWeight] = useState("");
+  const [newImage, setNewImage] = useState("");
+  const [unit, setUnit] = useState("");
+  const [showRemove, setShowRemove] = useState(false);
+  const [names, setNames] = useState("");
+  const [oldReps, setOldReps] = useState("");
+  const [weights, setWeights] = useState("");
+  const [units, setUnits] = useState("");
 
   const [selection, setSelection] = useState({
     start: 0,
     end: 1,
-  })
+  });
 
   useFocusEffect(
     useCallback(() => {
-      settingsRepo.findOne({ where: {} }).then(setSettings)
+      settingsRepo.findOne({ where: {} }).then(setSettings);
       setRepo.find({ where: { id: In(ids) } }).then((sets) => {
-        setNames(sets.map((set) => set.name).join(', '))
-        setOldReps(sets.map((set) => set.reps).join(', '))
-        setWeights(sets.map((set) => set.weight).join(', '))
-        setUnits(sets.map((set) => set.unit).join(', '))
-      })
-    }, [ids]),
-  )
+        setNames(sets.map((set) => set.name).join(", "));
+        setOldReps(sets.map((set) => set.reps).join(", "));
+        setWeights(sets.map((set) => set.weight).join(", "));
+        setUnits(sets.map((set) => set.unit).join(", "));
+      });
+    }, [ids])
+  );
 
   const handleSubmit = async () => {
-    console.log(`${EditSets.name}.handleSubmit:`, { uri: newImage, name })
-    const update: Partial<GymSet> = {}
-    if (name) update.name = name
-    if (reps) update.reps = Number(reps)
-    if (weight) update.weight = Number(weight)
-    if (unit) update.unit = unit
-    if (newImage) update.image = newImage
-    if (Object.keys(update).length > 0) await setRepo.update(ids, update)
-    navigation.goBack()
-  }
+    console.log(`${EditSets.name}.handleSubmit:`, { uri: newImage, name });
+    const update: Partial<GymSet> = {};
+    if (name) update.name = name;
+    if (reps) update.reps = Number(reps);
+    if (weight) update.weight = Number(weight);
+    if (unit) update.unit = unit;
+    if (newImage) update.image = newImage;
+    if (Object.keys(update).length > 0) await setRepo.update(ids, update);
+    navigation.goBack();
+  };
 
   const changeImage = useCallback(async () => {
     const { fileCopyUri } = await DocumentPicker.pickSingle({
       type: DocumentPicker.types.images,
-      copyTo: 'documentDirectory',
-    })
-    if (fileCopyUri) setNewImage(fileCopyUri)
-  }, [])
+      copyTo: "documentDirectory",
+    });
+    if (fileCopyUri) setNewImage(fileCopyUri);
+  }, []);
 
   const handleRemove = useCallback(async () => {
-    setNewImage('')
-    setShowRemove(false)
-  }, [])
+    setNewImage("");
+    setShowRemove(false);
+  }, []);
 
   return (
     <>
@@ -91,7 +91,7 @@ export default function EditSets() {
 
         <AppInput
           label={`Reps: ${oldReps}`}
-          keyboardType='numeric'
+          keyboardType="numeric"
           value={reps}
           onChangeText={setReps}
           selection={selection}
@@ -101,7 +101,7 @@ export default function EditSets() {
 
         <AppInput
           label={`Weights: ${weights}`}
-          keyboardType='numeric'
+          keyboardType="numeric"
           value={weight}
           onChangeText={setWeight}
           onSubmitEditing={handleSubmit}
@@ -109,7 +109,7 @@ export default function EditSets() {
 
         {settings.showUnit && (
           <AppInput
-            autoCapitalize='none'
+            autoCapitalize="none"
             label={`Units: ${units}`}
             value={unit}
             onChangeText={setUnit}
@@ -126,7 +126,7 @@ export default function EditSets() {
           </TouchableRipple>
         )}
         <ConfirmDialog
-          title='Remove image'
+          title="Remove image"
           onOk={handleRemove}
           show={showRemove}
           setShow={setShowRemove}
@@ -138,7 +138,7 @@ export default function EditSets() {
           <Button
             style={{ marginBottom: MARGIN }}
             onPress={changeImage}
-            icon='add-photo-alternate'
+            icon="add-photo-alternate"
           >
             Image
           </Button>
@@ -146,13 +146,13 @@ export default function EditSets() {
       </View>
 
       <Button
-        mode='outlined'
-        icon='save'
+        mode="outlined"
+        icon="save"
         style={{ margin: MARGIN }}
         onPress={handleSubmit}
       >
         Save
       </Button>
     </>
-  )
+  );
 }

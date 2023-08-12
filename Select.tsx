@@ -1,12 +1,12 @@
-import React, { useCallback, useMemo, useState } from 'react'
-import { View } from 'react-native'
-import { Button, Menu, Subheading } from 'react-native-paper'
-import { ITEM_PADDING } from './constants'
+import React, { useCallback, useMemo, useState } from "react";
+import { View } from "react-native";
+import { Button, Menu, Subheading } from "react-native-paper";
+import { ITEM_PADDING } from "./constants";
 
 export interface Item {
-  value: string
-  label: string
-  color?: string
+  value: string;
+  label: string;
+  color?: string;
 }
 
 function Select({
@@ -15,31 +15,31 @@ function Select({
   items,
   label,
 }: {
-  value: string
-  onChange: (value: string) => void
-  items: Item[]
-  label?: string
+  value: string;
+  onChange: (value: string) => void;
+  items: Item[];
+  label?: string;
 }) {
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false);
 
   const selected = useMemo(
     () => items.find((item) => item.value === value) || items[0],
-    [items, value],
-  )
+    [items, value]
+  );
 
   const handlePress = useCallback(
     (newValue: string) => {
-      onChange(newValue)
-      setShow(false)
+      onChange(newValue);
+      setShow(false);
     },
-    [onChange],
-  )
+    [onChange]
+  );
 
   return (
     <View
       style={{
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         paddingLeft: ITEM_PADDING,
       }}
     >
@@ -51,7 +51,7 @@ function Select({
           <Button
             onPress={() => setShow(true)}
             style={{
-              alignSelf: 'flex-start',
+              alignSelf: "flex-start",
             }}
           >
             {selected?.label}
@@ -68,7 +68,7 @@ function Select({
         ))}
       </Menu>
     </View>
-  )
+  );
 }
 
-export default React.memo(Select)
+export default React.memo(Select);
