@@ -45,18 +45,30 @@ export default function StartPlan() {
     const questions = workouts
       .map((workout, index) => `('${workout}',${index})`)
       .join(",");
-    const select = `
-      SELECT workouts.name, COUNT(sets.id) as total, sets.sets
-      FROM (select 0 as name, 0 as sequence union values ${questions}) as workouts 
-      LEFT JOIN sets ON sets.name = workouts.name 
-        AND sets.created LIKE STRFTIME('%Y-%m-%d%%', 'now', 'localtime')
-        AND NOT sets.hidden
-      GROUP BY workouts.name
-      ORDER BY workouts.sequence
-      LIMIT -1
-      OFFSET 1
-    `;
-    const newCounts = await AppDataSource.manager.query(select);
+    const newCounts = await AppDataSource.manager
+      .createQueryBuilder()
+      .select("workouts.name")
+      .addSelect("COUNT(sets.id)", "total")
+      .addSelect("sets.sets")
+      .from((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select("0", "name")
+          .addSelect("0", "sequence")
+          .from("workouts", "workouts")
+          .getQuery();
+        return `(${subQuery} UNION ALL values ${questions})`;
+      }, "workouts")
+      .leftJoin(
+        "sets",
+        "sets",
+        "sets.name = workouts.name AND sets.created LIKE STRFTIME('%Y-%m-%d%%', 'now', 'localtime') AND NOT sets.hidden"
+      )
+      .groupBy("workouts.name")
+      .orderBy("workouts.sequence")
+      .limit(-1)
+      .offset(1)
+      .getRawMany();
     console.log(`${StartPlan.name}.focus:`, { newCounts });
     setCounts(newCounts);
   }, [workouts]);
