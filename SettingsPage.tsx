@@ -244,13 +244,13 @@ export default function SettingsPage() {
   }, [settings, darkColor, formatOptions, theme, lightColor]);
 
   const renderSelect = useCallback(
-    (item: Input<string>) => (
+    (input: Input<string>) => (
       <Select
-        key={item.name}
-        value={item.value}
-        onChange={(value) => changeString(item.key, value)}
-        label={item.name}
-        items={item.items}
+        key={input.name}
+        value={input.value}
+        onChange={(value) => changeString(input.key, value)}
+        label={input.name}
+        items={input.items}
       />
     ),
     [changeString]
