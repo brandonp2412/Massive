@@ -6,6 +6,7 @@ import {
 import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
 import { List } from "react-native-paper";
+import { LIMIT } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import GymSet from "./gym-set";
@@ -14,8 +15,6 @@ import SetList from "./SetList";
 import Settings from "./settings";
 import WorkoutItem from "./WorkoutItem";
 import { WorkoutsPageParams } from "./WorkoutsPage";
-
-const limit = 15;
 
 export default function WorkoutList() {
   const [workouts, setWorkouts] = useState<GymSet[]>();
@@ -32,7 +31,7 @@ export default function WorkoutList() {
       .where("name LIKE :name", { name: `%${value.trim()}%` })
       .groupBy("name")
       .orderBy("name")
-      .limit(limit)
+      .limit(LIMIT)
       .getMany();
     console.log(`${WorkoutList.name}`, { newWorkout: newWorkouts[0] });
     setWorkouts(newWorkouts);
@@ -61,10 +60,10 @@ export default function WorkoutList() {
 
   const next = useCallback(async () => {
     if (end) return;
-    const newOffset = offset + limit;
+    const newOffset = offset + LIMIT;
     console.log(`${SetList.name}.next:`, {
       offset,
-      limit,
+      limit: LIMIT,
       newOffset,
       term,
     });
@@ -74,13 +73,13 @@ export default function WorkoutList() {
       .where("name LIKE :name", { name: `%${term.trim()}%` })
       .groupBy("name")
       .orderBy("name")
-      .limit(limit)
+      .limit(LIMIT)
       .offset(newOffset)
       .getMany();
     if (newWorkouts.length === 0) return setEnd(true);
     if (!workouts) return;
     setWorkouts([...workouts, ...newWorkouts]);
-    if (newWorkouts.length < limit) return setEnd(true);
+    if (newWorkouts.length < LIMIT) return setEnd(true);
     setOffset(newOffset);
   }, [term, end, offset, workouts]);
 

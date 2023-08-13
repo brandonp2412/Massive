@@ -6,15 +6,19 @@ import {
 import { useCallback, useState } from "react";
 import { FlatList, Image } from "react-native";
 import { List } from "react-native-paper";
-import { GraphsPageParams } from "./GraphsPage";
-import { setRepo, settingsRepo } from "./db";
+import { getBestSets } from "./best.service";
+import { LIMIT } from "./constants";
+import { settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
+import { GraphsPageParams } from "./GraphsPage";
 import GymSet from "./gym-set";
 import Page from "./Page";
 import Settings from "./settings";
 
 export default function GraphsList() {
-  const [bests, setBests] = useState<GymSet[]>();
+  const [bests, setBests] = useState<GymSet[]>([]);
+  const [offset, setOffset] = useState(0);
+  const [end, setEnd] = useState(false);
   const [term, setTerm] = useState("");
   const navigation = useNavigation<NavigationProp<GraphsPageParams>>();
   const [settings, setSettings] = useState<Settings>();
@@ -26,22 +30,9 @@ export default function GraphsList() {
   );
 
   const refresh = useCallback(async (value: string) => {
-    const result = await setRepo
-      .createQueryBuilder("gym_set")
-      .select(["gym_set.name", "gym_set.reps", "gym_set.weight"])
-      .groupBy("gym_set.name")
-      .innerJoin(
-        (qb) =>
-          qb
-            .select(["gym_set2.name", "MAX(gym_set2.weight) AS max_weight"])
-            .from(GymSet, "gym_set2")
-            .where("gym_set2.name LIKE (:name)", { name: `%${value.trim()}%` })
-            .groupBy("gym_set2.name"),
-        "subquery",
-        "gym_set.name = subquery.gym_set2_name AND gym_set.weight = subquery.max_weight"
-      )
-      .getMany();
+    const result = await getBestSets({ term: value, offset: 0 });
     setBests(result);
+    setOffset(0);
   }, []);
 
   useFocusEffect(
@@ -49,6 +40,18 @@ export default function GraphsList() {
       refresh(term);
     }, [refresh, term])
   );
+
+  const next = useCallback(async () => {
+    if (end) return;
+    const newOffset = offset + LIMIT;
+    console.log(`${GraphsList.name}.next:`, { offset, newOffset, term });
+    const newBests = await getBestSets({ term, offset });
+    if (newBests.length === 0) return setEnd(true);
+    if (!bests) return;
+    setBests([...bests, ...newBests]);
+    if (newBests.length < LIMIT) return setEnd(true);
+    setOffset(newOffset);
+  }, [term, end, offset, bests]);
 
   const search = useCallback(
     (value: string) => {
@@ -86,7 +89,12 @@ export default function GraphsList() {
             description="Once sets have been added, this will highlight your personal bests."
           />
         ) : (
-          <FlatList style={{ flex: 1 }} renderItem={renderItem} data={bests} />
+          <FlatList
+            style={{ flex: 1 }}
+            renderItem={renderItem}
+            data={bests}
+            onEndReached={next}
+          />
         )}
       </Page>
     </>

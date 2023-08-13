@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
+import { LIMIT } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import GymSet, { defaultSet } from "./gym-set";
@@ -15,8 +16,6 @@ import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetItem from "./SetItem";
 import Settings from "./settings";
-
-const limit = 15;
 
 export default function SetList() {
   const [sets, setSets] = useState<GymSet[]>([]);
@@ -30,11 +29,11 @@ export default function SetList() {
   const refresh = useCallback(async (value: string) => {
     const newSets = await setRepo.find({
       where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
-      take: limit,
+      take: LIMIT,
       skip: 0,
       order: { created: "DESC" },
     });
-    console.log(`${SetList.name}.refresh:`, { value, limit });
+    console.log(`${SetList.name}.refresh:`, { value });
     setSets(newSets);
     setOffset(0);
     setEnd(false);
@@ -63,18 +62,18 @@ export default function SetList() {
 
   const next = useCallback(async () => {
     if (end) return;
-    const newOffset = offset + limit;
+    const newOffset = offset + LIMIT;
     console.log(`${SetList.name}.next:`, { offset, newOffset, term });
     const newSets = await setRepo.find({
       where: { name: Like(`%${term}%`), hidden: 0 as any },
-      take: limit,
+      take: LIMIT,
       skip: newOffset,
       order: { created: "DESC" },
     });
     if (newSets.length === 0) return setEnd(true);
     if (!sets) return;
     setSets([...sets, ...newSets]);
-    if (newSets.length < limit) return setEnd(true);
+    if (newSets.length < LIMIT) return setEnd(true);
     setOffset(newOffset);
   }, [term, end, offset, sets]);
 
