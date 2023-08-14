@@ -10,7 +10,7 @@ import { FlatList, NativeModules, TextInput, View } from "react-native";
 import { Button, IconButton, ProgressBar } from "react-native-paper";
 import AppInput from "./AppInput";
 import { getBestSet } from "./best.service";
-import { PADDING } from "./constants";
+import { MARGIN, PADDING } from "./constants";
 import CountMany from "./count-many";
 import { AppDataSource } from "./data-source";
 import { getNow, setRepo, settingsRepo } from "./db";
@@ -126,35 +126,69 @@ export default function StartPlan() {
       </StackHeader>
       <View style={{ padding: PADDING, flex: 1, flexDirection: "column" }}>
         <View style={{ flex: 1 }}>
-          <AppInput
-            label="Reps"
-            keyboardType="numeric"
-            value={reps}
-            onChangeText={(newReps) => {
-              const fixed = fixNumeric(newReps);
-              setReps(fixed);
-              if (fixed.length !== newReps.length)
-                toast("Reps must be a number");
+          <View
+            style={{
+              flexDirection: "row",
+              marginBottom: MARGIN,
             }}
-            onSubmitEditing={() => weightRef.current?.focus()}
-            selection={selection}
-            onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
-            innerRef={repsRef}
-          />
-          <AppInput
-            label="Weight"
-            keyboardType="numeric"
-            value={weight}
-            onChangeText={(newWeight) => {
-              const fixed = fixNumeric(newWeight);
-              setWeight(fixed);
-              if (fixed.length !== newWeight.length)
-                toast("Weight must be a number");
+          >
+            <AppInput
+              label="Reps"
+              style={{ flex: 1 }}
+              keyboardType="numeric"
+              value={reps}
+              onChangeText={(newReps) => {
+                const fixed = fixNumeric(newReps);
+                setReps(fixed);
+                if (fixed.length !== newReps.length)
+                  toast("Reps must be a number");
+              }}
+              onSubmitEditing={() => weightRef.current?.focus()}
+              selection={selection}
+              onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
+              innerRef={repsRef}
+            />
+            <IconButton
+              icon="add"
+              onPress={() => setReps((Number(reps) + 1).toString())}
+            />
+            <IconButton
+              icon="remove"
+              onPress={() => setReps((Number(reps) - 1).toString())}
+            />
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              marginBottom: MARGIN,
             }}
-            onSubmitEditing={handleSubmit}
-            innerRef={weightRef}
-            blurOnSubmit
-          />
+          >
+            <AppInput
+              label="Weight"
+              style={{ flex: 1 }}
+              keyboardType="numeric"
+              value={weight}
+              onChangeText={(newWeight) => {
+                const fixed = fixNumeric(newWeight);
+                setWeight(fixed);
+                if (fixed.length !== newWeight.length)
+                  toast("Weight must be a number");
+              }}
+              onSubmitEditing={handleSubmit}
+              innerRef={weightRef}
+              blurOnSubmit
+            />
+            <IconButton
+              icon="add"
+              onPress={() => setWeight((Number(weight) + 2.5).toString())}
+            />
+            <IconButton
+              icon="remove"
+              onPress={() => setWeight((Number(weight) - 2.5).toString())}
+            />
+          </View>
+
           {settings?.showUnit && (
             <AppInput
               autoCapitalize="none"

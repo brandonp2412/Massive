@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import { useCallback, useRef, useState } from "react";
 import { NativeModules, TextInput, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
-import { Button, Card, TouchableRipple } from "react-native-paper";
+import { Button, Card, IconButton, TouchableRipple } from "react-native-paper";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
@@ -155,34 +155,65 @@ export default function EditSet() {
           onSubmitEditing={() => repsRef.current?.focus()}
         />
 
-        <AppInput
-          label="Reps"
-          keyboardType="numeric"
-          value={reps}
-          onChangeText={(newReps) => {
-            const fixed = fixNumeric(newReps);
-            setReps(fixed);
-            if (fixed.length !== newReps.length) toast("Reps must be a number");
-          }}
-          onSubmitEditing={() => weightRef.current?.focus()}
-          selection={selection}
-          onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
-          innerRef={repsRef}
-        />
+        <View style={{ flexDirection: "row" }}>
+          <AppInput
+            style={{
+              flex: 1,
+              marginBottom: MARGIN,
+            }}
+            label="Reps"
+            keyboardType="numeric"
+            value={reps}
+            onChangeText={(newReps) => {
+              const fixed = fixNumeric(newReps);
+              setReps(fixed);
+              if (fixed.length !== newReps.length)
+                toast("Reps must be a number");
+            }}
+            onSubmitEditing={() => weightRef.current?.focus()}
+            selection={selection}
+            onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
+            innerRef={repsRef}
+          />
+          <IconButton
+            icon="add"
+            onPress={() => setReps((Number(reps) + 1).toString())}
+          />
+          <IconButton
+            icon="remove"
+            onPress={() => setReps((Number(reps) - 1).toString())}
+          />
+        </View>
 
-        <AppInput
-          label="Weight"
-          keyboardType="numeric"
-          value={weight}
-          onChangeText={(newWeight) => {
-            const fixed = fixNumeric(newWeight);
-            setWeight(fixed);
-            if (fixed.length !== newWeight.length)
-              toast("Weight must be a number");
+        <View
+          style={{
+            flexDirection: "row",
+            marginBottom: MARGIN,
           }}
-          onSubmitEditing={handleSubmit}
-          innerRef={weightRef}
-        />
+        >
+          <AppInput
+            style={{ flex: 1 }}
+            label="Weight"
+            keyboardType="numeric"
+            value={weight}
+            onChangeText={(newWeight) => {
+              const fixed = fixNumeric(newWeight);
+              setWeight(fixed);
+              if (fixed.length !== newWeight.length)
+                toast("Weight must be a number");
+            }}
+            onSubmitEditing={handleSubmit}
+            innerRef={weightRef}
+          />
+          <IconButton
+            icon="add"
+            onPress={() => setWeight((Number(weight) + 2.5).toString())}
+          />
+          <IconButton
+            icon="remove"
+            onPress={() => setWeight((Number(weight) - 2.5).toString())}
+          />
+        </View>
 
         {settings.showUnit && (
           <AppInput
