@@ -8,6 +8,7 @@ import { useCallback, useRef, useState } from "react";
 import { ScrollView, TextInput, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Button, Card, TouchableRipple } from "react-native-paper";
+import { In } from "typeorm";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
@@ -19,20 +20,22 @@ import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 import { WorkoutsPageParams } from "./WorkoutsPage";
 
-export default function EditWorkout() {
-  const { params } = useRoute<RouteProp<WorkoutsPageParams, "EditWorkout">>();
+export default function EditWorkouts() {
+  const { params } = useRoute<RouteProp<WorkoutsPageParams, "EditWorkouts">>();
   const [removeImage, setRemoveImage] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
-  const [name, setName] = useState(params.gymSet.name);
-  const [steps, setSteps] = useState(params.gymSet.steps);
-  const [uri, setUri] = useState(params.gymSet.image);
-  const [minutes, setMinutes] = useState(
-    params.gymSet.minutes?.toString() ?? "3"
-  );
-  const [seconds, setSeconds] = useState(
-    params.gymSet.seconds?.toString() ?? "30"
-  );
-  const [sets, setSets] = useState(params.gymSet.sets?.toString() ?? "3");
+  const [name, setName] = useState("");
+  const [oldNames, setOldNames] = useState(params.names.join(", "));
+  const [steps, setSteps] = useState("");
+  const [oldSteps, setOldSteps] = useState("");
+  const [uri, setUri] = useState("");
+  const [oldUri, setOldUri] = useState("");
+  const [minutes, setMinutes] = useState("");
+  const [oldMinutes, setOldMinutes] = useState("");
+  const [seconds, setSeconds] = useState("");
+  const [oldSeconds, setOldSeconds] = useState("");
+  const [sets, setSets] = useState("");
+  const [oldSets, setOldSets] = useState("");
   const navigation = useNavigation();
   const setsRef = useRef<TextInput>(null);
   const stepsRef = useRef<TextInput>(null);
@@ -43,27 +46,41 @@ export default function EditWorkout() {
   useFocusEffect(
     useCallback(() => {
       settingsRepo.findOne({ where: {} }).then(setSettings);
-    }, [])
+      setRepo
+        .createQueryBuilder()
+        .select()
+        .where("name IN (:...names)", { names: params.names })
+        .groupBy("name")
+        .getMany()
+        .then((gymSets) => {
+          console.log({ gymSets });
+          setOldNames(gymSets.map((set) => set.name).join(", "));
+          setOldSteps(gymSets.map((set) => set.steps).join(", "));
+          setOldUri(gymSets.map((set) => set.steps).join(", "));
+        });
+    }, [params.names])
   );
 
   const update = async () => {
     await setRepo.update(
-      { name: params.gymSet.name },
+      { name: In(params.names) },
       {
-        name: name || params.gymSet.name,
-        sets: Number(sets),
-        minutes: +minutes,
-        seconds: +seconds,
-        steps,
+        name: name || undefined,
+        sets: sets ? Number(sets) : undefined,
+        minutes: minutes ? Number(minutes) : undefined,
+        seconds: seconds ? Number(seconds) : undefined,
+        steps: steps || undefined,
         image: removeImage ? "" : uri,
       }
     );
-    await planRepo.query(
-      `UPDATE plans 
-       SET workouts = REPLACE(workouts, $1, $2) 
-       WHERE workouts LIKE $3`,
-      [params.gymSet.name, name, `%${params.gymSet.name}%`]
-    );
+    await planRepo
+      .createQueryBuilder()
+      .update()
+      .set({
+        workouts: () => `REPLACE(workouts, '${params.gymSet.name}', '${name}')`,
+      })
+      .where("workouts LIKE :name", { name: `%${params.gymSet.name}%` })
+      .execute();
     navigation.goBack();
   };
 

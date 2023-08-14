@@ -52,12 +52,11 @@ export default function SetList() {
         settings={settings}
         item={item}
         key={item.id}
-        onRemove={() => refresh(term)}
         ids={ids}
         setIds={setIds}
       />
     ),
-    [refresh, term, settings, ids]
+    [settings, ids]
   );
 
   const next = useCallback(async () => {

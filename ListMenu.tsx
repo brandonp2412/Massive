@@ -11,11 +11,11 @@ export default function ListMenu({
   ids,
 }: {
   onEdit: () => void;
-  onCopy: () => void;
+  onCopy?: () => void;
   onClear: () => void;
   onDelete: () => void;
   onSelect: () => void;
-  ids?: number[];
+  ids?: unknown[];
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
@@ -64,12 +64,14 @@ export default function ListMenu({
         onPress={edit}
         disabled={ids?.length === 0}
       />
-      <Menu.Item
-        leadingIcon="content-copy"
-        title="Copy"
-        onPress={copy}
-        disabled={ids?.length === 0}
-      />
+      {onCopy && (
+        <Menu.Item
+          leadingIcon="content-copy"
+          title="Copy"
+          onPress={copy}
+          disabled={ids?.length === 0}
+        />
+      )}
       <Divider />
       <Menu.Item
         leadingIcon="delete"

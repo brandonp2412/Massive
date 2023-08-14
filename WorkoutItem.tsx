@@ -1,39 +1,26 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { useCallback, useMemo, useState } from "react";
-import { GestureResponderEvent, Image } from "react-native";
-import { List, Menu, Text } from "react-native-paper";
-import ConfirmDialog from "./ConfirmDialog";
-import { setRepo } from "./db";
+import { useCallback, useMemo } from "react";
+import { Image } from "react-native";
+import { List } from "react-native-paper";
+import { DARK_RIPPLE } from "./constants";
+import { LIGHT_RIPPLE } from "./constants";
 import GymSet from "./gym-set";
+import useDark from "./use-dark";
 import { WorkoutsPageParams } from "./WorkoutsPage";
 
 export default function WorkoutItem({
   item,
-  onRemove,
+  setNames,
+  names,
   images,
 }: {
   item: GymSet;
-  onRemove: () => void;
   images: boolean;
+  setNames: (value: string[]) => void;
+  names: string[];
 }) {
-  const [showMenu, setShowMenu] = useState(false);
-  const [anchor, setAnchor] = useState({ x: 0, y: 0 });
-  const [showRemove, setShowRemove] = useState("");
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
-
-  const remove = useCallback(async () => {
-    await setRepo.delete({ name: item.name });
-    setShowMenu(false);
-    onRemove();
-  }, [setShowMenu, onRemove, item.name]);
-
-  const longPress = useCallback(
-    (e: GestureResponderEvent) => {
-      setAnchor({ x: e.nativeEvent.pageX, y: e.nativeEvent.pageY });
-      setShowMenu(true);
-    },
-    [setShowMenu, setAnchor]
-  );
+  const dark = useDark();
 
   const description = useMemo(() => {
     const seconds = item.seconds?.toString().padStart(2, "0");
@@ -47,50 +34,33 @@ export default function WorkoutItem({
     );
   }, [item.image, images]);
 
-  const right = useCallback(() => {
-    return (
-      <Text
-        style={{
-          alignSelf: "center",
-        }}
-      >
-        <Menu
-          anchor={anchor}
-          visible={showMenu}
-          onDismiss={() => setShowMenu(false)}
-        >
-          <Menu.Item
-            leadingIcon="delete"
-            onPress={() => {
-              setShowRemove(item.name);
-              setShowMenu(false);
-            }}
-            title="Delete"
-          />
-        </Menu>
-      </Text>
-    );
-  }, [anchor, showMenu, item.name]);
+  const long = useCallback(() => {
+    if (names.length > 0) return;
+    setNames([item.name]);
+  }, [names.length, item.name, setNames]);
+
+  const backgroundColor = useMemo(() => {
+    if (!names.includes(item.name)) return;
+    if (dark) return DARK_RIPPLE;
+    return LIGHT_RIPPLE;
+  }, [dark, names, item.name]);
+
+  const press = useCallback(() => {
+    if (names.length === 0)
+      return navigation.navigate("EditWorkout", { gymSet: item });
+    const removing = names.find((name) => name === item.name);
+    if (removing) setNames(names.filter((name) => name !== item.name));
+    else setNames([...names, item.name]);
+  }, [names, item, navigation, setNames]);
 
   return (
-    <>
-      <List.Item
-        onPress={() => navigation.navigate("EditWorkout", { value: item })}
-        title={item.name}
-        description={description}
-        onLongPress={longPress}
-        left={left}
-        right={right}
-      />
-      <ConfirmDialog
-        title={`Delete ${showRemove}`}
-        show={!!showRemove}
-        setShow={(show) => (show ? null : setShowRemove(""))}
-        onOk={remove}
-      >
-        This irreversibly deletes ALL sets related to this workout. Are you
-        sure?
-      </ConfirmDialog>
-    </>
+    <List.Item
+      onPress={press}
+      title={item.name}
+      description={description}
+      onLongPress={long}
+      left={left}
+      style={{ backgroundColor }}
+    />
   );
 }

@@ -10,6 +10,7 @@ import { LIMIT } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import GymSet from "./gym-set";
+import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetList from "./SetList";
 import Settings from "./settings";
@@ -22,6 +23,7 @@ export default function WorkoutList() {
   const [term, setTerm] = useState("");
   const [end, setEnd] = useState(false);
   const [settings, setSettings] = useState<Settings>();
+  const [names, setNames] = useState<string[]>([]);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
 
   const refresh = useCallback(async (value: string) => {
@@ -52,13 +54,14 @@ export default function WorkoutList() {
         images={settings?.images}
         item={item}
         key={item.name}
-        onRemove={() => refresh(term)}
+        names={names}
+        setNames={setNames}
       />
     ),
-    [refresh, term, settings?.images]
+    [settings?.images, names]
   );
 
-  const next = useCallback(async () => {
+  const next = async () => {
     if (end) return;
     const newOffset = offset + LIMIT;
     console.log(`${SetList.name}.next:`, {
@@ -81,11 +84,11 @@ export default function WorkoutList() {
     setWorkouts([...workouts, ...newWorkouts]);
     if (newWorkouts.length < LIMIT) return setEnd(true);
     setOffset(newOffset);
-  }, [term, end, offset, workouts]);
+  };
 
   const onAdd = useCallback(async () => {
     navigation.navigate("EditWorkout", {
-      value: new GymSet(),
+      gymSet: new GymSet(),
     });
   }, [navigation]);
 
@@ -97,9 +100,33 @@ export default function WorkoutList() {
     [refresh]
   );
 
+  const clear = useCallback(() => {
+    setNames([]);
+  }, []);
+
+  const remove = async () => {
+    setNames([]);
+    await setRepo.delete(names.length > 0 ? names : {});
+    await refresh(term);
+  };
+
+  const select = () => {
+    setNames(workouts.map((workout) => workout.name));
+  };
+
+  const edit = useCallback(() => {}, []);
+
   return (
     <>
-      <DrawerHeader name="Workouts" />
+      <DrawerHeader name="Workouts">
+        <ListMenu
+          onClear={clear}
+          onDelete={remove}
+          onEdit={edit}
+          ids={names}
+          onSelect={select}
+        />
+      </DrawerHeader>
       <Page onAdd={onAdd} term={term} search={search}>
         {workouts?.length === 0 ? (
           <List.Item

@@ -6,7 +6,10 @@ import WorkoutList from "./WorkoutList";
 export type WorkoutsPageParams = {
   WorkoutList: {};
   EditWorkout: {
-    value: GymSet;
+    gymSet: GymSet;
+  };
+  EditWorkouts: {
+    names: string[];
   };
 };
 

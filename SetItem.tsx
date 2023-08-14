@@ -16,7 +16,6 @@ export default function SetItem({
   setIds,
 }: {
   item: GymSet;
-  onRemove: () => void;
   settings: Settings;
   ids: number[];
   setIds: (value: number[]) => void;
