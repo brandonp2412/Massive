@@ -1,11 +1,14 @@
 import {
   NavigationProp,
+  RouteProp,
   useFocusEffect,
   useNavigation,
+  useRoute,
 } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
 import { List } from "react-native-paper";
+import { In } from "typeorm";
 import { LIMIT } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
@@ -25,6 +28,7 @@ export default function WorkoutList() {
   const [settings, setSettings] = useState<Settings>();
   const [names, setNames] = useState<string[]>([]);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
+  const { params } = useRoute<RouteProp<WorkoutsPageParams, "WorkoutList">>();
 
   const refresh = useCallback(async (value: string) => {
     const newWorkouts = await setRepo
@@ -45,7 +49,8 @@ export default function WorkoutList() {
     useCallback(() => {
       refresh(term);
       settingsRepo.findOne({ where: {} }).then(setSettings);
-    }, [refresh, term])
+      if (params?.clearNames) setNames([]);
+    }, [refresh, term, params])
   );
 
   const renderItem = useCallback(
@@ -106,7 +111,7 @@ export default function WorkoutList() {
 
   const remove = async () => {
     setNames([]);
-    await setRepo.delete(names.length > 0 ? names : {});
+    if (names.length > 0) await setRepo.delete({ name: In(names) });
     await refresh(term);
   };
 
@@ -114,11 +119,15 @@ export default function WorkoutList() {
     setNames(workouts.map((workout) => workout.name));
   };
 
-  const edit = useCallback(() => {}, []);
+  const edit = () => {
+    navigation.navigate("EditWorkouts", { names });
+  };
 
   return (
     <>
-      <DrawerHeader name="Workouts">
+      <DrawerHeader
+        name={names.length > 0 ? `${names.length} selected` : "Workouts"}
+      >
         <ListMenu
           onClear={clear}
           onDelete={remove}
@@ -131,7 +140,7 @@ export default function WorkoutList() {
         {workouts?.length === 0 ? (
           <List.Item
             title="No workouts yet."
-            description="A workout is something you do at the gym. For example Deadlifts are a workout."
+            description="A workout is something you do at the gym. E.g. Deadlifts"
           />
         ) : (
           <FlatList

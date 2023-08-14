@@ -25,7 +25,7 @@ export default function WorkoutItem({
   const description = useMemo(() => {
     const seconds = item.seconds?.toString().padStart(2, "0");
     return `${item.sets} x ${item.minutes || 0}:${seconds}`;
-  }, [item]);
+  }, [item.sets, item.minutes, item.seconds]);
 
   const left = useCallback(() => {
     if (!images || !item.image) return null;
@@ -34,10 +34,10 @@ export default function WorkoutItem({
     );
   }, [item.image, images]);
 
-  const long = useCallback(() => {
+  const long = () => {
     if (names.length > 0) return;
     setNames([item.name]);
-  }, [names.length, item.name, setNames]);
+  };
 
   const backgroundColor = useMemo(() => {
     if (!names.includes(item.name)) return;
@@ -45,13 +45,14 @@ export default function WorkoutItem({
     return LIGHT_RIPPLE;
   }, [dark, names, item.name]);
 
-  const press = useCallback(() => {
+  const press = () => {
+    console.log({ names });
     if (names.length === 0)
       return navigation.navigate("EditWorkout", { gymSet: item });
     const removing = names.find((name) => name === item.name);
     if (removing) setNames(names.filter((name) => name !== item.name));
     else setNames([...names, item.name]);
-  }, [names, item, navigation, setNames]);
+  };
 
   return (
     <List.Item
