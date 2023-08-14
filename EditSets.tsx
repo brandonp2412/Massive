@@ -7,7 +7,7 @@ import {
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
-import { Button, Card, TouchableRipple } from "react-native-paper";
+import { Button, Card, IconButton, TouchableRipple } from "react-native-paper";
 import { In } from "typeorm";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
@@ -89,23 +89,57 @@ export default function EditSets() {
           autoFocus={!name}
         />
 
-        <AppInput
-          label={`Reps: ${oldReps}`}
-          keyboardType="numeric"
-          value={reps}
-          onChangeText={setReps}
-          selection={selection}
-          onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
-          autoFocus={!!name}
-        />
+        <View
+          style={{
+            flexDirection: "row",
+            marginBottom: MARGIN,
+          }}
+        >
+          <AppInput
+            style={{
+              flex: 1,
+            }}
+            label={`Reps: ${oldReps}`}
+            keyboardType="numeric"
+            value={reps}
+            onChangeText={setReps}
+            selection={selection}
+            onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
+            autoFocus={!!name}
+          />
+          <IconButton
+            icon="add"
+            onPress={() => setReps((Number(reps) + 1).toString())}
+          />
+          <IconButton
+            icon="remove"
+            onPress={() => setReps((Number(reps) - 1).toString())}
+          />
+        </View>
 
-        <AppInput
-          label={`Weights: ${weights}`}
-          keyboardType="numeric"
-          value={weight}
-          onChangeText={setWeight}
-          onSubmitEditing={handleSubmit}
-        />
+        <View
+          style={{
+            flexDirection: "row",
+            marginBottom: MARGIN,
+          }}
+        >
+          <AppInput
+            style={{ flex: 1 }}
+            label={`Weights: ${weights}`}
+            keyboardType="numeric"
+            value={weight}
+            onChangeText={setWeight}
+            onSubmitEditing={handleSubmit}
+          />
+          <IconButton
+            icon="add"
+            onPress={() => setWeight((Number(weight) + 2.5).toString())}
+          />
+          <IconButton
+            icon="remove"
+            onPress={() => setWeight((Number(weight) - 2.5).toString())}
+          />
+        </View>
 
         {settings.showUnit && (
           <AppInput
