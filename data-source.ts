@@ -25,6 +25,7 @@ import { addNoSound1667186456118 } from "./migrations/1667186456118-add-no-sound
 import { dropMigrations1667190214743 } from "./migrations/1667190214743-drop-migrations";
 import { splitColor1669420187764 } from "./migrations/1669420187764-split-color";
 import { addBackup1678334268359 } from "./migrations/1678334268359-add-backup";
+import { planTitle1692654882408 } from "./migrations/1692654882408-plan-title";
 import { Plan } from "./plan";
 import Settings from "./settings";
 
@@ -61,5 +62,6 @@ export const AppDataSource = new DataSource({
     dropMigrations1667190214743,
     splitColor1669420187764,
     addBackup1678334268359,
+    planTitle1692654882408,
   ],
 });
