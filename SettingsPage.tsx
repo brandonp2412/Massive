@@ -16,7 +16,7 @@ import { darkOptions, lightOptions, themeOptions } from "./options";
 import Page from "./Page";
 import Select from "./Select";
 import SettingButton from "./SettingButton";
-import Settings from "./settings";
+import Settings, { settingsUpdated } from "./settings";
 import Switch from "./Switch";
 import { toast } from "./toast";
 import { useTheme } from "./use-theme";
@@ -71,13 +71,14 @@ export default function SettingsPage() {
     });
   }, []);
 
-  const update = useCallback((key: keyof Settings, value: unknown) => {
-    return settingsRepo
+  const update = useCallback(async (key: keyof Settings, value: unknown) => {
+    await settingsRepo
       .createQueryBuilder()
       .update()
       .set({ [key]: value })
       .printSql()
       .execute();
+    settingsUpdated();
   }, []);
 
   const soundString = useMemo(() => {

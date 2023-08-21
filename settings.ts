@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
+import { DeviceEventEmitter } from "react-native";
 
 @Entity()
 export default class Settings {
@@ -47,3 +48,9 @@ export default class Settings {
   @Column("boolean")
   backup: boolean;
 }
+
+export const SETTINGS = "settings";
+
+export const settingsUpdated = () => {
+  DeviceEventEmitter.emit(SETTINGS);
+};

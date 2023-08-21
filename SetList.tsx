@@ -5,7 +5,7 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList } from "react-native";
+import { DeviceEventEmitter, FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
 import { LIMIT } from "./constants";
@@ -16,7 +16,7 @@ import { HomePageParams } from "./home-page-params";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetItem from "./SetItem";
-import Settings from "./settings";
+import Settings, { SETTINGS } from "./settings";
 
 export default function SetList() {
   const [refreshing, setRefreshing] = useState(false);
@@ -59,6 +59,10 @@ export default function SetList() {
       value: "",
       skip: 0,
     });
+    const description = DeviceEventEmitter.addListener(SETTINGS, () => {
+      settingsRepo.findOne({ where: {} }).then(setSettings);
+    });
+    return description.remove;
     /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 
