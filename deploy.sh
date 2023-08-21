@@ -32,7 +32,7 @@ fi
 
 git add app/build.gradle ../package.json
 git commit --amend --message \
-  "$(git log -1 --pretty=%B | sed " 1 s/.*/& - $major.$minor/")"
+  "$(git log -1 --pretty=%B | sed " 1 s/.*/& - $major.$minor 🚀/")"
 git tag "$versionCode"
 git push origin HEAD
 git push --tags
