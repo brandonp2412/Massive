@@ -1,9 +1,10 @@
 import {
   NavigationProp,
-  useFocusEffect,
+  RouteProp,
   useNavigation,
+  useRoute,
 } from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
@@ -18,33 +19,77 @@ import SetItem from "./SetItem";
 import Settings from "./settings";
 
 export default function SetList() {
+  const [refreshing, setRefreshing] = useState(false);
   const [sets, setSets] = useState<GymSet[]>([]);
   const [offset, setOffset] = useState(0);
-  const [term, setTerm] = useState("");
   const [end, setEnd] = useState(false);
   const [settings, setSettings] = useState<Settings>();
   const [ids, setIds] = useState<number[]>([]);
   const navigation = useNavigation<NavigationProp<HomePageParams>>();
+  const { params } = useRoute<RouteProp<HomePageParams, "Sets">>();
+  const [term, setTerm] = useState(params?.search || "");
 
-  const refresh = useCallback(async (value: string) => {
-    const newSets = await setRepo.find({
-      where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
-      take: LIMIT,
-      skip: 0,
-      order: { created: "DESC" },
-    });
-    console.log(`${SetList.name}.refresh:`, { value });
+  const refresh = async ({
+    value,
+    take,
+    skip,
+  }: {
+    value: string;
+    take: number;
+    skip: number;
+  }) => {
+    setRefreshing(true);
+    const newSets = await setRepo
+      .find({
+        where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
+        take,
+        skip,
+        order: { created: "DESC" },
+      })
+      .finally(() => setRefreshing(false));
+    console.log(`${SetList.name}.refresh:`, { value, take, offset });
     setSets(newSets);
-    setOffset(0);
     setEnd(false);
+  };
+
+  useEffect(() => {
+    settingsRepo.findOne({ where: {} }).then(setSettings);
+    refresh({
+      take: LIMIT,
+      value: "",
+      skip: 0,
+    });
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      refresh(term);
-      settingsRepo.findOne({ where: {} }).then(setSettings);
-    }, [refresh, term])
-  );
+  const search = (value: string) => {
+    setTerm(value);
+    setOffset(0);
+    refresh({
+      skip: 0,
+      take: LIMIT,
+      value,
+    });
+  };
+
+  useEffect(() => {
+    if (!params) return;
+    console.log({ params });
+    if (params.search) search(params.search);
+    else if (params.refresh)
+      refresh({
+        skip: 0,
+        take: offset,
+        value: term,
+      });
+    else if (params.reset)
+      refresh({
+        skip: 0,
+        take: LIMIT,
+        value: term,
+      });
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [params]);
 
   const renderItem = useCallback(
     ({ item }: { item: GymSet }) => (
@@ -59,22 +104,29 @@ export default function SetList() {
     [settings, ids]
   );
 
-  const next = useCallback(async () => {
-    if (end) return;
+  const next = async () => {
+    if (end || refreshing) return;
     const newOffset = offset + LIMIT;
     console.log(`${SetList.name}.next:`, { offset, newOffset, term });
-    const newSets = await setRepo.find({
-      where: { name: Like(`%${term}%`), hidden: 0 as any },
-      take: LIMIT,
-      skip: newOffset,
-      order: { created: "DESC" },
-    });
+    setRefreshing(true);
+    const newSets = await setRepo
+      .find({
+        where: { name: Like(`%${term}%`), hidden: 0 as any },
+        take: LIMIT,
+        skip: newOffset,
+        order: { created: "DESC" },
+      })
+      .finally(() => setRefreshing(false));
     if (newSets.length === 0) return setEnd(true);
     if (!sets) return;
-    setSets([...sets, ...newSets]);
+    const map = new Map<number, GymSet>();
+    for (const set of sets) map.set(set.id, set);
+    for (const set of newSets) map.set(set.id, set);
+    const unique = Array.from(map.values());
+    setSets(unique);
     if (newSets.length < LIMIT) return setEnd(true);
     setOffset(newOffset);
-  }, [term, end, offset, sets]);
+  };
 
   const onAdd = useCallback(async () => {
     const now = await getNow();
@@ -84,14 +136,6 @@ export default function SetList() {
     delete set.id;
     navigation.navigate("EditSet", { set });
   }, [navigation, sets]);
-
-  const search = useCallback(
-    (value: string) => {
-      setTerm(value);
-      refresh(value);
-    },
-    [refresh]
-  );
 
   const edit = useCallback(() => {
     navigation.navigate("EditSets", { ids });
@@ -112,15 +156,46 @@ export default function SetList() {
     setIds([]);
   }, []);
 
-  const remove = useCallback(async () => {
+  const remove = async () => {
     setIds([]);
     await setRepo.delete(ids.length > 0 ? ids : {});
-    await refresh(term);
-  }, [ids, refresh, term]);
+    return refresh({
+      skip: 0,
+      take: LIMIT,
+      value: term,
+    });
+  };
 
   const select = useCallback(() => {
     setIds(sets.map((set) => set.id));
   }, [sets]);
+
+  const content = useMemo(() => {
+    if (!settings) return null;
+    if (sets?.length === 0)
+      return (
+        <List.Item
+          title="No sets yet"
+          description="A set is a group of repetitions. E.g. 8 reps of Squats."
+        />
+      );
+    return (
+      <FlatList
+        data={sets}
+        style={{ flex: 1 }}
+        renderItem={renderItem}
+        onEndReached={next}
+        refreshing={false}
+        onRefresh={() =>
+          refresh({
+            skip: 0,
+            take: LIMIT,
+            value: term,
+          })
+        }
+      />
+    );
+  }, [sets, settings, term]);
 
   return (
     <>
@@ -136,21 +211,7 @@ export default function SetList() {
       </DrawerHeader>
 
       <Page onAdd={onAdd} term={term} search={search}>
-        {sets?.length === 0 ? (
-          <List.Item
-            title="No sets yet"
-            description="A set is a group of repetitions. E.g. 8 reps of Squats."
-          />
-        ) : (
-          settings && (
-            <FlatList
-              data={sets}
-              style={{ flex: 1 }}
-              renderItem={renderItem}
-              onEndReached={next}
-            />
-          )
-        )}
+        {content}
       </Page>
     </>
   );

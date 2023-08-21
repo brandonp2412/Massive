@@ -5,6 +5,7 @@ import { List, Menu, RadioButton, useTheme } from "react-native-paper";
 import { Like } from "typeorm";
 import CountMany from "./count-many";
 import { getNow, setRepo } from "./db";
+import { HomePageParams } from "./home-page-params";
 import { PlanPageParams } from "./plan-page-params";
 import { toast } from "./toast";
 
@@ -20,6 +21,8 @@ export default function StartPlanItem(props: Props) {
   const [anchor, setAnchor] = useState({ x: 0, y: 0 });
   const [showMenu, setShowMenu] = useState(false);
   const { navigate } = useNavigation<NavigationProp<PlanPageParams>>();
+  const { navigate: navigateHome } =
+    useNavigation<NavigationProp<HomePageParams>>();
 
   const undo = useCallback(async () => {
     const now = await getNow();
@@ -62,6 +65,11 @@ export default function StartPlanItem(props: Props) {
     navigate("EditSet", { set: first });
   }, [item.name, navigate]);
 
+  const view = () => {
+    setShowMenu(false);
+    navigateHome("Sets", { search: item.name });
+  };
+
   const left = useCallback(
     () => (
       <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -89,6 +97,7 @@ export default function StartPlanItem(props: Props) {
           visible={showMenu}
           onDismiss={() => setShowMenu(false)}
         >
+          <Menu.Item leadingIcon="visibility" onPress={view} title="View" />
           <Menu.Item leadingIcon="edit" onPress={edit} title="Edit" />
           <Menu.Item leadingIcon="undo" onPress={undo} title="Undo" />
         </Menu>

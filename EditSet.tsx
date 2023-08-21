@@ -1,5 +1,6 @@
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import {
+  NavigationProp,
   RouteProp,
   useFocusEffect,
   useNavigation,
@@ -24,7 +25,7 @@ import { fixNumeric } from "./fix-numeric";
 export default function EditSet() {
   const { params } = useRoute<RouteProp<HomePageParams, "EditSet">>();
   const { set } = params;
-  const navigation = useNavigation();
+  const { navigate } = useNavigation<NavigationProp<HomePageParams>>();
   const [settings, setSettings] = useState<Settings>({} as Settings);
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps?.toString());
@@ -63,20 +64,18 @@ export default function EditSet() {
     [settings]
   );
 
-  const added = useCallback(
-    async (value: GymSet) => {
-      startTimer(value.name);
-      console.log(`${EditSet.name}.add`, { set: value });
-      if (!settings.notify) return;
-      if (
-        value.weight > set.weight ||
-        (value.reps > set.reps && value.weight === set.weight)
-      ) {
-        toast("Great work King! That's a new record.");
-      }
-    },
-    [startTimer, set, settings]
-  );
+  const added = async (value: GymSet) => {
+    startTimer(value.name);
+    console.log(`${EditSet.name}.add`, { set: value });
+    if (!settings.notify) return;
+    if (
+      value.weight > set.weight ||
+      (value.reps > set.reps && value.weight === set.weight)
+    ) {
+      toast("Great work King! That's a new record.");
+    }
+    navigate("Sets", { added: value.id });
+  };
 
   const handleSubmit = async () => {
     if (!name) return;
@@ -104,8 +103,9 @@ export default function EditSet() {
     if (typeof set.id !== "number") newSet.created = await getNow();
 
     const saved = await setRepo.save(newSet);
-    if (typeof set.id !== "number") added(saved);
-    navigation.goBack();
+    if (typeof set.id !== "number") return added(saved);
+    if (createdDirty) navigate("Sets", { reset: saved.id });
+    else navigate("Sets", { refresh: saved.id });
   };
 
   const changeImage = useCallback(async () => {
