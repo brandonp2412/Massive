@@ -56,28 +56,37 @@ export default function PlanItem({
     setIds([item.id]);
   }, [ids.length, item.id, setIds]);
 
+  const currentDays = days.map((day, index) => (
+    <Text key={day}>
+      {day === today ? (
+        <Text
+          style={{
+            fontWeight: "bold",
+            textDecorationLine: "underline",
+          }}
+        >
+          {day}
+        </Text>
+      ) : (
+        day
+      )}
+      {index === days.length - 1 ? "" : ", "}
+    </Text>
+  ));
+
   const title = useMemo(
     () =>
-      days.map((day, index) => (
-        <Text key={day}>
-          {day === today ? (
-            <Text
-              style={{ fontWeight: "bold", textDecorationLine: "underline" }}
-            >
-              {day}
-            </Text>
-          ) : (
-            day
-          )}
-          {index === days.length - 1 ? "" : ", "}
-        </Text>
-      )),
-    [days, today]
+      item.title ? (
+        <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
+      ) : (
+        currentDays
+      ),
+    [item.title, currentDays]
   );
 
   const description = useMemo(
-    () => item.workouts.replace(/,/g, ", "),
-    [item.workouts]
+    () => (item.title ? currentDays : item.workouts.replace(/,/g, ", ")),
+    [item.title, currentDays, item.workouts]
   );
 
   const backgroundColor = useMemo(() => {

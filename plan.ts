@@ -6,6 +6,9 @@ export class Plan {
   id?: number;
 
   @Column("text")
+  title?: string;
+
+  @Column("text")
   days: string;
 
   @Column("text")

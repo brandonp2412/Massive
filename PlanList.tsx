@@ -25,6 +25,7 @@ export default function PlanList() {
     planRepo
       .find({
         where: [
+          { title: Like(`%${value.trim()}%`) },
           { days: Like(`%${value.trim()}%`) },
           { workouts: Like(`%${value.trim()}%`) },
         ],
@@ -54,7 +55,9 @@ export default function PlanList() {
   );
 
   const onAdd = () =>
-    navigation.navigate("EditPlan", { plan: { days: "", workouts: "" } });
+    navigation.navigate("EditPlan", {
+      plan: { title: "", days: "", workouts: "" },
+    });
 
   const edit = useCallback(async () => {
     const plan = await planRepo.findOne({ where: { id: ids.pop() } });
