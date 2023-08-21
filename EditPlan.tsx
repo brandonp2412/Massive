@@ -14,10 +14,12 @@ import { PlanPageParams } from "./plan-page-params";
 import StackHeader from "./StackHeader";
 import Switch from "./Switch";
 import { DAYS } from "./time";
+import AppInput from "./AppInput";
 
 export default function EditPlan() {
   const { params } = useRoute<RouteProp<PlanPageParams, "EditPlan">>();
   const { plan } = params;
+  const [title, setTitle] = useState<string>(plan?.title);
   const [days, setDays] = useState<string[]>(
     plan.days ? plan.days.split(",") : []
   );
@@ -45,8 +47,13 @@ export default function EditPlan() {
     if (!days || !workouts) return;
     const newWorkouts = workouts.filter((workout) => workout).join(",");
     const newDays = days.filter((day) => day).join(",");
-    await planRepo.save({ days: newDays, workouts: newWorkouts, id: plan.id });
-  }, [days, workouts, plan]);
+    await planRepo.save({
+      title: title,
+      days: newDays,
+      workouts: newWorkouts,
+      id: plan.id,
+    });
+  }, [title, days, workouts, plan]);
 
   const toggleWorkout = useCallback(
     (on: boolean, name: string) => {
@@ -96,6 +103,11 @@ export default function EditPlan() {
       </StackHeader>
       <View style={{ padding: PADDING, flex: 1 }}>
         <ScrollView style={{ flex: 1 }}>
+          <AppInput
+            label="Title"
+            value={title}
+            onChangeText={(value) => setTitle(value)}
+          />
           <Text style={styles.title}>Days</Text>
           {DAYS.map((day) => (
             <Switch
