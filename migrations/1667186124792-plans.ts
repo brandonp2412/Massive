@@ -5,11 +5,10 @@ export class plans1667186124792 implements MigrationInterface {
     await queryRunner.query(`
     CREATE TABLE IF NOT EXISTS plans (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT NOT NULL,
       days TEXT NOT NULL,
       workouts TEXT NOT NULL
     )
-`);
+`)
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
