@@ -74,7 +74,7 @@ export default function EditSet() {
     ) {
       toast("Great work King! That's a new record.");
     }
-    navigate("Sets", { added: value.id });
+    navigate("Sets", { reset: value.id });
   };
 
   const handleSubmit = async () => {
