@@ -40,14 +40,7 @@ cd android
 ./gradlew assembleRelease
 ```
 
-The apk file can be found at `android/app/build/outputs/apk/release/app-*-release.apk`
-The APKs are separated by architecture, for example we have:
-- `app-arm64-v8a-release.apk`
-- `app-armeabi-v7a-release.apk`
-- `app-x86_64-release.apk`
-- `app-x86-release.apk`
-
-Your phone is probably `app-arm64-v8a-release.apk`.
+The apk file can be found at `android/app/build/outputs/apk/release/app-release.apk`
 
 # Running in Development
 
@@ -71,12 +64,5 @@ yarn android
 
 # Fdroid Metadata
 
-You can find the metadata yaml file in the fdroiddata repository: 
+You can find the metadata yaml file in the fdroiddata repository:
 https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/com.massive.yml
-
-# Relevant Documentation
-
-- Android https://developer.android.com/docs
-- TypeScript https://www.typescriptlang.org/docs/
-- JavaScript https://developer.mozilla.org/en-US/docs/Web/JavaScript
-- SQLite https://sqlite.org/docs.html
