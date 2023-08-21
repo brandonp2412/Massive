@@ -25,7 +25,6 @@ sed -i "s/\"version\": \"[0-9]*.[0-9]*\"/\"version\": \"$major.$minor\"/" ../pac
 
 if [ "$1" != "-n" ]; then
   yarn tsc
-  yarn lint
   ./gradlew bundleRelease
   bundle install
   bundle exec fastlane supply --aab app/build/outputs/bundle/release/app-release.aab
