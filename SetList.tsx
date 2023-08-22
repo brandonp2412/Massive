@@ -171,8 +171,9 @@ export default function SetList() {
   };
 
   const select = useCallback(() => {
+    if (ids.length === sets.length) return setIds([]);
     setIds(sets.map((set) => set.id));
-  }, [sets]);
+  }, [sets, ids]);
 
   const content = useMemo(() => {
     if (!settings) return null;
@@ -199,7 +200,7 @@ export default function SetList() {
         }
       />
     );
-  }, [sets, settings, term]);
+  }, [sets, settings, term, ids]);
 
   return (
     <>
