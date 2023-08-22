@@ -4,6 +4,7 @@ import { Dimensions, NativeModules, View } from "react-native";
 import { Button, Text, useTheme } from "react-native-paper";
 import { ProgressCircle } from "react-native-svg-charts";
 import AppFab from "./AppFab";
+import { darkenRgba } from "./colors";
 import { MARGIN, PADDING } from "./constants";
 import { settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
@@ -43,6 +44,11 @@ export default function TimerPage() {
     return Dimensions.get("screen").width * 0.5 - 60;
   }, []);
 
+  const backgroundColor = useMemo(() => {
+    if (colors.primary.match(/rgba/)) return darkenRgba(colors.primary, 0.6);
+    return colors.primary + "80";
+  }, [colors.primary]);
+
   return (
     <>
       <DrawerHeader name="Timer" />
@@ -62,7 +68,7 @@ export default function TimerPage() {
             progress={progress}
             strokeWidth={10}
             progressColor={colors.primary}
-            backgroundColor={colors.primary + "80"}
+            backgroundColor={backgroundColor}
           />
         </View>
       </View>
