@@ -20,7 +20,7 @@ import Settings, { SETTINGS } from "./settings";
 
 export default function SetList() {
   const [refreshing, setRefreshing] = useState(false);
-  const [sets, setSets] = useState<GymSet[]>([]);
+  const [sets, setSets] = useState<GymSet[]>();
   const [offset, setOffset] = useState(0);
   const [end, setEnd] = useState(false);
   const [settings, setSettings] = useState<Settings>();
@@ -109,6 +109,7 @@ export default function SetList() {
   );
 
   const next = async () => {
+    console.log({ end, refreshing });
     if (end || refreshing) return;
     const newOffset = offset + LIMIT;
     console.log(`${SetList.name}.next:`, { offset, newOffset, term });
@@ -134,7 +135,7 @@ export default function SetList() {
 
   const onAdd = useCallback(async () => {
     const now = await getNow();
-    let set = sets[0];
+    let set = sets?.[0];
     if (!set) set = { ...defaultSet };
     set.created = now;
     delete set.id;
@@ -171,11 +172,12 @@ export default function SetList() {
   };
 
   const select = useCallback(() => {
+    if (!sets) return;
     if (ids.length === sets.length) return setIds([]);
     setIds(sets.map((set) => set.id));
   }, [sets, ids]);
 
-  const content = useMemo(() => {
+  const getContent = () => {
     if (!settings) return null;
     if (sets?.length === 0)
       return (
@@ -186,21 +188,22 @@ export default function SetList() {
       );
     return (
       <FlatList
-        data={sets}
+        data={sets ?? []}
         style={{ flex: 1 }}
         renderItem={renderItem}
         onEndReached={next}
-        refreshing={false}
-        onRefresh={() =>
+        refreshing={refreshing}
+        onRefresh={() => {
+          setOffset(0);
           refresh({
             skip: 0,
             take: LIMIT,
             value: term,
-          })
-        }
+          });
+        }}
       />
     );
-  }, [sets, settings, term, ids]);
+  };
 
   return (
     <>
@@ -216,7 +219,7 @@ export default function SetList() {
       </DrawerHeader>
 
       <Page onAdd={onAdd} term={term} search={search}>
-        {content}
+        {getContent()}
       </Page>
     </>
   );
