@@ -6,11 +6,17 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { FlatList, NativeModules, TextInput, View } from "react-native";
+import {
+  DeviceEventEmitter,
+  FlatList,
+  NativeModules,
+  TextInput,
+  View,
+} from "react-native";
 import { Button, IconButton, ProgressBar } from "react-native-paper";
 import AppInput from "./AppInput";
 import { getBestSet } from "./best.service";
-import { MARGIN, PADDING } from "./constants";
+import { GYM_SETS_EDITED, GYM_SET_CREATED, MARGIN, PADDING } from "./constants";
 import CountMany from "./count-many";
 import { AppDataSource } from "./data-source";
 import { getNow, setRepo, settingsRepo } from "./db";
@@ -103,6 +109,7 @@ export default function StartPlan() {
       hidden: false,
     };
     await setRepo.save(newSet);
+    DeviceEventEmitter.emit(GYM_SET_CREATED);
     await refresh();
     if (
       settings.notify &&

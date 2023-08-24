@@ -1,8 +1,14 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { GestureResponderEvent, ListRenderItemInfo, View } from "react-native";
+import {
+  DeviceEventEmitter,
+  GestureResponderEvent,
+  ListRenderItemInfo,
+  View,
+} from "react-native";
 import { List, Menu, RadioButton, useTheme } from "react-native-paper";
 import { Like } from "typeorm";
+import { GYM_SET_DELETED } from "./constants";
 import CountMany from "./count-many";
 import { getNow, setRepo } from "./db";
 import { HomePageParams } from "./home-page-params";
@@ -38,6 +44,7 @@ export default function StartPlanItem(props: Props) {
     setShowMenu(false);
     if (!first) return toast("Nothing to undo.");
     await setRepo.delete(first.id);
+    DeviceEventEmitter.emit(GYM_SET_DELETED);
     onUndo();
   }, [setShowMenu, onUndo, item.name]);
 

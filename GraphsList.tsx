@@ -1,47 +1,64 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from "@react-navigation/native";
-import { useCallback, useState } from "react";
-import { FlatList, Image } from "react-native";
+  DeviceEventEmitter,
+  EmitterSubscription,
+  FlatList,
+  Image,
+} from "react-native";
 import { List } from "react-native-paper";
 import { getBestSets } from "./best.service";
-import { LIMIT } from "./constants";
+import {
+  GYM_SET_CREATED,
+  GYM_SET_DELETED,
+  GYM_SET_UPDATED,
+  LIMIT,
+} from "./constants";
 import { settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import { GraphsPageParams } from "./GraphsPage";
 import GymSet from "./gym-set";
 import Page from "./Page";
-import Settings from "./settings";
+import Settings, { SETTINGS } from "./settings";
 
 export default function GraphsList() {
-  const [bests, setBests] = useState<GymSet[]>([]);
+  const [bests, setBests] = useState<GymSet[]>();
+  const [refreshing, setRefreshing] = useState(false);
   const [offset, setOffset] = useState(0);
   const [end, setEnd] = useState(false);
   const [term, setTerm] = useState("");
   const navigation = useNavigation<NavigationProp<GraphsPageParams>>();
   const [settings, setSettings] = useState<Settings>();
 
-  useFocusEffect(
-    useCallback(() => {
-      settingsRepo.findOne({ where: {} }).then(setSettings);
-    }, [])
-  );
-
   const refresh = useCallback(async (value: string) => {
-    const result = await getBestSets({ term: value, offset: 0 });
+    setRefreshing(true);
+    const result = await getBestSets({ term: value, offset: 0 }).finally(() =>
+      setRefreshing(false)
+    );
     setBests(result);
     setOffset(0);
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      refresh(term);
-    }, [refresh, term])
-  );
+  useEffect(() => {
+    refresh("");
+    settingsRepo.findOne({ where: {} }).then(setSettings);
+    const subs: EmitterSubscription[] = [];
+
+    subs.push(
+      DeviceEventEmitter.addListener(GYM_SET_CREATED, () => refresh("")),
+      DeviceEventEmitter.addListener(GYM_SET_UPDATED, () => refresh("")),
+      DeviceEventEmitter.addListener(GYM_SET_DELETED, () => refresh("")),
+      DeviceEventEmitter.addListener(SETTINGS, () =>
+        settingsRepo.findOne({ where: {} }).then(setSettings)
+      )
+    );
+
+    return () => subs.forEach((sub) => sub.remove());
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, []);
 
   const next = useCallback(async () => {
+    console.log("next:", { end, offset });
     if (end) return;
     const newOffset = offset + LIMIT;
     console.log(`${GraphsList.name}.next:`, { offset, newOffset, term });
@@ -68,7 +85,7 @@ export default function GraphsList() {
       description={`${item.reps} x ${item.weight}${item.unit || "kg"}`}
       onPress={() => navigation.navigate("ViewGraph", { best: item })}
       left={() =>
-        (settings.images && item.image && (
+        (settings?.images && item.image && (
           <Image
             source={{ uri: item.image }}
             style={{ height: 75, width: 75 }}
@@ -94,6 +111,8 @@ export default function GraphsList() {
             renderItem={renderItem}
             data={bests}
             onEndReached={next}
+            refreshing={refreshing}
+            onRefresh={() => refresh("")}
           />
         )}
       </Page>

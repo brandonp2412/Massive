@@ -8,12 +8,17 @@ import {
 } from "@react-navigation/native";
 import { format } from "date-fns";
 import { useCallback, useRef, useState } from "react";
-import { NativeModules, TextInput, View } from "react-native";
+import {
+  DeviceEventEmitter,
+  NativeModules,
+  TextInput,
+  View,
+} from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Button, Card, IconButton, TouchableRipple } from "react-native-paper";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
-import { MARGIN, PADDING } from "./constants";
+import { GYM_SET_CREATED, GYM_SET_UPDATED, MARGIN, PADDING } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
 import GymSet from "./gym-set";
 import { HomePageParams } from "./home-page-params";
@@ -65,6 +70,7 @@ export default function EditSet() {
   );
 
   const added = async (value: GymSet) => {
+    DeviceEventEmitter.emit(GYM_SET_CREATED);
     startTimer(value.name);
     console.log(`${EditSet.name}.add`, { set: value });
     if (!settings.notify) return;
@@ -104,6 +110,7 @@ export default function EditSet() {
 
     const saved = await setRepo.save(newSet);
     if (typeof set.id !== "number") return added(saved);
+    DeviceEventEmitter.emit(GYM_SET_UPDATED);
     if (createdDirty) navigate("Sets", { reset: saved.id });
     else navigate("Sets", { refresh: saved.id });
   };

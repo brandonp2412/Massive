@@ -4,11 +4,20 @@ import {
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { DeviceEventEmitter, FlatList } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import {
+  DeviceEventEmitter,
+  EmitterSubscription,
+  FlatList,
+} from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
-import { LIMIT } from "./constants";
+import {
+  GYM_SET_CREATED,
+  GYM_SET_DELETED,
+  GYM_SET_UPDATED,
+  LIMIT,
+} from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import GymSet, { defaultSet } from "./gym-set";
@@ -29,21 +38,14 @@ export default function SetList() {
   const { params } = useRoute<RouteProp<HomePageParams, "Sets">>();
   const [term, setTerm] = useState(params?.search || "");
 
-  const refresh = async ({
-    value,
-    take,
-    skip,
-  }: {
-    value: string;
-    take: number;
-    skip: number;
-  }) => {
+  const refresh = async ({ value, take }: { value: string; take: number }) => {
     setRefreshing(true);
+    setOffset(0);
     const newSets = await setRepo
       .find({
         where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
         take,
-        skip,
+        skip: 0,
         order: { created: "DESC" },
       })
       .finally(() => setRefreshing(false));
@@ -57,20 +59,35 @@ export default function SetList() {
     refresh({
       take: LIMIT,
       value: "",
-      skip: 0,
     });
-    const description = DeviceEventEmitter.addListener(SETTINGS, () => {
-      settingsRepo.findOne({ where: {} }).then(setSettings);
-    });
-    return description.remove;
+
+    const subs: EmitterSubscription[] = [];
+
+    subs.push(
+      DeviceEventEmitter.addListener(SETTINGS, () => {
+        settingsRepo.findOne({ where: {} }).then(setSettings);
+      }),
+      DeviceEventEmitter.addListener(GYM_SET_UPDATED, () =>
+        refresh({ take: offset, value: term })
+      ),
+      DeviceEventEmitter.addListener(GYM_SET_DELETED, () => {
+        refresh({ take: LIMIT, value: term });
+      }),
+      DeviceEventEmitter.addListener(GYM_SET_CREATED, () => {
+        refresh({ take: LIMIT, value: term });
+      }),
+      DeviceEventEmitter.addListener(SETTINGS, () =>
+        settingsRepo.findOne({ where: {} }).then(setSettings)
+      )
+    );
+
+    return () => subs.forEach((sub) => sub.remove());
     /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 
   const search = (value: string) => {
     setTerm(value);
-    setOffset(0);
     refresh({
-      skip: 0,
       take: LIMIT,
       value,
     });
@@ -82,13 +99,11 @@ export default function SetList() {
     if (params.search) search(params.search);
     else if (params.refresh)
       refresh({
-        skip: 0,
         take: offset,
         value: term,
       });
     else if (params.reset)
       refresh({
-        skip: 0,
         take: LIMIT,
         value: term,
       });
@@ -164,8 +179,8 @@ export default function SetList() {
   const remove = async () => {
     setIds([]);
     await setRepo.delete(ids.length > 0 ? ids : {});
+    DeviceEventEmitter.emit(GYM_SET_DELETED);
     return refresh({
-      skip: 0,
       take: LIMIT,
       value: term,
     });
@@ -194,9 +209,7 @@ export default function SetList() {
         onEndReached={next}
         refreshing={refreshing}
         onRefresh={() => {
-          setOffset(0);
           refresh({
-            skip: 0,
             take: LIMIT,
             value: term,
           });

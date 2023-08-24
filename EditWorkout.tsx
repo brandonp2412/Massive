@@ -5,12 +5,12 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useCallback, useRef, useState } from "react";
-import { ScrollView, TextInput, View } from "react-native";
+import { DeviceEventEmitter, ScrollView, TextInput, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Button, Card, TouchableRipple } from "react-native-paper";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
-import { MARGIN, PADDING } from "./constants";
+import { GYM_SET_UPDATED, MARGIN, PADDING } from "./constants";
 import { getNow, planRepo, setRepo, settingsRepo } from "./db";
 import { fixNumeric } from "./fix-numeric";
 import { defaultSet } from "./gym-set";
@@ -58,6 +58,7 @@ export default function EditWorkout() {
         image: removeImage ? "" : uri,
       }
     );
+    DeviceEventEmitter.emit(GYM_SET_UPDATED);
     await planRepo.query(
       `UPDATE plans 
        SET workouts = REPLACE(workouts, $1, $2) 

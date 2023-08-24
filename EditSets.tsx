@@ -5,13 +5,13 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { View } from "react-native";
+import { DeviceEventEmitter, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Button, Card, IconButton, TouchableRipple } from "react-native-paper";
 import { In } from "typeorm";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
-import { MARGIN, PADDING } from "./constants";
+import { GYM_SET_UPDATED, MARGIN, PADDING } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import GymSet from "./gym-set";
 import { HomePageParams } from "./home-page-params";
@@ -60,6 +60,7 @@ export default function EditSets() {
     if (unit) update.unit = unit;
     if (newImage) update.image = newImage;
     if (Object.keys(update).length > 0) await setRepo.update(ids, update);
+    DeviceEventEmitter.emit(GYM_SET_UPDATED);
     navigation.goBack();
   };
 
