@@ -1,6 +1,7 @@
 import {
   NavigationProp,
   RouteProp,
+  useFocusEffect,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
@@ -37,33 +38,42 @@ export default function SetList() {
     setSets(newSets);
   };
 
-  const reset = async ({ value, skip }: { value: string; skip: number }) => {
-    setRefreshing(true);
-    const newSets = await setRepo
-      .find({
-        where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
-        take: LIMIT,
-        skip,
-        order: { created: "DESC" },
-      })
-      .finally(() => setRefreshing(false));
-    console.log(`${SetList.name}.refresh:`, { value, offset });
-    setSets(newSets);
-    setEnd(false);
-  };
+  const reset = useCallback(
+    async ({ value, skip }: { value: string; skip: number }) => {
+      setRefreshing(true);
+      const newSets = await setRepo
+        .find({
+          where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
+          take: LIMIT,
+          skip,
+          order: { created: "DESC" },
+        })
+        .finally(() => setRefreshing(false));
+      console.log(`${SetList.name}.refresh:`, { value, offset });
+      setSets(newSets);
+      setEnd(false);
+    },
+    [offset]
+  );
 
   useEffect(() => {
     settingsRepo.findOne({ where: {} }).then(setSettings);
-    reset({
-      value: "",
-      skip: 0,
-    });
     const description = DeviceEventEmitter.addListener(SETTINGS, () => {
       settingsRepo.findOne({ where: {} }).then(setSettings);
     });
     return description.remove;
-    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log("Focused.");
+      if (offset > 0) return;
+      reset({
+        value: "",
+        skip: 0,
+      });
+    }, [offset, reset])
+  );
 
   const search = (value: string) => {
     setTerm(value);
