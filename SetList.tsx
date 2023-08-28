@@ -30,6 +30,7 @@ export default function SetList() {
   const [term, setTerm] = useState(params?.search || "");
 
   const refresh = async (id: number) => {
+    if (!sets) return;
     const set = await setRepo.findOne({ where: { id } });
     let newSets = sets.map((oldSet) => (oldSet.id === id ? set : oldSet));
     setSets(newSets);
@@ -182,6 +183,7 @@ export default function SetList() {
         renderItem={renderItem}
         onEndReached={next}
         refreshing={refreshing}
+        keyExtractor={(set) => set.id.toString()}
         onRefresh={() => {
           setOffset(0);
           reset({
