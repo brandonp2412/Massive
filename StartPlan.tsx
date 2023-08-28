@@ -201,6 +201,7 @@ export default function StartPlan() {
           {counts && (
             <FlatList
               data={counts}
+              keyExtractor={(count) => count.name}
               renderItem={(props) => (
                 <View>
                   <StartPlanItem

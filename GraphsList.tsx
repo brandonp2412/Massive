@@ -93,6 +93,7 @@ export default function GraphsList() {
             style={{ flex: 1 }}
             renderItem={renderItem}
             data={bests}
+            keyExtractor={(set) => set.name}
             onEndReached={next}
           />
         )}
