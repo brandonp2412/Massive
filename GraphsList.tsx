@@ -45,7 +45,7 @@ export default function GraphsList() {
     if (end) return;
     const newOffset = offset + LIMIT;
     console.log(`${GraphsList.name}.next:`, { offset, newOffset, term });
-    const newBests = await getBestSets({ term, offset });
+    const newBests = await getBestSets({ term, offset: newOffset });
     if (newBests.length === 0) return setEnd(true);
     if (!bests) return;
     setBests([...bests, ...newBests]);
