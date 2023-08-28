@@ -1,4 +1,5 @@
 import {
+  NavigationProp,
   RouteProp,
   useFocusEffect,
   useNavigation,
@@ -21,7 +22,7 @@ import StackHeader from "./StackHeader";
 export default function EditSets() {
   const { params } = useRoute<RouteProp<HomePageParams, "EditSets">>();
   const { ids } = params;
-  const navigation = useNavigation();
+  const { navigate } = useNavigation<NavigationProp<HomePageParams>>();
   const [settings, setSettings] = useState<Settings>({} as Settings);
   const [name, setName] = useState("");
   const [reps, setReps] = useState("");
@@ -51,7 +52,7 @@ export default function EditSets() {
     }, [ids])
   );
 
-  const handleSubmit = async () => {
+  const save = async () => {
     console.log(`${EditSets.name}.handleSubmit:`, { uri: newImage, name });
     const update: Partial<GymSet> = {};
     if (name) update.name = name;
@@ -60,7 +61,7 @@ export default function EditSets() {
     if (unit) update.unit = unit;
     if (newImage) update.image = newImage;
     if (Object.keys(update).length > 0) await setRepo.update(ids, update);
-    navigation.goBack();
+    navigate("Sets", { reset: ids[0] });
   };
 
   const changeImage = useCallback(async () => {
@@ -129,7 +130,7 @@ export default function EditSets() {
             keyboardType="numeric"
             value={weight}
             onChangeText={setWeight}
-            onSubmitEditing={handleSubmit}
+            onSubmitEditing={save}
           />
           <IconButton
             icon="add"
@@ -183,7 +184,7 @@ export default function EditSets() {
         mode="outlined"
         icon="save"
         style={{ margin: MARGIN }}
-        onPress={handleSubmit}
+        onPress={save}
       >
         Save
       </Button>
