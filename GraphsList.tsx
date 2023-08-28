@@ -16,7 +16,7 @@ import Page from "./Page";
 import Settings from "./settings";
 
 export default function GraphsList() {
-  const [bests, setBests] = useState<GymSet[]>([]);
+  const [bests, setBests] = useState<GymSet[]>();
   const [offset, setOffset] = useState(0);
   const [end, setEnd] = useState(false);
   const [term, setTerm] = useState("");
