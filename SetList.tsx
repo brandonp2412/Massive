@@ -5,19 +5,10 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import {
-  DeviceEventEmitter,
-  EmitterSubscription,
-  FlatList,
-} from "react-native";
+import { DeviceEventEmitter, FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
-import {
-  GYM_SET_CREATED,
-  GYM_SET_DELETED,
-  GYM_SET_UPDATED,
-  LIMIT,
-} from "./constants";
+import { LIMIT } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import GymSet, { defaultSet } from "./gym-set";
@@ -38,57 +29,45 @@ export default function SetList() {
   const { params } = useRoute<RouteProp<HomePageParams, "Sets">>();
   const [term, setTerm] = useState(params?.search || "");
 
-  const refresh = async ({ value, take }: { value: string; take: number }) => {
+  const refresh = async (id: number) => {
+    const set = await setRepo.findOne({ where: { id } });
+    let newSets = sets.map((oldSet) => (oldSet.id === id ? set : oldSet));
+    setSets(newSets);
+  };
+
+  const reset = async ({ value, skip }: { value: string; skip: number }) => {
     setRefreshing(true);
-    setOffset(0);
     const newSets = await setRepo
       .find({
         where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
-        take,
-        skip: 0,
+        take: LIMIT,
+        skip,
         order: { created: "DESC" },
       })
       .finally(() => setRefreshing(false));
-    console.log(`${SetList.name}.refresh:`, { value, take, offset });
+    console.log(`${SetList.name}.refresh:`, { value, offset });
     setSets(newSets);
     setEnd(false);
   };
 
   useEffect(() => {
     settingsRepo.findOne({ where: {} }).then(setSettings);
-    refresh({
-      take: LIMIT,
+    reset({
       value: "",
+      skip: 0,
     });
-
-    const subs: EmitterSubscription[] = [];
-
-    subs.push(
-      DeviceEventEmitter.addListener(SETTINGS, () => {
-        settingsRepo.findOne({ where: {} }).then(setSettings);
-      }),
-      DeviceEventEmitter.addListener(GYM_SET_UPDATED, () =>
-        refresh({ take: offset, value: term })
-      ),
-      DeviceEventEmitter.addListener(GYM_SET_DELETED, () => {
-        refresh({ take: LIMIT, value: term });
-      }),
-      DeviceEventEmitter.addListener(GYM_SET_CREATED, () => {
-        refresh({ take: LIMIT, value: term });
-      }),
-      DeviceEventEmitter.addListener(SETTINGS, () =>
-        settingsRepo.findOne({ where: {} }).then(setSettings)
-      )
-    );
-
-    return () => subs.forEach((sub) => sub.remove());
+    const description = DeviceEventEmitter.addListener(SETTINGS, () => {
+      settingsRepo.findOne({ where: {} }).then(setSettings);
+    });
+    return description.remove;
     /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 
   const search = (value: string) => {
     setTerm(value);
-    refresh({
-      take: LIMIT,
+    setOffset(0);
+    reset({
+      skip: 0,
       value,
     });
   };
@@ -97,14 +76,10 @@ export default function SetList() {
     if (!params) return;
     console.log({ params });
     if (params.search) search(params.search);
-    else if (params.refresh)
-      refresh({
-        take: offset,
-        value: term,
-      });
+    else if (params.refresh) refresh(params.refresh);
     else if (params.reset)
-      refresh({
-        take: LIMIT,
+      reset({
+        skip: 0,
         value: term,
       });
     /* eslint-disable react-hooks/exhaustive-deps */
@@ -179,9 +154,8 @@ export default function SetList() {
   const remove = async () => {
     setIds([]);
     await setRepo.delete(ids.length > 0 ? ids : {});
-    DeviceEventEmitter.emit(GYM_SET_DELETED);
-    return refresh({
-      take: LIMIT,
+    return reset({
+      skip: 0,
       value: term,
     });
   };
@@ -209,8 +183,9 @@ export default function SetList() {
         onEndReached={next}
         refreshing={refreshing}
         onRefresh={() => {
-          refresh({
-            take: LIMIT,
+          setOffset(0);
+          reset({
+            skip: 0,
             value: term,
           });
         }}
