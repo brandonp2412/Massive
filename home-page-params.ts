@@ -5,9 +5,9 @@ export type HomePageParams = {
     search?: string;
 
     /**
-     * Reload the specified set by ID.
+     * Update the specified set
      */
-    refresh?: number;
+    refresh?: GymSet;
 
     /**
      * Reload the list with limit = 0

@@ -105,7 +105,7 @@ export default function EditSet() {
     const saved = await setRepo.save(newSet);
     if (typeof set.id !== "number") return added(saved);
     if (createdDirty) navigate("Sets", { reset: saved.id });
-    else navigate("Sets", { refresh: saved.id });
+    else navigate("Sets", { refresh: saved });
   };
 
   const changeImage = useCallback(async () => {

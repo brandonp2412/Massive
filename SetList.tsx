@@ -29,10 +29,11 @@ export default function SetList() {
   const { params } = useRoute<RouteProp<HomePageParams, "Sets">>();
   const [term, setTerm] = useState(params?.search || "");
 
-  const refresh = async (id: number) => {
+  const refresh = async (gymSet: GymSet) => {
     if (!sets) return;
-    const set = await setRepo.findOne({ where: { id } });
-    let newSets = sets.map((oldSet) => (oldSet.id === id ? set : oldSet));
+    const newSets = sets.map((oldSet) =>
+      oldSet.id === gymSet.id ? gymSet : oldSet
+    );
     setSets(newSets);
   };
 
