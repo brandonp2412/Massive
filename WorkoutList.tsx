@@ -116,6 +116,7 @@ export default function WorkoutList() {
   };
 
   const select = () => {
+    if (!workouts) return;
     setNames(workouts.map((workout) => workout.name));
   };
 

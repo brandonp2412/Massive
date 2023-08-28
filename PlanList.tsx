@@ -85,6 +85,7 @@ export default function PlanList() {
   }, [ids, refresh, term]);
 
   const select = useCallback(() => {
+    if (!plans) return;
     setIds(plans.map((plan) => plan.id));
   }, [plans]);
 
