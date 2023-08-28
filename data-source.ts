@@ -1,6 +1,5 @@
 import { DataSource } from "typeorm";
 import GymSet from "./gym-set";
-import { GymSetSubscriber } from "./gym-set-subscriber";
 import { Sets1667185586014 as sets1667185586014 } from "./migrations/1667185586014-sets";
 import { plans1667186124792 } from "./migrations/1667186124792-plans";
 import { settings1667186130041 } from "./migrations/1667186130041-settings";

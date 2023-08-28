@@ -6,13 +6,13 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useCallback, useRef, useState } from "react";
-import { DeviceEventEmitter, ScrollView, TextInput, View } from "react-native";
+import { ScrollView, TextInput, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Button, Card, TouchableRipple } from "react-native-paper";
 import { In } from "typeorm";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
-import { GYM_SETS_EDITED, MARGIN, PADDING } from "./constants";
+import { MARGIN, PADDING } from "./constants";
 import { planRepo, setRepo, settingsRepo } from "./db";
 import { fixNumeric } from "./fix-numeric";
 import Settings from "./settings";
@@ -74,7 +74,6 @@ export default function EditWorkouts() {
         image: removeImage ? "" : uri,
       }
     );
-    DeviceEventEmitter.emit(GYM_SETS_EDITED);
     for (const oldName of params.names) {
       await planRepo
         .createQueryBuilder()
