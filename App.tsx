@@ -4,7 +4,7 @@ import {
   NavigationContainer,
 } from "@react-navigation/native";
 import React, { useEffect, useMemo, useState } from "react";
-import { DeviceEventEmitter, useColorScheme } from "react-native";
+import { useColorScheme } from "react-native";
 import {
   MD3DarkTheme as PaperDarkTheme,
   MD3LightTheme as PaperDefaultTheme,
@@ -14,6 +14,7 @@ import {
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
+import { emitter } from "./emitter";
 import Routes from "./Routes";
 import { TOAST } from "./toast";
 import { ThemeContext } from "./use-theme";
@@ -59,7 +60,7 @@ const App = () => {
       if (settings.darkColor) setDarkColor(settings.darkColor);
       setInitialized(true);
     })();
-    const description = DeviceEventEmitter.addListener(
+    const description = emitter.addListener(
       TOAST,
       ({ value }: { value: string }) => {
         setSnackbar(value);

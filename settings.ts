@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
-import { DeviceEventEmitter } from "react-native";
+import { emitter } from "./emitter";
 
 @Entity()
 export default class Settings {
@@ -52,5 +52,5 @@ export default class Settings {
 export const SETTINGS = "settings";
 
 export const settingsUpdated = () => {
-  DeviceEventEmitter.emit(SETTINGS);
+  emitter.emit(SETTINGS);
 };

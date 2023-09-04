@@ -1,7 +1,7 @@
-import { DeviceEventEmitter } from "react-native";
+import { emitter } from "./emitter";
 
 export const TOAST = "toast";
 
 export function toast(value: string) {
-  DeviceEventEmitter.emit(TOAST, { value });
+  emitter.emit(TOAST, { value });
 }

@@ -6,12 +6,13 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { DeviceEventEmitter, FlatList } from "react-native";
+import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
 import { LIMIT } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
+import { emitter } from "./emitter";
 import GymSet, { defaultSet } from "./gym-set";
 import { HomePageParams } from "./home-page-params";
 import ListMenu from "./ListMenu";
@@ -58,7 +59,7 @@ export default function SetList() {
 
   useEffect(() => {
     settingsRepo.findOne({ where: {} }).then(setSettings);
-    const description = DeviceEventEmitter.addListener(SETTINGS, () => {
+    const description = emitter.addListener(SETTINGS, () => {
       settingsRepo.findOne({ where: {} }).then(setSettings);
     });
     return description.remove;
