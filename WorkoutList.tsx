@@ -117,6 +117,7 @@ export default function WorkoutList() {
 
   const select = () => {
     if (!workouts) return;
+    if (names.length === workouts.length) return setNames([]);
     setNames(workouts.map((workout) => workout.name));
   };
 
