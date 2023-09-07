@@ -118,7 +118,9 @@ export default function StartPlan() {
 
   return (
     <>
-      <StackHeader title={params.plan.days.replace(/,/g, ", ")}>
+      <StackHeader
+        title={params.plan.title || params.plan.days.replace(/,/g, ", ")}
+      >
         <IconButton
           onPress={() => navigation.navigate("EditPlan", { plan: params.plan })}
           icon="edit"
