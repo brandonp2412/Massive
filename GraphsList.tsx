@@ -1,19 +1,16 @@
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList, Image } from "react-native";
 import { List } from "react-native-paper";
 import { getBestSets } from "./best.service";
 import { LIMIT } from "./constants";
 import { settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
+import { emitter } from "./emitter";
 import { GraphsPageParams } from "./GraphsPage";
 import GymSet from "./gym-set";
 import Page from "./Page";
-import Settings from "./settings";
+import Settings, { SETTINGS } from "./settings";
 
 export default function GraphsList() {
   const [bests, setBests] = useState<GymSet[]>();
@@ -22,23 +19,29 @@ export default function GraphsList() {
   const [term, setTerm] = useState("");
   const navigation = useNavigation<NavigationProp<GraphsPageParams>>();
   const [settings, setSettings] = useState<Settings>();
+  const [refreshing, setRefreshing] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
+  useEffect(() => {
+    refresh("");
+    settingsRepo.findOne({ where: {} }).then(setSettings);
+    const description = emitter.addListener(SETTINGS, () => {
       settingsRepo.findOne({ where: {} }).then(setSettings);
-    }, [])
-  );
-
-  const refresh = useCallback(async (value: string) => {
-    const result = await getBestSets({ term: value, offset: 0 });
-    setBests(result);
-    setOffset(0);
+    });
+    return description.remove;
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      refresh(term);
-    }, [refresh, term])
+  const refresh = useCallback(
+    async (value: string) => {
+      if (refreshing) return;
+      setRefreshing(true);
+      const result = await getBestSets({ term: value, offset: 0 }).finally(() =>
+        setRefreshing(false)
+      );
+      setBests(result);
+      setOffset(0);
+    },
+    [refreshing]
   );
 
   const next = useCallback(async () => {
@@ -68,7 +71,7 @@ export default function GraphsList() {
       description={`${item.reps} x ${item.weight}${item.unit || "kg"}`}
       onPress={() => navigation.navigate("ViewGraph", { best: item })}
       left={() =>
-        (settings.images && item.image && (
+        (settings?.images && item.image && (
           <Image
             source={{ uri: item.image }}
             style={{ height: 75, width: 75 }}
@@ -95,6 +98,8 @@ export default function GraphsList() {
             data={bests}
             keyExtractor={(set) => set.name}
             onEndReached={next}
+            refreshing={refreshing}
+            onRefresh={() => refresh(term)}
           />
         )}
       </Page>
