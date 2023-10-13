@@ -13,19 +13,23 @@ export default function WorkoutItem({
   setNames,
   names,
   images,
+  alarm,
 }: {
   item: GymSet;
   images: boolean;
   setNames: (value: string[]) => void;
   names: string[];
+  alarm: boolean;
 }) {
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
   const dark = useDark();
 
   const description = useMemo(() => {
     const seconds = item.seconds?.toString().padStart(2, "0");
-    return `${item.sets} x ${item.minutes || 0}:${seconds}`;
-  }, [item.sets, item.minutes, item.seconds]);
+    const time = ` x ${item.minutes || 0}:${seconds}`;
+    if (alarm) return item.sets.toString() + time;
+    return item.sets.toString();
+  }, [item.sets, item.minutes, item.seconds, alarm]);
 
   const left = useCallback(() => {
     if (!images || !item.image) return null;

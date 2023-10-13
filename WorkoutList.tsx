@@ -57,13 +57,14 @@ export default function WorkoutList() {
     ({ item }: { item: GymSet }) => (
       <WorkoutItem
         images={settings?.images}
+        alarm={settings.alarm}
         item={item}
         key={item.name}
         names={names}
         setNames={setNames}
       />
     ),
-    [settings?.images, names]
+    [settings?.images, names, settings.alarm]
   );
 
   const next = async () => {
