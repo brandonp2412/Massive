@@ -153,8 +153,8 @@ export default function SettingsPage() {
           else toast("Hid date on sets.");
           return;
         case "noSound":
-          if (value) toast("Disable sound on rest timer alarms.");
-          else toast("Enabled sound for rest timer alarms.");
+          if (value) toast("Alarms will no longer make a sound.");
+          else toast("Enabled sound for alarms.");
           return;
         case "backup":
           if (value) {
