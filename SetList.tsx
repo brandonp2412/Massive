@@ -1,7 +1,6 @@
 import {
   NavigationProp,
   RouteProp,
-  useFocusEffect,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
@@ -47,7 +46,7 @@ export default function SetList() {
         skip,
         order: { created: "DESC" },
       });
-      console.log(`${SetList.name}.refresh:`, { value, offset });
+      console.log(`${SetList.name}.reset:`, { value, offset });
       setSets(newSets);
       setEnd(false);
     },
@@ -62,17 +61,6 @@ export default function SetList() {
     return description.remove;
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      console.log("Focused.");
-      if (offset > 0) return;
-      reset({
-        value: "",
-        skip: 0,
-      });
-    }, [offset, reset])
-  );
-
   const search = (value: string) => {
     setTerm(value);
     setOffset(0);
@@ -83,11 +71,14 @@ export default function SetList() {
   };
 
   useEffect(() => {
-    if (!params) return;
-    console.log({ params });
-    if (params.search) search(params.search);
-    else if (params.refresh) refresh(params.refresh);
-    else if (params.reset)
+    if (!params)
+      reset({
+        skip: 0,
+        value: "",
+      });
+    if (params?.search) search(params.search);
+    else if (params?.refresh) refresh(params.refresh);
+    else if (params?.reset)
       reset({
         skip: 0,
         value: term,
