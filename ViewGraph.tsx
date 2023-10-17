@@ -21,7 +21,7 @@ export default function ViewGraph() {
   const { params } = useRoute<RouteProp<GraphsPageParams, "ViewGraph">>();
   const [weights, setWeights] = useState<GymSet[]>();
   const [volumes, setVolumes] = useState<Volume[]>();
-  const [metric, setMetric] = useState(Metrics.Weight);
+  const [metric, setMetric] = useState(Metrics.OneRepMax);
   const [period, setPeriod] = useState(Periods.Monthly);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function ViewGraph() {
       .groupBy("name")
       .addGroupBy(`STRFTIME('${group}', created)`);
     switch (metric) {
-      case Metrics.Weight:
+      case Metrics.Best:
         builder
           .addSelect("ROUND(MAX(weight), 2)", "weight")
           .getRawMany()
@@ -72,7 +72,7 @@ export default function ViewGraph() {
   const charts = useMemo(() => {
     if (
       (metric === Metrics.Volume && volumes?.length === 0) ||
-      (metric === Metrics.Weight && weights?.length === 0) ||
+      (metric === Metrics.Best && weights?.length === 0) ||
       (metric === Metrics.OneRepMax && weights?.length === 0)
     ) {
       return <List.Item title="No data yet." />;
@@ -127,12 +127,9 @@ export default function ViewGraph() {
         <Select
           label="Metric"
           items={[
-            { value: Metrics.Volume, label: Metrics.Volume },
             { value: Metrics.OneRepMax, label: Metrics.OneRepMax },
-            {
-              label: Metrics.Weight,
-              value: Metrics.Weight,
-            },
+            { label: Metrics.Best, value: Metrics.Best },
+            { value: Metrics.Volume, label: Metrics.Volume },
           ]}
           onChange={(value) => setMetric(value as Metrics)}
           value={metric}
