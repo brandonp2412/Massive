@@ -41,15 +41,12 @@ export default function SetList() {
 
   const reset = useCallback(
     async ({ value, skip }: { value: string; skip: number }) => {
-      setRefreshing(true);
-      const newSets = await setRepo
-        .find({
-          where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
-          take: LIMIT,
-          skip,
-          order: { created: "DESC" },
-        })
-        .finally(() => setRefreshing(false));
+      const newSets = await setRepo.find({
+        where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
+        take: LIMIT,
+        skip,
+        order: { created: "DESC" },
+      });
       console.log(`${SetList.name}.refresh:`, { value, offset });
       setSets(newSets);
       setEnd(false);
@@ -116,15 +113,12 @@ export default function SetList() {
     if (end || refreshing) return;
     const newOffset = offset + LIMIT;
     console.log(`${SetList.name}.next:`, { offset, newOffset, term });
-    setRefreshing(true);
-    const newSets = await setRepo
-      .find({
-        where: { name: Like(`%${term}%`), hidden: 0 as any },
-        take: LIMIT,
-        skip: newOffset,
-        order: { created: "DESC" },
-      })
-      .finally(() => setRefreshing(false));
+    const newSets = await setRepo.find({
+      where: { name: Like(`%${term}%`), hidden: 0 as any },
+      take: LIMIT,
+      skip: newOffset,
+      order: { created: "DESC" },
+    });
     if (newSets.length === 0) return setEnd(true);
     if (!sets) return;
     const map = new Map<number, GymSet>();
@@ -198,10 +192,11 @@ export default function SetList() {
         keyExtractor={(set) => set.id.toString()}
         onRefresh={() => {
           setOffset(0);
+          setRefreshing(true);
           reset({
             skip: 0,
             value: term,
-          });
+          }).finally(() => setRefreshing(false));
         }}
       />
     );
