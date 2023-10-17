@@ -34,10 +34,7 @@ export default function GraphsList() {
   const refresh = useCallback(
     async (value: string) => {
       if (refreshing) return;
-      setRefreshing(true);
-      const result = await getBestSets({ term: value, offset: 0 }).finally(() =>
-        setRefreshing(false)
-      );
+      const result = await getBestSets({ term: value, offset: 0 });
       setBests(result);
       setOffset(0);
     },
@@ -99,7 +96,10 @@ export default function GraphsList() {
             keyExtractor={(set) => set.name}
             onEndReached={next}
             refreshing={refreshing}
-            onRefresh={() => refresh(term)}
+            onRefresh={() => {
+              setRefreshing(true);
+              refresh(term).finally(() => setRefreshing(false));
+            }}
           />
         )}
       </Page>
