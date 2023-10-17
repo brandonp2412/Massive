@@ -31,6 +31,7 @@ export default function SetList() {
   const [term, setTerm] = useState(params?.search || "");
 
   const refresh = async (gymSet: GymSet) => {
+    console.log(`${SetList.name}.refresh:`, gymSet);
     if (!sets) return;
     const newSets = sets.map((oldSet) =>
       oldSet.id === gymSet.id ? gymSet : oldSet
@@ -62,6 +63,7 @@ export default function SetList() {
   }, []);
 
   const search = (value: string) => {
+    console.log(`${SetList.name}.search:`, value);
     setTerm(value);
     setOffset(0);
     reset({
@@ -71,6 +73,7 @@ export default function SetList() {
   };
 
   useEffect(() => {
+    console.log(`${SetList.name}.useEffect:`, params);
     if (!params)
       reset({
         skip: 0,
@@ -180,7 +183,7 @@ export default function SetList() {
         renderItem={renderItem}
         onEndReached={next}
         refreshing={refreshing}
-        keyExtractor={(set) => set.id.toString()}
+        keyExtractor={(set) => set.id?.toString()}
         onRefresh={() => {
           setOffset(0);
           setRefreshing(true);

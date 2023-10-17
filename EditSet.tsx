@@ -67,13 +67,14 @@ export default function EditSet() {
   const added = async (value: GymSet) => {
     startTimer(value.name);
     console.log(`${EditSet.name}.add`, { set: value });
-    if (!settings.notify) return;
+    if (!settings.notify) return navigate("Sets", { reset: value.id });
     if (
       value.weight > set.weight ||
       (value.reps > set.reps && value.weight === set.weight)
     ) {
       toast("Great work King! That's a new record.");
     }
+    console.log("Navigating...");
     navigate("Sets", { reset: value.id });
   };
 
