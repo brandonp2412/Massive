@@ -1,22 +1,22 @@
 import {
   NavigationProp,
   RouteProp,
-  useFocusEffect,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { In } from "typeorm";
 import { LIMIT } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
+import { emitter } from "./emitter";
 import GymSet from "./gym-set";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetList from "./SetList";
-import Settings from "./settings";
+import Settings, { SETTINGS } from "./settings";
 import WorkoutItem from "./WorkoutItem";
 import { WorkoutsPageParams } from "./WorkoutsPage";
 
@@ -27,10 +27,21 @@ export default function WorkoutList() {
   const [end, setEnd] = useState(false);
   const [settings, setSettings] = useState<Settings>();
   const [names, setNames] = useState<string[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
   const { params } = useRoute<RouteProp<WorkoutsPageParams, "WorkoutList">>();
 
-  const refresh = useCallback(async (value: string) => {
+  const update = (newWorkout: GymSet) => {
+    console.log(`${WorkoutList.name}.update:`, newWorkout);
+    if (!workouts) return;
+    const newWorkouts = workouts.map((workout) =>
+      workout.name === newWorkout.name ? newWorkout : workout
+    );
+    setWorkouts(newWorkouts);
+  };
+
+  const reset = async (value: string) => {
+    console.log(`${WorkoutList.name}.reset`, value);
     const newWorkouts = await setRepo
       .createQueryBuilder()
       .select()
@@ -39,19 +50,29 @@ export default function WorkoutList() {
       .orderBy("name")
       .limit(LIMIT)
       .getMany();
-    console.log(`${WorkoutList.name}`, { newWorkout: newWorkouts[0] });
-    setWorkouts(newWorkouts);
     setOffset(0);
-    setEnd(false);
+    console.log(`${WorkoutList.name}.reset`, { length: newWorkouts.length });
+    setEnd(newWorkouts.length < LIMIT);
+    setWorkouts(newWorkouts);
+  };
+
+  useEffect(() => {
+    settingsRepo.findOne({ where: {} }).then(setSettings);
+    const description = emitter.addListener(SETTINGS, () => {
+      settingsRepo.findOne({ where: {} }).then(setSettings);
+    });
+    return description.remove;
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      refresh(term);
-      settingsRepo.findOne({ where: {} }).then(setSettings);
-      if (params?.clearNames) setNames([]);
-    }, [refresh, term, params])
-  );
+  useEffect(() => {
+    console.log(`${WorkoutList.name}.useEffect`, params);
+    if (!params) reset("");
+    if (params?.search) search(params.search);
+    else if (params?.update) update(params.update);
+    else if (params?.reset) reset(term);
+    else if (params?.clearNames) setNames([]);
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [params]);
 
   const renderItem = useCallback(
     ({ item }: { item: GymSet }) => (
@@ -68,14 +89,14 @@ export default function WorkoutList() {
   );
 
   const next = async () => {
-    if (end) return;
-    const newOffset = offset + LIMIT;
     console.log(`${SetList.name}.next:`, {
       offset,
       limit: LIMIT,
-      newOffset,
       term,
+      end,
     });
+    if (end) return;
+    const newOffset = offset + LIMIT;
     const newWorkouts = await setRepo
       .createQueryBuilder()
       .select()
@@ -98,13 +119,10 @@ export default function WorkoutList() {
     });
   }, [navigation]);
 
-  const search = useCallback(
-    (value: string) => {
-      setTerm(value);
-      refresh(value);
-    },
-    [refresh]
-  );
+  const search = (value: string) => {
+    setTerm(value);
+    reset(value);
+  };
 
   const clear = useCallback(() => {
     setNames([]);
@@ -113,7 +131,7 @@ export default function WorkoutList() {
   const remove = async () => {
     setNames([]);
     if (names.length > 0) await setRepo.delete({ name: In(names) });
-    await refresh(term);
+    await reset(term);
   };
 
   const select = () => {
@@ -152,6 +170,11 @@ export default function WorkoutList() {
             renderItem={renderItem}
             keyExtractor={(w) => w.name}
             onEndReached={next}
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              reset("").finally(() => setRefreshing(false));
+            }}
           />
         )}
       </Page>

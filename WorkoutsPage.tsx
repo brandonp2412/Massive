@@ -7,6 +7,9 @@ import WorkoutList from "./WorkoutList";
 export type WorkoutsPageParams = {
   WorkoutList: {
     clearNames?: boolean;
+    search?: string;
+    update?: GymSet;
+    reset?: number;
   };
   EditWorkout: {
     gymSet: GymSet;

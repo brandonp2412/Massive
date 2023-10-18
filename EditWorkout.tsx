@@ -1,4 +1,5 @@
 import {
+  NavigationProp,
   RouteProp,
   useFocusEffect,
   useNavigation,
@@ -13,7 +14,7 @@ import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, planRepo, setRepo, settingsRepo } from "./db";
 import { fixNumeric } from "./fix-numeric";
-import { defaultSet } from "./gym-set";
+import GymSet, { defaultSet } from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
@@ -33,7 +34,7 @@ export default function EditWorkout() {
     params.gymSet.seconds?.toString() ?? "30"
   );
   const [sets, setSets] = useState(params.gymSet.sets?.toString() ?? "3");
-  const navigation = useNavigation();
+  const { navigate } = useNavigation<NavigationProp<WorkoutsPageParams>>();
   const setsRef = useRef<TextInput>(null);
   const stepsRef = useRef<TextInput>(null);
   const minutesRef = useRef<TextInput>(null);
@@ -47,24 +48,22 @@ export default function EditWorkout() {
   );
 
   const update = async () => {
-    await setRepo.update(
-      { name: params.gymSet.name },
-      {
-        name: name || params.gymSet.name,
-        sets: Number(sets),
-        minutes: +minutes,
-        seconds: +seconds,
-        steps,
-        image: removeImage ? "" : uri,
-      }
-    );
+    const newWorkout = {
+      name: name || params.gymSet.name,
+      sets: Number(sets),
+      minutes: +minutes,
+      seconds: +seconds,
+      steps,
+      image: removeImage ? "" : uri,
+    } as GymSet;
+    await setRepo.update({ name: params.gymSet.name }, newWorkout);
     await planRepo.query(
       `UPDATE plans 
        SET workouts = REPLACE(workouts, $1, $2) 
        WHERE workouts LIKE $3`,
       [params.gymSet.name, name, `%${params.gymSet.name}%`]
     );
-    navigation.goBack();
+    navigate("WorkoutList", { update: newWorkout });
   };
 
   const add = async () => {
@@ -80,7 +79,7 @@ export default function EditWorkout() {
       steps,
       created: now,
     });
-    navigation.goBack();
+    navigate("WorkoutList", { reset: new Date().getTime() });
   };
 
   const save = async () => {
