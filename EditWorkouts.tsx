@@ -14,7 +14,9 @@ import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { planRepo, setRepo, settingsRepo } from "./db";
+import { emitter } from "./emitter";
 import { fixNumeric } from "./fix-numeric";
+import { GYM_SET_CREATED } from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
@@ -74,6 +76,7 @@ export default function EditWorkouts() {
         image: removeImage ? "" : uri,
       }
     );
+    emitter.emit(GYM_SET_CREATED);
     for (const oldName of params.names) {
       await planRepo
         .createQueryBuilder()

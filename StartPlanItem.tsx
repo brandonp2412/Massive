@@ -5,6 +5,8 @@ import { List, Menu, RadioButton, useTheme } from "react-native-paper";
 import { Like } from "typeorm";
 import CountMany from "./count-many";
 import { getNow, setRepo } from "./db";
+import { emitter } from "./emitter";
+import { GYM_SET_DELETED } from "./gym-set";
 import { HomePageParams } from "./home-page-params";
 import { PlanPageParams } from "./plan-page-params";
 import { toast } from "./toast";
@@ -38,6 +40,7 @@ export default function StartPlanItem(props: Props) {
     setShowMenu(false);
     if (!first) return toast("Nothing to undo.");
     await setRepo.delete(first.id);
+    emitter.emit(GYM_SET_DELETED, first);
     onUndo();
   }, [setShowMenu, onUndo, item.name]);
 

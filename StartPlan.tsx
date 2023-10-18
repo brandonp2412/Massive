@@ -14,8 +14,9 @@ import { MARGIN, PADDING } from "./constants";
 import CountMany from "./count-many";
 import { AppDataSource } from "./data-source";
 import { getNow, setRepo, settingsRepo } from "./db";
+import { emitter } from "./emitter";
 import { fixNumeric } from "./fix-numeric";
-import GymSet from "./gym-set";
+import GymSet, { GYM_SET_CREATED, GYM_SET_UPDATED } from "./gym-set";
 import { PlanPageParams } from "./plan-page-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
@@ -102,7 +103,8 @@ export default function StartPlan() {
       created: now,
       hidden: false,
     };
-    await setRepo.save(newSet);
+    const saved = await setRepo.save(newSet);
+    emitter.emit(GYM_SET_CREATED, saved);
     await refresh();
     if (
       settings.notify &&

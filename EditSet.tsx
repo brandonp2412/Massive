@@ -15,12 +15,13 @@ import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
-import GymSet from "./gym-set";
+import GymSet, { GYM_SET_CREATED, GYM_SET_UPDATED } from "./gym-set";
 import { HomePageParams } from "./home-page-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 import { fixNumeric } from "./fix-numeric";
+import { emitter } from "./emitter";
 
 export default function EditSet() {
   const { params } = useRoute<RouteProp<HomePageParams, "EditSet">>();
@@ -64,18 +65,20 @@ export default function EditSet() {
     [settings]
   );
 
-  const added = async (value: GymSet) => {
-    startTimer(value.name);
-    console.log(`${EditSet.name}.add`, { set: value });
-    if (!settings.notify) return navigate("Sets", { reset: value.id });
+  const notify = (value: Partial<GymSet>) => {
+    if (!settings.notify) return navigate("Sets");
     if (
       value.weight > set.weight ||
       (value.reps > set.reps && value.weight === set.weight)
     ) {
       toast("Great work King! That's a new record.");
     }
-    console.log("Navigating...");
-    navigate("Sets", { reset: value.id });
+  };
+
+  const added = async (value: GymSet) => {
+    console.log(`${EditSet.name}.added:`, value);
+    emitter.emit(GYM_SET_CREATED);
+    startTimer(value.name);
   };
 
   const handleSubmit = async () => {
@@ -104,9 +107,10 @@ export default function EditSet() {
     if (typeof set.id !== "number") newSet.created = await getNow();
 
     const saved = await setRepo.save(newSet);
+    notify(newSet);
     if (typeof set.id !== "number") return added(saved);
-    if (createdDirty) navigate("Sets", { reset: saved.id });
-    else navigate("Sets", { refresh: saved });
+    else emitter.emit(GYM_SET_UPDATED, saved);
+    navigate("Sets");
   };
 
   const changeImage = useCallback(async () => {

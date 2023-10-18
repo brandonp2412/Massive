@@ -1,5 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
+export const GYM_SET_UPDATED = "gym-set-updated";
+export const GYM_SET_DELETED = "gym-set-deleted";
+export const GYM_SET_CREATED = "gym-set-created";
+
 @Entity("sets")
 export default class GymSet {
   @PrimaryGeneratedColumn()

@@ -12,7 +12,12 @@ import { LIMIT } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import { emitter } from "./emitter";
-import GymSet, { defaultSet } from "./gym-set";
+import GymSet, {
+  defaultSet,
+  GYM_SET_CREATED,
+  GYM_SET_DELETED,
+  GYM_SET_UPDATED,
+} from "./gym-set";
 import { HomePageParams } from "./home-page-params";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
@@ -30,21 +35,12 @@ export default function SetList() {
   const { params } = useRoute<RouteProp<HomePageParams, "Sets">>();
   const [term, setTerm] = useState(params?.search || "");
 
-  const refresh = async (gymSet: GymSet) => {
-    console.log(`${SetList.name}.refresh:`, gymSet);
-    if (!sets) return;
-    const newSets = sets.map((oldSet) =>
-      oldSet.id === gymSet.id ? gymSet : oldSet
-    );
-    setSets(newSets);
-  };
-
   const reset = useCallback(
-    async ({ value, skip }: { value: string; skip: number }) => {
+    async (value: string) => {
       const newSets = await setRepo.find({
         where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
         take: LIMIT,
-        skip,
+        skip: 0,
         order: { created: "DESC" },
       });
       console.log(`${SetList.name}.reset:`, { value, offset });
@@ -56,37 +52,43 @@ export default function SetList() {
 
   useEffect(() => {
     settingsRepo.findOne({ where: {} }).then(setSettings);
-    const description = emitter.addListener(SETTINGS, () => {
-      settingsRepo.findOne({ where: {} }).then(setSettings);
-    });
-    return description.remove;
+    reset("");
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
+
+  useEffect(() => {
+    const updated = (gymSet: GymSet) => {
+      if (!sets) console.log({ sets });
+      console.log(`${SetList.name}.updated:`, { gymSet, length: sets.length });
+      const newSets = sets.map((set) => {
+        if (set.id !== gymSet.id) return set;
+        if (gymSet.created === undefined) gymSet.created = set.created;
+        return gymSet;
+      });
+      setSets(newSets);
+    };
+
+    const descriptions = [
+      emitter.addListener(SETTINGS, () => {
+        settingsRepo.findOne({ where: {} }).then(setSettings);
+      }),
+      emitter.addListener(GYM_SET_UPDATED, updated),
+      emitter.addListener(GYM_SET_CREATED, () => reset("")),
+      emitter.addListener(GYM_SET_DELETED, () => reset("")),
+    ];
+    return () => descriptions.forEach((description) => description.remove());
+  }, [sets]);
 
   const search = (value: string) => {
     console.log(`${SetList.name}.search:`, value);
     setTerm(value);
     setOffset(0);
-    reset({
-      skip: 0,
-      value,
-    });
+    reset(value);
   };
 
   useEffect(() => {
     console.log(`${SetList.name}.useEffect:`, params);
-    if (!params)
-      reset({
-        skip: 0,
-        value: "",
-      });
     if (params?.search) search(params.search);
-    else if (params?.refresh) refresh(params.refresh);
-    else if (params?.reset)
-      reset({
-        skip: 0,
-        value: term,
-      });
-    /* eslint-disable react-hooks/exhaustive-deps */
   }, [params]);
 
   const renderItem = useCallback(
@@ -155,10 +157,7 @@ export default function SetList() {
   const remove = async () => {
     setIds([]);
     await setRepo.delete(ids.length > 0 ? ids : {});
-    return reset({
-      skip: 0,
-      value: term,
-    });
+    return reset(term);
   };
 
   const select = useCallback(() => {
@@ -187,10 +186,7 @@ export default function SetList() {
         onRefresh={() => {
           setOffset(0);
           setRefreshing(true);
-          reset({
-            skip: 0,
-            value: term,
-          }).finally(() => setRefreshing(false));
+          reset(term).finally(() => setRefreshing(false));
         }}
       />
     );

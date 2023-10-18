@@ -13,8 +13,9 @@ import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, planRepo, setRepo, settingsRepo } from "./db";
+import { emitter } from "./emitter";
 import { fixNumeric } from "./fix-numeric";
-import GymSet, { defaultSet } from "./gym-set";
+import GymSet, { defaultSet, GYM_SET_CREATED } from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
@@ -79,6 +80,7 @@ export default function EditWorkout() {
       steps,
       created: now,
     });
+    emitter.emit(GYM_SET_CREATED);
     navigate("WorkoutList", { reset: new Date().getTime() });
   };
 

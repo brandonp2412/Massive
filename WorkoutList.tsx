@@ -12,7 +12,7 @@ import { LIMIT } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import { emitter } from "./emitter";
-import GymSet from "./gym-set";
+import GymSet, { GYM_SET_DELETED } from "./gym-set";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetList from "./SetList";
@@ -131,6 +131,7 @@ export default function WorkoutList() {
   const remove = async () => {
     setNames([]);
     if (names.length > 0) await setRepo.delete({ name: In(names) });
+    emitter.emit(GYM_SET_DELETED);
     await reset(term);
   };
 
