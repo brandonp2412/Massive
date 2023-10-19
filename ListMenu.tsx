@@ -49,17 +49,19 @@ export default function ListMenu({
     <Menu
       visible={showMenu}
       onDismiss={() => setShowMenu(false)}
-      anchor={<IconButton onPress={() => setShowMenu(true)} icon="more-vert" />}
+      anchor={
+        <IconButton onPress={() => setShowMenu(true)} icon="dots-vertical" />
+      }
     >
-      <Menu.Item leadingIcon="done-all" title="Select all" onPress={select} />
+      <Menu.Item leadingIcon="check-all" title="Select all" onPress={select} />
       <Menu.Item
-        leadingIcon="clear"
+        leadingIcon="close"
         title="Clear"
         onPress={clear}
         disabled={ids?.length === 0}
       />
       <Menu.Item
-        leadingIcon="edit"
+        leadingIcon="pencil"
         title="Edit"
         onPress={edit}
         disabled={ids?.length === 0}

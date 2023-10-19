@@ -8,6 +8,7 @@ import SettingsPage from "./SettingsPage";
 import TimerPage from "./TimerPage";
 import useDark from "./use-dark";
 import WorkoutsPage from "./WorkoutsPage";
+import WeightPage from "./WeightPage";
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
@@ -30,27 +31,32 @@ export default function Routes() {
       <Drawer.Screen
         name="Plans"
         component={PlanPage}
-        options={{ drawerIcon: () => <IconButton icon="event" /> }}
+        options={{ drawerIcon: () => <IconButton icon="calendar" /> }}
       />
       <Drawer.Screen
         name="Graphs"
         component={GraphsPage}
-        options={{ drawerIcon: () => <IconButton icon="insights" /> }}
+        options={{ drawerIcon: () => <IconButton icon="chart-line" /> }}
       />
       <Drawer.Screen
         name="Workouts"
         component={WorkoutsPage}
-        options={{ drawerIcon: () => <IconButton icon="fitness-center" /> }}
+        options={{ drawerIcon: () => <IconButton icon="dumbbell" /> }}
       />
       <Drawer.Screen
         name="Timer"
         component={TimerPage}
-        options={{ drawerIcon: () => <IconButton icon="access-time" /> }}
+        options={{ drawerIcon: () => <IconButton icon="timer-outline" /> }}
+      />
+      <Drawer.Screen
+        name="Weight"
+        component={WeightPage}
+        options={{ drawerIcon: () => <IconButton icon="scale" /> }}
       />
       <Drawer.Screen
         name="Settings"
         component={SettingsPage}
-        options={{ drawerIcon: () => <IconButton icon="settings" /> }}
+        options={{ drawerIcon: () => <IconButton icon="cog" /> }}
       />
     </Drawer.Navigator>
   );

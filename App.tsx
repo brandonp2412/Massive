@@ -11,7 +11,7 @@ import {
   Provider as PaperProvider,
   Snackbar,
 } from "react-native-paper";
-import MaterialIcon from "react-native-vector-icons/MaterialIcons";
+import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
 import { emitter } from "./emitter";

@@ -97,7 +97,7 @@ export default function EditPlan() {
               delete first.id;
               navigation.navigate("StartPlan", { plan: newPlan, first });
             }}
-            icon="play-arrow"
+            icon="play"
           />
         )}
       </StackHeader>
@@ -138,7 +138,7 @@ export default function EditPlan() {
           disabled={workouts.length === 0 && days.length === 0}
           style={styles.button}
           mode="outlined"
-          icon="save"
+          icon="content-save"
           onPress={async () => {
             await save();
             navigation.navigate("PlanList");

@@ -100,8 +100,8 @@ export default function StartPlanItem(props: Props) {
           visible={showMenu}
           onDismiss={() => setShowMenu(false)}
         >
-          <Menu.Item leadingIcon="visibility" onPress={view} title="View" />
-          <Menu.Item leadingIcon="edit" onPress={edit} title="Edit" />
+          <Menu.Item leadingIcon="eye-outline" onPress={view} title="View" />
+          <Menu.Item leadingIcon="pencil" onPress={edit} title="Edit" />
           <Menu.Item leadingIcon="undo" onPress={undo} title="Undo" />
         </Menu>
       </View>

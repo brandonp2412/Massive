@@ -16,7 +16,7 @@ export default function AppFab(props: Partial<ComponentProps<typeof FAB>>) {
 
   return (
     <FAB
-      icon="add"
+      icon="plus"
       testID="add"
       color={fabColor}
       style={{

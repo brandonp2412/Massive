@@ -12,7 +12,7 @@ export default function StackHeader({
 
   return (
     <Appbar.Header>
-      <IconButton icon="arrow-back" onPress={navigation.goBack} />
+      <IconButton icon="arrow-left" onPress={navigation.goBack} />
       <Appbar.Content title={title} />
       {children}
     </Appbar.Header>

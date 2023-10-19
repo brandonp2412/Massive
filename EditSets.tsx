@@ -111,11 +111,11 @@ export default function EditSets() {
             autoFocus={!!name}
           />
           <IconButton
-            icon="add"
+            icon="plus"
             onPress={() => setReps((Number(reps) + 1).toString())}
           />
           <IconButton
-            icon="remove"
+            icon="minus"
             onPress={() => setReps((Number(reps) - 1).toString())}
           />
         </View>
@@ -135,11 +135,11 @@ export default function EditSets() {
             onSubmitEditing={save}
           />
           <IconButton
-            icon="add"
+            icon="plus"
             onPress={() => setWeight((Number(weight) + 2.5).toString())}
           />
           <IconButton
-            icon="remove"
+            icon="minus"
             onPress={() => setWeight((Number(weight) - 2.5).toString())}
           />
         </View>
@@ -175,7 +175,7 @@ export default function EditSets() {
           <Button
             style={{ marginBottom: MARGIN }}
             onPress={changeImage}
-            icon="add-photo-alternate"
+            icon="image-plus"
           >
             Image
           </Button>
@@ -184,7 +184,7 @@ export default function EditSets() {
 
       <Button
         mode="outlined"
-        icon="save"
+        icon="content-save"
         style={{ margin: MARGIN }}
         onPress={save}
       >

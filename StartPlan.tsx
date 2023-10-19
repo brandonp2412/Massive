@@ -16,7 +16,7 @@ import { AppDataSource } from "./data-source";
 import { getNow, setRepo, settingsRepo } from "./db";
 import { emitter } from "./emitter";
 import { fixNumeric } from "./fix-numeric";
-import GymSet, { GYM_SET_CREATED, GYM_SET_UPDATED } from "./gym-set";
+import GymSet, { GYM_SET_CREATED } from "./gym-set";
 import { PlanPageParams } from "./plan-page-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
@@ -125,7 +125,7 @@ export default function StartPlan() {
       >
         <IconButton
           onPress={() => navigation.navigate("EditPlan", { plan: params.plan })}
-          icon="edit"
+          icon="pencil"
         />
       </StackHeader>
       <View style={{ padding: PADDING, flex: 1, flexDirection: "column" }}>
@@ -153,11 +153,11 @@ export default function StartPlan() {
               innerRef={repsRef}
             />
             <IconButton
-              icon="add"
+              icon="plus"
               onPress={() => setReps((Number(reps) + 1).toString())}
             />
             <IconButton
-              icon="remove"
+              icon="minus"
               onPress={() => setReps((Number(reps) - 1).toString())}
             />
           </View>
@@ -184,11 +184,11 @@ export default function StartPlan() {
               blurOnSubmit
             />
             <IconButton
-              icon="add"
+              icon="plus"
               onPress={() => setWeight((Number(weight) + 2.5).toString())}
             />
             <IconButton
-              icon="remove"
+              icon="minus"
               onPress={() => setWeight((Number(weight) - 2.5).toString())}
             />
           </View>
@@ -222,7 +222,7 @@ export default function StartPlan() {
             />
           )}
         </View>
-        <Button mode="outlined" icon="save" onPress={handleSubmit}>
+        <Button mode="outlined" icon="content-save" onPress={handleSubmit}>
           Save
         </Button>
       </View>

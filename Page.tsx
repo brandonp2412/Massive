@@ -22,8 +22,8 @@ export default function Page({
         placeholder="Search"
         value={term}
         onChangeText={search}
-        icon="search"
-        clearIcon="clear"
+        icon="magnify"
+        clearIcon="close"
       />
       {children}
       {onAdd && <AppFab onPress={onAdd} />}

@@ -27,7 +27,7 @@ import { toast } from "./toast";
 import { fixNumeric } from "./fix-numeric";
 import { emitter } from "./emitter";
 
-export default function EditSet() {
+export default function EditWeight() {
   const { params } = useRoute<RouteProp<HomePageParams, "EditSet">>();
   const { set } = params;
   const { navigate } = useNavigation<NavigationProp<HomePageParams>>();
@@ -202,11 +202,11 @@ export default function EditSet() {
             innerRef={repsRef}
           />
           <IconButton
-            icon="plus"
+            icon="add"
             onPress={() => setReps((Number(reps) + 1).toString())}
           />
           <IconButton
-            icon="minus"
+            icon="remove"
             onPress={() => setReps((Number(reps) - 1).toString())}
           />
         </View>
@@ -232,11 +232,11 @@ export default function EditSet() {
             innerRef={weightRef}
           />
           <IconButton
-            icon="plus"
+            icon="add"
             onPress={() => setWeight((Number(weight) + 2.5).toString())}
           />
           <IconButton
-            icon="minus"
+            icon="remove"
             onPress={() => setWeight((Number(weight) - 2.5).toString())}
           />
         </View>
@@ -273,7 +273,7 @@ export default function EditSet() {
           <Button
             style={{ marginBottom: MARGIN }}
             onPress={changeImage}
-            icon="image-plus"
+            icon="add-photo-alternate"
           >
             Image
           </Button>
@@ -283,7 +283,7 @@ export default function EditSet() {
       <Button
         disabled={!name}
         mode="outlined"
-        icon="content-save"
+        icon="save"
         style={{ margin: MARGIN }}
         onPress={handleSubmit}
       >
