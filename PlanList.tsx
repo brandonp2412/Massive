@@ -22,6 +22,7 @@ export default function PlanList() {
   const navigation = useNavigation<NavigationProp<PlanPageParams>>();
 
   const refresh = useCallback(async (value: string) => {
+    console.log(`${PlanList.name}.refresh:`, value);
     planRepo
       .find({
         where: [
