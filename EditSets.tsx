@@ -14,7 +14,8 @@ import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { setRepo, settingsRepo } from "./db";
-import GymSet from "./gym-set";
+import { emitter } from "./emitter";
+import GymSet, { GYM_SET_CREATED } from "./gym-set";
 import { HomePageParams } from "./home-page-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
@@ -61,7 +62,8 @@ export default function EditSets() {
     if (unit) update.unit = unit;
     if (newImage) update.image = newImage;
     if (Object.keys(update).length > 0) await setRepo.update(ids, update);
-    navigate("Sets", { reset: ids[0] });
+    emitter.emit(GYM_SET_CREATED);
+    navigate("Sets");
   };
 
   const changeImage = useCallback(async () => {
