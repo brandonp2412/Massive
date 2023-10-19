@@ -15,7 +15,11 @@ import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
-import GymSet, { GYM_SET_CREATED, GYM_SET_UPDATED } from "./gym-set";
+import GymSet, {
+  GYM_SET_CREATED,
+  GYM_SET_DELETED,
+  GYM_SET_UPDATED,
+} from "./gym-set";
 import { HomePageParams } from "./home-page-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
@@ -33,6 +37,7 @@ export default function EditSet() {
   const [weight, setWeight] = useState(set.weight?.toString());
   const [newImage, setNewImage] = useState(set.image);
   const [unit, setUnit] = useState(set.unit);
+  const [showDelete, setShowDelete] = useState(false);
   const [created, setCreated] = useState<Date>(
     set.created ? new Date(set.created) : new Date()
   );
@@ -144,11 +149,27 @@ export default function EditSet() {
     });
   }, [created]);
 
+  const remove = async () => {
+    await setRepo.delete(set.id);
+    emitter.emit(GYM_SET_DELETED);
+    navigate("Sets");
+  };
+
   return (
     <>
-      <StackHeader
-        title={typeof set.id === "number" ? "Edit set" : "Add set"}
-      />
+      <StackHeader title={typeof set.id === "number" ? "Edit set" : "Add set"}>
+        {typeof set.id === "number" ? (
+          <IconButton onPress={() => setShowDelete(true)} icon="delete" />
+        ) : null}
+      </StackHeader>
+      <ConfirmDialog
+        title="Delete set"
+        show={showDelete}
+        onOk={remove}
+        setShow={setShowDelete}
+      >
+        <>Are you sure you want to delete {name}</>
+      </ConfirmDialog>
 
       <View style={{ padding: PADDING, flex: 1 }}>
         <AppInput
