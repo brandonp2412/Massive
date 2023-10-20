@@ -10,11 +10,19 @@ import { format } from "date-fns";
 import { useCallback, useRef, useState } from "react";
 import { NativeModules, TextInput, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
-import { Button, Card, IconButton, TouchableRipple } from "react-native-paper";
+import {
+  Button,
+  Card,
+  IconButton,
+  Menu,
+  TouchableRipple,
+} from "react-native-paper";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
+import { emitter } from "./emitter";
+import { fixNumeric } from "./fix-numeric";
 import GymSet, {
   GYM_SET_CREATED,
   GYM_SET_DELETED,
@@ -24,8 +32,6 @@ import { HomePageParams } from "./home-page-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
-import { fixNumeric } from "./fix-numeric";
-import { emitter } from "./emitter";
 
 export default function EditSet() {
   const { params } = useRoute<RouteProp<HomePageParams, "EditSet">>();
@@ -38,12 +44,14 @@ export default function EditSet() {
   const [newImage, setNewImage] = useState(set.image);
   const [unit, setUnit] = useState(set.unit);
   const [showDelete, setShowDelete] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [created, setCreated] = useState<Date>(
     set.created ? new Date(set.created) : new Date()
   );
   const [createdDirty, setCreatedDirty] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
   const [removeImage, setRemoveImage] = useState(false);
+  const [sets, setSets] = useState<GymSet[]>([]);
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
@@ -155,6 +163,30 @@ export default function EditSet() {
     navigate("Sets");
   };
 
+  const openMenu = async () => {
+    const latestSets = await setRepo
+      .createQueryBuilder()
+      .select()
+      .addSelect("MAX(created) as created")
+      .groupBy("name")
+      .getMany();
+    setSets(latestSets);
+    setShowMenu(true);
+  };
+
+  const select = (setOption: GymSet) => {
+    setName(setOption.name);
+    setReps(setOption.reps.toString());
+    setWeight(setOption.weight.toString());
+    setNewImage(setOption.image);
+    setUnit(setOption.unit);
+    setSelection({
+      start: 0,
+      end: setOption.reps.toString().length,
+    });
+    setShowMenu(false);
+  };
+
   return (
     <>
       <StackHeader title={typeof set.id === "number" ? "Edit set" : "Add set"}>
@@ -172,21 +204,36 @@ export default function EditSet() {
       </ConfirmDialog>
 
       <View style={{ padding: PADDING, flex: 1 }}>
-        <AppInput
-          label="Name"
-          value={name}
-          onChangeText={setName}
-          autoCorrect={false}
-          autoFocus={!name}
-          onSubmitEditing={() => repsRef.current?.focus()}
-        />
-
-        <View style={{ flexDirection: "row" }}>
+        <View>
           <AppInput
-            style={{
-              flex: 1,
-              marginBottom: MARGIN,
-            }}
+            label="Name"
+            value={name}
+            onChangeText={setName}
+            autoCorrect={false}
+            autoFocus={!name}
+            onSubmitEditing={() => repsRef.current?.focus()}
+          />
+          <View
+            style={{ position: "absolute", right: 0, flexDirection: "row" }}
+          >
+            <Menu
+              visible={showMenu}
+              onDismiss={() => setShowMenu(false)}
+              anchor={<IconButton icon="menu-down" onPress={openMenu} />}
+            >
+              {sets.map((setOption) => (
+                <Menu.Item
+                  title={setOption.name}
+                  key={setOption.id}
+                  onPress={() => select(setOption)}
+                />
+              ))}
+            </Menu>
+          </View>
+        </View>
+
+        <View>
+          <AppInput
             label="Reps"
             keyboardType="numeric"
             value={reps}
@@ -201,24 +248,22 @@ export default function EditSet() {
             onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
             innerRef={repsRef}
           />
-          <IconButton
-            icon="plus"
-            onPress={() => setReps((Number(reps) + 1).toString())}
-          />
-          <IconButton
-            icon="minus"
-            onPress={() => setReps((Number(reps) - 1).toString())}
-          />
+          <View
+            style={{ position: "absolute", right: 0, flexDirection: "row" }}
+          >
+            <IconButton
+              icon="plus"
+              onPress={() => setReps((Number(reps) + 1).toString())}
+            />
+            <IconButton
+              icon="minus"
+              onPress={() => setReps((Number(reps) - 1).toString())}
+            />
+          </View>
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            marginBottom: MARGIN,
-          }}
-        >
+        <View>
           <AppInput
-            style={{ flex: 1 }}
             label="Weight"
             keyboardType="numeric"
             value={weight}
@@ -231,14 +276,19 @@ export default function EditSet() {
             onSubmitEditing={handleSubmit}
             innerRef={weightRef}
           />
-          <IconButton
-            icon="plus"
-            onPress={() => setWeight((Number(weight) + 2.5).toString())}
-          />
-          <IconButton
-            icon="minus"
-            onPress={() => setWeight((Number(weight) - 2.5).toString())}
-          />
+
+          <View
+            style={{ position: "absolute", right: 0, flexDirection: "row" }}
+          >
+            <IconButton
+              icon="plus"
+              onPress={() => setWeight((Number(weight) + 2.5).toString())}
+            />
+            <IconButton
+              icon="minus"
+              onPress={() => setWeight((Number(weight) - 2.5).toString())}
+            />
+          </View>
         </View>
 
         {settings.showUnit && (
