@@ -1,174 +1,114 @@
 import {
   NavigationProp,
-  RouteProp,
+  useFocusEffect,
   useNavigation,
-  useRoute,
 } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
-import { List } from "react-native-paper";
+import { IconButton, List } from "react-native-paper";
 import { Like } from "typeorm";
 import { LIMIT } from "./constants";
-import { getNow, setRepo, settingsRepo } from "./db";
+import { getNow, settingsRepo, weightRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
-import { emitter } from "./emitter";
-import GymSet, {
-  defaultSet,
-  GYM_SET_CREATED,
-  GYM_SET_DELETED,
-  GYM_SET_UPDATED,
-} from "./gym-set";
-import { HomePageParams } from "./home-page-params";
-import ListMenu from "./ListMenu";
 import Page from "./Page";
-import SetItem from "./SetItem";
-import Settings, { SETTINGS } from "./settings";
+import Settings from "./settings";
+import { default as Weight, defaultWeight } from "./weight";
+import WeightItem from "./WeightItem";
+import { WeightPageParams } from "./WeightPage";
 
 export default function WeightList() {
   const [refreshing, setRefreshing] = useState(false);
-  const [sets, setSets] = useState<GymSet[]>();
+  const [weights, setWeights] = useState<Weight[]>();
   const [offset, setOffset] = useState(0);
   const [end, setEnd] = useState(false);
   const [settings, setSettings] = useState<Settings>();
-  const [ids, setIds] = useState<number[]>([]);
-  const navigation = useNavigation<NavigationProp<HomePageParams>>();
-  const { params } = useRoute<RouteProp<HomePageParams, "Sets">>();
-  const [term, setTerm] = useState(params?.search || "");
+  const { navigate } = useNavigation<NavigationProp<WeightPageParams>>();
+  const [term, setTerm] = useState("");
 
   const reset = useCallback(
     async (value: string) => {
-      const newSets = await setRepo.find({
-        where: { name: Like(`%${value.trim()}%`), hidden: 0 as any },
+      const newWeights = await weightRepo.find({
+        where: [
+          {
+            value: isNaN(Number(term)) ? undefined : Number(term),
+          },
+          {
+            created: Like(`%${term}%`),
+          },
+        ],
         take: LIMIT,
         skip: 0,
         order: { created: "DESC" },
       });
-      console.log(`${SetList.name}.reset:`, { value, offset });
-      setSets(newSets);
+      console.log(`${WeightList.name}.reset:`, { value, offset });
+      setWeights(newWeights);
       setEnd(false);
     },
-    [offset]
+    [offset, term]
   );
 
-  useEffect(() => {
-    settingsRepo.findOne({ where: {} }).then(setSettings);
-    reset("");
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, []);
-
-  useEffect(() => {
-    const updated = (gymSet: GymSet) => {
-      if (!sets) console.log({ sets });
-      console.log(`${SetList.name}.updated:`, { gymSet, length: sets.length });
-      const newSets = sets.map((set) => {
-        if (set.id !== gymSet.id) return set;
-        if (gymSet.created === undefined) gymSet.created = set.created;
-        return gymSet;
-      });
-      setSets(newSets);
-    };
-
-    const descriptions = [
-      emitter.addListener(SETTINGS, () => {
-        settingsRepo.findOne({ where: {} }).then(setSettings);
-      }),
-      emitter.addListener(GYM_SET_UPDATED, updated),
-      emitter.addListener(GYM_SET_CREATED, () => reset("")),
-      emitter.addListener(GYM_SET_DELETED, () => reset("")),
-    ];
-    return () => descriptions.forEach((description) => description.remove());
-  }, [sets]);
+  useFocusEffect(
+    useCallback(() => {
+      settingsRepo.findOne({ where: {} }).then(setSettings);
+      reset(term);
+    }, [term, reset])
+  );
 
   const search = (value: string) => {
-    console.log(`${SetList.name}.search:`, value);
+    console.log(`${WeightList.name}.search:`, value);
     setTerm(value);
     setOffset(0);
     reset(value);
   };
 
-  useEffect(() => {
-    console.log(`${SetList.name}.useEffect:`, params);
-    if (params?.search) search(params.search);
-  }, [params]);
-
   const renderItem = useCallback(
-    ({ item }: { item: GymSet }) => (
-      <SetItem
-        settings={settings}
-        item={item}
-        key={item.id}
-        ids={ids}
-        setIds={setIds}
-      />
+    ({ item }: { item: Weight }) => (
+      <WeightItem settings={settings} item={item} key={item.id} />
     ),
-    [settings, ids]
+    [settings]
   );
 
   const next = async () => {
     console.log({ end, refreshing });
     if (end || refreshing) return;
     const newOffset = offset + LIMIT;
-    console.log(`${SetList.name}.next:`, { offset, newOffset, term });
-    const newSets = await setRepo.find({
-      where: { name: Like(`%${term}%`), hidden: 0 as any },
+    console.log(`${WeightList.name}.next:`, { offset, newOffset, term });
+    const newWeights = await weightRepo.find({
+      where: [
+        {
+          value: Number(term),
+        },
+        {
+          created: Like(`%${term}%`),
+        },
+      ],
       take: LIMIT,
       skip: newOffset,
       order: { created: "DESC" },
     });
-    if (newSets.length === 0) return setEnd(true);
-    if (!sets) return;
-    const map = new Map<number, GymSet>();
-    for (const set of sets) map.set(set.id, set);
-    for (const set of newSets) map.set(set.id, set);
+    if (newWeights.length === 0) return setEnd(true);
+    if (!weights) return;
+    const map = new Map<number, Weight>();
+    for (const weight of weights) map.set(weight.id, weight);
+    for (const weight of newWeights) map.set(weight.id, weight);
     const unique = Array.from(map.values());
-    setSets(unique);
-    if (newSets.length < LIMIT) return setEnd(true);
+    setWeights(unique);
+    if (newWeights.length < LIMIT) return setEnd(true);
     setOffset(newOffset);
   };
 
   const onAdd = useCallback(async () => {
     const now = await getNow();
-    let set = sets?.[0];
-    if (!set) set = { ...defaultSet };
-    set.created = now;
-    delete set.id;
-    navigation.navigate("EditSet", { set });
-  }, [navigation, sets]);
-
-  const edit = useCallback(() => {
-    navigation.navigate("EditSets", { ids });
-    setIds([]);
-  }, [ids, navigation]);
-
-  const copy = useCallback(async () => {
-    const set = await setRepo.findOne({
-      where: { id: ids.pop() },
-    });
-    delete set.id;
-    delete set.created;
-    navigation.navigate("EditSet", { set });
-    setIds([]);
-  }, [ids, navigation]);
-
-  const clear = useCallback(() => {
-    setIds([]);
-  }, []);
-
-  const remove = async () => {
-    setIds([]);
-    await setRepo.delete(ids.length > 0 ? ids : {});
-    return reset(term);
-  };
-
-  const select = useCallback(() => {
-    if (!sets) return;
-    if (ids.length === sets.length) return setIds([]);
-    setIds(sets.map((set) => set.id));
-  }, [sets, ids]);
+    let weight = weights?.[0];
+    if (!weight) weight = { ...defaultWeight };
+    weight.created = now;
+    delete weight.id;
+    navigate("EditWeight", { weight });
+  }, [navigate, weights]);
 
   const getContent = () => {
     if (!settings) return null;
-    if (sets?.length === 0)
+    if (weights?.length === 0)
       return (
         <List.Item
           title="No sets yet"
@@ -177,7 +117,7 @@ export default function WeightList() {
       );
     return (
       <FlatList
-        data={sets ?? []}
+        data={weights ?? []}
         style={{ flex: 1 }}
         renderItem={renderItem}
         onEndReached={next}
@@ -194,14 +134,10 @@ export default function WeightList() {
 
   return (
     <>
-      <DrawerHeader name={ids.length > 0 ? `${ids.length} selected` : "Home"}>
-        <ListMenu
-          onClear={clear}
-          onCopy={copy}
-          onDelete={remove}
-          onEdit={edit}
-          ids={ids}
-          onSelect={select}
+      <DrawerHeader name="Weight">
+        <IconButton
+          onPress={() => navigate("ViewWeightGraph")}
+          icon="chart-bell-curve-cumulative"
         />
       </DrawerHeader>
 

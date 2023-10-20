@@ -68,10 +68,10 @@ export default function StartPlanItem(props: Props) {
     navigate("EditSet", { set: first });
   }, [item.name, navigate]);
 
-  const view = () => {
+  const view = useCallback(() => {
     setShowMenu(false);
     navigateHome("Sets", { search: item.name });
-  };
+  }, [item.name, navigateHome]);
 
   const left = useCallback(
     () => (
@@ -106,7 +106,7 @@ export default function StartPlanItem(props: Props) {
         </Menu>
       </View>
     ),
-    [anchor, showMenu, edit, undo]
+    [anchor, showMenu, edit, undo, view]
   );
 
   return (

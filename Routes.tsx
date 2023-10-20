@@ -36,7 +36,9 @@ export default function Routes() {
       <Drawer.Screen
         name="Graphs"
         component={GraphsPage}
-        options={{ drawerIcon: () => <IconButton icon="chart-line" /> }}
+        options={{
+          drawerIcon: () => <IconButton icon="chart-bell-curve-cumulative" />,
+        }}
       />
       <Drawer.Screen
         name="Workouts"

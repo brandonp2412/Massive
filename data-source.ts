@@ -26,14 +26,16 @@ import { dropMigrations1667190214743 } from "./migrations/1667190214743-drop-mig
 import { splitColor1669420187764 } from "./migrations/1669420187764-split-color";
 import { addBackup1678334268359 } from "./migrations/1678334268359-add-backup";
 import { planTitle1692654882408 } from "./migrations/1692654882408-plan-title";
+import { weight1697766633971 } from "./migrations/1697766633971-weight";
 import { Plan } from "./plan";
 import Settings from "./settings";
+import Weight from "./weight";
 
 export const AppDataSource = new DataSource({
   type: "react-native",
   database: "massive.db",
   location: "default",
-  entities: [GymSet, Plan, Settings],
+  entities: [GymSet, Plan, Settings, Weight],
   migrationsRun: true,
   migrationsTableName: "typeorm_migrations",
   migrations: [
@@ -63,5 +65,6 @@ export const AppDataSource = new DataSource({
     splitColor1669420187764,
     addBackup1678334268359,
     planTitle1692654882408,
+    weight1697766633971,
   ],
 });
