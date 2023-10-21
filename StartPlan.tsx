@@ -130,15 +130,9 @@ export default function StartPlan() {
       </StackHeader>
       <View style={{ padding: PADDING, flex: 1, flexDirection: "column" }}>
         <View style={{ flex: 1 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              marginBottom: MARGIN,
-            }}
-          >
+          <View>
             <AppInput
               label="Reps"
-              style={{ flex: 1 }}
               keyboardType="numeric"
               value={reps}
               onChangeText={(newReps) => {
@@ -152,25 +146,23 @@ export default function StartPlan() {
               onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
               innerRef={repsRef}
             />
-            <IconButton
-              icon="plus"
-              onPress={() => setReps((Number(reps) + 1).toString())}
-            />
-            <IconButton
-              icon="minus"
-              onPress={() => setReps((Number(reps) - 1).toString())}
-            />
+            <View
+              style={{ position: "absolute", right: 0, flexDirection: "row" }}
+            >
+              <IconButton
+                icon="plus"
+                onPress={() => setReps((Number(reps) + 1).toString())}
+              />
+              <IconButton
+                icon="minus"
+                onPress={() => setReps((Number(reps) - 1).toString())}
+              />
+            </View>
           </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              marginBottom: MARGIN,
-            }}
-          >
+          <View>
             <AppInput
               label="Weight"
-              style={{ flex: 1 }}
               keyboardType="numeric"
               value={weight}
               onChangeText={(newWeight) => {
@@ -183,14 +175,18 @@ export default function StartPlan() {
               innerRef={weightRef}
               blurOnSubmit
             />
-            <IconButton
-              icon="plus"
-              onPress={() => setWeight((Number(weight) + 2.5).toString())}
-            />
-            <IconButton
-              icon="minus"
-              onPress={() => setWeight((Number(weight) - 2.5).toString())}
-            />
+            <View
+              style={{ position: "absolute", right: 0, flexDirection: "row" }}
+            >
+              <IconButton
+                icon="plus"
+                onPress={() => setWeight((Number(weight) + 2.5).toString())}
+              />
+              <IconButton
+                icon="minus"
+                onPress={() => setWeight((Number(weight) - 2.5).toString())}
+              />
+            </View>
           </View>
 
           {settings?.showUnit && (
