@@ -51,7 +51,7 @@ export default function EditSet() {
   const [createdDirty, setCreatedDirty] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
   const [removeImage, setRemoveImage] = useState(false);
-  const [sets, setSets] = useState<GymSet[]>([]);
+  const [setOptions, setSets] = useState<GymSet[]>([]);
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
@@ -164,6 +164,7 @@ export default function EditSet() {
   };
 
   const openMenu = async () => {
+    if (setOptions.length > 0) return setShowMenu(true);
     const latestSets = await setRepo
       .createQueryBuilder()
       .select()
@@ -221,7 +222,7 @@ export default function EditSet() {
               onDismiss={() => setShowMenu(false)}
               anchor={<IconButton icon="menu-down" onPress={openMenu} />}
             >
-              {sets.map((setOption) => (
+              {setOptions.map((setOption) => (
                 <Menu.Item
                   title={setOption.name}
                   key={setOption.id}
