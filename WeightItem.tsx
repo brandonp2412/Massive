@@ -1,6 +1,6 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { format } from "date-fns";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { List, Text } from "react-native-paper";
 import Settings from "./settings";
 import Weight from "./weight";
@@ -19,15 +19,31 @@ export default function WeightItem({
     navigation.navigate("EditWeight", { weight: item });
   }, [item, navigation]);
 
-  const description = useCallback(() => {
-    return <Text>{format(new Date(item.created), settings.date || "P")}</Text>;
-  }, [item.created, settings.date]);
+  const today = useMemo(() => {
+    const now = new Date();
+    const created = new Date(item.created);
+    return (
+      now.getFullYear() === created.getFullYear() &&
+      now.getMonth() === created.getMonth() &&
+      now.getDate() === created.getDate()
+    );
+  }, [item.created]);
 
   return (
     <List.Item
       onPress={press}
       title={`${item.value}${item.unit || "kg"}`}
-      description={description}
+      right={() => (
+        <Text
+          style={{
+            alignSelf: "center",
+            textDecorationLine: today ? "underline" : "none",
+            fontWeight: today ? "bold" : "normal",
+          }}
+        >
+          {format(new Date(item.created), settings.date || "P")}
+        </Text>
+      )}
     />
   );
 }
