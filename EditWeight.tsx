@@ -39,7 +39,7 @@ export default function EditWeight() {
     }, [])
   );
 
-  const handleSubmit = async () => {
+  const submit = async () => {
     if (!value) return;
 
     const newWeight: Partial<Weight> = {
@@ -93,11 +93,11 @@ export default function EditWeight() {
 
       <View style={{ padding: PADDING, flex: 1 }}>
         <AppInput
-          label="Value"
+          label="Weight"
           value={value}
           onChangeText={setValue}
           keyboardType="numeric"
-          onSubmitEditing={() => unitRef.current?.focus()}
+          onSubmitEditing={submit}
         />
 
         {settings.showUnit && (
@@ -124,7 +124,7 @@ export default function EditWeight() {
         mode="outlined"
         icon="content-save"
         style={{ margin: MARGIN }}
-        onPress={handleSubmit}
+        onPress={submit}
       >
         Save
       </Button>
