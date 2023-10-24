@@ -13,9 +13,11 @@ import { Button, IconButton } from "react-native-paper";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
+import { AppDataSource } from "./data-source";
 import { getNow, settingsRepo, weightRepo } from "./db";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
+import { toast } from "./toast";
 import Weight from "./weight";
 import { WeightPageParams } from "./WeightPage";
 
@@ -52,7 +54,29 @@ export default function EditWeight() {
     else if (typeof weight.id !== "number") newWeight.created = await getNow();
 
     await weightRepo.save(newWeight);
+    if (settings.notify) await checkWeekly();
     navigate("Weights");
+  };
+
+  const checkWeekly = async () => {
+    const select = `
+      WITH weekly_weights AS (
+          SELECT
+              strftime('%W', created) AS week_number,
+              AVG(value) AS weekly_average
+          FROM weights
+          WHERE strftime('%W', created) = strftime('%W', 'now')
+          GROUP BY week_number
+      )
+      SELECT
+          ((SELECT value FROM weights WHERE strftime('%W', created) = strftime('%W', 'now') ORDER BY created LIMIT 1) - weekly_weights.weekly_average) / (SELECT value FROM weights WHERE strftime('%W', created) = strftime('%W', 'now') ORDER BY created LIMIT 1) * 100 AS loss
+      FROM weekly_weights
+      WHERE week_number = strftime('%W', 'now')
+    `;
+    const result = await AppDataSource.manager.query(select);
+    console.log(`${EditWeight.name}.checkWeekly:`, result);
+    if (result.length && result[0].loss > 1)
+      toast("Weight loss should be <= 1% per week.");
   };
 
   const pickDate = useCallback(() => {
