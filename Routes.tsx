@@ -9,6 +9,7 @@ import TimerPage from "./TimerPage";
 import useDark from "./use-dark";
 import WorkoutsPage from "./WorkoutsPage";
 import WeightPage from "./WeightPage";
+import InsightsPage from "./InsightsPage";
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
@@ -54,6 +55,13 @@ export default function Routes() {
         name="Weight"
         component={WeightPage}
         options={{ drawerIcon: () => <IconButton icon="scale" /> }}
+      />
+      <Drawer.Screen
+        name="Insights"
+        component={InsightsPage}
+        options={{
+          drawerIcon: () => <IconButton icon="lightbulb-on-outline" />,
+        }}
       />
       <Drawer.Screen
         name="Settings"
