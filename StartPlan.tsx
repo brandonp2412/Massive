@@ -10,7 +10,7 @@ import { FlatList, NativeModules, TextInput, View } from "react-native";
 import { Button, IconButton, ProgressBar } from "react-native-paper";
 import AppInput from "./AppInput";
 import { getBestSet } from "./best.service";
-import { MARGIN, PADDING } from "./constants";
+import { PADDING } from "./constants";
 import CountMany from "./count-many";
 import { AppDataSource } from "./data-source";
 import { getNow, setRepo, settingsRepo } from "./db";

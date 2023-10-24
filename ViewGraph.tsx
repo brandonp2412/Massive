@@ -34,7 +34,7 @@ export default function ViewGraph() {
       .createQueryBuilder()
       .select("STRFTIME('%Y-%m-%d', created)", "created")
       .addSelect("unit")
-      .where("name = :name", { name: params.best.name })
+      .where("name = :name", { name: params.name })
       .andWhere("NOT hidden")
       .andWhere("DATE(created) >= DATE('now', 'weekday 0', :difference)", {
         difference,
@@ -67,7 +67,7 @@ export default function ViewGraph() {
             setWeights(newWeights);
           });
     }
-  }, [params.best.name, metric, period]);
+  }, [params.name, metric, period]);
 
   const charts = useMemo(() => {
     if (
@@ -108,7 +108,7 @@ export default function ViewGraph() {
 
   return (
     <>
-      <StackHeader title={params.best.name}>
+      <StackHeader title={params.name}>
         <IconButton
           onPress={() =>
             captureScreen().then(async (uri) => {

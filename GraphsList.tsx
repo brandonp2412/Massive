@@ -66,7 +66,7 @@ export default function GraphsList() {
       key={item.name}
       title={item.name}
       description={`${item.reps} x ${item.weight}${item.unit || "kg"}`}
-      onPress={() => navigation.navigate("ViewGraph", { best: item })}
+      onPress={() => navigation.navigate("ViewGraph", { name: item.name })}
       left={() =>
         (settings?.images && item.image && (
           <Image

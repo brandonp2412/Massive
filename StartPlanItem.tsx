@@ -6,6 +6,7 @@ import { Like } from "typeorm";
 import CountMany from "./count-many";
 import { getNow, setRepo } from "./db";
 import { emitter } from "./emitter";
+import { GraphsPageParams } from "./GraphsPage";
 import { GYM_SET_DELETED } from "./gym-set";
 import { HomePageParams } from "./home-page-params";
 import { PlanPageParams } from "./plan-page-params";
@@ -25,6 +26,8 @@ export default function StartPlanItem(props: Props) {
   const { navigate } = useNavigation<NavigationProp<PlanPageParams>>();
   const { navigate: navigateHome } =
     useNavigation<NavigationProp<HomePageParams>>();
+  const { navigate: navigateGraph } =
+    useNavigation<NavigationProp<GraphsPageParams>>();
 
   const undo = useCallback(async () => {
     const now = await getNow();
@@ -73,6 +76,11 @@ export default function StartPlanItem(props: Props) {
     navigateHome("Sets", { search: item.name });
   }, [item.name, navigateHome]);
 
+  const graph = useCallback(() => {
+    setShowMenu(false);
+    navigateGraph("ViewGraph", { name: item.name });
+  }, [item.name, navigateGraph]);
+
   const left = useCallback(
     () => (
       <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -101,12 +109,17 @@ export default function StartPlanItem(props: Props) {
           onDismiss={() => setShowMenu(false)}
         >
           <Menu.Item leadingIcon="eye-outline" onPress={view} title="View" />
+          <Menu.Item
+            leadingIcon="chart-bell-curve-cumulative"
+            onPress={graph}
+            title="Graph"
+          />
           <Menu.Item leadingIcon="pencil" onPress={edit} title="Edit" />
           <Menu.Item leadingIcon="undo" onPress={undo} title="Undo" />
         </Menu>
       </View>
     ),
-    [anchor, showMenu, edit, undo, view]
+    [anchor, showMenu, edit, undo, view, graph]
   );
 
   return (
