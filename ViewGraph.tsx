@@ -1,5 +1,4 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { FileSystem } from "react-native-file-access";
@@ -16,6 +15,7 @@ import GymSet from "./gym-set";
 import { Metrics } from "./metrics";
 import { Periods } from "./periods";
 import Volume from "./volume";
+import { format } from "date-fns";
 
 export default function ViewGraph() {
   const { params } = useRoute<RouteProp<GraphsPageParams, "ViewGraph">>();
@@ -70,41 +70,38 @@ export default function ViewGraph() {
   }, [params.name, metric, period]);
 
   const charts = useMemo(() => {
-    if (
-      (metric === Metrics.Volume && volumes?.length === 0) ||
-      (metric === Metrics.Best && weights?.length === 0) ||
-      (metric === Metrics.OneRepMax && weights?.length === 0)
-    ) {
-      return <List.Item title="No data yet." />;
-    }
-    if (metric === Metrics.Volume && volumes?.length && weights?.length) {
+    let periodFormat = "do";
+    if (period === Periods.Weekly) periodFormat = "iii";
+    else if (period === Periods.Yearly) periodFormat = "P";
+    let preserve = 3;
+    if (period === Periods.Yearly) preserve = 1;
+
+    if (metric === Metrics.Volume && Number(volumes?.length) > 0)
       return (
         <Chart
-          yData={volumes.map((v) => v.value)}
-          yFormat={(value: number) =>
-            `${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}${
-              volumes[0].unit || "kg"
-            }`
-          }
-          xData={weights}
-          xFormat={(_value, index) =>
-            format(new Date(weights[index].created), "d/M")
-          }
+          data={volumes.map((volume) => volume.value)}
+          labels={volumes.map((volume) =>
+            format(new Date(volume.created), periodFormat)
+          )}
+          preserve={preserve}
         />
       );
-    }
+    if (
+      (metric === Metrics.Best || metric === Metrics.OneRepMax) &&
+      Number(weights?.length) > 0
+    )
+      return (
+        <Chart
+          data={weights.map((set) => set.weight)}
+          labels={weights.map((set) =>
+            format(new Date(set.created), periodFormat)
+          )}
+          preserve={preserve}
+        />
+      );
 
-    return (
-      <Chart
-        yData={weights?.map((set) => set.weight) || []}
-        yFormat={(value) => `${value}${weights?.[0].unit}`}
-        xData={weights || []}
-        xFormat={(_value, index) =>
-          format(new Date(weights?.[index].created), "d/M")
-        }
-      />
-    );
-  }, [volumes, weights, metric]);
+    return <List.Item title="No data yet." />;
+  }, [volumes, weights, metric, period]);
 
   return (
     <>
@@ -144,7 +141,9 @@ export default function ViewGraph() {
           onChange={(value) => setPeriod(value as Periods)}
           value={period}
         />
-        {charts}
+        <View style={{ paddingTop: PADDING }}>
+          {(weights || volumes) && charts}
+        </View>
       </View>
     </>
   );

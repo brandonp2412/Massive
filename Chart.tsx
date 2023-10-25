@@ -1,69 +1,55 @@
-import { useTheme } from "@react-navigation/native";
-import * as shape from "d3-shape";
-import { View } from "react-native";
-import { Grid, LineChart, XAxis, YAxis } from "react-native-svg-charts";
-import { CombinedDarkTheme, CombinedDefaultTheme } from "./App";
-import { MARGIN, PADDING } from "./constants";
+import { useMemo } from "react";
+import { useWindowDimensions } from "react-native";
+import { LineChart } from "react-native-chart-kit";
+import { AbstractChartConfig } from "react-native-chart-kit/dist/AbstractChart";
+import { PADDING } from "./constants";
 import useDark from "./use-dark";
+import { useTheme } from "react-native-paper";
 
-export default function Chart({
-  yData,
-  xFormat,
-  xData,
-  yFormat,
-}: {
-  yData: number[];
-  xData: unknown[];
-  xFormat: (value: any, index: number) => string;
-  yFormat: (value: any) => string;
-}) {
+interface ChartProps {
+  labels: string[];
+  data: number[];
+  preserve?: number;
+}
+
+export default function Chart({ labels, data, preserve = 3 }: ChartProps) {
+  const { width } = useWindowDimensions();
   const { colors } = useTheme();
-  const dark = useDark();
-  const axesSvg = {
-    fontSize: 10,
-    fill: dark
-      ? CombinedDarkTheme.colors.text
-      : CombinedDefaultTheme.colors.text,
+
+  const config: AbstractChartConfig = {
+    backgroundGradientFrom: colors.background,
+    backgroundGradientTo: colors.elevation.level1,
+    color: () => colors.primary,
   };
-  const verticalContentInset = { top: 10, bottom: 10 };
-  const xAxisHeight = 30;
+
+  const pruned = useMemo(() => {
+    const newPruned = [...labels];
+    if (labels.length <= preserve + 2) return labels;
+
+    let interval = Math.floor((labels.length - 2) / (preserve + 1));
+    for (let i = 1; i < labels.length - 1; i++) {
+      if ((i - 1) % interval !== 0 || i === 1) {
+        newPruned[i] = "";
+      }
+    }
+    return newPruned;
+  }, [labels, preserve]);
+
+  console.log({ labels, data, pruned, preserve });
 
   return (
-    <>
-      <View
-        style={{
-          height: 300,
-          padding: PADDING,
-          flexDirection: "row",
-        }}
-      >
-        <YAxis
-          data={yData}
-          style={{ marginBottom: xAxisHeight }}
-          contentInset={verticalContentInset}
-          svg={axesSvg}
-          formatLabel={yFormat}
-        />
-        <View style={{ flex: 1, marginLeft: MARGIN }}>
-          <LineChart
-            style={{ flex: 1 }}
-            data={yData}
-            contentInset={verticalContentInset}
-            curve={shape.curveBasis}
-            svg={{
-              stroke: colors.primary,
-            }}
-          >
-            <Grid />
-          </LineChart>
-          <XAxis
-            data={xData}
-            formatLabel={xFormat}
-            contentInset={{ left: 15, right: 16 }}
-            svg={axesSvg}
-          />
-        </View>
-      </View>
-    </>
+    <LineChart
+      height={400}
+      width={width - 20}
+      data={{
+        labels: pruned,
+        datasets: [
+          {
+            data,
+          },
+        ],
+      }}
+      chartConfig={config}
+    />
   );
 }
