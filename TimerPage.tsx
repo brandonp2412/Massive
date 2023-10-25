@@ -1,7 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useMemo, useState } from "react";
 import { Dimensions, NativeModules, View } from "react-native";
-import { Button, Text, useTheme } from "react-native-paper";
+import { Button, FAB, Text, useTheme } from "react-native-paper";
 import { ProgressCircle } from "react-native-svg-charts";
 import AppFab from "./AppFab";
 import { darkenRgba } from "./colors";
@@ -72,9 +72,18 @@ export default function TimerPage() {
           />
         </View>
       </View>
-      <Button onPress={add} style={{ position: "absolute", top: "82%", left }}>
-        Add 1 min
-      </Button>
+
+      <FAB
+        icon="plus"
+        color={colors.background}
+        onPress={add}
+        style={{
+          position: "absolute",
+          left: 20,
+          bottom: 20,
+          backgroundColor: colors.primary,
+        }}
+      />
       <AppFab icon="stop" onPress={stop} />
     </>
   );
