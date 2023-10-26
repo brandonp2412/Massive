@@ -122,6 +122,7 @@ export default function EditWeight() {
           onChangeText={setValue}
           keyboardType="numeric"
           onSubmitEditing={submit}
+          autoFocus
         />
 
         {settings.showUnit && (
