@@ -47,19 +47,19 @@ The apk file can be found at `android/app/build/outputs/apk/release/app-release.
 First ensure Node.js dependencies are installed:
 
 ```
-yarn install
+npm install
 ```
 
 Then start the metro server:
 
 ```
-yarn start
+npm start
 ```
 
 Then (in a separate terminal) run the `android` script:
 
 ```
-yarn android
+npm run android
 ```
 
 # Fdroid Metadata
