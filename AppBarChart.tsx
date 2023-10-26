@@ -1,5 +1,6 @@
 import { useWindowDimensions } from "react-native";
 import { PieChart } from "react-native-chart-kit";
+import { useTheme } from "react-native-paper";
 
 export interface Option {
   value: number;
@@ -8,6 +9,7 @@ export interface Option {
 
 export default function AppBarChart({ options }: { options: Option[] }) {
   const { width } = useWindowDimensions();
+  const { colors } = useTheme();
 
   const pieChartColors = [
     "#1f77b4", // Blue
@@ -24,7 +26,7 @@ export default function AppBarChart({ options }: { options: Option[] }) {
     name: option.label,
     value: option.value,
     color: pieChartColors[index],
-    legendFontColor: "white",
+    legendFontColor: colors.onSurface,
     legendFontSize: 15,
   }));
 
