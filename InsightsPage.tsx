@@ -1,16 +1,16 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import AppBarChart from "./AppBarChart";
+import Chart from "./Chart";
+import ConfirmDialog from "./ConfirmDialog";
+import DrawerHeader from "./DrawerHeader";
+import Select from "./Select";
 import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
-import DrawerHeader from "./DrawerHeader";
-import { DAYS } from "./time";
-import Select from "./Select";
 import { Periods } from "./periods";
-import ConfirmDialog from "./ConfirmDialog";
-import Chart from "./Chart";
+import { DAYS } from "./time";
 
 interface WeekCount {
   week: string;
@@ -23,8 +23,8 @@ interface HourCount {
 }
 
 export default function InsightsPage() {
-  const [weekCounts, setWeekCounts] = useState<WeekCount[]>([]);
-  const [hourCounts, setHourCounts] = useState<HourCount[]>([]);
+  const [weekCounts, setWeekCounts] = useState<WeekCount[]>();
+  const [hourCounts, setHourCounts] = useState<HourCount[]>();
   const [period, setPeriod] = useState(Periods.Monthly);
   const [showWeek, setShowWeek] = useState(false);
   const [showHour, setShowHour] = useState(false);
@@ -68,10 +68,11 @@ export default function InsightsPage() {
   return (
     <>
       <DrawerHeader name="Insights" />
-      <ScrollView
+      <View
         style={{
-          padding: PADDING,
-          flexGrow: 1,
+          paddingLeft: PADDING,
+          paddingTop: PADDING,
+          paddingRight: PADDING,
         }}
       >
         <Select
@@ -85,7 +86,13 @@ export default function InsightsPage() {
           value={period}
           onChange={(value) => setPeriod(value as Periods)}
         />
-
+      </View>
+      <ScrollView
+        style={{
+          padding: PADDING,
+          flexGrow: 1,
+        }}
+      >
         <View
           style={{
             flexDirection: "row",
@@ -109,14 +116,15 @@ export default function InsightsPage() {
           />
         </View>
 
-        {weekCounts.length > 0 ? (
+        {weekCounts?.length > 0 && (
           <AppBarChart
             options={weekCounts.map((weekCount) => ({
               label: DAYS[weekCount.week],
               value: weekCount.count,
             }))}
           />
-        ) : (
+        )}
+        {weekCounts?.length === 0 && (
           <Text style={{ marginBottom: MARGIN }}>
             No entries yet! Start recording sets to see your most active days of
             the week.
@@ -146,17 +154,19 @@ export default function InsightsPage() {
           />
         </View>
 
-        {hourCounts.length > 0 ? (
+        {hourCounts?.length > 0 && (
           <Chart
             data={hourCounts.map((hc) => hc.count)}
             labels={hourCounts.map((hc) => hourLabel(hc.hour))}
           />
-        ) : (
+        )}
+        {hourCounts?.length === 0 && (
           <Text>
             No entries yet! Start recording sets to see your most active hours
             of the day.
           </Text>
         )}
+        <View style={{ marginBottom: MARGIN }} />
       </ScrollView>
 
       <ConfirmDialog
