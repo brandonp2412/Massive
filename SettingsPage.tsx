@@ -2,7 +2,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { format } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { NativeModules, ScrollView } from "react-native";
+import { NativeModules, ScrollView, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Dirs, FileSystem } from "react-native-file-access";
 import ConfirmDialog from "./ConfirmDialog";
@@ -324,6 +324,7 @@ export default function SettingsPage() {
       <Page term={term} search={setTerm} style={{ flexGrow: 1 }}>
         <ScrollView style={{ marginTop: MARGIN, flex: 1 }}>
           {switchesMarkup}
+          <View style={{ marginBottom: MARGIN }} />
           {selectsMarkup}
           {buttonsMarkup}
         </ScrollView>

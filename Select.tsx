@@ -1,6 +1,13 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { View } from "react-native";
-import { Button, Menu, Subheading, useTheme } from "react-native-paper";
+import { Pressable, View } from "react-native";
+import {
+  Button,
+  IconButton,
+  Menu,
+  Subheading,
+  useTheme,
+} from "react-native-paper";
+import AppInput from "./AppInput";
 import { ITEM_PADDING } from "./constants";
 
 export interface Item {
@@ -22,13 +29,14 @@ function Select({
 }) {
   const [show, setShow] = useState(false);
   const { colors } = useTheme();
+  let menuButton: React.Ref<View> = null;
 
   const selected = useMemo(
     () => items.find((item) => item.value === value) || items[0],
     [items, value]
   );
 
-  const handlePress = useCallback(
+  const press = useCallback(
     (newValue: string) => {
       onChange(newValue);
       setShow(false);
@@ -37,38 +45,35 @@ function Select({
   );
 
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        paddingLeft: ITEM_PADDING,
-      }}
-    >
-      {label && <Subheading style={{ width: 100 }}>{label}</Subheading>}
-      <Menu
-        visible={show}
-        onDismiss={() => setShow(false)}
-        anchor={
-          <Button
-            onPress={() => setShow(true)}
-            style={{
-              alignSelf: "flex-start",
-            }}
+    <Menu
+      visible={show}
+      onDismiss={() => setShow(false)}
+      anchor={
+        <View>
+          <Pressable onPress={() => setShow(true)}>
+            <AppInput label={label} value={selected.label} editable={false} />
+          </Pressable>
+          <View
+            style={{ position: "absolute", right: 0, flexDirection: "row" }}
           >
-            {selected?.label}
-          </Button>
-        }
-      >
-        {items.map((item) => (
-          <Menu.Item
-            titleStyle={{ color: item.color || colors.onSurface }}
-            key={item.value}
-            title={item.label}
-            onPress={() => handlePress(item.value)}
-          />
-        ))}
-      </Menu>
-    </View>
+            <IconButton
+              ref={menuButton}
+              icon="menu-down"
+              onPress={() => setShow(true)}
+            />
+          </View>
+        </View>
+      }
+    >
+      {items.map((item) => (
+        <Menu.Item
+          title={item.label}
+          key={item.value}
+          onPress={() => press(item.value)}
+          titleStyle={{ color: item.color || colors.onSurface }}
+        />
+      ))}
+    </Menu>
   );
 }
 
