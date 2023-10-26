@@ -28,8 +28,8 @@ export default function ViewWeightGraph() {
     weightRepo
       .createQueryBuilder()
       .select("STRFTIME('%Y-%m-%d', created)", "created")
+      .addSelect("AVG(value) as value")
       .addSelect("unit")
-      .addSelect("value")
       .where("DATE(created) >= DATE('now', 'weekday 0', :difference)", {
         difference,
       })
