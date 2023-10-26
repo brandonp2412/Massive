@@ -73,8 +73,6 @@ export default function ViewGraph() {
     let periodFormat = "do";
     if (period === Periods.Weekly) periodFormat = "iii";
     else if (period === Periods.Yearly) periodFormat = "P";
-    let preserve = 3;
-    if (period === Periods.Yearly) preserve = 1;
 
     if (metric === Metrics.Volume && Number(volumes?.length) > 0)
       return (
@@ -83,7 +81,6 @@ export default function ViewGraph() {
           labels={volumes.map((volume) =>
             format(new Date(volume.created), periodFormat)
           )}
-          preserve={preserve}
         />
       );
     if (
@@ -96,7 +93,6 @@ export default function ViewGraph() {
           labels={weights.map((set) =>
             format(new Date(set.created), periodFormat)
           )}
-          preserve={preserve}
         />
       );
 

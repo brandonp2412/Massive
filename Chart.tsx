@@ -2,17 +2,14 @@ import { useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { AbstractChartConfig } from "react-native-chart-kit/dist/AbstractChart";
-import { PADDING } from "./constants";
-import useDark from "./use-dark";
 import { useTheme } from "react-native-paper";
 
 interface ChartProps {
   labels: string[];
   data: number[];
-  preserve?: number;
 }
 
-export default function Chart({ labels, data, preserve = 3 }: ChartProps) {
+export default function Chart({ labels, data }: ChartProps) {
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
 
@@ -23,19 +20,16 @@ export default function Chart({ labels, data, preserve = 3 }: ChartProps) {
   };
 
   const pruned = useMemo(() => {
-    const newPruned = [...labels];
-    if (labels.length <= preserve + 2) return labels;
-
-    let interval = Math.floor((labels.length - 2) / (preserve + 1));
+    if (labels.length < 3) return labels;
+    const newPruned = [labels[0]];
+    const centerIndex = Math.floor(labels.length / 2);
     for (let i = 1; i < labels.length - 1; i++) {
-      if ((i - 1) % interval !== 0 || i === 1) {
-        newPruned[i] = "";
-      }
+      if (i === centerIndex) newPruned[i] = labels[i];
+      else newPruned[i] = "";
     }
+    newPruned.push(labels[labels.length - 1]);
     return newPruned;
-  }, [labels, preserve]);
-
-  console.log({ labels, data, pruned, preserve });
+  }, [labels]);
 
   return (
     <LineChart

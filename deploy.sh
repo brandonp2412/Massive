@@ -2,6 +2,8 @@
 
 set -ex
 
+npx tsc
+
 cd android || exit 1
 
 build=app/build.gradle
@@ -24,7 +26,6 @@ sed -i "s/\(^\s*\)versionName \"[0-9]*.[0-9]*\"$/\1versionName \"$major.$minor\"
 sed -i "s/\"version\": \"[0-9]*.[0-9]*\"/\"version\": \"$major.$minor\"/" ../package.json
 
 if [ "$1" != "-n" ]; then
-  npx tsc
   ./gradlew bundleRelease
   bundle install
   bundle exec fastlane supply --aab app/build/outputs/bundle/release/app-release.aab

@@ -39,21 +39,24 @@ export default function ViewWeightGraph() {
   }, [period]);
 
   const charts = useMemo(() => {
+    if (!weights) return;
     if (weights?.length === 0) {
       return <List.Item title="No data yet." />;
     }
 
+    let periodFormat = "do";
+    if (period === Periods.Weekly) periodFormat = "iii";
+    else if (period === Periods.Yearly) periodFormat = "P";
+
     return (
       <Chart
-        yData={weights?.map((set) => set.value) || []}
-        yFormat={(value) => `${value}${weights?.[0].unit}`}
-        xData={weights || []}
-        xFormat={(_value, index) =>
-          format(new Date(weights?.[index].created), "d/M")
-        }
+        data={weights.map((set) => set.value)}
+        labels={weights.map((weight) =>
+          format(new Date(weight.created), periodFormat)
+        )}
       />
     );
-  }, [weights]);
+  }, [weights, period]);
 
   return (
     <>
