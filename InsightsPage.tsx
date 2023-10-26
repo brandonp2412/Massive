@@ -1,7 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
-import { Text } from "react-native-paper";
+import { IconButton, Text } from "react-native-paper";
 import AppBarChart from "./AppBarChart";
 import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
@@ -9,6 +9,7 @@ import DrawerHeader from "./DrawerHeader";
 import { DAYS } from "./time";
 import Select from "./Select";
 import { Periods } from "./periods";
+import ConfirmDialog from "./ConfirmDialog";
 
 export interface WeekCounts {
   week: number;
@@ -18,6 +19,7 @@ export interface WeekCounts {
 export default function InsightsPage() {
   const [weekCounts, setWeekCounts] = useState<WeekCounts[]>([]);
   const [period, setPeriod] = useState(Periods.Monthly);
+  const [showActive, setShowActive] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -46,9 +48,29 @@ export default function InsightsPage() {
           flexGrow: 1,
         }}
       >
-        <Text variant="titleLarge" style={{ marginBottom: MARGIN }}>
-          Most active days of the week
-        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            alignContent: "center",
+          }}
+        >
+          <Text
+            variant="titleLarge"
+            style={{
+              marginBottom: MARGIN,
+            }}
+          >
+            Most active days of the week
+          </Text>
+          <IconButton
+            icon="help-circle-outline"
+            size={25}
+            style={{ padding: 0, margin: 0, paddingBottom: 10 }}
+            onPress={() => setShowActive(true)}
+          />
+        </View>
+
         <Select
           label="Period"
           items={[
@@ -67,6 +89,15 @@ export default function InsightsPage() {
           }))}
         />
       </View>
+      <ConfirmDialog
+        title="Most active days of the week"
+        show={showActive}
+        setShow={setShowActive}
+        onOk={() => setShowActive(false)}
+      >
+        If your plan expects an equal # of sets each day of the week, then this
+        pie graph should be evenly sliced.
+      </ConfirmDialog>
     </>
   );
 }
