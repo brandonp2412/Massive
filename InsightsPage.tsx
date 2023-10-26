@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useState } from "react";
-import { View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ScrollView, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import AppBarChart from "./AppBarChart";
 import { MARGIN, PADDING } from "./constants";
@@ -10,16 +10,24 @@ import { DAYS } from "./time";
 import Select from "./Select";
 import { Periods } from "./periods";
 import ConfirmDialog from "./ConfirmDialog";
+import Chart from "./Chart";
 
-export interface WeekCounts {
-  week: number;
+interface WeekCount {
+  week: string;
+  count: number;
+}
+
+interface HourCount {
+  hour: string;
   count: number;
 }
 
 export default function InsightsPage() {
-  const [weekCounts, setWeekCounts] = useState<WeekCounts[]>([]);
+  const [weekCounts, setWeekCounts] = useState<WeekCount[]>([]);
+  const [hourCounts, setHourCounts] = useState<HourCount[]>([]);
   const [period, setPeriod] = useState(Periods.Monthly);
-  const [showActive, setShowActive] = useState(false);
+  const [showWeek, setShowWeek] = useState(false);
+  const [showHour, setShowHour] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -27,27 +35,57 @@ export default function InsightsPage() {
       if (period === Periods.TwoMonths) difference = "-2 months";
       if (period === Periods.ThreeMonths) difference = "-3 months";
       if (period === Periods.SixMonths) difference = "-6 months";
-      const select = `
-      SELECT strftime('%w', created) as week, COUNT(*) as count
-      FROM sets
-      WHERE DATE(created) >= DATE('now', 'weekday 0', '${difference}')
-      GROUP BY week
-      HAVING week IS NOT NULL
-      ORDER BY count DESC;
-    `;
-      AppDataSource.manager.query(select).then(setWeekCounts);
+      const selectWeeks = `
+        SELECT strftime('%w', created) as week, COUNT(*) as count
+        FROM sets
+        WHERE DATE(created) >= DATE('now', 'weekday 0', '${difference}')
+        GROUP BY week
+        HAVING week IS NOT NULL
+        ORDER BY count DESC;
+      `;
+      const selectHours = `
+        SELECT strftime('%H', created) AS hour, COUNT(*) AS count
+            FROM sets
+            WHERE DATE(created) >= DATE('now', 'weekday 0', '${difference}')
+            GROUP BY hour
+            having hour is not null
+            ORDER BY hour
+      `;
+      AppDataSource.manager.query(selectWeeks).then(setWeekCounts);
+      AppDataSource.manager.query(selectHours).then(setHourCounts);
     }, [period])
   );
+
+  const hourLabel = (hour: string) => {
+    let twelveHour = Number(hour);
+    if (twelveHour === 0) return "12AM";
+    let amPm = "AM";
+    if (twelveHour >= 12) amPm = "PM";
+    if (twelveHour > 12) twelveHour -= 12;
+    return `${twelveHour} ${amPm}`;
+  };
 
   return (
     <>
       <DrawerHeader name="Insights" />
-      <View
+      <ScrollView
         style={{
           padding: PADDING,
           flexGrow: 1,
         }}
       >
+        <Select
+          label="Period"
+          items={[
+            { value: Periods.Monthly, label: Periods.Monthly },
+            { value: Periods.TwoMonths, label: Periods.TwoMonths },
+            { value: Periods.ThreeMonths, label: Periods.ThreeMonths },
+            { value: Periods.SixMonths, label: Periods.SixMonths },
+          ]}
+          value={period}
+          onChange={(value) => setPeriod(value as Periods)}
+        />
+
         <View
           style={{
             flexDirection: "row",
@@ -67,36 +105,78 @@ export default function InsightsPage() {
             icon="help-circle-outline"
             size={25}
             style={{ padding: 0, margin: 0, paddingBottom: 10 }}
-            onPress={() => setShowActive(true)}
+            onPress={() => setShowWeek(true)}
           />
         </View>
 
-        <Select
-          label="Period"
-          items={[
-            { value: Periods.Monthly, label: Periods.Monthly },
-            { value: Periods.TwoMonths, label: Periods.TwoMonths },
-            { value: Periods.ThreeMonths, label: Periods.ThreeMonths },
-            { value: Periods.SixMonths, label: Periods.SixMonths },
-          ]}
-          value={period}
-          onChange={(value) => setPeriod(value as Periods)}
-        />
-        <AppBarChart
-          options={weekCounts.map((weekCount) => ({
-            label: DAYS[weekCount.week],
-            value: weekCount.count,
-          }))}
-        />
-      </View>
+        {weekCounts.length > 0 ? (
+          <AppBarChart
+            options={weekCounts.map((weekCount) => ({
+              label: DAYS[weekCount.week],
+              value: weekCount.count,
+            }))}
+          />
+        ) : (
+          <Text style={{ marginBottom: MARGIN }}>
+            No entries yet! Start recording sets to see your most active days of
+            the week.
+          </Text>
+        )}
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            alignContent: "center",
+          }}
+        >
+          <Text
+            variant="titleLarge"
+            style={{
+              marginBottom: MARGIN,
+            }}
+          >
+            Most active hours of the day
+          </Text>
+          <IconButton
+            icon="help-circle-outline"
+            size={25}
+            style={{ padding: 0, margin: 0, paddingBottom: 10 }}
+            onPress={() => setShowHour(true)}
+          />
+        </View>
+
+        {hourCounts.length > 0 ? (
+          <Chart
+            data={hourCounts.map((hc) => hc.count)}
+            labels={hourCounts.map((hc) => hourLabel(hc.hour))}
+          />
+        ) : (
+          <Text>
+            No entries yet! Start recording sets to see your most active hours
+            of the day.
+          </Text>
+        )}
+      </ScrollView>
+
       <ConfirmDialog
         title="Most active days of the week"
-        show={showActive}
-        setShow={setShowActive}
-        onOk={() => setShowActive(false)}
+        show={showWeek}
+        setShow={setShowWeek}
+        onOk={() => setShowWeek(false)}
       >
         If your plan expects an equal # of sets each day of the week, then this
         pie graph should be evenly sliced.
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        title="Most active hours of the day"
+        show={showHour}
+        setShow={setShowHour}
+        onOk={() => setShowHour(false)}
+      >
+        If you find yourself giving up on the gym after 5pm, consider starting
+        earlier! Or vice-versa.
       </ConfirmDialog>
     </>
   );
