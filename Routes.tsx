@@ -27,12 +27,12 @@ export default function Routes() {
       <Drawer.Screen
         name="Home"
         component={HomePage}
-        options={{ drawerIcon: () => <IconButton icon="home" /> }}
+        options={{ drawerIcon: () => <IconButton icon="home-outline" /> }}
       />
       <Drawer.Screen
         name="Plans"
         component={PlanPage}
-        options={{ drawerIcon: () => <IconButton icon="calendar" /> }}
+        options={{ drawerIcon: () => <IconButton icon="calendar-outline" /> }}
       />
       <Drawer.Screen
         name="Graphs"
@@ -54,7 +54,7 @@ export default function Routes() {
       <Drawer.Screen
         name="Weight"
         component={WeightPage}
-        options={{ drawerIcon: () => <IconButton icon="scale" /> }}
+        options={{ drawerIcon: () => <IconButton icon="scale-bathroom" /> }}
       />
       <Drawer.Screen
         name="Insights"
@@ -66,7 +66,7 @@ export default function Routes() {
       <Drawer.Screen
         name="Settings"
         component={SettingsPage}
-        options={{ drawerIcon: () => <IconButton icon="cog" /> }}
+        options={{ drawerIcon: () => <IconButton icon="cog-outline" /> }}
       />
     </Drawer.Navigator>
   );
