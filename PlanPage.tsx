@@ -4,6 +4,7 @@ import EditSet from "./EditSet";
 import { PlanPageParams } from "./plan-page-params";
 import PlanList from "./PlanList";
 import StartPlan from "./StartPlan";
+import ViewGraph from "./ViewGraph";
 
 const Stack = createStackNavigator<PlanPageParams>();
 
@@ -16,6 +17,7 @@ export default function PlanPage() {
       <Stack.Screen name="EditPlan" component={EditPlan} />
       <Stack.Screen name="StartPlan" component={StartPlan} />
       <Stack.Screen name="EditSet" component={EditSet} />
+      <Stack.Screen name="ViewGraph" component={ViewGraph} />
     </Stack.Navigator>
   );
 }

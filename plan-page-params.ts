@@ -13,4 +13,7 @@ export type PlanPageParams = {
   EditSet: {
     set: GymSet;
   };
+  ViewGraph: {
+    name: string;
+  };
 };
