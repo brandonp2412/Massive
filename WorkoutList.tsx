@@ -18,7 +18,7 @@ import Page from "./Page";
 import SetList from "./SetList";
 import Settings, { SETTINGS } from "./settings";
 import WorkoutItem from "./WorkoutItem";
-import { WorkoutsPageParams } from "./WorkoutsPage";
+import { DrawerParams } from "./drawer-param-list";
 
 export default function WorkoutList() {
   const [workouts, setWorkouts] = useState<GymSet[]>();
@@ -28,8 +28,8 @@ export default function WorkoutList() {
   const [settings, setSettings] = useState<Settings>();
   const [names, setNames] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
-  const { params } = useRoute<RouteProp<WorkoutsPageParams, "WorkoutList">>();
+  const navigation = useNavigation<NavigationProp<DrawerParams>>();
+  const { params } = useRoute<RouteProp<DrawerParams, "Workouts">>();
 
   const update = (newWorkout: GymSet) => {
     console.log(`${WorkoutList.name}.update:`, newWorkout);

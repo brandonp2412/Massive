@@ -19,10 +19,11 @@ import GymSet, { defaultSet, GYM_SET_CREATED } from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
-import { WorkoutsPageParams } from "./WorkoutsPage";
+import { DrawerParams } from "./drawer-param-list";
+import { StackParams } from "./AppStack";
 
 export default function EditWorkout() {
-  const { params } = useRoute<RouteProp<WorkoutsPageParams, "EditWorkout">>();
+  const { params } = useRoute<RouteProp<StackParams, "EditWorkout">>();
   const [removeImage, setRemoveImage] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
   const [name, setName] = useState(params.gymSet.name);
@@ -35,7 +36,7 @@ export default function EditWorkout() {
     params.gymSet.seconds?.toString() ?? "30"
   );
   const [sets, setSets] = useState(params.gymSet.sets?.toString() ?? "3");
-  const { navigate } = useNavigation<NavigationProp<WorkoutsPageParams>>();
+  const { navigate } = useNavigation<NavigationProp<DrawerParams>>();
   const setsRef = useRef<TextInput>(null);
   const stepsRef = useRef<TextInput>(null);
   const minutesRef = useRef<TextInput>(null);
@@ -64,7 +65,7 @@ export default function EditWorkout() {
        WHERE workouts LIKE $3`,
       [params.gymSet.name, name, `%${params.gymSet.name}%`]
     );
-    navigate("WorkoutList", { update: newWorkout });
+    navigate("Workouts", { update: newWorkout });
   };
 
   const add = async () => {
@@ -81,7 +82,7 @@ export default function EditWorkout() {
       created: now,
     });
     emitter.emit(GYM_SET_CREATED);
-    navigate("WorkoutList", { reset: new Date().getTime() });
+    navigate("Workouts", { reset: new Date().getTime() });
   };
 
   const save = async () => {
@@ -184,13 +185,18 @@ export default function EditWorkout() {
             <Button
               style={{ marginBottom: MARGIN }}
               onPress={changeImage}
-              icon="add-photo-alternate"
+              icon="image-plus"
             >
               Image
             </Button>
           )}
         </ScrollView>
-        <Button disabled={!name} mode="outlined" icon="save" onPress={save}>
+        <Button
+          disabled={!name}
+          mode="outlined"
+          icon="content-save"
+          onPress={save}
+        >
           Save
         </Button>
         <ConfirmDialog

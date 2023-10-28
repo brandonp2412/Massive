@@ -1,7 +1,7 @@
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import { Appbar, IconButton } from "react-native-paper";
-import { DrawerParamList } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-param-list";
 
 export default function DrawerHeader({
   name,
@@ -10,7 +10,7 @@ export default function DrawerHeader({
   name: string;
   children?: JSX.Element | JSX.Element[];
 }) {
-  const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
+  const navigation = useNavigation<DrawerNavigationProp<DrawerParams>>();
 
   return (
     <Appbar.Header>

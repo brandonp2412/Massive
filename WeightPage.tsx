@@ -20,8 +20,6 @@ export default function WeightPage() {
       screenOptions={{ headerShown: false, animationEnabled: false }}
     >
       <Stack.Screen name="Weights" component={WeightList} />
-      <Stack.Screen name="EditWeight" component={EditWeight} />
-      <Stack.Screen name="ViewWeightGraph" component={ViewWeightGraph} />
     </Stack.Navigator>
   );
 }

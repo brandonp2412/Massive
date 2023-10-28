@@ -17,14 +17,14 @@ import { getNow, setRepo, settingsRepo } from "./db";
 import { emitter } from "./emitter";
 import { fixNumeric } from "./fix-numeric";
 import GymSet, { GYM_SET_CREATED } from "./gym-set";
-import { PlanPageParams } from "./plan-page-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import StartPlanItem from "./StartPlanItem";
 import { toast } from "./toast";
+import { StackParams } from "./AppStack";
 
 export default function StartPlan() {
-  const { params } = useRoute<RouteProp<PlanPageParams, "StartPlan">>();
+  const { params } = useRoute<RouteProp<StackParams, "StartPlan">>();
   const [reps, setReps] = useState(params.first?.reps.toString() || "0");
   const [weight, setWeight] = useState(params.first?.weight.toString() || "0");
   const [unit, setUnit] = useState<string>(params.first?.unit || "kg");
@@ -35,7 +35,7 @@ export default function StartPlan() {
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
   const workouts = useMemo(() => params.plan.workouts.split(","), [params]);
-  const navigation = useNavigation<NavigationProp<PlanPageParams>>();
+  const navigation = useNavigation<NavigationProp<StackParams>>();
 
   const [selection, setSelection] = useState({
     start: 0,

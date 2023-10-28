@@ -1,19 +1,19 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { IconButton } from "react-native-paper";
-import GraphsPage from "./GraphsPage";
-import { DrawerParamList } from "./drawer-param-list";
-import HomePage from "./HomePage";
-import PlanPage from "./PlanPage";
+import GraphsList from "./GraphsList";
+import InsightsPage from "./InsightsPage";
+import PlanList from "./PlanList";
+import SetList from "./SetList";
 import SettingsPage from "./SettingsPage";
 import TimerPage from "./TimerPage";
+import WeightList from "./WeightList";
+import WorkoutList from "./WorkoutList";
+import { DrawerParams } from "./drawer-param-list";
 import useDark from "./use-dark";
-import WorkoutsPage from "./WorkoutsPage";
-import WeightPage from "./WeightPage";
-import InsightsPage from "./InsightsPage";
 
-const Drawer = createDrawerNavigator<DrawerParamList>();
+const Drawer = createDrawerNavigator<DrawerParams>();
 
-export default function Routes() {
+export default function AppDrawer() {
   const dark = useDark();
 
   return (
@@ -26,24 +26,24 @@ export default function Routes() {
     >
       <Drawer.Screen
         name="Home"
-        component={HomePage}
+        component={SetList}
         options={{ drawerIcon: () => <IconButton icon="home-outline" /> }}
       />
       <Drawer.Screen
         name="Plans"
-        component={PlanPage}
+        component={PlanList}
         options={{ drawerIcon: () => <IconButton icon="calendar-outline" /> }}
       />
       <Drawer.Screen
         name="Graphs"
-        component={GraphsPage}
+        component={GraphsList}
         options={{
           drawerIcon: () => <IconButton icon="chart-bell-curve-cumulative" />,
         }}
       />
       <Drawer.Screen
         name="Workouts"
-        component={WorkoutsPage}
+        component={WorkoutList}
         options={{ drawerIcon: () => <IconButton icon="dumbbell" /> }}
       />
       <Drawer.Screen
@@ -53,7 +53,7 @@ export default function Routes() {
       />
       <Drawer.Screen
         name="Weight"
-        component={WeightPage}
+        component={WeightList}
         options={{ drawerIcon: () => <IconButton icon="scale-bathroom" /> }}
       />
       <Drawer.Screen

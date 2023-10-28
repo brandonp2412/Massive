@@ -1,7 +1,7 @@
-import { DrawerParamList } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-param-list";
 
 export default interface Route {
-  name: keyof DrawerParamList;
+  name: keyof DrawerParams;
   component: React.ComponentType<any>;
   icon: string;
 }

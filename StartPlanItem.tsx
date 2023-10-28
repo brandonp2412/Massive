@@ -3,13 +3,12 @@ import React, { useCallback, useState } from "react";
 import { GestureResponderEvent, ListRenderItemInfo, View } from "react-native";
 import { List, Menu, RadioButton, useTheme } from "react-native-paper";
 import { Like } from "typeorm";
+import { StackParams } from "./AppStack";
 import CountMany from "./count-many";
 import { getNow, setRepo } from "./db";
+import { DrawerParams } from "./drawer-param-list";
 import { emitter } from "./emitter";
-import { GraphsPageParams } from "./GraphsPage";
 import { GYM_SET_DELETED } from "./gym-set";
-import { HomePageParams } from "./home-page-params";
-import { PlanPageParams } from "./plan-page-params";
 import { toast } from "./toast";
 
 interface Props extends ListRenderItemInfo<CountMany> {
@@ -23,11 +22,10 @@ export default function StartPlanItem(props: Props) {
   const { colors } = useTheme();
   const [anchor, setAnchor] = useState({ x: 0, y: 0 });
   const [showMenu, setShowMenu] = useState(false);
-  const { navigate } = useNavigation<NavigationProp<PlanPageParams>>();
-  const { navigate: navigateHome } =
-    useNavigation<NavigationProp<HomePageParams>>();
-  const { navigate: navigateGraph } =
-    useNavigation<NavigationProp<GraphsPageParams>>();
+  const { navigate: stackNavigate } =
+    useNavigation<NavigationProp<StackParams>>();
+  const { navigate: drawerNavigate } =
+    useNavigation<NavigationProp<DrawerParams>>();
 
   const undo = useCallback(async () => {
     const now = await getNow();
@@ -68,18 +66,18 @@ export default function StartPlanItem(props: Props) {
     });
     setShowMenu(false);
     if (!first) return toast("Nothing to edit.");
-    navigate("EditSet", { set: first });
-  }, [item.name, navigate]);
+    stackNavigate("EditSet", { set: first });
+  }, [item.name, stackNavigate]);
 
   const view = useCallback(() => {
     setShowMenu(false);
-    navigateHome("Sets", { search: item.name });
-  }, [item.name, navigateHome]);
+    drawerNavigate("Home", { search: item.name });
+  }, [item.name, drawerNavigate]);
 
   const graph = useCallback(() => {
     setShowMenu(false);
-    navigateGraph("ViewGraph", { name: item.name });
-  }, [item.name, navigateGraph]);
+    stackNavigate("ViewGraph", { name: item.name });
+  }, [item.name, stackNavigate]);
 
   const left = useCallback(
     () => (

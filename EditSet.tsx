@@ -28,15 +28,16 @@ import GymSet, {
   GYM_SET_DELETED,
   GYM_SET_UPDATED,
 } from "./gym-set";
-import { HomePageParams } from "./home-page-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
+import { DrawerParams } from "./drawer-param-list";
+import { StackParams } from "./AppStack";
 
 export default function EditSet() {
-  const { params } = useRoute<RouteProp<HomePageParams, "EditSet">>();
+  const { params } = useRoute<RouteProp<StackParams, "EditSet">>();
   const { set } = params;
-  const { navigate } = useNavigation<NavigationProp<HomePageParams>>();
+  const { goBack } = useNavigation<NavigationProp<DrawerParams>>();
   const [settings, setSettings] = useState<Settings>({} as Settings);
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps?.toString());
@@ -79,7 +80,7 @@ export default function EditSet() {
   );
 
   const notify = (value: Partial<GymSet>) => {
-    if (!settings.notify) return navigate("Sets");
+    if (!settings.notify) return goBack();
     if (
       value.weight > set.weight ||
       (value.reps > set.reps && value.weight === set.weight)
@@ -121,9 +122,9 @@ export default function EditSet() {
 
     const saved = await setRepo.save(newSet);
     notify(newSet);
-    if (typeof set.id !== "number") return added(saved);
+    if (typeof set.id !== "number") added(saved);
     else emitter.emit(GYM_SET_UPDATED, saved);
-    navigate("Sets");
+    goBack();
   };
 
   const changeImage = useCallback(async () => {
@@ -160,7 +161,7 @@ export default function EditSet() {
   const remove = async () => {
     await setRepo.delete(set.id);
     emitter.emit(GYM_SET_DELETED);
-    navigate("Sets");
+    goBack();
   };
 
   const openMenu = async () => {

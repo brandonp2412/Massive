@@ -9,7 +9,7 @@ import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN } from "./constants";
 import { AppDataSource } from "./data-source";
 import { setRepo, settingsRepo } from "./db";
-import { DrawerParamList } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-param-list";
 import DrawerHeader from "./DrawerHeader";
 import Input from "./input";
 import { darkOptions, lightOptions, themeOptions } from "./options";
@@ -46,7 +46,7 @@ export default function SettingsPage() {
   const [formatOptions, setFormatOptions] = useState<string[]>(twelveHours);
   const [importing, setImporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const { reset } = useNavigation<NavigationProp<DrawerParamList>>();
+  const { reset } = useNavigation<NavigationProp<DrawerParams>>();
 
   const { watch, setValue } = useForm<Settings>({
     defaultValues: () => settingsRepo.findOne({ where: {} }),

@@ -5,9 +5,9 @@ import { Image } from "react-native";
 import { List, Text } from "react-native-paper";
 import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
 import GymSet from "./gym-set";
-import { HomePageParams } from "./home-page-params";
 import Settings from "./settings";
 import useDark from "./use-dark";
+import { StackParams } from "./AppStack";
 
 export default function SetItem({
   item,
@@ -21,7 +21,7 @@ export default function SetItem({
   setIds: (value: number[]) => void;
 }) {
   const dark = useDark();
-  const navigation = useNavigation<NavigationProp<HomePageParams>>();
+  const navigation = useNavigation<NavigationProp<StackParams>>();
 
   const longPress = useCallback(() => {
     if (ids.length > 0) return;

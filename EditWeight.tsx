@@ -11,20 +11,21 @@ import { useCallback, useRef, useState } from "react";
 import { TextInput, View } from "react-native";
 import { Button, IconButton } from "react-native-paper";
 import AppInput from "./AppInput";
+import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
+import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
 import { getNow, settingsRepo, weightRepo } from "./db";
+import { DrawerParams } from "./drawer-param-list";
 import Settings from "./settings";
-import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 import Weight from "./weight";
-import { WeightPageParams } from "./WeightPage";
 
 export default function EditWeight() {
-  const { params } = useRoute<RouteProp<WeightPageParams, "EditWeight">>();
+  const { params } = useRoute<RouteProp<StackParams, "EditWeight">>();
   const { weight } = params;
-  const { navigate } = useNavigation<NavigationProp<WeightPageParams>>();
+  const { navigate } = useNavigation<NavigationProp<DrawerParams>>();
   const [settings, setSettings] = useState<Settings>({} as Settings);
   const [value, setValue] = useState(weight.value?.toString());
   const [unit, setUnit] = useState(weight.unit);
@@ -55,7 +56,7 @@ export default function EditWeight() {
 
     await weightRepo.save(newWeight);
     if (settings.notify) await checkWeekly();
-    navigate("Weights");
+    navigate("Weight");
   };
 
   const checkWeekly = async () => {
@@ -94,7 +95,7 @@ export default function EditWeight() {
   const remove = async () => {
     if (!weight.id) return;
     await weightRepo.delete(weight.id);
-    navigate("Weights");
+    navigate("Weight");
   };
 
   return (

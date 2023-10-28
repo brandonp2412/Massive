@@ -18,11 +18,12 @@ import GymSet, {
   GYM_SET_DELETED,
   GYM_SET_UPDATED,
 } from "./gym-set";
-import { HomePageParams } from "./home-page-params";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetItem from "./SetItem";
 import Settings, { SETTINGS } from "./settings";
+import { StackParams } from "./AppStack";
+import { DrawerParams } from "./drawer-param-list";
 
 export default function SetList() {
   const [refreshing, setRefreshing] = useState(false);
@@ -31,8 +32,8 @@ export default function SetList() {
   const [end, setEnd] = useState(false);
   const [settings, setSettings] = useState<Settings>();
   const [ids, setIds] = useState<number[]>([]);
-  const navigation = useNavigation<NavigationProp<HomePageParams>>();
-  const { params } = useRoute<RouteProp<HomePageParams, "Sets">>();
+  const navigation = useNavigation<NavigationProp<StackParams>>();
+  const { params } = useRoute<RouteProp<DrawerParams, "Home">>();
   const [term, setTerm] = useState(params?.search || "");
 
   const reset = useCallback(

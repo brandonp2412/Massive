@@ -16,14 +16,15 @@ import { MARGIN, PADDING } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import { emitter } from "./emitter";
 import GymSet, { GYM_SET_CREATED } from "./gym-set";
-import { HomePageParams } from "./home-page-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
+import { StackParams } from "./AppStack";
+import { DrawerParams } from "./drawer-param-list";
 
 export default function EditSets() {
-  const { params } = useRoute<RouteProp<HomePageParams, "EditSets">>();
+  const { params } = useRoute<RouteProp<StackParams, "EditSets">>();
   const { ids } = params;
-  const { navigate } = useNavigation<NavigationProp<HomePageParams>>();
+  const { navigate } = useNavigation<NavigationProp<DrawerParams>>();
   const [settings, setSettings] = useState<Settings>({} as Settings);
   const [name, setName] = useState("");
   const [reps, setReps] = useState("");
@@ -63,7 +64,7 @@ export default function EditSets() {
     if (newImage) update.image = newImage;
     if (Object.keys(update).length > 0) await setRepo.update(ids, update);
     emitter.emit(GYM_SET_CREATED);
-    navigate("Sets");
+    navigate("Home");
   };
 
   const changeImage = useCallback(async () => {

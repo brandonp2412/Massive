@@ -12,14 +12,14 @@ import DrawerHeader from "./DrawerHeader";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import { Plan } from "./plan";
-import { PlanPageParams } from "./plan-page-params";
 import PlanItem from "./PlanItem";
+import { StackParams } from "./AppStack";
 
 export default function PlanList() {
   const [term, setTerm] = useState("");
   const [plans, setPlans] = useState<Plan[]>();
   const [ids, setIds] = useState<number[]>([]);
-  const navigation = useNavigation<NavigationProp<PlanPageParams>>();
+  const navigation = useNavigation<NavigationProp<StackParams>>();
 
   const refresh = useCallback(async (value: string) => {
     console.log(`${PlanList.name}.refresh:`, value);

@@ -10,9 +10,9 @@ import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
 import { setRepo } from "./db";
 import { defaultSet } from "./gym-set";
 import { Plan } from "./plan";
-import { PlanPageParams } from "./plan-page-params";
 import { DAYS } from "./time";
 import useDark from "./use-dark";
+import { StackParams } from "./AppStack";
 
 export default function PlanItem({
   item,
@@ -26,7 +26,7 @@ export default function PlanItem({
   const [today, setToday] = useState<string>();
   const dark = useDark();
   const days = useMemo(() => item.days.split(","), [item.days]);
-  const navigation = useNavigation<NavigationProp<PlanPageParams>>();
+  const navigation = useNavigation<NavigationProp<StackParams>>();
 
   useFocusEffect(
     useCallback(() => {

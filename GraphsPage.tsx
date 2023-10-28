@@ -16,7 +16,6 @@ export default function GraphsPage() {
       screenOptions={{ headerShown: false, animationEnabled: false }}
     >
       <Stack.Screen name="GraphsList" component={GraphsList} />
-      <Stack.Screen name="ViewGraph" component={ViewGraph} />
     </Stack.Navigator>
   );
 }

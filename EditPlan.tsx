@@ -10,14 +10,15 @@ import { Button, IconButton, Text } from "react-native-paper";
 import { MARGIN, PADDING } from "./constants";
 import { planRepo, setRepo } from "./db";
 import { defaultSet } from "./gym-set";
-import { PlanPageParams } from "./plan-page-params";
 import StackHeader from "./StackHeader";
 import Switch from "./Switch";
 import { DAYS } from "./time";
 import AppInput from "./AppInput";
+import { StackParams } from "./AppStack";
+import { DrawerParams } from "./drawer-param-list";
 
 export default function EditPlan() {
-  const { params } = useRoute<RouteProp<PlanPageParams, "EditPlan">>();
+  const { params } = useRoute<RouteProp<StackParams, "EditPlan">>();
   const { plan } = params;
   const [title, setTitle] = useState<string>(plan?.title);
   const [days, setDays] = useState<string[]>(
@@ -27,7 +28,10 @@ export default function EditPlan() {
     plan.workouts ? plan.workouts.split(",") : []
   );
   const [names, setNames] = useState<string[]>([]);
-  const navigation = useNavigation<NavigationProp<PlanPageParams>>();
+  const { navigate: drawerNavigate } =
+    useNavigation<NavigationProp<DrawerParams>>();
+  const { navigate: stackNavigate } =
+    useNavigation<NavigationProp<StackParams>>();
 
   useEffect(() => {
     setRepo
@@ -95,7 +99,7 @@ export default function EditPlan() {
               });
               if (!first) first = { ...defaultSet, name: workouts[0] };
               delete first.id;
-              navigation.navigate("StartPlan", { plan: newPlan, first });
+              stackNavigate("StartPlan", { plan: newPlan, first });
             }}
             icon="play"
           />
@@ -141,7 +145,7 @@ export default function EditPlan() {
           icon="content-save"
           onPress={async () => {
             await save();
-            navigation.navigate("PlanList");
+            drawerNavigate("Plans");
           }}
         >
           Save
