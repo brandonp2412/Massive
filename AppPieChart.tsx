@@ -12,14 +12,13 @@ export default function AppPieChart({ options }: { options: Option[] }) {
   const { colors } = useTheme();
 
   const pieChartColors = [
-    "#1f77b4", // Blue
-    "#ff7f0e", // Orange
-    "#2ca02c", // Green
-    "#d62728", // Red
-    "#9467bd", // Purple
-    "#8c564b", // Brown
-    "#e377c2", // Pink
-    "#7f7f7f", // Gray
+    "#FF7F50", // Coral
+    "#1E90FF", // Dodger Blue
+    "#32CD32", // Lime Green
+    "#BA55D3", // Medium Orchid
+    "#FFD700", // Gold
+    "#48D1CC", // Medium Turquoise
+    "#FF69B4", // Hot Pink
   ];
 
   const data = options.map((option, index) => ({
