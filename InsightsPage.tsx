@@ -2,7 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
-import AppBarChart from "./AppBarChart";
+import AppPieChart from "./AppPieChart";
 import Chart from "./Chart";
 import ConfirmDialog from "./ConfirmDialog";
 import DrawerHeader from "./DrawerHeader";
@@ -117,7 +117,7 @@ export default function InsightsPage() {
         </View>
 
         {weekCounts?.length > 0 && (
-          <AppBarChart
+          <AppPieChart
             options={weekCounts.map((weekCount) => ({
               label: DAYS[weekCount.week],
               value: weekCount.count,

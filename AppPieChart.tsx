@@ -7,7 +7,7 @@ export interface Option {
   label: string;
 }
 
-export default function AppBarChart({ options }: { options: Option[] }) {
+export default function AppPieChart({ options }: { options: Option[] }) {
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
 
