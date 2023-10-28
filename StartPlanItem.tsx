@@ -71,8 +71,8 @@ export default function StartPlanItem(props: Props) {
 
   const view = useCallback(() => {
     setShowMenu(false);
-    drawerNavigate("Home", { search: item.name });
-  }, [item.name, drawerNavigate]);
+    stackNavigate("ViewSetList", { name: item.name });
+  }, [item.name, stackNavigate]);
 
   const graph = useCallback(() => {
     setShowMenu(false);

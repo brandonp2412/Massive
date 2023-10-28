@@ -12,6 +12,7 @@ import ViewWeightGraph from "./ViewWeightGraph";
 import GymSet from "./gym-set";
 import { Plan } from "./plan";
 import Weight from "./weight";
+import ViewSetList from "./ViewSetList";
 
 export type StackParams = {
   Drawer: {};
@@ -41,6 +42,9 @@ export type StackParams = {
   EditWorkouts: {
     names: string[];
   };
+  ViewSetList: {
+    name: string;
+  };
 };
 
 const Stack = createStackNavigator<StackParams>();
@@ -60,6 +64,7 @@ export default function AppStack() {
       <Stack.Screen name="ViewWeightGraph" component={ViewWeightGraph} />
       <Stack.Screen name="EditWorkout" component={EditWorkout} />
       <Stack.Screen name="EditWorkouts" component={EditWorkouts} />
+      <Stack.Screen name="ViewSetList" component={ViewSetList} />
     </Stack.Navigator>
   );
 }

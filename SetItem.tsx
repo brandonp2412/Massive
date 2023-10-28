@@ -14,11 +14,13 @@ export default function SetItem({
   settings,
   ids,
   setIds,
+  disablePress,
 }: {
   item: GymSet;
   settings: Settings;
   ids: number[];
   setIds: (value: number[]) => void;
+  disablePress?: boolean;
 }) {
   const dark = useDark();
   const navigation = useNavigation<NavigationProp<StackParams>>();
@@ -29,11 +31,12 @@ export default function SetItem({
   }, [ids.length, item.id, setIds]);
 
   const press = useCallback(() => {
+    if (disablePress) return;
     if (ids.length === 0) return navigation.navigate("EditSet", { set: item });
     const removing = ids.find((id) => id === item.id);
     if (removing) setIds(ids.filter((id) => id !== item.id));
     else setIds([...ids, item.id]);
-  }, [ids, item, navigation, setIds]);
+  }, [ids, item, navigation, setIds, disablePress]);
 
   const backgroundColor = useMemo(() => {
     if (!ids.includes(item.id)) return;
