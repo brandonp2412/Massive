@@ -1,29 +1,23 @@
-import {
-  NavigationProp,
-  RouteProp,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
-import { LIMIT } from "./constants";
-import { getNow, setRepo, settingsRepo } from "./db";
+import { StackParams } from "./AppStack";
 import DrawerHeader from "./DrawerHeader";
-import { emitter } from "./emitter";
-import GymSet, {
-  defaultSet,
-  GYM_SET_CREATED,
-  GYM_SET_DELETED,
-  GYM_SET_UPDATED,
-} from "./gym-set";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetItem from "./SetItem";
+import { LIMIT } from "./constants";
+import { getNow, setRepo, settingsRepo } from "./db";
+import { emitter } from "./emitter";
+import GymSet, {
+  GYM_SET_CREATED,
+  GYM_SET_DELETED,
+  GYM_SET_UPDATED,
+  defaultSet,
+} from "./gym-set";
 import Settings, { SETTINGS } from "./settings";
-import { StackParams } from "./AppStack";
-import { DrawerParams } from "./drawer-param-list";
 
 export default function SetList() {
   const [refreshing, setRefreshing] = useState(false);
@@ -33,8 +27,7 @@ export default function SetList() {
   const [settings, setSettings] = useState<Settings>();
   const [ids, setIds] = useState<number[]>([]);
   const navigation = useNavigation<NavigationProp<StackParams>>();
-  const { params } = useRoute<RouteProp<DrawerParams, "Home">>();
-  const [term, setTerm] = useState(params?.search || "");
+  const [term, setTerm] = useState("");
 
   const reset = useCallback(
     async (value: string) => {
@@ -86,11 +79,6 @@ export default function SetList() {
     setOffset(0);
     reset(value);
   };
-
-  useEffect(() => {
-    console.log(`${SetList.name}.useEffect:`, params);
-    if (params?.search) search(params.search);
-  }, [params]);
 
   const renderItem = useCallback(
     ({ item }: { item: GymSet }) => (

@@ -1,9 +1,7 @@
 import GymSet from "./gym-set";
 
 export type DrawerParams = {
-  Home: {
-    search?: string;
-  };
+  Home: {};
   Settings: {};
   Graphs: {};
   Plans: {};
