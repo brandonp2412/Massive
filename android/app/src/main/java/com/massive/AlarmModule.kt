@@ -68,6 +68,14 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         reactApplicationContext.stopService(intent)
     }
 
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    fun getCurrent(): Int {
+        Log.d("AlarmModule", "currentMs=$currentMs")
+        if (running)
+            return currentMs.toInt();
+        return 0;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
     fun stop() {

@@ -2,6 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { emitter } from "./emitter";
 import { TickEvent } from "./TimerPage";
+import { NativeModules } from "react-native";
 
 export default function useTimer() {
   const [minutes, setMinutes] = useState("00");
@@ -9,8 +10,17 @@ export default function useTimer() {
 
   useFocusEffect(
     useCallback(() => {
-      setMinutes("00");
-      setSeconds("00");
+      const current: number = NativeModules.AlarmModule.getCurrent();
+      setMinutes(
+        Math.floor(current / 1000 / 60)
+          .toString()
+          .padStart(2, "0")
+      );
+      setSeconds(
+        Math.floor((current / 1000) % 60)
+          .toString()
+          .padStart(2, "0")
+      );
       const listener = emitter.addListener("tick", (event: TickEvent) => {
         console.log(`${useTimer.name}.tick:`, { event });
         setMinutes(event.minutes);
