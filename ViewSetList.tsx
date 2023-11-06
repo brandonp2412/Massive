@@ -33,15 +33,14 @@ export default function ViewSetList() {
       });
 
       let prevDate = null;
-      let color = colors.elevation.level3;
+      const elevate = colors.elevation.level2;
+      const transparent = colors.elevation.level0;
+      let color = elevate;
 
       for (let i = 0; i < newSets.length; i++) {
         let currDate = new Date(newSets[i].created).toDateString();
         if (currDate !== prevDate)
-          color =
-            color === colors.elevation.level3
-              ? colors.elevation.level0
-              : colors.elevation.level3;
+          color = color === elevate ? transparent : elevate;
         newSets[i].color = color;
         prevDate = currDate;
       }
