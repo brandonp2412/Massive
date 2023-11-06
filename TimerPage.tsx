@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useMemo, useState } from "react";
-import { Dimensions, NativeModules, View } from "react-native";
+import { NativeModules, View } from "react-native";
 import { FAB, Text, useTheme } from "react-native-paper";
 import { ProgressCircle } from "react-native-svg-charts";
 import AppFab from "./AppFab";
@@ -39,10 +39,6 @@ export default function TimerPage() {
   const progress = useMemo(() => {
     return (Number(minutes) * 60 + Number(seconds)) / 210;
   }, [minutes, seconds]);
-
-  const left = useMemo(() => {
-    return Dimensions.get("screen").width * 0.5 - 60;
-  }, []);
 
   const backgroundColor = useMemo(() => {
     if (colors.primary.match(/rgba/)) return darkenRgba(colors.primary, 0.6);
