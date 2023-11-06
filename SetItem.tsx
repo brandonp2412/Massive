@@ -15,12 +15,14 @@ export default function SetItem({
   ids,
   setIds,
   disablePress,
+  customBg,
 }: {
   item: GymSet;
   settings: Settings;
   ids: number[];
   setIds: (value: number[]) => void;
   disablePress?: boolean;
+  customBg?: string;
 }) {
   const dark = useDark();
   const navigation = useNavigation<NavigationProp<StackParams>>();
@@ -71,7 +73,7 @@ export default function SetItem({
       title={item.name}
       description={`${item.reps} x ${item.weight}${item.unit || "kg"}`}
       onLongPress={longPress}
-      style={{ backgroundColor }}
+      style={{ backgroundColor: customBg || backgroundColor }}
       left={left}
       right={right}
     />

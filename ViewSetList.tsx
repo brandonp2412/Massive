@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList } from "react-native";
-import { List } from "react-native-paper";
+import { List, useTheme } from "react-native-paper";
 import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
 import SetItem from "./SetItem";
@@ -11,39 +11,57 @@ import { setRepo, settingsRepo } from "./db";
 import GymSet from "./gym-set";
 import Settings from "./settings";
 
+interface ColorSet extends GymSet {
+  color?: string;
+}
+
 export default function ViewSetList() {
-  const [sets, setSets] = useState<GymSet[]>();
+  const [sets, setSets] = useState<ColorSet[]>();
   const [settings, setSettings] = useState<Settings>();
+  const { colors } = useTheme();
   const { params } = useRoute<RouteProp<StackParams, "ViewSetList">>();
 
   useEffect(() => {
     settingsRepo.findOne({ where: {} }).then(setSettings);
 
     const reset = async () => {
-      const newSets = await setRepo.find({
+      const newSets: ColorSet[] = await setRepo.find({
         where: { name: Like(`%${params.name}%`), hidden: 0 as any },
-        take: LIMIT * 2,
+        take: LIMIT,
         skip: 0,
         order: { created: "DESC" },
       });
+
+      let prevDate = null;
+      let color = colors.elevation.level3;
+
+      for (let i = 0; i < newSets.length; i++) {
+        let currDate = new Date(newSets[i].created).toDateString();
+        if (currDate !== prevDate)
+          color =
+            color === colors.elevation.level3
+              ? colors.elevation.level0
+              : colors.elevation.level3;
+        newSets[i].color = color;
+        prevDate = currDate;
+      }
+
       setSets(newSets);
     };
 
     reset();
-  }, [params.name]);
+  }, [params.name, colors]);
 
-  const renderItem = useCallback(
-    ({ item }: { item: GymSet }) => (
-      <SetItem
-        settings={settings}
-        item={item}
-        key={item.id}
-        ids={[]}
-        setIds={() => null}
-        disablePress
-      />
-    ),
-    [settings]
+  const renderItem = ({ item }: { item: ColorSet; index: number }) => (
+    <SetItem
+      settings={settings}
+      item={item}
+      key={item.id}
+      ids={[]}
+      setIds={() => null}
+      disablePress
+      customBg={item.color}
+    />
   );
 
   const getContent = () => {
