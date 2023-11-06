@@ -43,6 +43,7 @@ export default function Chart({ labels, data }: ChartProps) {
           },
         ],
       }}
+      bezier
       chartConfig={config}
     />
   );
