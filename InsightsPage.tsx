@@ -10,7 +10,7 @@ import Select from "./Select";
 import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
 import { Periods } from "./periods";
-import { DAYS } from "./time";
+import { DAYS } from "./days";
 
 interface WeekCount {
   week: string;

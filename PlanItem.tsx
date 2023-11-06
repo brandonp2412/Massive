@@ -10,7 +10,7 @@ import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
 import { setRepo } from "./db";
 import { defaultSet } from "./gym-set";
 import { Plan } from "./plan";
-import { DAYS } from "./time";
+import { DAYS } from "./days";
 import useDark from "./use-dark";
 import { StackParams } from "./AppStack";
 

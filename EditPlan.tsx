@@ -12,7 +12,7 @@ import { planRepo, setRepo } from "./db";
 import { defaultSet } from "./gym-set";
 import StackHeader from "./StackHeader";
 import Switch from "./Switch";
-import { DAYS } from "./time";
+import { DAYS } from "./days";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import { DrawerParams } from "./drawer-param-list";
