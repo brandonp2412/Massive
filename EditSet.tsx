@@ -18,9 +18,12 @@ import {
   TouchableRipple,
 } from "react-native-paper";
 import AppInput from "./AppInput";
+import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
+import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
+import { DrawerParams } from "./drawer-param-list";
 import { emitter } from "./emitter";
 import { fixNumeric } from "./fix-numeric";
 import GymSet, {
@@ -29,15 +32,12 @@ import GymSet, {
   GYM_SET_UPDATED,
 } from "./gym-set";
 import Settings from "./settings";
-import StackHeader from "./StackHeader";
 import { toast } from "./toast";
-import { DrawerParams } from "./drawer-param-list";
-import { StackParams } from "./AppStack";
 
 export default function EditSet() {
   const { params } = useRoute<RouteProp<StackParams, "EditSet">>();
   const { set } = params;
-  const { goBack } = useNavigation<NavigationProp<DrawerParams>>();
+  const { navigate } = useNavigation<NavigationProp<DrawerParams>>();
   const [settings, setSettings] = useState<Settings>({} as Settings);
   const [name, setName] = useState(set.name);
   const [reps, setReps] = useState(set.reps?.toString());
@@ -74,13 +74,14 @@ export default function EditSet() {
       const first = await setRepo.findOne({ where: { name: value } });
       const milliseconds =
         (first?.minutes ?? 3) * 60 * 1000 + (first?.seconds ?? 0) * 1000;
+      console.log(`${EditSet.name}.timer:`, { milliseconds });
       if (milliseconds) NativeModules.AlarmModule.timer(milliseconds);
     },
     [settings]
   );
 
   const notify = (value: Partial<GymSet>) => {
-    if (!settings.notify) return goBack();
+    if (!settings.notify) return navigate("Home");
     if (
       value.weight > set.weight ||
       (value.reps > set.reps && value.weight === set.weight)
@@ -124,7 +125,7 @@ export default function EditSet() {
     notify(newSet);
     if (typeof set.id !== "number") added(saved);
     else emitter.emit(GYM_SET_UPDATED, saved);
-    goBack();
+    navigate("Home");
   };
 
   const changeImage = useCallback(async () => {
@@ -161,7 +162,7 @@ export default function EditSet() {
   const remove = async () => {
     await setRepo.delete(set.id);
     emitter.emit(GYM_SET_DELETED);
-    goBack();
+    navigate("Home");
   };
 
   const openMenu = async () => {
