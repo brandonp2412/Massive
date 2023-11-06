@@ -106,7 +106,7 @@ export default function StartPlanItem(props: Props) {
           visible={showMenu}
           onDismiss={() => setShowMenu(false)}
         >
-          <Menu.Item leadingIcon="eye-outline" onPress={view} title="View" />
+          <Menu.Item leadingIcon="eye-outline" onPress={view} title="Peek" />
           <Menu.Item
             leadingIcon="chart-bell-curve-cumulative"
             onPress={graph}
