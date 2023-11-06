@@ -19,6 +19,7 @@ import SetList from "./SetList";
 import Settings, { SETTINGS } from "./settings";
 import WorkoutItem from "./WorkoutItem";
 import { DrawerParams } from "./drawer-param-list";
+import { StackParams } from "./AppStack";
 
 export default function WorkoutList() {
   const [workouts, setWorkouts] = useState<GymSet[]>();
@@ -28,7 +29,7 @@ export default function WorkoutList() {
   const [settings, setSettings] = useState<Settings>();
   const [names, setNames] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation<NavigationProp<DrawerParams>>();
+  const navigation = useNavigation<NavigationProp<StackParams>>();
   const { params } = useRoute<RouteProp<DrawerParams, "Workouts">>();
 
   const update = (newWorkout: GymSet) => {
