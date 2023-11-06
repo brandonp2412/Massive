@@ -183,13 +183,18 @@ export default function EditWorkouts() {
             <Button
               style={{ marginBottom: MARGIN }}
               onPress={changeImage}
-              icon="add-photo-alternate"
+              icon="image-plus"
             >
               Image
             </Button>
           )}
         </ScrollView>
-        <Button disabled={!name} mode="outlined" icon="save" onPress={update}>
+        <Button
+          disabled={!name}
+          mode="outlined"
+          icon="content-save"
+          onPress={update}
+        >
           Save
         </Button>
         <ConfirmDialog
