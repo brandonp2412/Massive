@@ -37,19 +37,19 @@ export default function InsightsPage() {
       if (period === Periods.SixMonths) difference = "-6 months";
       const selectWeeks = `
         SELECT strftime('%w', created) as week, COUNT(*) as count
-        FROM sets
-        WHERE DATE(created) >= DATE('now', 'weekday 0', '${difference}')
-        GROUP BY week
-        HAVING week IS NOT NULL
-        ORDER BY count DESC;
+          FROM sets
+          WHERE DATE(created) >= DATE('now', 'weekday 0', '${difference}')
+          GROUP BY week
+          HAVING week IS NOT NULL
+          ORDER BY count DESC;
       `;
       const selectHours = `
         SELECT strftime('%H', created) AS hour, COUNT(*) AS count
-            FROM sets
-            WHERE DATE(created) >= DATE('now', 'weekday 0', '${difference}')
-            GROUP BY hour
-            having hour is not null
-            ORDER BY hour
+          FROM sets
+          WHERE DATE(created) >= DATE('now', 'weekday 0', '${difference}')
+          GROUP BY hour
+          having hour is not null
+          ORDER BY hour
       `;
 
       setTimeout(
