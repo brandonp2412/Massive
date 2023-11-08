@@ -5,17 +5,25 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { Button, IconButton, Text } from "react-native-paper";
-import { MARGIN, PADDING } from "./constants";
-import { planRepo, setRepo } from "./db";
-import { defaultSet } from "./gym-set";
-import StackHeader from "./StackHeader";
-import Switch from "./Switch";
-import { DAYS } from "./days";
+import { Pressable, StyleSheet, View } from "react-native";
+import {
+  Button,
+  IconButton,
+  Switch as PaperSwitch,
+  Text,
+} from "react-native-paper";
+import ReorderableList, {
+  ReorderableListRenderItemInfo,
+} from "react-native-reorderable-list";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
+import StackHeader from "./StackHeader";
+import Switch from "./Switch";
+import { MARGIN, PADDING } from "./constants";
+import { DAYS } from "./days";
+import { planRepo, setRepo } from "./db";
 import { DrawerParams } from "./drawer-param-list";
+import { defaultSet } from "./gym-set";
 
 export default function EditPlan() {
   const { params } = useRoute<RouteProp<StackParams, "EditPlan">>();
@@ -41,8 +49,9 @@ export default function EditPlan() {
       .orderBy("name")
       .getRawMany()
       .then((values) => {
-        console.log(EditPlan.name, { values });
-        setNames(values.map((value) => value.name));
+        const newNames = values.map((value) => value.name);
+        console.log(EditPlan.name, { newNames });
+        setNames(newNames);
       });
   }, []);
 
@@ -81,6 +90,43 @@ export default function EditPlan() {
     [setDays, days]
   );
 
+  const renderDay = (day: string) => (
+    <Switch
+      key={day}
+      onChange={(value) => toggleDay(value, day)}
+      value={days.includes(day)}
+      title={day}
+    />
+  );
+
+  const renderWorkout = ({
+    item,
+    drag,
+  }: ReorderableListRenderItemInfo<string>) => (
+    <Pressable
+      onLongPress={drag}
+      onPress={() => toggleWorkout(!workouts.includes(item), item)}
+      style={{ flexDirection: "row", alignItems: "center" }}
+    >
+      <PaperSwitch
+        value={workouts.includes(item)}
+        style={{ marginRight: MARGIN }}
+        onValueChange={(value) => toggleWorkout(value, item)}
+      />
+      <Text>{item}</Text>
+    </Pressable>
+  );
+
+  const reorderWorkout = (from: number, to: number) => {
+    const newNames = [...names];
+    const copy = newNames[from];
+    newNames[from] = newNames[to];
+    newNames[to] = copy;
+    const newWorkouts = newNames.filter((name) => workouts.includes(name));
+    console.log({ newWorkouts });
+    setWorkouts(newWorkouts);
+  };
+
   return (
     <>
       <StackHeader
@@ -106,37 +152,35 @@ export default function EditPlan() {
         )}
       </StackHeader>
       <View style={{ padding: PADDING, flex: 1 }}>
-        <ScrollView style={{ flex: 1 }}>
-          <AppInput
-            label="Title"
-            value={title}
-            onChangeText={(value) => setTitle(value)}
+        <AppInput
+          label="Title"
+          value={title}
+          onChangeText={(value) => setTitle(value)}
+        />
+
+        <Text style={styles.title}>Days</Text>
+        {DAYS.map((day) => renderDay(day))}
+
+        <Text style={[styles.title, { marginTop: MARGIN }]}>Workouts</Text>
+        {names.length === 0 ? (
+          <View>
+            <Text>No workouts found.</Text>
+          </View>
+        ) : (
+          <ReorderableList
+            data={names}
+            onReorder={({ fromIndex, toIndex }) =>
+              reorderWorkout(fromIndex, toIndex)
+            }
+            renderItem={renderWorkout}
+            keyExtractor={(item) => item}
+            dragScale={1.025}
+            style={{
+              flex: 1,
+            }}
+            containerStyle={{ flex: 1 }}
           />
-          <Text style={styles.title}>Days</Text>
-          {DAYS.map((day) => (
-            <Switch
-              key={day}
-              onChange={(value) => toggleDay(value, day)}
-              value={days.includes(day)}
-              title={day}
-            />
-          ))}
-          <Text style={[styles.title, { marginTop: MARGIN }]}>Workouts</Text>
-          {names.length === 0 ? (
-            <View>
-              <Text>No workouts found.</Text>
-            </View>
-          ) : (
-            names.map((name) => (
-              <Switch
-                key={name}
-                onChange={(value) => toggleWorkout(value, name)}
-                value={workouts.includes(name)}
-                title={name}
-              />
-            ))
-          )}
-        </ScrollView>
+        )}
 
         <Button
           disabled={workouts.length === 0 && days.length === 0}
