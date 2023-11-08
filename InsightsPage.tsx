@@ -51,8 +51,17 @@ export default function InsightsPage() {
             having hour is not null
             ORDER BY hour
       `;
-      AppDataSource.manager.query(selectWeeks).then(setWeekCounts);
-      AppDataSource.manager.query(selectHours).then(setHourCounts);
+
+      setTimeout(
+        () =>
+          AppDataSource.manager
+            .query(selectWeeks)
+            .then(setWeekCounts)
+            .then(() =>
+              AppDataSource.manager.query(selectHours).then(setHourCounts)
+            ),
+        400
+      );
     }, [period])
   );
 
