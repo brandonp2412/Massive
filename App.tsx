@@ -15,7 +15,6 @@ import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
 import { emitter } from "./emitter";
-import AppDrawer from "./AppDrawer";
 import { TOAST } from "./toast";
 import { ThemeContext } from "./use-theme";
 import AppStack from "./AppStack";
