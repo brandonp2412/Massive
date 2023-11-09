@@ -20,6 +20,7 @@ import { darkOptions, lightOptions, themeOptions } from "./options";
 import Settings, { settingsUpdated } from "./settings";
 import { toast } from "./toast";
 import { useTheme } from "./use-theme";
+import { check, PERMISSIONS, RESULTS, request } from "react-native-permissions";
 
 const twelveHours = [
   "dd/LL/yyyy",
@@ -126,6 +127,9 @@ export default function SettingsPage() {
         case "alarm":
           if (value) toast("Timers will now run after each set.");
           else toast("Stopped timers running after each set.");
+          const canNotify = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+          if (canNotify === RESULTS.DENIED || canNotify === RESULTS.BLOCKED)
+            await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
           if (value && !ignoring) NativeModules.SettingsModule.ignoreBattery();
           return;
         case "vibrate":
@@ -290,6 +294,9 @@ export default function SettingsPage() {
   }, [reset, update]);
 
   const exportDatabase = useCallback(async () => {
+    const result = await check(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+    if (result === RESULTS.DENIED || result === RESULTS.BLOCKED)
+      await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
     const path = Dirs.DatabaseDir + "/massive.db";
     await FileSystem.cpExternal(path, "massive.db", "downloads");
     toast("Database exported. Check downloads.");

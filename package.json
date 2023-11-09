@@ -1,6 +1,6 @@
 {
   "name": "massive",
-  "version": "1.171",
+  "version": "1.172",
   "private": true,
   "license": "GPL-3.0-only",
   "scripts": {
@@ -40,6 +40,7 @@
     "react-native-linear-gradient": "^2.7.3",
     "react-native-pager-view": "^6.2.0",
     "react-native-paper": "^5.9.1",
+    "react-native-permissions": "^3.10.1",
     "react-native-reanimated": "^3.3.0",
     "react-native-reorderable-list": "^0.4.0",
     "react-native-safe-area-context": "^4.7.1",
