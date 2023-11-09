@@ -1,14 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
-import {
-  Button,
-  IconButton,
-  Menu,
-  Subheading,
-  useTheme,
-} from "react-native-paper";
+import { IconButton, Menu, useTheme } from "react-native-paper";
 import AppInput from "./AppInput";
-import { ITEM_PADDING } from "./constants";
 
 export interface Item {
   value: string;
