@@ -5,19 +5,19 @@ import { useForm } from "react-hook-form";
 import { NativeModules, ScrollView, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Dirs, FileSystem } from "react-native-file-access";
+import { Button } from "react-native-paper";
 import ConfirmDialog from "./ConfirmDialog";
+import DrawerHeader from "./DrawerHeader";
+import Page from "./Page";
+import Select from "./Select";
+import Switch from "./Switch";
 import { MARGIN } from "./constants";
 import { AppDataSource } from "./data-source";
 import { setRepo, settingsRepo } from "./db";
 import { DrawerParams } from "./drawer-param-list";
-import DrawerHeader from "./DrawerHeader";
 import Input from "./input";
 import { darkOptions, lightOptions, themeOptions } from "./options";
-import Page from "./Page";
-import Select from "./Select";
-import SettingButton from "./SettingButton";
 import Settings, { settingsUpdated } from "./settings";
-import Switch from "./Switch";
 import { toast } from "./toast";
 import { useTheme } from "./use-theme";
 
@@ -298,9 +298,8 @@ export default function SettingsPage() {
   const buttons = useMemo(
     () => [
       {
-        name: soundString || "Default",
+        name: `Alarm sound: ${soundString || "Default"}`,
         onPress: changeSound,
-        label: "Alarm sound",
       },
       { name: "Export database", onPress: exportDatabase },
       { name: "Import database", onPress: () => setImporting(true) },
@@ -311,9 +310,15 @@ export default function SettingsPage() {
 
   const buttonsMarkup = useMemo(
     () =>
-      buttons
-        .filter(filter)
-        .map((button) => <SettingButton {...button} key={button.name} />),
+      buttons.filter(filter).map((button) => (
+        <Button
+          key={button.name}
+          style={{ alignSelf: "flex-start" }}
+          onPress={button.onPress}
+        >
+          {button.name}
+        </Button>
+      )),
     [buttons, filter]
   );
 
@@ -323,9 +328,8 @@ export default function SettingsPage() {
 
       <Page term={term} search={setTerm} style={{ flexGrow: 1 }}>
         <ScrollView style={{ marginTop: MARGIN, flex: 1 }}>
-          {switchesMarkup}
-          <View style={{ marginBottom: MARGIN }} />
           {selectsMarkup}
+          {switchesMarkup}
           {buttonsMarkup}
         </ScrollView>
       </Page>
