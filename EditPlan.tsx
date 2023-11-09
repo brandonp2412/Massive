@@ -32,8 +32,8 @@ export default function EditPlan() {
   const [days, setDays] = useState<string[]>(
     plan.days ? plan.days.split(",") : []
   );
-  const [workouts, setWorkouts] = useState<string[]>(
-    plan.workouts ? plan.workouts.split(",") : []
+  const [exercises, setExercises] = useState<string[]>(
+    plan.exercises ? plan.exercises.split(",") : []
   );
   const [names, setNames] = useState<string[]>([]);
   const { navigate: drawerNavigate } =
@@ -56,27 +56,27 @@ export default function EditPlan() {
   }, []);
 
   const save = useCallback(async () => {
-    console.log(`${EditPlan.name}.save`, { days, workouts, plan });
-    if (!days || !workouts) return;
-    const newWorkouts = workouts.filter((workout) => workout).join(",");
+    console.log(`${EditPlan.name}.save`, { days, exercises, plan });
+    if (!days || !exercises) return;
+    const newExercises = exercises.filter((exercise) => exercise).join(",");
     const newDays = days.filter((day) => day).join(",");
     await planRepo.save({
       title: title,
       days: newDays,
-      workouts: newWorkouts,
+      exercises: newExercises,
       id: plan.id,
     });
-  }, [title, days, workouts, plan]);
+  }, [title, days, exercises, plan]);
 
-  const toggleWorkout = useCallback(
+  const toggleExercise = useCallback(
     (on: boolean, name: string) => {
       if (on) {
-        setWorkouts([...workouts, name]);
+        setExercises([...exercises, name]);
       } else {
-        setWorkouts(workouts.filter((workout) => workout !== name));
+        setExercises(exercises.filter((exercise) => exercise !== name));
       }
     },
-    [setWorkouts, workouts]
+    [setExercises, exercises]
   );
 
   const toggleDay = useCallback(
@@ -99,32 +99,32 @@ export default function EditPlan() {
     />
   );
 
-  const renderWorkout = ({
+  const renderExercise = ({
     item,
     drag,
   }: ReorderableListRenderItemInfo<string>) => (
     <Pressable
       onLongPress={drag}
-      onPress={() => toggleWorkout(!workouts.includes(item), item)}
+      onPress={() => toggleExercise(!exercises.includes(item), item)}
       style={{ flexDirection: "row", alignItems: "center" }}
     >
       <PaperSwitch
-        value={workouts.includes(item)}
+        value={exercises.includes(item)}
         style={{ marginRight: MARGIN }}
-        onValueChange={(value) => toggleWorkout(value, item)}
+        onValueChange={(value) => toggleExercise(value, item)}
       />
       <Text>{item}</Text>
     </Pressable>
   );
 
-  const reorderWorkout = (from: number, to: number) => {
+  const reorderExercise = (from: number, to: number) => {
     const newNames = [...names];
     const copy = newNames[from];
     newNames[from] = newNames[to];
     newNames[to] = copy;
-    const newWorkouts = newNames.filter((name) => workouts.includes(name));
-    console.log({ newWorkouts });
-    setWorkouts(newWorkouts);
+    const newExercises = newNames.filter((name) => exercises.includes(name));
+    console.log({ newExercises });
+    setExercises(newExercises);
   };
 
   return (
@@ -140,10 +140,10 @@ export default function EditPlan() {
                 where: { id: plan.id },
               });
               let first = await setRepo.findOne({
-                where: { name: workouts[0] },
+                where: { name: exercises[0] },
                 order: { created: "desc" },
               });
-              if (!first) first = { ...defaultSet, name: workouts[0] };
+              if (!first) first = { ...defaultSet, name: exercises[0] };
               delete first.id;
               stackNavigate("StartPlan", { plan: newPlan, first });
             }}
@@ -161,18 +161,18 @@ export default function EditPlan() {
         <Text style={styles.title}>Days</Text>
         {DAYS.map((day) => renderDay(day))}
 
-        <Text style={[styles.title, { marginTop: MARGIN }]}>Workouts</Text>
+        <Text style={[styles.title, { marginTop: MARGIN }]}>Exercises</Text>
         {names.length === 0 ? (
           <View>
-            <Text>No workouts found.</Text>
+            <Text>No exercises found.</Text>
           </View>
         ) : (
           <ReorderableList
             data={names}
             onReorder={({ fromIndex, toIndex }) =>
-              reorderWorkout(fromIndex, toIndex)
+              reorderExercise(fromIndex, toIndex)
             }
-            renderItem={renderWorkout}
+            renderItem={renderExercise}
             keyExtractor={(item) => item}
             dragScale={1.025}
             style={{
@@ -183,7 +183,7 @@ export default function EditPlan() {
         )}
 
         <Button
-          disabled={workouts.length === 0 && days.length === 0}
+          disabled={exercises.length === 0 && days.length === 0}
           style={styles.button}
           mode="outlined"
           icon="content-save"

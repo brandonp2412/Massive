@@ -2,7 +2,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { format } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { NativeModules, ScrollView, View } from "react-native";
+import { NativeModules, ScrollView } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Dirs, FileSystem } from "react-native-file-access";
 import { Button } from "react-native-paper";
@@ -145,8 +145,8 @@ export default function SettingsPage() {
           else toast("Hid unit option for sets.");
           return;
         case "steps":
-          if (value) toast("Show steps for a workout.");
-          else toast("Hid steps for workouts.");
+          if (value) toast("Show steps for exercises.");
+          else toast("Hid steps for exercises.");
           return;
         case "showDate":
           if (value) toast("Show date for sets.");

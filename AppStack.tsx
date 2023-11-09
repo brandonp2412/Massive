@@ -4,8 +4,8 @@ import EditPlan from "./EditPlan";
 import EditSet from "./EditSet";
 import EditSets from "./EditSets";
 import EditWeight from "./EditWeight";
-import EditWorkout from "./EditWorkout";
-import EditWorkouts from "./EditWorkouts";
+import EditExercise from "./EditExercise";
+import EditExercises from "./EditExercises";
 import StartPlan from "./StartPlan";
 import ViewGraph from "./ViewGraph";
 import ViewWeightGraph from "./ViewWeightGraph";
@@ -36,10 +36,10 @@ export type StackParams = {
     weight: Weight;
   };
   ViewWeightGraph: {};
-  EditWorkout: {
+  EditExercise: {
     gymSet: GymSet;
   };
-  EditWorkouts: {
+  EditExercises: {
     names: string[];
   };
   ViewSetList: {
@@ -62,8 +62,8 @@ export default function AppStack() {
       <Stack.Screen name="ViewGraph" component={ViewGraph} />
       <Stack.Screen name="EditWeight" component={EditWeight} />
       <Stack.Screen name="ViewWeightGraph" component={ViewWeightGraph} />
-      <Stack.Screen name="EditWorkout" component={EditWorkout} />
-      <Stack.Screen name="EditWorkouts" component={EditWorkouts} />
+      <Stack.Screen name="EditExercise" component={EditExercise} />
+      <Stack.Screen name="EditExercises" component={EditExercises} />
       <Stack.Screen name="ViewSetList" component={ViewSetList} />
     </Stack.Navigator>
   );

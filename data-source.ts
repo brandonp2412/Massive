@@ -30,6 +30,7 @@ import { weight1697766633971 } from "./migrations/1697766633971-weight";
 import { Plan } from "./plan";
 import Settings from "./settings";
 import Weight from "./weight";
+import { exercises1699508495726 } from "./migrations/1699508495726-exercises";
 
 export const AppDataSource = new DataSource({
   type: "react-native",
@@ -66,5 +67,6 @@ export const AppDataSource = new DataSource({
     addBackup1678334268359,
     planTitle1692654882408,
     weight1697766633971,
+    exercises1699508495726,
   ],
 });

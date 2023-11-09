@@ -36,12 +36,12 @@ export default function PlanItem({
   );
 
   const start = useCallback(async () => {
-    const workout = item.workouts.split(",")[0];
+    const exercise = item.exercises.split(",")[0];
     let first = await setRepo.findOne({
-      where: { name: workout },
+      where: { name: exercise },
       order: { created: "desc" },
     });
-    if (!first) first = { ...defaultSet, name: workout };
+    if (!first) first = { ...defaultSet, name: exercise };
     delete first.id;
     if (ids.length === 0) {
       return navigation.navigate("StartPlan", { plan: item, first });
@@ -85,8 +85,8 @@ export default function PlanItem({
   );
 
   const description = useMemo(
-    () => (item.title ? currentDays : item.workouts.replace(/,/g, ", ")),
-    [item.title, currentDays, item.workouts]
+    () => (item.title ? currentDays : item.exercises.replace(/,/g, ", ")),
+    [item.title, currentDays, item.exercises]
   );
 
   const backgroundColor = useMemo(() => {

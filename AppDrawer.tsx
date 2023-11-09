@@ -7,7 +7,7 @@ import SetList from "./SetList";
 import SettingsPage from "./SettingsPage";
 import TimerPage from "./TimerPage";
 import WeightList from "./WeightList";
-import WorkoutList from "./WorkoutList";
+import ExerciseList from "./ExerciseList";
 import { DrawerParams } from "./drawer-param-list";
 import useDark from "./use-dark";
 
@@ -30,6 +30,11 @@ export default function AppDrawer() {
         options={{ drawerIcon: () => <IconButton icon="home-outline" /> }}
       />
       <Drawer.Screen
+        name="Exercises"
+        component={ExerciseList}
+        options={{ drawerIcon: () => <IconButton icon="dumbbell" /> }}
+      />
+      <Drawer.Screen
         name="Plans"
         component={PlanList}
         options={{ drawerIcon: () => <IconButton icon="calendar-outline" /> }}
@@ -40,11 +45,6 @@ export default function AppDrawer() {
         options={{
           drawerIcon: () => <IconButton icon="chart-bell-curve-cumulative" />,
         }}
-      />
-      <Drawer.Screen
-        name="Workouts"
-        component={WorkoutList}
-        options={{ drawerIcon: () => <IconButton icon="dumbbell" /> }}
       />
       <Drawer.Screen
         name="Timer"

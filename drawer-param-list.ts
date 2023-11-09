@@ -5,7 +5,7 @@ export type DrawerParams = {
   Settings: {};
   Graphs: {};
   Plans: {};
-  Workouts: {
+  Exercises: {
     clearNames?: boolean;
     search?: string;
     update?: GymSet;

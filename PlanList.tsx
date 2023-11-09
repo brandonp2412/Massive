@@ -28,7 +28,7 @@ export default function PlanList() {
         where: [
           { title: Like(`%${value.trim()}%`) },
           { days: Like(`%${value.trim()}%`) },
-          { workouts: Like(`%${value.trim()}%`) },
+          { exercises: Like(`%${value.trim()}%`) },
         ],
       })
       .then(setPlans);
@@ -57,7 +57,7 @@ export default function PlanList() {
 
   const onAdd = () =>
     navigation.navigate("EditPlan", {
-      plan: { title: "", days: "", workouts: "" },
+      plan: { title: "", days: "", exercises: "" },
     });
 
   const edit = useCallback(async () => {
@@ -107,7 +107,7 @@ export default function PlanList() {
         {plans?.length === 0 ? (
           <List.Item
             title="No plans yet"
-            description="A plan is a list of workouts for certain days."
+            description="A plan is a list of exercises for certain days."
           />
         ) : (
           <FlatList

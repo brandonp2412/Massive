@@ -34,7 +34,7 @@ export default function StartPlan() {
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const unitRef = useRef<TextInput>(null);
-  const workouts = useMemo(() => params.plan.workouts.split(","), [params]);
+  const exercises = useMemo(() => params.plan.exercises.split(","), [params]);
   const navigation = useNavigation<NavigationProp<StackParams>>();
 
   const [selection, setSelection] = useState({
@@ -43,33 +43,33 @@ export default function StartPlan() {
   });
 
   const refresh = useCallback(async () => {
-    const questions = workouts
-      .map((workout, index) => `('${workout}',${index})`)
+    const questions = exercises
+      .map((exercise, index) => `('${exercise}',${index})`)
       .join(",");
     const select = `
-      SELECT workouts.name, COUNT(sets.id) as total, sets.sets
-      FROM (select 0 as name, 0 as sequence union values ${questions}) as workouts 
-      LEFT JOIN sets ON sets.name = workouts.name 
+      SELECT exercises.name, COUNT(sets.id) as total, sets.sets
+      FROM (select 0 as name, 0 as sequence union values ${questions}) as exercises 
+      LEFT JOIN sets ON sets.name = exercises.name 
         AND sets.created LIKE STRFTIME('%Y-%m-%d%%', 'now', 'localtime')
         AND NOT sets.hidden
-      GROUP BY workouts.name
-      ORDER BY workouts.sequence
+      GROUP BY exercises.name
+      ORDER BY exercises.sequence
       LIMIT -1
       OFFSET 1
     `;
     const newCounts = await AppDataSource.manager.query(select);
     console.log(`${StartPlan.name}.focus:`, { newCounts });
     setCounts(newCounts);
-  }, [workouts]);
+  }, [exercises]);
 
   const select = useCallback(
     async (index: number, newCounts?: CountMany[]) => {
       setSelected(index);
       if (!counts && !newCounts) return;
-      const workout = counts ? counts[index] : newCounts[index];
-      console.log(`${StartPlan.name}.next:`, { workout });
+      const exercise = counts ? counts[index] : newCounts[index];
+      console.log(`${StartPlan.name}.next:`, { exercise });
       const last = await setRepo.findOne({
-        where: { name: workout.name },
+        where: { name: exercise.name },
         order: { created: "desc" },
       });
       console.log({ last });
@@ -92,8 +92,8 @@ export default function StartPlan() {
 
   const handleSubmit = async () => {
     const now = await getNow();
-    const workout = counts[selected];
-    const best = await getBestSet(workout.name);
+    const exercise = counts[selected];
+    const best = await getBestSet(exercise.name);
     delete best.id;
     const newSet: GymSet = {
       ...best,

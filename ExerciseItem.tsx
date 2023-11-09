@@ -6,9 +6,9 @@ import { DARK_RIPPLE } from "./constants";
 import { LIGHT_RIPPLE } from "./constants";
 import GymSet from "./gym-set";
 import useDark from "./use-dark";
-import { WorkoutsPageParams } from "./WorkoutsPage";
+import { ExercisesPageParams } from "./ExercisesPage";
 
-export default function WorkoutItem({
+export default function ExerciseItem({
   item,
   setNames,
   names,
@@ -21,7 +21,7 @@ export default function WorkoutItem({
   names: string[];
   alarm: boolean;
 }) {
-  const navigation = useNavigation<NavigationProp<WorkoutsPageParams>>();
+  const navigation = useNavigation<NavigationProp<ExercisesPageParams>>();
   const dark = useDark();
 
   const description = useMemo(() => {
@@ -52,7 +52,7 @@ export default function WorkoutItem({
   const press = () => {
     console.log({ names });
     if (names.length === 0)
-      return navigation.navigate("EditWorkout", { gymSet: item });
+      return navigation.navigate("EditExercise", { gymSet: item });
     const removing = names.find((name) => name === item.name);
     if (removing) setNames(names.filter((name) => name !== item.name));
     else setNames([...names, item.name]);

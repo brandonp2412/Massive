@@ -17,12 +17,12 @@ import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetList from "./SetList";
 import Settings, { SETTINGS } from "./settings";
-import WorkoutItem from "./WorkoutItem";
+import ExerciseItem from "./ExerciseItem";
 import { DrawerParams } from "./drawer-param-list";
 import { StackParams } from "./AppStack";
 
-export default function WorkoutList() {
-  const [workouts, setWorkouts] = useState<GymSet[]>();
+export default function ExerciseList() {
+  const [exercises, setExercises] = useState<GymSet[]>();
   const [offset, setOffset] = useState(0);
   const [term, setTerm] = useState("");
   const [end, setEnd] = useState(false);
@@ -30,20 +30,20 @@ export default function WorkoutList() {
   const [names, setNames] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation<NavigationProp<StackParams>>();
-  const { params } = useRoute<RouteProp<DrawerParams, "Workouts">>();
+  const { params } = useRoute<RouteProp<DrawerParams, "Exercises">>();
 
-  const update = (newWorkout: GymSet) => {
-    console.log(`${WorkoutList.name}.update:`, newWorkout);
-    if (!workouts) return;
-    const newWorkouts = workouts.map((workout) =>
-      workout.name === newWorkout.name ? newWorkout : workout
+  const update = (newExercise: GymSet) => {
+    console.log(`${ExerciseList.name}.update:`, newExercise);
+    if (!exercises) return;
+    const newExercises = exercises.map((exercise) =>
+      exercise.name === newExercise.name ? newExercise : exercise
     );
-    setWorkouts(newWorkouts);
+    setExercises(newExercises);
   };
 
   const reset = async (value: string) => {
-    console.log(`${WorkoutList.name}.reset`, value);
-    const newWorkouts = await setRepo
+    console.log(`${ExerciseList.name}.reset`, value);
+    const newExercises = await setRepo
       .createQueryBuilder()
       .select()
       .where("name LIKE :name", { name: `%${value.trim()}%` })
@@ -52,9 +52,9 @@ export default function WorkoutList() {
       .limit(LIMIT)
       .getMany();
     setOffset(0);
-    console.log(`${WorkoutList.name}.reset`, { length: newWorkouts.length });
-    setEnd(newWorkouts.length < LIMIT);
-    setWorkouts(newWorkouts);
+    console.log(`${ExerciseList.name}.reset`, { length: newExercises.length });
+    setEnd(newExercises.length < LIMIT);
+    setExercises(newExercises);
   };
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function WorkoutList() {
   }, []);
 
   useEffect(() => {
-    console.log(`${WorkoutList.name}.useEffect`, params);
+    console.log(`${ExerciseList.name}.useEffect`, params);
     if (!params) reset("");
     if (params?.search) search(params.search);
     else if (params?.update) update(params.update);
@@ -77,7 +77,7 @@ export default function WorkoutList() {
 
   const renderItem = useCallback(
     ({ item }: { item: GymSet }) => (
-      <WorkoutItem
+      <ExerciseItem
         images={settings?.images}
         alarm={settings?.alarm}
         item={item}
@@ -98,7 +98,7 @@ export default function WorkoutList() {
     });
     if (end) return;
     const newOffset = offset + LIMIT;
-    const newWorkouts = await setRepo
+    const newExercises = await setRepo
       .createQueryBuilder()
       .select()
       .where("name LIKE :name", { name: `%${term.trim()}%` })
@@ -107,15 +107,15 @@ export default function WorkoutList() {
       .limit(LIMIT)
       .offset(newOffset)
       .getMany();
-    if (newWorkouts.length === 0) return setEnd(true);
-    if (!workouts) return;
-    setWorkouts([...workouts, ...newWorkouts]);
-    if (newWorkouts.length < LIMIT) return setEnd(true);
+    if (newExercises.length === 0) return setEnd(true);
+    if (!exercises) return;
+    setExercises([...exercises, ...newExercises]);
+    if (newExercises.length < LIMIT) return setEnd(true);
     setOffset(newOffset);
   };
 
   const onAdd = useCallback(async () => {
-    navigation.navigate("EditWorkout", {
+    navigation.navigate("EditExercise", {
       gymSet: new GymSet(),
     });
   }, [navigation]);
@@ -137,19 +137,19 @@ export default function WorkoutList() {
   };
 
   const select = () => {
-    if (!workouts) return;
-    if (names.length === workouts.length) return setNames([]);
-    setNames(workouts.map((workout) => workout.name));
+    if (!exercises) return;
+    if (names.length === exercises.length) return setNames([]);
+    setNames(exercises.map((exercise) => exercise.name));
   };
 
   const edit = () => {
-    navigation.navigate("EditWorkouts", { names });
+    navigation.navigate("EditExercises", { names });
   };
 
   return (
     <>
       <DrawerHeader
-        name={names.length > 0 ? `${names.length} selected` : "Workouts"}
+        name={names.length > 0 ? `${names.length} selected` : "Exercises"}
       >
         <ListMenu
           onClear={clear}
@@ -160,14 +160,14 @@ export default function WorkoutList() {
         />
       </DrawerHeader>
       <Page onAdd={onAdd} term={term} search={search}>
-        {workouts?.length === 0 ? (
+        {exercises?.length === 0 ? (
           <List.Item
-            title="No workouts yet."
-            description="A workout is something you do at the gym. E.g. Deadlifts"
+            title="No exercises yet."
+            description="An exercise is something you do at the gym. E.g. Deadlifts"
           />
         ) : (
           <FlatList
-            data={workouts}
+            data={exercises}
             style={{ flex: 1 }}
             renderItem={renderItem}
             keyExtractor={(w) => w.name}

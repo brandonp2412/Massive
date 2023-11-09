@@ -12,5 +12,5 @@ export class Plan {
   days: string;
 
   @Column("text")
-  workouts: string;
+  exercises: string;
 }

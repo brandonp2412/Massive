@@ -9,34 +9,36 @@ import { useCallback, useRef, useState } from "react";
 import { ScrollView, TextInput, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Button, Card, TouchableRipple } from "react-native-paper";
+import { In } from "typeorm";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
-import { getNow, planRepo, setRepo, settingsRepo } from "./db";
+import { planRepo, setRepo, settingsRepo } from "./db";
 import { emitter } from "./emitter";
 import { fixNumeric } from "./fix-numeric";
-import GymSet, { defaultSet, GYM_SET_CREATED } from "./gym-set";
+import { GYM_SET_CREATED } from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
-import { DrawerParams } from "./drawer-param-list";
-import { StackParams } from "./AppStack";
+import { ExercisesPageParams } from "./ExercisesPage";
 
-export default function EditWorkout() {
-  const { params } = useRoute<RouteProp<StackParams, "EditWorkout">>();
+export default function EditExercises() {
+  const { params } =
+    useRoute<RouteProp<ExercisesPageParams, "EditExercises">>();
   const [removeImage, setRemoveImage] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
-  const [name, setName] = useState(params.gymSet.name);
-  const [steps, setSteps] = useState(params.gymSet.steps);
-  const [uri, setUri] = useState(params.gymSet.image);
-  const [minutes, setMinutes] = useState(
-    params.gymSet.minutes?.toString() ?? "3"
-  );
-  const [seconds, setSeconds] = useState(
-    params.gymSet.seconds?.toString() ?? "30"
-  );
-  const [sets, setSets] = useState(params.gymSet.sets?.toString() ?? "3");
-  const { navigate } = useNavigation<NavigationProp<DrawerParams>>();
+  const [name, setName] = useState("");
+  const [oldNames, setOldNames] = useState(params.names.join(", "));
+  const [steps, setSteps] = useState("");
+  const [oldSteps, setOldSteps] = useState("");
+  const [uri, setUri] = useState("");
+  const [minutes, setMinutes] = useState("");
+  const [oldMinutes, setOldMinutes] = useState("");
+  const [seconds, setSeconds] = useState("");
+  const [oldSeconds, setOldSeconds] = useState("");
+  const [sets, setSets] = useState("");
+  const [oldSets, setOldSets] = useState("");
+  const navigation = useNavigation<NavigationProp<ExercisesPageParams>>();
   const setsRef = useRef<TextInput>(null);
   const stepsRef = useRef<TextInput>(null);
   const minutesRef = useRef<TextInput>(null);
@@ -46,48 +48,47 @@ export default function EditWorkout() {
   useFocusEffect(
     useCallback(() => {
       settingsRepo.findOne({ where: {} }).then(setSettings);
-    }, [])
+      setRepo
+        .createQueryBuilder()
+        .select()
+        .where("name IN (:...names)", { names: params.names })
+        .groupBy("name")
+        .getMany()
+        .then((gymSets) => {
+          console.log({ gymSets });
+          setOldNames(gymSets.map((set) => set.name).join(", "));
+          setOldSteps(gymSets.map((set) => set.steps).join(", "));
+          setOldMinutes(gymSets.map((set) => set.minutes).join(", "));
+          setOldSeconds(gymSets.map((set) => set.seconds).join(", "));
+          setOldSets(gymSets.map((set) => set.sets).join(", "));
+        });
+    }, [params.names])
   );
 
   const update = async () => {
-    const newWorkout = {
-      name: name || params.gymSet.name,
-      sets: Number(sets),
-      minutes: +minutes,
-      seconds: +seconds,
-      steps,
-      image: removeImage ? "" : uri,
-    } as GymSet;
-    await setRepo.update({ name: params.gymSet.name }, newWorkout);
-    await planRepo.query(
-      `UPDATE plans 
-       SET workouts = REPLACE(workouts, $1, $2) 
-       WHERE workouts LIKE $3`,
-      [params.gymSet.name, name, `%${params.gymSet.name}%`]
+    await setRepo.update(
+      { name: In(params.names) },
+      {
+        name: name || undefined,
+        sets: sets ? Number(sets) : undefined,
+        minutes: minutes ? Number(minutes) : undefined,
+        seconds: seconds ? Number(seconds) : undefined,
+        steps: steps || undefined,
+        image: removeImage ? "" : uri,
+      }
     );
-    navigate("Workouts", { update: newWorkout });
-  };
-
-  const add = async () => {
-    const now = await getNow();
-    await setRepo.save({
-      ...defaultSet,
-      name,
-      hidden: true,
-      image: uri,
-      minutes: minutes ? +minutes : 3,
-      seconds: seconds ? +seconds : 30,
-      sets: sets ? +sets : 3,
-      steps,
-      created: now,
-    });
     emitter.emit(GYM_SET_CREATED);
-    navigate("Workouts", { reset: new Date().getTime() });
-  };
-
-  const save = async () => {
-    if (params.gymSet.name) return update();
-    return add();
+    for (const oldName of params.names) {
+      await planRepo
+        .createQueryBuilder()
+        .update()
+        .set({
+          exercises: () => `REPLACE(exercises, '${oldName}', '${name}')`,
+        })
+        .where("exercises LIKE :name", { name: `%${oldName}%` })
+        .execute();
+    }
+    navigation.navigate("ExerciseList", { clearNames: true });
   };
 
   const changeImage = useCallback(async () => {
@@ -111,14 +112,12 @@ export default function EditWorkout() {
 
   return (
     <>
-      <StackHeader
-        title={params.gymSet.name ? "Edit workout" : "Add workout"}
-      />
+      <StackHeader title={`Edit ${params.names.length} exercises`} />
       <View style={{ padding: PADDING, flex: 1 }}>
         <ScrollView style={{ flex: 1 }}>
           <AppInput
             autoFocus
-            label="Name"
+            label={`Names: ${oldNames}`}
             value={name}
             onChangeText={setName}
             onSubmitEditing={submitName}
@@ -129,7 +128,7 @@ export default function EditWorkout() {
               selectTextOnFocus={false}
               value={steps}
               onChangeText={setSteps}
-              label="Steps"
+              label={`Steps: ${oldSteps}`}
               multiline
               onSubmitEditing={() => setsRef.current?.focus()}
             />
@@ -143,7 +142,7 @@ export default function EditWorkout() {
               if (fixed.length !== newSets.length)
                 toast("Sets must be a number");
             }}
-            label="Sets per workout"
+            label={`Sets: ${oldSets}`}
             keyboardType="numeric"
             onSubmitEditing={() => minutesRef.current?.focus()}
           />
@@ -159,14 +158,14 @@ export default function EditWorkout() {
                   if (fixed.length !== newMinutes.length)
                     toast("Reps must be a number");
                 }}
-                label="Rest minutes"
+                label={`Rest minutes: ${oldMinutes}`}
                 keyboardType="numeric"
               />
               <AppInput
                 innerRef={secondsRef}
                 value={seconds}
                 onChangeText={setSeconds}
-                label="Rest seconds"
+                label={`Rest seconds: ${oldSeconds}`}
                 keyboardType="numeric"
                 blurOnSubmit
               />
@@ -195,7 +194,7 @@ export default function EditWorkout() {
           disabled={!name}
           mode="outlined"
           icon="content-save"
-          onPress={save}
+          onPress={update}
         >
           Save
         </Button>
