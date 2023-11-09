@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import AppPieChart from "./AppPieChart";
 import Chart from "./Chart";
@@ -125,6 +125,8 @@ export default function InsightsPage() {
           />
         </View>
 
+        {weekCounts === undefined && <ActivityIndicator />}
+
         {weekCounts?.length > 0 && (
           <AppPieChart
             options={weekCounts.map((weekCount) => ({
@@ -163,6 +165,8 @@ export default function InsightsPage() {
           />
         </View>
 
+        {hourCounts === undefined && <ActivityIndicator />}
+
         {hourCounts?.length > 0 && (
           <Chart
             data={hourCounts.map((hc) => hc.count)}
@@ -184,8 +188,8 @@ export default function InsightsPage() {
         setShow={setShowWeek}
         onOk={() => setShowWeek(false)}
       >
-        If your plan expects an equal # of sets each day of the week, then this
-        pie graph should be evenly sliced.
+        Are mondays your weak-spot? Find out here. This counts the # of sets you
+        tend to do based on the day of the week.
       </ConfirmDialog>
 
       <ConfirmDialog
@@ -195,7 +199,8 @@ export default function InsightsPage() {
         onOk={() => setShowHour(false)}
       >
         If you find yourself giving up on the gym after 5pm, consider starting
-        earlier! Or vice-versa.
+        earlier! Or vice-versa. This counts the # of sets you tend to do, based
+        on what time of day you began your workout.
       </ConfirmDialog>
     </>
   );
