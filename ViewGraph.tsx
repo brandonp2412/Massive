@@ -28,6 +28,9 @@ export default function ViewGraph() {
     let difference = "-7 days";
     if (period === Periods.Monthly) difference = "-1 months";
     else if (period === Periods.Yearly) difference = "-1 years";
+    else if (period === Periods.TwoMonths) difference = "-2 months";
+    else if (period === Periods.ThreeMonths) difference = "-3 months";
+    else if (period === Periods.SixMonths) difference = "-6 months";
 
     let group = "%Y-%m-%d";
     if (period === Periods.Yearly) group = "%Y-%m";
@@ -135,6 +138,9 @@ export default function ViewGraph() {
           items={[
             { value: Periods.Weekly, label: Periods.Weekly },
             { value: Periods.Monthly, label: Periods.Monthly },
+            { value: Periods.TwoMonths, label: Periods.TwoMonths },
+            { value: Periods.ThreeMonths, label: Periods.ThreeMonths },
+            { value: Periods.SixMonths, label: Periods.SixMonths },
             { value: Periods.Yearly, label: Periods.Yearly },
           ]}
           onChange={(value) => setPeriod(value as Periods)}
