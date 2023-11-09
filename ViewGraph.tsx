@@ -28,8 +28,10 @@ export default function ViewGraph() {
     let difference = "-7 days";
     if (period === Periods.Monthly) difference = "-1 months";
     else if (period === Periods.Yearly) difference = "-1 years";
+
     let group = "%Y-%m-%d";
     if (period === Periods.Yearly) group = "%Y-%m";
+
     const builder = setRepo
       .createQueryBuilder()
       .select("STRFTIME('%Y-%m-%d', created)", "created")
@@ -41,6 +43,7 @@ export default function ViewGraph() {
       })
       .groupBy("name")
       .addGroupBy(`STRFTIME('${group}', created)`);
+
     switch (metric) {
       case Metrics.Best:
         builder

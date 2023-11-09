@@ -35,6 +35,7 @@ export default function InsightsPage() {
       if (period === Periods.TwoMonths) difference = "-2 months";
       if (period === Periods.ThreeMonths) difference = "-3 months";
       if (period === Periods.SixMonths) difference = "-6 months";
+
       const selectWeeks = `
         SELECT strftime('%w', created) as week, COUNT(*) as count
           FROM sets
