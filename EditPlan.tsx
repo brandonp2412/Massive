@@ -125,6 +125,7 @@ export default function EditPlan() {
     const newExercises = newNames.filter((name) => exercises.includes(name));
     console.log({ newExercises });
     setExercises(newExercises);
+    setNames(newNames);
   };
 
   return (
