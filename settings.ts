@@ -47,6 +47,9 @@ export default class Settings {
 
   @Column("boolean")
   backup: boolean;
+
+  @Column("int")
+  duration: number;
 }
 
 export const SETTINGS = "settings";

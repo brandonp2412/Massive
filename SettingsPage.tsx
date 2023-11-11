@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { NativeModules, ScrollView } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Dirs, FileSystem } from "react-native-file-access";
-import { Button } from "react-native-paper";
+import { Button, TextInput } from "react-native-paper";
 import ConfirmDialog from "./ConfirmDialog";
 import DrawerHeader from "./DrawerHeader";
 import Page from "./Page";
@@ -21,6 +21,7 @@ import Settings, { settingsUpdated } from "./settings";
 import { toast } from "./toast";
 import { useTheme } from "./use-theme";
 import { check, PERMISSIONS, RESULTS, request } from "react-native-permissions";
+import AppInput from "./AppInput";
 
 const twelveHours = [
   "dd/LL/yyyy",
@@ -220,6 +221,51 @@ export default function SettingsPage() {
     [update, setTheme, setDarkColor, setLightColor, setValue]
   );
 
+  const changeNumber = useCallback(
+    async (key: keyof Settings, value: number) => {
+      setValue(key, value);
+      await update(key, value);
+      switch (key) {
+        case "duration":
+          return toast("Changed duration of alarm vibrations.");
+      }
+    },
+    [update, setValue]
+  );
+
+  const numberInputs: Input<number>[] = useMemo(
+    () => [
+      {
+        name: "Vibration duration (ms)",
+        value: settings.duration,
+        key: "duration",
+      },
+    ],
+    [settings]
+  );
+
+  const renderNumber = useCallback(
+    (item: Input<number>) => (
+      <AppInput
+        value={item.value?.toString() ?? "300"}
+        key={item.key}
+        label={item.name}
+        onChangeText={(value) => changeString(item.key, value)}
+        onSubmitEditing={(e) =>
+          changeNumber(item.key, Number(e.nativeEvent.text))
+        }
+        keyboardType="numeric"
+        blurOnSubmit
+      />
+    ),
+    [changeString, changeNumber]
+  );
+
+  const numbersMarkup = useMemo(
+    () => numberInputs.filter(filter).map((s) => renderNumber(s)),
+    [numberInputs, filter, renderNumber]
+  );
+
   const selects: Input<string>[] = useMemo(() => {
     const today = new Date();
     return [
@@ -336,6 +382,7 @@ export default function SettingsPage() {
       <Page term={term} search={setTerm} style={{ flexGrow: 1 }}>
         <ScrollView style={{ marginTop: MARGIN, flex: 1 }}>
           {selectsMarkup}
+          {numbersMarkup}
           {switchesMarkup}
           {buttonsMarkup}
         </ScrollView>

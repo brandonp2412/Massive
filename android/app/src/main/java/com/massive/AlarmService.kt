@@ -12,7 +12,7 @@ import android.os.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 
-class Settings(val sound: String?, val noSound: Boolean, val vibrate: Boolean)
+class Settings(val sound: String?, val noSound: Boolean, val vibrate: Boolean, val duration: Long)
 
 @RequiresApi(Build.VERSION_CODES.O)
 class AlarmService : Service(), OnPreparedListener {
@@ -45,13 +45,15 @@ class AlarmService : Service(), OnPreparedListener {
     @SuppressLint("Range")
     private fun getSettings(): Settings {
         val db = DatabaseHelper(applicationContext).readableDatabase
-        val cursor = db.rawQuery("SELECT sound, noSound, vibrate FROM settings", null)
+        val cursor = db.rawQuery("SELECT sound, noSound, vibrate, duration FROM settings", null)
         cursor.moveToFirst()
         val sound = cursor.getString(cursor.getColumnIndex("sound"))
         val noSound = cursor.getInt(cursor.getColumnIndex("noSound")) == 1
         val vibrate = cursor.getInt(cursor.getColumnIndex("vibrate")) == 1
+        var duration = cursor.getLong(cursor.getColumnIndex("duration"))
+        if (duration.toInt() == 0) duration = 300
         cursor.close()
-        return Settings(sound, noSound, vibrate)
+        return Settings(sound, noSound, vibrate, duration)
     }
 
     private fun playSound(settings: Settings) {
@@ -117,7 +119,7 @@ class AlarmService : Service(), OnPreparedListener {
         val settings = getSettings()
         playSound(settings)
         if (!settings.vibrate) return START_STICKY
-        val pattern = longArrayOf(0, 300, 1300, 300, 1300, 300)
+        val pattern = longArrayOf(0, settings.duration, 1300, settings.duration, 1300, settings.duration / 2)
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =
                 getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
