@@ -9,6 +9,7 @@ import {
   MD3DarkTheme as PaperDarkTheme,
   MD3LightTheme as PaperDefaultTheme,
   Provider as PaperProvider,
+  ProgressBar,
   Snackbar,
 } from "react-native-paper";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -18,6 +19,8 @@ import { emitter } from "./emitter";
 import { TOAST } from "./toast";
 import { ThemeContext } from "./use-theme";
 import AppStack from "./AppStack";
+import useTimer from "./use-timer";
+import { TickEvent } from "./TimerPage";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -42,6 +45,7 @@ const App = () => {
   const [initialized, setInitialized] = useState(false);
   const [snackbar, setSnackbar] = useState("");
   const [appTheme, setAppTheme] = useState("system");
+  const [progress, setProgress] = useState(0);
 
   const [lightColor, setLightColor] = useState<string>(
     CombinedDefaultTheme.colors.primary
@@ -60,13 +64,15 @@ const App = () => {
       if (settings.darkColor) setDarkColor(settings.darkColor);
       setInitialized(true);
     })();
-    const description = emitter.addListener(
-      TOAST,
-      ({ value }: { value: string }) => {
+    const descriptions = [
+      emitter.addListener(TOAST, ({ value }: { value: string }) => {
         setSnackbar(value);
-      }
-    );
-    return description.remove;
+      }),
+      emitter.addListener("tick", (event: TickEvent) => {
+        setProgress((Number(event.minutes) * 60 + Number(event.seconds)) / 210);
+      }),
+    ];
+    return () => descriptions.forEach((description) => description.remove());
   }, []);
 
   const paperTheme = useMemo(() => {
@@ -122,6 +128,8 @@ const App = () => {
       >
         {snackbar}
       </Snackbar>
+
+      {progress > 0 && <ProgressBar progress={progress} />}
     </PaperProvider>
   );
 };
