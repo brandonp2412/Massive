@@ -104,7 +104,6 @@ export default function EditPlan() {
     drag,
   }: ReorderableListRenderItemInfo<string>) => (
     <Pressable
-      onLongPress={drag}
       onPress={() => toggleExercise(!exercises.includes(item), item)}
       style={{ flexDirection: "row", alignItems: "center" }}
     >
@@ -114,6 +113,11 @@ export default function EditPlan() {
         onValueChange={(value) => toggleExercise(value, item)}
       />
       <Text>{item}</Text>
+      <IconButton
+        icon="drag-vertical"
+        style={{ marginLeft: "auto" }}
+        onPressIn={drag}
+      />
     </Pressable>
   );
 
