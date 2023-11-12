@@ -10,10 +10,19 @@ import SettingsPage from "./SettingsPage";
 import TimerPage from "./TimerPage";
 import useDark from "./use-dark";
 import WeightList from "./WeightList";
+import Settings from "./settings";
+import { StackScreenProps } from "@react-navigation/stack";
 
 const Drawer = createDrawerNavigator<DrawerParams>();
 
-export default function AppDrawer() {
+interface AppDrawerParams {
+  settings: Settings;
+}
+
+export default function AppDrawer({
+  route,
+}: StackScreenProps<{ settings: AppDrawerParams }>) {
+  console.log(route.params.settings.startup);
   const dark = useDark();
 
   return (
@@ -23,6 +32,9 @@ export default function AppDrawer() {
         swipeEdgeWidth: 1000,
         headerShown: false,
       }}
+      initialRouteName={
+        (route.params.settings.startup || "Home") as keyof DrawerParams
+      }
     >
       <Drawer.Screen
         name="Home"

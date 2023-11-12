@@ -20,6 +20,7 @@ import { emitter } from "./emitter";
 import { TickEvent } from "./TimerPage";
 import { TOAST } from "./toast";
 import { ThemeContext } from "./use-theme";
+import Settings from "./settings";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -45,6 +46,7 @@ const App = () => {
   const [snackbar, setSnackbar] = useState("");
   const [appTheme, setAppTheme] = useState("system");
   const [progress, setProgress] = useState(0);
+  const [settings, setSettings] = useState<Settings>();
 
   const [lightColor, setLightColor] = useState<string>(
     CombinedDefaultTheme.colors.primary
@@ -57,12 +59,15 @@ const App = () => {
   useEffect(() => {
     (async () => {
       if (!AppDataSource.isInitialized) await AppDataSource.initialize();
-      const settings = await settingsRepo.findOne({ where: {} });
-      setAppTheme(settings.theme);
-      if (settings.lightColor) setLightColor(settings.lightColor);
-      if (settings.darkColor) setDarkColor(settings.darkColor);
+      const gotSettings = await settingsRepo.findOne({ where: {} });
+      console.log({ gotSettings });
+      setSettings(gotSettings);
+      setAppTheme(gotSettings.theme);
+      if (gotSettings.lightColor) setLightColor(gotSettings.lightColor);
+      if (gotSettings.darkColor) setDarkColor(gotSettings.darkColor);
       setInitialized(true);
     })();
+
     const descriptions = [
       emitter.addListener(TOAST, ({ value }: { value: string }) => {
         setSnackbar(value);
@@ -110,7 +115,7 @@ const App = () => {
               setDarkColor,
             }}
           >
-            <AppStack />
+            <AppStack settings={settings} />
           </ThemeContext.Provider>
         )}
       </NavigationContainer>

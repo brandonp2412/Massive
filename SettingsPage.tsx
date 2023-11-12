@@ -123,6 +123,30 @@ export default function SettingsPage() {
 
   const data: Item[] = [
     {
+      name: "Start up page",
+      renderItem: (name: string) => (
+        <Select
+          label={name}
+          items={[
+            { label: "Home", value: "Home" },
+            { label: "Exercises", value: "Exercises" },
+            { label: "Plans", value: "Plans" },
+            { label: "Graphs", value: "Graphs" },
+            { label: "Timer", value: "Timer" },
+            { label: "Weight", value: "Weight" },
+            { label: "Insights", value: "Insights" },
+            { label: "Settings", value: "Settings" },
+          ]}
+          value={settings.startup}
+          onChange={async (value) => {
+            setValue("startup", value);
+            await update("startup", value);
+            toast(`App will always start on ${value}`);
+          }}
+        />
+      ),
+    },
+    {
       name: "Theme",
       renderItem: (name: string) => (
         <Select

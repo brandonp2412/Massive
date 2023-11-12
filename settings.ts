@@ -49,4 +49,7 @@ export default class Settings {
 
   @Column("int")
   duration: number;
+
+  @Column("text")
+  startup: string;
 }

@@ -1,10 +1,10 @@
 export type DrawerParams = {
   Home: {};
-  Settings: {};
-  Graphs: {};
-  Plans: {};
   Exercises: {};
+  Plans: {};
+  Graphs: {};
   Timer: {};
   Weight: {};
   Insights: {};
+  Settings: {};
 };

@@ -13,6 +13,7 @@ import ViewGraph from "./ViewGraph";
 import ViewSetList from "./ViewSetList";
 import ViewWeightGraph from "./ViewWeightGraph";
 import Weight from "./weight";
+import Settings from "./settings";
 
 export type StackParams = {
   Drawer: {};
@@ -49,12 +50,17 @@ export type StackParams = {
 
 const Stack = createStackNavigator<StackParams>();
 
-export default function AppStack() {
+export default function AppStack({ settings }: { settings: Settings }) {
+  console.log({ settings });
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, animationEnabled: false }}
     >
-      <Stack.Screen name="Drawer" component={AppDrawer} />
+      <Stack.Screen
+        name="Drawer"
+        component={AppDrawer}
+        initialParams={{ settings }}
+      />
       <Stack.Screen name="EditSet" component={EditSet} />
       <Stack.Screen name="EditSets" component={EditSets} />
       <Stack.Screen name="EditPlan" component={EditPlan} />
