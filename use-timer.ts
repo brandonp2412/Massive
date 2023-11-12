@@ -8,19 +8,23 @@ export default function useTimer() {
   const [minutes, setMinutes] = useState("00");
   const [seconds, setSeconds] = useState("00");
 
+  const update = () => {
+    const current: number = NativeModules.AlarmModule.getCurrent();
+    setMinutes(
+      Math.floor(current / 1000 / 60)
+        .toString()
+        .padStart(2, "0")
+    );
+    setSeconds(
+      Math.floor((current / 1000) % 60)
+        .toString()
+        .padStart(2, "0")
+    );
+  };
+
   useFocusEffect(
     useCallback(() => {
-      const current: number = NativeModules.AlarmModule.getCurrent();
-      setMinutes(
-        Math.floor(current / 1000 / 60)
-          .toString()
-          .padStart(2, "0")
-      );
-      setSeconds(
-        Math.floor((current / 1000) % 60)
-          .toString()
-          .padStart(2, "0")
-      );
+      update();
       const listener = emitter.addListener("tick", (event: TickEvent) => {
         console.log(`${useTimer.name}.tick:`, { event });
         setMinutes(event.minutes);
@@ -30,5 +34,5 @@ export default function useTimer() {
     }, [])
   );
 
-  return { minutes, seconds };
+  return { minutes, seconds, update };
 }

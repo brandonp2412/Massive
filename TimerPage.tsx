@@ -17,7 +17,7 @@ export interface TickEvent {
 }
 
 export default function TimerPage() {
-  const { minutes, seconds } = useTimer();
+  const { minutes, seconds, update } = useTimer();
   const [settings, setSettings] = useState<Settings>();
   const { colors } = useTheme();
 
@@ -29,11 +29,13 @@ export default function TimerPage() {
 
   const stop = () => {
     NativeModules.AlarmModule.stop();
+    update();
   };
 
   const add = async () => {
     console.log(`${TimerPage.name}.add:`, settings);
     NativeModules.AlarmModule.add();
+    update();
   };
 
   const progress = useMemo(() => {
