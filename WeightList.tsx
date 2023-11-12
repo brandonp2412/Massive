@@ -51,7 +51,8 @@ export default function WeightList() {
     useCallback(() => {
       settingsRepo.findOne({ where: {} }).then(setSettings);
       reset(term);
-    }, [term, reset])
+      // eslint-disable-next-line
+    }, [term])
   );
 
   const search = (value: string) => {

@@ -37,7 +37,8 @@ export default function PlanList() {
   useFocusEffect(
     useCallback(() => {
       refresh(term);
-    }, [refresh, term])
+      // eslint-disable-next-line
+    }, [term])
   );
 
   const search = useCallback(

@@ -38,7 +38,8 @@ export default function GraphsList() {
     useCallback(() => {
       refresh(term);
       settingsRepo.findOne({ where: {} }).then(setSettings);
-    }, [refresh, term])
+      // eslint-disable-next-line
+    }, [term])
   );
 
   const next = useCallback(async () => {

@@ -44,9 +44,11 @@ export default function SetList() {
 
   useFocusEffect(
     useCallback(() => {
+      console.log(`${SetList.name}.focus:`, { term });
       settingsRepo.findOne({ where: {} }).then(setSettings);
       reset(term);
-    }, [reset, term])
+      // eslint-disable-next-line
+    }, [term])
   );
 
   const search = (value: string) => {

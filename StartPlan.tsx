@@ -86,7 +86,8 @@ export default function StartPlan() {
     useCallback(() => {
       settingsRepo.findOne({ where: {} }).then(setSettings);
       refresh();
-    }, [refresh])
+      // eslint-disable-next-line
+    }, [])
   );
 
   const handleSubmit = async () => {
