@@ -1,25 +1,22 @@
 import {
   NavigationProp,
-  RouteProp,
+  useFocusEffect,
   useNavigation,
-  useRoute,
 } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { In } from "typeorm";
-import { LIMIT } from "./constants";
-import { setRepo, settingsRepo } from "./db";
+import { StackParams } from "./AppStack";
 import DrawerHeader from "./DrawerHeader";
-import { emitter } from "./emitter";
-import GymSet, { GYM_SET_DELETED } from "./gym-set";
+import ExerciseItem from "./ExerciseItem";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetList from "./SetList";
-import Settings, { SETTINGS } from "./settings";
-import ExerciseItem from "./ExerciseItem";
-import { DrawerParams } from "./drawer-param-list";
-import { StackParams } from "./AppStack";
+import { LIMIT } from "./constants";
+import { setRepo, settingsRepo } from "./db";
+import GymSet from "./gym-set";
+import Settings from "./settings";
 
 export default function ExerciseList() {
   const [exercises, setExercises] = useState<GymSet[]>();
@@ -30,16 +27,6 @@ export default function ExerciseList() {
   const [names, setNames] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation<NavigationProp<StackParams>>();
-  const { params } = useRoute<RouteProp<DrawerParams, "Exercises">>();
-
-  const update = (newExercise: GymSet) => {
-    console.log(`${ExerciseList.name}.update:`, newExercise);
-    if (!exercises) return;
-    const newExercises = exercises.map((exercise) =>
-      exercise.name === newExercise.name ? newExercise : exercise
-    );
-    setExercises(newExercises);
-  };
 
   const reset = async (value: string) => {
     console.log(`${ExerciseList.name}.reset`, value);
@@ -57,23 +44,12 @@ export default function ExerciseList() {
     setExercises(newExercises);
   };
 
-  useEffect(() => {
-    settingsRepo.findOne({ where: {} }).then(setSettings);
-    const description = emitter.addListener(SETTINGS, () => {
+  useFocusEffect(
+    useCallback(() => {
+      reset(term);
       settingsRepo.findOne({ where: {} }).then(setSettings);
-    });
-    return description.remove;
-  }, []);
-
-  useEffect(() => {
-    console.log(`${ExerciseList.name}.useEffect`, params);
-    if (!params) reset("");
-    if (params?.search) search(params.search);
-    else if (params?.update) update(params.update);
-    else if (params?.reset) reset(term);
-    else if (params?.clearNames) setNames([]);
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, [params]);
+    }, [term])
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: GymSet }) => (
@@ -132,7 +108,6 @@ export default function ExerciseList() {
   const remove = async () => {
     setNames([]);
     if (names.length > 0) await setRepo.delete({ name: In(names) });
-    emitter.emit(GYM_SET_DELETED);
     await reset(term);
   };
 

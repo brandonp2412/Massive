@@ -19,7 +19,6 @@ import { emitter } from "./emitter";
 import { TOAST } from "./toast";
 import { ThemeContext } from "./use-theme";
 import AppStack from "./AppStack";
-import useTimer from "./use-timer";
 import { TickEvent } from "./TimerPage";
 
 export const CombinedDefaultTheme = {

@@ -92,7 +92,6 @@ export default function EditSet() {
 
   const added = async (value: GymSet) => {
     console.log(`${EditSet.name}.added:`, value);
-    emitter.emit(GYM_SET_CREATED);
     startTimer(value.name);
   };
 
@@ -124,7 +123,6 @@ export default function EditSet() {
     const saved = await setRepo.save(newSet);
     notify(newSet);
     if (typeof set.id !== "number") added(saved);
-    else emitter.emit(GYM_SET_UPDATED, saved);
     navigate("Home");
   };
 
@@ -161,7 +159,6 @@ export default function EditSet() {
 
   const remove = async () => {
     await setRepo.delete(set.id);
-    emitter.emit(GYM_SET_DELETED);
     navigate("Home");
   };
 

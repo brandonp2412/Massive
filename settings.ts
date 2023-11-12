@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
-import { emitter } from "./emitter";
 
 @Entity()
 export default class Settings {
@@ -51,9 +50,3 @@ export default class Settings {
   @Column("int")
   duration: number;
 }
-
-export const SETTINGS = "settings";
-
-export const settingsUpdated = () => {
-  emitter.emit(SETTINGS);
-};

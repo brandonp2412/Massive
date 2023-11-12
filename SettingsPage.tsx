@@ -5,7 +5,9 @@ import { useForm } from "react-hook-form";
 import { NativeModules, ScrollView } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Dirs, FileSystem } from "react-native-file-access";
-import { Button, TextInput } from "react-native-paper";
+import { Button } from "react-native-paper";
+import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
+import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import DrawerHeader from "./DrawerHeader";
 import Page from "./Page";
@@ -17,11 +19,9 @@ import { setRepo, settingsRepo } from "./db";
 import { DrawerParams } from "./drawer-param-list";
 import Input from "./input";
 import { darkOptions, lightOptions, themeOptions } from "./options";
-import Settings, { settingsUpdated } from "./settings";
+import Settings from "./settings";
 import { toast } from "./toast";
 import { useTheme } from "./use-theme";
-import { check, PERMISSIONS, RESULTS, request } from "react-native-permissions";
-import AppInput from "./AppInput";
 
 const twelveHours = [
   "dd/LL/yyyy",
@@ -80,7 +80,6 @@ export default function SettingsPage() {
       .set({ [key]: value })
       .printSql()
       .execute();
-    settingsUpdated();
   }, []);
 
   const soundString = useMemo(() => {

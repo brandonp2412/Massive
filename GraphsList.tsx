@@ -1,16 +1,19 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from "@react-navigation/native";
+import { useCallback, useState } from "react";
 import { FlatList, Image } from "react-native";
 import { List } from "react-native-paper";
+import DrawerHeader from "./DrawerHeader";
+import { GraphsPageParams } from "./GraphsPage";
+import Page from "./Page";
 import { getBestSets } from "./best.service";
 import { LIMIT } from "./constants";
 import { settingsRepo } from "./db";
-import DrawerHeader from "./DrawerHeader";
-import { emitter } from "./emitter";
-import { GraphsPageParams } from "./GraphsPage";
 import GymSet from "./gym-set";
-import Page from "./Page";
-import Settings, { SETTINGS } from "./settings";
+import Settings from "./settings";
 
 export default function GraphsList() {
   const [bests, setBests] = useState<GymSet[]>();
@@ -21,16 +24,6 @@ export default function GraphsList() {
   const [settings, setSettings] = useState<Settings>();
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    refresh("");
-    settingsRepo.findOne({ where: {} }).then(setSettings);
-    const description = emitter.addListener(SETTINGS, () => {
-      settingsRepo.findOne({ where: {} }).then(setSettings);
-    });
-    return description.remove;
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, []);
-
   const refresh = useCallback(
     async (value: string) => {
       if (refreshing) return;
@@ -39,6 +32,13 @@ export default function GraphsList() {
       setOffset(0);
     },
     [refreshing]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      refresh(term);
+      settingsRepo.findOne({ where: {} }).then(setSettings);
+    }, [refresh, term])
   );
 
   const next = useCallback(async () => {

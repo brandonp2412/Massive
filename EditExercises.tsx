@@ -77,7 +77,6 @@ export default function EditExercises() {
         image: removeImage ? "" : uri,
       }
     );
-    emitter.emit(GYM_SET_CREATED);
     for (const oldName of params.names) {
       await planRepo
         .createQueryBuilder()

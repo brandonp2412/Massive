@@ -103,8 +103,7 @@ export default function StartPlan() {
       created: now,
       hidden: false,
     };
-    const saved = await setRepo.save(newSet);
-    emitter.emit(GYM_SET_CREATED, saved);
+    await setRepo.save(newSet);
     await refresh();
     if (
       settings.notify &&

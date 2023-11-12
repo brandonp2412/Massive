@@ -1,5 +1,9 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from "@react-navigation/native";
+import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
@@ -10,14 +14,8 @@ import Page from "./Page";
 import SetItem from "./SetItem";
 import { LIMIT } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
-import { emitter } from "./emitter";
-import GymSet, {
-  GYM_SET_CREATED,
-  GYM_SET_DELETED,
-  GYM_SET_UPDATED,
-  defaultSet,
-} from "./gym-set";
-import Settings, { SETTINGS } from "./settings";
+import GymSet, { defaultSet } from "./gym-set";
+import Settings from "./settings";
 
 export default function SetList() {
   const [refreshing, setRefreshing] = useState(false);
@@ -44,34 +42,12 @@ export default function SetList() {
     [offset]
   );
 
-  useEffect(() => {
-    settingsRepo.findOne({ where: {} }).then(setSettings);
-    reset("");
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, []);
-
-  useEffect(() => {
-    const updated = (gymSet: GymSet) => {
-      if (!sets) console.log({ sets });
-      console.log(`${SetList.name}.updated:`, { gymSet, length: sets.length });
-      const newSets = sets.map((set) => {
-        if (set.id !== gymSet.id) return set;
-        if (gymSet.created === undefined) gymSet.created = set.created;
-        return gymSet;
-      });
-      setSets(newSets);
-    };
-
-    const descriptions = [
-      emitter.addListener(SETTINGS, () => {
-        settingsRepo.findOne({ where: {} }).then(setSettings);
-      }),
-      emitter.addListener(GYM_SET_UPDATED, updated),
-      emitter.addListener(GYM_SET_CREATED, () => reset("")),
-      emitter.addListener(GYM_SET_DELETED, () => reset("")),
-    ];
-    return () => descriptions.forEach((description) => description.remove());
-  }, [sets]);
+  useFocusEffect(
+    useCallback(() => {
+      settingsRepo.findOne({ where: {} }).then(setSettings);
+      reset(term);
+    }, [reset, term])
+  );
 
   const search = (value: string) => {
     console.log(`${SetList.name}.search:`, value);

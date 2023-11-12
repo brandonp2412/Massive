@@ -63,7 +63,6 @@ export default function EditSets() {
     if (unit) update.unit = unit;
     if (newImage) update.image = newImage;
     if (Object.keys(update).length > 0) await setRepo.update(ids, update);
-    emitter.emit(GYM_SET_CREATED);
     navigate("Home");
   };
 

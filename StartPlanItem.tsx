@@ -24,8 +24,6 @@ export default function StartPlanItem(props: Props) {
   const [showMenu, setShowMenu] = useState(false);
   const { navigate: stackNavigate } =
     useNavigation<NavigationProp<StackParams>>();
-  const { navigate: drawerNavigate } =
-    useNavigation<NavigationProp<DrawerParams>>();
 
   const undo = useCallback(async () => {
     const now = await getNow();
@@ -41,7 +39,6 @@ export default function StartPlanItem(props: Props) {
     setShowMenu(false);
     if (!first) return toast("Nothing to undo.");
     await setRepo.delete(first.id);
-    emitter.emit(GYM_SET_DELETED, first);
     onUndo();
   }, [setShowMenu, onUndo, item.name]);
 

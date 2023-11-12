@@ -81,7 +81,6 @@ export default function EditExercise() {
       steps,
       created: now,
     });
-    emitter.emit(GYM_SET_CREATED);
     navigate("Exercises", { reset: new Date().getTime() });
   };
 
