@@ -21,6 +21,7 @@ import { TickEvent } from "./TimerPage";
 import { TOAST } from "./toast";
 import { ThemeContext } from "./use-theme";
 import Settings from "./settings";
+import { MARGIN } from "./constants";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -133,7 +134,12 @@ const App = () => {
         {snackbar}
       </Snackbar>
 
-      {progress > 0 && <ProgressBar progress={progress} />}
+      {progress > 0 && (
+        <ProgressBar
+          style={{ position: "absolute", bottom: MARGIN / 2 }}
+          progress={progress}
+        />
+      )}
     </PaperProvider>
   );
 };
