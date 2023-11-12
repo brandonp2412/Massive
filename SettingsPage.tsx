@@ -2,24 +2,23 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { format } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { NativeModules, ScrollView } from "react-native";
+import { FlatList, NativeModules } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Dirs, FileSystem } from "react-native-file-access";
 import { Button } from "react-native-paper";
-import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
+import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
-import { MARGIN } from "./constants";
+import DrawerHeader from "./DrawerHeader";
+import Page from "./Page";
+import Select from "./Select";
+import Switch from "./Switch";
+import { PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
 import { setRepo, settingsRepo } from "./db";
 import { DrawerParams } from "./drawer-param-list";
-import DrawerHeader from "./DrawerHeader";
-import Input from "./input";
 import { darkOptions, lightOptions, themeOptions } from "./options";
-import Page from "./Page";
-import Select from "./Select";
 import Settings from "./settings";
-import Switch from "./Switch";
 import { toast } from "./toast";
 import { useTheme } from "./use-theme";
 
@@ -41,6 +40,11 @@ const twentyFours = [
   "yyyy-MM-d, k:m",
   "yyyy.MM.d",
 ];
+
+interface Item {
+  name: string;
+  renderItem: (name: string) => React.JSX.Element;
+}
 
 export default function SettingsPage() {
   const [ignoring, setIgnoring] = useState(false);
@@ -88,229 +92,6 @@ export default function SettingsPage() {
     return split.pop();
   }, [settings.sound]);
 
-  const changeSound = useCallback(async () => {
-    const { fileCopyUri } = await DocumentPicker.pickSingle({
-      type: DocumentPicker.types.audio,
-      copyTo: "documentDirectory",
-    });
-    if (!fileCopyUri) return;
-    setValue("sound", fileCopyUri);
-    await update("sound", fileCopyUri);
-    toast("Sound will play after rest timers.");
-  }, [setValue, update]);
-
-  const switches: Input<boolean>[] = useMemo(
-    () => [
-      { name: "Rest timers", value: settings.alarm, key: "alarm" },
-      { name: "Vibrate", value: settings.vibrate, key: "vibrate" },
-      { name: "Disable sound", value: settings.noSound, key: "noSound" },
-      { name: "Notifications", value: settings.notify, key: "notify" },
-      { name: "Show images", value: settings.images, key: "images" },
-      { name: "Show unit", value: settings.showUnit, key: "showUnit" },
-      { name: "Show steps", value: settings.steps, key: "steps" },
-      { name: "Show date", value: settings.showDate, key: "showDate" },
-      { name: "Automatic backup", value: settings.backup, key: "backup" },
-    ],
-    [settings]
-  );
-
-  const filter = useCallback(
-    ({ name }) => name.toLowerCase().includes(term.toLowerCase()),
-    [term]
-  );
-
-  const changeBoolean = useCallback(
-    async (key: keyof Settings, value: boolean) => {
-      setValue(key, value);
-      await update(key, value);
-      switch (key) {
-        case "alarm":
-          if (value) toast("Timers will now run after each set.");
-          else toast("Stopped timers running after each set.");
-          const canNotify = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-          if (canNotify === RESULTS.DENIED || canNotify === RESULTS.BLOCKED)
-            await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-          if (value && !ignoring) NativeModules.SettingsModule.ignoreBattery();
-          return;
-        case "vibrate":
-          if (value) toast("Alarms will now vibrate.");
-          else toast("Alarms will no longer vibrate.");
-          return;
-        case "notify":
-          if (value) toast("Show notifications for new records.");
-          else toast("Stopped notifications for new records.");
-          return;
-        case "images":
-          if (value) toast("Show images for sets.");
-          else toast("Hid images for sets.");
-          return;
-        case "showUnit":
-          if (value) toast("Show option to select unit for sets.");
-          else toast("Hid unit option for sets.");
-          return;
-        case "steps":
-          if (value) toast("Show steps for exercises.");
-          else toast("Hid steps for exercises.");
-          return;
-        case "showDate":
-          if (value) toast("Show date for sets.");
-          else toast("Hid date on sets.");
-          return;
-        case "noSound":
-          if (value) toast("Alarms will no longer make a sound.");
-          else toast("Enabled sound for alarms.");
-          return;
-        case "backup":
-          if (value) {
-            const result = await DocumentPicker.pickDirectory();
-            toast("Backup database daily.");
-            NativeModules.BackupModule.start(result.uri);
-          } else {
-            toast("Stopped backing up daily");
-            NativeModules.BackupModule.stop();
-          }
-          return;
-      }
-    },
-    [ignoring, setValue, update]
-  );
-
-  const renderSwitch = useCallback(
-    (item: Input<boolean>) => (
-      <Switch
-        key={item.name}
-        value={item.value}
-        onChange={(value) => changeBoolean(item.key, value)}
-        title={item.name}
-      />
-    ),
-    [changeBoolean]
-  );
-
-  const switchesMarkup = useMemo(
-    () => switches.filter(filter).map((s) => renderSwitch(s)),
-    [filter, switches, renderSwitch]
-  );
-
-  const changeString = useCallback(
-    async (key: keyof Settings, value: string) => {
-      setValue(key, value);
-      await update(key, value);
-      switch (key) {
-        case "date":
-          return toast("Changed date format");
-        case "darkColor":
-          setDarkColor(value);
-          return toast("Set primary color for dark mode.");
-        case "lightColor":
-          setLightColor(value);
-          return toast("Set primary color for light mode.");
-        case "vibrate":
-          return toast("Set primary color for light mode.");
-        case "sound":
-          return toast("Sound will play after rest timers.");
-        case "theme":
-          setTheme(value as string);
-          if (value === "dark") toast("Theme will always be dark.");
-          else if (value === "light") toast("Theme will always be light.");
-          else if (value === "system") toast("Theme will follow system.");
-          return;
-      }
-    },
-    [update, setTheme, setDarkColor, setLightColor, setValue]
-  );
-
-  const changeNumber = useCallback(
-    async (key: keyof Settings, value: number) => {
-      setValue(key, value);
-      await update(key, value);
-      switch (key) {
-        case "duration":
-          return toast("Changed duration of alarm vibrations.");
-      }
-    },
-    [update, setValue]
-  );
-
-  const numberInputs: Input<number>[] = useMemo(
-    () => [
-      {
-        name: "Vibration duration (ms)",
-        value: settings.duration,
-        key: "duration",
-      },
-    ],
-    [settings]
-  );
-
-  const renderNumber = useCallback(
-    (item: Input<number>) => (
-      <AppInput
-        value={item.value?.toString() ?? "300"}
-        key={item.key}
-        label={item.name}
-        onChangeText={(value) => changeString(item.key, value)}
-        onSubmitEditing={(e) =>
-          changeNumber(item.key, Number(e.nativeEvent.text))
-        }
-        keyboardType="numeric"
-        blurOnSubmit
-      />
-    ),
-    [changeString, changeNumber]
-  );
-
-  const numbersMarkup = useMemo(
-    () => numberInputs.filter(filter).map((s) => renderNumber(s)),
-    [numberInputs, filter, renderNumber]
-  );
-
-  const selects: Input<string>[] = useMemo(() => {
-    const today = new Date();
-    return [
-      { name: "Theme", value: theme, items: themeOptions, key: "theme" },
-      {
-        name: "Dark color",
-        value: darkColor,
-        items: lightOptions,
-        key: "darkColor",
-      },
-      {
-        name: "Light color",
-        value: lightColor,
-        items: darkOptions,
-        key: "lightColor",
-      },
-      {
-        name: "Date format",
-        value: settings.date,
-        items: formatOptions.map((option) => ({
-          label: format(today, option),
-          value: option,
-        })),
-        key: "date",
-      },
-    ];
-  }, [settings, darkColor, formatOptions, theme, lightColor]);
-
-  const renderSelect = useCallback(
-    (input: Input<string>) => (
-      <Select
-        key={input.name}
-        value={input.value}
-        onChange={(value) => changeString(input.key, value)}
-        label={input.name}
-        items={input.items}
-      />
-    ),
-    [changeString]
-  );
-
-  const selectsMarkup = useMemo(
-    () => selects.filter(filter).map(renderSelect),
-    [filter, selects, renderSelect]
-  );
-
   const confirmDelete = useCallback(async () => {
     setDeleting(false);
     await AppDataSource.dropDatabase();
@@ -338,53 +119,313 @@ export default function SettingsPage() {
     });
   }, [reset, update]);
 
-  const exportDatabase = useCallback(async () => {
-    const result = await check(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
-    if (result === RESULTS.DENIED || result === RESULTS.BLOCKED)
-      await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
-    const path = Dirs.DatabaseDir + "/massive.db";
-    await FileSystem.cpExternal(path, "massive.db", "downloads");
-    toast("Database exported. Check downloads.");
-  }, []);
+  const today = new Date();
 
-  const buttons = useMemo(
-    () => [
-      {
-        name: `Alarm sound: ${soundString || "Default"}`,
-        onPress: changeSound,
-      },
-      { name: "Export database", onPress: exportDatabase },
-      { name: "Import database", onPress: () => setImporting(true) },
-      { name: "Delete database", onPress: () => setDeleting(true) },
-    ],
-    [changeSound, exportDatabase, soundString]
-  );
-
-  const buttonsMarkup = useMemo(
-    () =>
-      buttons.filter(filter).map((button) => (
+  const data: Item[] = [
+    {
+      name: "Theme",
+      renderItem: (name: string) => (
+        <Select
+          label={name}
+          items={themeOptions}
+          value={theme}
+          onChange={async (value) => {
+            setValue("theme", value);
+            setTheme(value);
+            await update("theme", value);
+            if (value === "dark") toast("Theme will always be dark.");
+            else if (value === "light") toast("Theme will always be light.");
+            else if (value === "system") toast("Theme will follow system.");
+          }}
+        />
+      ),
+    },
+    {
+      name: "Dark color",
+      renderItem: (name: string) => (
+        <Select
+          label={name}
+          items={lightOptions}
+          value={darkColor}
+          onChange={async (value) => {
+            setValue("darkColor", value);
+            setDarkColor(value);
+            await update("darkColor", value);
+            toast("Set primary color for dark mode.");
+          }}
+        />
+      ),
+    },
+    {
+      name: "Light color",
+      renderItem: (name: string) => (
+        <Select
+          label={name}
+          items={darkOptions}
+          value={lightColor}
+          onChange={async (value) => {
+            setValue("lightColor", value);
+            setLightColor(value);
+            await update("lightColor", value);
+            toast("Set primary color for light mode.");
+          }}
+        />
+      ),
+    },
+    {
+      name: "Date format",
+      renderItem: (name: string) => (
+        <Select
+          label={name}
+          items={formatOptions.map((option) => ({
+            label: format(today, option),
+            value: option,
+          }))}
+          value={settings.date}
+          onChange={async (value) => {
+            setValue("date", value);
+            await update("date", value);
+            toast("Changed date format.");
+          }}
+        />
+      ),
+    },
+    {
+      name: "Vibration duration (ms)",
+      renderItem: (name: string) => (
+        <AppInput
+          value={settings.duration?.toString() ?? "300"}
+          label={name}
+          onChangeText={(value) => setValue("duration", Number(value))}
+          onSubmitEditing={async (e) => {
+            setValue("duration", Number(e.nativeEvent.text));
+            await update("duration", e.nativeEvent.text);
+            toast("Changed duration of alarm vibrations.");
+          }}
+          keyboardType="numeric"
+          blurOnSubmit
+        />
+      ),
+    },
+    {
+      name: "Rest timers",
+      renderItem: (name: string) => (
+        <Switch
+          value={settings.alarm}
+          onChange={async (value) => {
+            setValue("alarm", value);
+            if (value && !ignoring)
+              NativeModules.SettingsModule.ignoreBattery();
+            await update("alarm", value);
+            if (value) toast("Timers will now run after each set.");
+            else toast("Stopped timers running after each set.");
+          }}
+          title={name}
+        />
+      ),
+    },
+    {
+      name: "Vibrate",
+      renderItem: (name: string) => (
+        <Switch
+          value={settings.vibrate}
+          onChange={async (value) => {
+            setValue("vibrate", value);
+            await update("vibrate", value);
+            if (value) toast("Timers will now run after each set.");
+            else toast("Stopped timers running after each set.");
+          }}
+          title={name}
+        />
+      ),
+    },
+    {
+      name: "Disable sound",
+      renderItem: (name: string) => (
+        <Switch
+          value={settings.noSound}
+          onChange={async (value) => {
+            setValue("noSound", value);
+            await update("noSound", value);
+            if (value) toast("Alarms will no longer make a sound.");
+            else toast("Enabled sound for alarms.");
+          }}
+          title={name}
+        />
+      ),
+    },
+    {
+      name: "Notifications",
+      renderItem: (name: string) => (
+        <Switch
+          value={settings.notify}
+          onChange={async (value) => {
+            setValue("notify", value);
+            await update("notify", value);
+            if (value) toast("Show notifications for new records.");
+            else toast("Stopped notifications for new records.");
+          }}
+          title={name}
+        />
+      ),
+    },
+    {
+      name: "Show images",
+      renderItem: (name: string) => (
+        <Switch
+          value={settings.images}
+          onChange={async (value) => {
+            setValue("images", value);
+            await update("images", value);
+            if (value) toast("Show images for sets.");
+            else toast("Hid images for sets.");
+          }}
+          title={name}
+        />
+      ),
+    },
+    {
+      name: "Show unit",
+      renderItem: (name: string) => (
+        <Switch
+          value={settings.showUnit}
+          onChange={async (value) => {
+            setValue("showUnit", value);
+            await update("showUnit", value);
+            if (value) toast("Show option to select unit for sets.");
+            else toast("Hid unit option for sets.");
+          }}
+          title={name}
+        />
+      ),
+    },
+    {
+      name: "Show steps",
+      renderItem: (name: string) => (
+        <Switch
+          value={settings.steps}
+          onChange={async (value) => {
+            setValue("steps", value);
+            await update("steps", value);
+            if (value) toast("Show steps for exercises.");
+            else toast("Hid steps for exercises.");
+          }}
+          title={name}
+        />
+      ),
+    },
+    {
+      name: "Show date",
+      renderItem: (name: string) => (
+        <Switch
+          value={settings.showDate}
+          onChange={async (value) => {
+            setValue("showDate", value);
+            await update("showDate", value);
+            if (value) toast("Show date for sets.");
+            else toast("Hid date on sets.");
+          }}
+          title={name}
+        />
+      ),
+    },
+    {
+      name: "Automatic backup",
+      renderItem: (name: string) => (
+        <Switch
+          value={settings.backup}
+          onChange={async (value) => {
+            setValue("backup", value);
+            await update("backup", value);
+            if (value) {
+              const result = await DocumentPicker.pickDirectory();
+              toast("Backup database daily.");
+              NativeModules.BackupModule.start(result.uri);
+            } else {
+              toast("Stopped backing up daily");
+              NativeModules.BackupModule.stop();
+            }
+          }}
+          title={name}
+        />
+      ),
+    },
+    {
+      name: `Alarm sound: ${soundString || "Default"}`,
+      renderItem: (name: string) => (
         <Button
-          key={button.name}
           style={{ alignSelf: "flex-start" }}
-          onPress={button.onPress}
+          onPress={async () => {
+            const { fileCopyUri } = await DocumentPicker.pickSingle({
+              type: DocumentPicker.types.audio,
+              copyTo: "documentDirectory",
+            });
+            if (!fileCopyUri) return;
+            setValue("sound", fileCopyUri);
+            await update("sound", fileCopyUri);
+            toast("Sound will play after rest timers.");
+          }}
         >
-          {button.name}
+          {name}
         </Button>
-      )),
-    [buttons, filter]
-  );
+      ),
+    },
+    {
+      name: "Export database",
+      renderItem: (name: string) => (
+        <Button
+          style={{ alignSelf: "flex-start" }}
+          onPress={async () => {
+            const result = await check(
+              PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE
+            );
+            if (result === RESULTS.DENIED || result === RESULTS.BLOCKED)
+              await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+            const path = Dirs.DatabaseDir + "/massive.db";
+            await FileSystem.cpExternal(path, "massive.db", "downloads");
+            toast("Database exported. Check downloads.");
+          }}
+        >
+          {name}
+        </Button>
+      ),
+    },
+    {
+      name: "Import database",
+      renderItem: (name: string) => (
+        <Button
+          style={{ alignSelf: "flex-start" }}
+          onPress={() => setImporting(true)}
+        >
+          {name}
+        </Button>
+      ),
+    },
+    {
+      name: "Delete database",
+      renderItem: (name: string) => (
+        <Button
+          style={{ alignSelf: "flex-start" }}
+          onPress={() => setDeleting(true)}
+        >
+          {name}
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <>
       <DrawerHeader name="Settings" />
 
-      <Page term={term} search={setTerm} style={{ flexGrow: 1 }}>
-        <ScrollView style={{ marginTop: MARGIN, flex: 1 }}>
-          {selectsMarkup}
-          {numbersMarkup}
-          {switchesMarkup}
-          {buttonsMarkup}
-        </ScrollView>
+      <Page term={term} search={setTerm}>
+        <FlatList
+          data={data.filter((item) =>
+            item.name.toLowerCase().includes(term.toLowerCase())
+          )}
+          renderItem={({ item }) => item.renderItem(item.name)}
+          style={{ flex: 1, paddingTop: PADDING }}
+        />
       </Page>
 
       <ConfirmDialog
