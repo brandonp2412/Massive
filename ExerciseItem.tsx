@@ -3,9 +3,9 @@ import { useCallback, useMemo } from "react";
 import { Image } from "react-native";
 import { List } from "react-native-paper";
 import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
-import { ExercisesPageParams } from "./ExercisesPage";
 import GymSet from "./gym-set";
 import useDark from "./use-dark";
+import { StackParams } from "./AppStack";
 
 export default function ExerciseItem({
   item,
@@ -20,7 +20,7 @@ export default function ExerciseItem({
   names: string[];
   alarm: boolean;
 }) {
-  const navigation = useNavigation<NavigationProp<ExercisesPageParams>>();
+  const navigation = useNavigation<NavigationProp<StackParams>>();
   const dark = useDark();
 
   const description = useMemo(() => {

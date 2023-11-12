@@ -10,17 +10,17 @@ import { getBestSets } from "./best.service";
 import { LIMIT } from "./constants";
 import { settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
-import { GraphsPageParams } from "./GraphsPage";
 import GymSet from "./gym-set";
 import Page from "./Page";
 import Settings from "./settings";
+import { StackParams } from "./AppStack";
 
 export default function GraphsList() {
   const [bests, setBests] = useState<GymSet[]>();
   const [offset, setOffset] = useState(0);
   const [end, setEnd] = useState(false);
   const [term, setTerm] = useState("");
-  const navigation = useNavigation<NavigationProp<GraphsPageParams>>();
+  const navigation = useNavigation<NavigationProp<StackParams>>();
   const [settings, setSettings] = useState<Settings>();
   const [refreshing, setRefreshing] = useState(false);
 

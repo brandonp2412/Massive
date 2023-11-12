@@ -11,18 +11,18 @@ import DocumentPicker from "react-native-document-picker";
 import { Button, Card, TouchableRipple } from "react-native-paper";
 import { In } from "typeorm";
 import AppInput from "./AppInput";
+import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
+import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { planRepo, setRepo, settingsRepo } from "./db";
-import { ExercisesPageParams } from "./ExercisesPage";
+import { DrawerParams } from "./drawer-param-list";
 import { fixNumeric } from "./fix-numeric";
 import Settings from "./settings";
-import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 
 export default function EditExercises() {
-  const { params } =
-    useRoute<RouteProp<ExercisesPageParams, "EditExercises">>();
+  const { params } = useRoute<RouteProp<StackParams, "EditExercises">>();
   const [removeImage, setRemoveImage] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
   const [name, setName] = useState("");
@@ -36,7 +36,7 @@ export default function EditExercises() {
   const [oldSeconds, setOldSeconds] = useState("");
   const [sets, setSets] = useState("");
   const [oldSets, setOldSets] = useState("");
-  const navigation = useNavigation<NavigationProp<ExercisesPageParams>>();
+  const navigation = useNavigation<NavigationProp<DrawerParams>>();
   const setsRef = useRef<TextInput>(null);
   const stepsRef = useRef<TextInput>(null);
   const minutesRef = useRef<TextInput>(null);
@@ -85,7 +85,7 @@ export default function EditExercises() {
         .where("exercises LIKE :name", { name: `%${oldName}%` })
         .execute();
     }
-    navigation.navigate("ExerciseList", { clearNames: true });
+    navigation.navigate("Exercises");
   };
 
   const changeImage = useCallback(async () => {

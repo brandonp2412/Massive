@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { List, Text } from "react-native-paper";
 import Settings from "./settings";
 import Weight from "./weight";
-import { WeightPageParams } from "./WeightPage";
+import { StackParams } from "./AppStack";
 
 export default function WeightItem({
   item,
@@ -13,7 +13,7 @@ export default function WeightItem({
   item: Weight;
   settings: Settings;
 }) {
-  const navigation = useNavigation<NavigationProp<WeightPageParams>>();
+  const navigation = useNavigation<NavigationProp<StackParams>>();
 
   const press = useCallback(() => {
     navigation.navigate("EditWeight", { weight: item });

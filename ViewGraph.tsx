@@ -9,16 +9,16 @@ import { captureScreen } from "react-native-view-shot";
 import Chart from "./Chart";
 import { PADDING } from "./constants";
 import { setRepo } from "./db";
-import { GraphsPageParams } from "./GraphsPage";
 import GymSet from "./gym-set";
 import { Metrics } from "./metrics";
 import { Periods } from "./periods";
 import Select from "./Select";
 import StackHeader from "./StackHeader";
 import Volume from "./volume";
+import { StackParams } from "./AppStack";
 
 export default function ViewGraph() {
-  const { params } = useRoute<RouteProp<GraphsPageParams, "ViewGraph">>();
+  const { params } = useRoute<RouteProp<StackParams, "ViewGraph">>();
   const [weights, setWeights] = useState<GymSet[]>();
   const [volumes, setVolumes] = useState<Volume[]>();
   const [metric, setMetric] = useState(Metrics.OneRepMax);

@@ -14,7 +14,7 @@ import Page from "./Page";
 import Settings from "./settings";
 import { default as Weight, defaultWeight } from "./weight";
 import WeightItem from "./WeightItem";
-import { WeightPageParams } from "./WeightPage";
+import { StackParams } from "./AppStack";
 
 export default function WeightList() {
   const [refreshing, setRefreshing] = useState(false);
@@ -22,7 +22,7 @@ export default function WeightList() {
   const [offset, setOffset] = useState(0);
   const [end, setEnd] = useState(false);
   const [settings, setSettings] = useState<Settings>();
-  const { navigate } = useNavigation<NavigationProp<WeightPageParams>>();
+  const { navigate } = useNavigation<NavigationProp<StackParams>>();
   const [term, setTerm] = useState("");
 
   const reset = useCallback(
