@@ -1,18 +1,18 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import AppDrawer from "./AppDrawer";
+import EditExercise from "./EditExercise";
+import EditExercises from "./EditExercises";
 import EditPlan from "./EditPlan";
 import EditSet from "./EditSet";
 import EditSets from "./EditSets";
 import EditWeight from "./EditWeight";
-import EditExercise from "./EditExercise";
-import EditExercises from "./EditExercises";
-import StartPlan from "./StartPlan";
-import ViewGraph from "./ViewGraph";
-import ViewWeightGraph from "./ViewWeightGraph";
 import GymSet from "./gym-set";
 import { Plan } from "./plan";
-import Weight from "./weight";
+import StartPlan from "./StartPlan";
+import ViewGraph from "./ViewGraph";
 import ViewSetList from "./ViewSetList";
+import ViewWeightGraph from "./ViewWeightGraph";
+import Weight from "./weight";
 
 export type StackParams = {
   Drawer: {};

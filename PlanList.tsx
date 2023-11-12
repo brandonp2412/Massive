@@ -7,13 +7,13 @@ import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
+import { StackParams } from "./AppStack";
 import { planRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import { Plan } from "./plan";
 import PlanItem from "./PlanItem";
-import { StackParams } from "./AppStack";
 
 export default function PlanList() {
   const [term, setTerm] = useState("");

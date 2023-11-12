@@ -5,12 +5,12 @@ import { IconButton, Text } from "react-native-paper";
 import AppPieChart from "./AppPieChart";
 import Chart from "./Chart";
 import ConfirmDialog from "./ConfirmDialog";
-import DrawerHeader from "./DrawerHeader";
-import Select from "./Select";
 import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
-import { Periods } from "./periods";
 import { DAYS } from "./days";
+import DrawerHeader from "./DrawerHeader";
+import { Periods } from "./periods";
+import Select from "./Select";
 
 interface WeekCount {
   week: string;

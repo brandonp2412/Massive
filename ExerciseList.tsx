@@ -8,14 +8,14 @@ import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { In } from "typeorm";
 import { StackParams } from "./AppStack";
+import { LIMIT } from "./constants";
+import { setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import ExerciseItem from "./ExerciseItem";
+import GymSet from "./gym-set";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetList from "./SetList";
-import { LIMIT } from "./constants";
-import { setRepo, settingsRepo } from "./db";
-import GymSet from "./gym-set";
 import Settings from "./settings";
 
 export default function ExerciseList() {

@@ -1,15 +1,15 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { IconButton } from "react-native-paper";
+import { DrawerParams } from "./drawer-param-list";
+import ExerciseList from "./ExerciseList";
 import GraphsList from "./GraphsList";
 import InsightsPage from "./InsightsPage";
 import PlanList from "./PlanList";
 import SetList from "./SetList";
 import SettingsPage from "./SettingsPage";
 import TimerPage from "./TimerPage";
-import WeightList from "./WeightList";
-import ExerciseList from "./ExerciseList";
-import { DrawerParams } from "./drawer-param-list";
 import useDark from "./use-dark";
+import WeightList from "./WeightList";
 
 const Drawer = createDrawerNavigator<DrawerParams>();
 

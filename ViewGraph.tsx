@@ -1,4 +1,5 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { FileSystem } from "react-native-file-access";
@@ -6,16 +7,15 @@ import { IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
 import { captureScreen } from "react-native-view-shot";
 import Chart from "./Chart";
-import { GraphsPageParams } from "./GraphsPage";
-import Select from "./Select";
-import StackHeader from "./StackHeader";
 import { PADDING } from "./constants";
 import { setRepo } from "./db";
+import { GraphsPageParams } from "./GraphsPage";
 import GymSet from "./gym-set";
 import { Metrics } from "./metrics";
 import { Periods } from "./periods";
+import Select from "./Select";
+import StackHeader from "./StackHeader";
 import Volume from "./volume";
-import { format } from "date-fns";
 
 export default function ViewGraph() {
   const { params } = useRoute<RouteProp<GraphsPageParams, "ViewGraph">>();

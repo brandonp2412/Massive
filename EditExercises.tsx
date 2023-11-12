@@ -14,13 +14,11 @@ import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { planRepo, setRepo, settingsRepo } from "./db";
-import { emitter } from "./emitter";
+import { ExercisesPageParams } from "./ExercisesPage";
 import { fixNumeric } from "./fix-numeric";
-import { GYM_SET_CREATED } from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
-import { ExercisesPageParams } from "./ExercisesPage";
 
 export default function EditExercises() {
   const { params } =

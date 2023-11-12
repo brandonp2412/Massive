@@ -17,13 +17,13 @@ import ReorderableList, {
 } from "react-native-reorderable-list";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
-import StackHeader from "./StackHeader";
-import Switch from "./Switch";
 import { MARGIN, PADDING } from "./constants";
 import { DAYS } from "./days";
 import { planRepo, setRepo } from "./db";
 import { DrawerParams } from "./drawer-param-list";
 import { defaultSet } from "./gym-set";
+import StackHeader from "./StackHeader";
+import Switch from "./Switch";
 
 export default function EditPlan() {
   const { params } = useRoute<RouteProp<StackParams, "EditPlan">>();

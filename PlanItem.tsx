@@ -6,13 +6,13 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { Text } from "react-native";
 import { List } from "react-native-paper";
+import { StackParams } from "./AppStack";
 import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
+import { DAYS } from "./days";
 import { setRepo } from "./db";
 import { defaultSet } from "./gym-set";
 import { Plan } from "./plan";
-import { DAYS } from "./days";
 import useDark from "./use-dark";
-import { StackParams } from "./AppStack";
 
 export default function PlanItem({
   item,

@@ -9,19 +9,18 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, NativeModules, TextInput, View } from "react-native";
 import { Button, IconButton, ProgressBar } from "react-native-paper";
 import AppInput from "./AppInput";
+import { StackParams } from "./AppStack";
 import { getBestSet } from "./best.service";
 import { PADDING } from "./constants";
 import CountMany from "./count-many";
 import { AppDataSource } from "./data-source";
 import { getNow, setRepo, settingsRepo } from "./db";
-import { emitter } from "./emitter";
 import { fixNumeric } from "./fix-numeric";
-import GymSet, { GYM_SET_CREATED } from "./gym-set";
+import GymSet from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import StartPlanItem from "./StartPlanItem";
 import { toast } from "./toast";
-import { StackParams } from "./AppStack";
 
 export default function StartPlan() {
   const { params } = useRoute<RouteProp<StackParams, "StartPlan">>();

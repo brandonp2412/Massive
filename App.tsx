@@ -8,18 +8,18 @@ import { useColorScheme } from "react-native";
 import {
   MD3DarkTheme as PaperDarkTheme,
   MD3LightTheme as PaperDefaultTheme,
-  Provider as PaperProvider,
   ProgressBar,
+  Provider as PaperProvider,
   Snackbar,
 } from "react-native-paper";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import AppStack from "./AppStack";
 import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
 import { emitter } from "./emitter";
+import { TickEvent } from "./TimerPage";
 import { TOAST } from "./toast";
 import { ThemeContext } from "./use-theme";
-import AppStack from "./AppStack";
-import { TickEvent } from "./TimerPage";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,

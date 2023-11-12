@@ -1,3 +1,3 @@
 #!/bin/sh
 
-organize-imports-cli *.ts* tests/*.ts* && deno fmt *.ts* tests/*.ts*
+organize-imports-cli *.ts* && prettier --write *.ts*

@@ -1,6 +1,4 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import EditWeight from "./EditWeight";
-import ViewWeightGraph from "./ViewWeightGraph";
 import Weight from "./weight";
 import WeightList from "./WeightList";
 

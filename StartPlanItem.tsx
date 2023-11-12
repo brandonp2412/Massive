@@ -6,9 +6,6 @@ import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
 import CountMany from "./count-many";
 import { getNow, setRepo } from "./db";
-import { DrawerParams } from "./drawer-param-list";
-import { emitter } from "./emitter";
-import { GYM_SET_DELETED } from "./gym-set";
 import { toast } from "./toast";
 
 interface Props extends ListRenderItemInfo<CountMany> {

@@ -20,18 +20,13 @@ import {
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
-import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
 import { DrawerParams } from "./drawer-param-list";
-import { emitter } from "./emitter";
 import { fixNumeric } from "./fix-numeric";
-import GymSet, {
-  GYM_SET_CREATED,
-  GYM_SET_DELETED,
-  GYM_SET_UPDATED,
-} from "./gym-set";
+import GymSet from "./gym-set";
 import Settings from "./settings";
+import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 
 export default function EditSet() {

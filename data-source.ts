@@ -27,12 +27,12 @@ import { splitColor1669420187764 } from "./migrations/1669420187764-split-color"
 import { addBackup1678334268359 } from "./migrations/1678334268359-add-backup";
 import { planTitle1692654882408 } from "./migrations/1692654882408-plan-title";
 import { weight1697766633971 } from "./migrations/1697766633971-weight";
-import { Plan } from "./plan";
-import Settings from "./settings";
-import Weight from "./weight";
 import { exercises1699508495726 } from "./migrations/1699508495726-exercises";
 import { exercisesFix1699613077628 } from "./migrations/1699613077628-exercises-fix";
 import { settingsDuration1699743753975 } from "./migrations/1699743753975-settings-duration";
+import { Plan } from "./plan";
+import Settings from "./settings";
+import Weight from "./weight";
 
 export const AppDataSource = new DataSource({
   type: "react-native",

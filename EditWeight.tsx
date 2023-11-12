@@ -13,12 +13,12 @@ import { Button, IconButton } from "react-native-paper";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
-import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
 import { getNow, settingsRepo, weightRepo } from "./db";
 import { DrawerParams } from "./drawer-param-list";
 import Settings from "./settings";
+import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 import Weight from "./weight";
 

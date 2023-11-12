@@ -2,11 +2,10 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useCallback, useMemo } from "react";
 import { Image } from "react-native";
 import { List } from "react-native-paper";
-import { DARK_RIPPLE } from "./constants";
-import { LIGHT_RIPPLE } from "./constants";
+import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
+import { ExercisesPageParams } from "./ExercisesPage";
 import GymSet from "./gym-set";
 import useDark from "./use-dark";
-import { ExercisesPageParams } from "./ExercisesPage";
 
 export default function ExerciseItem({
   item,

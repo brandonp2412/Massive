@@ -4,12 +4,12 @@ import { FlatList } from "react-native";
 import { List, useTheme } from "react-native-paper";
 import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
-import SetItem from "./SetItem";
-import StackHeader from "./StackHeader";
 import { LIMIT } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import GymSet from "./gym-set";
+import SetItem from "./SetItem";
 import Settings from "./settings";
+import StackHeader from "./StackHeader";
 
 interface ColorSet extends GymSet {
   color?: string;

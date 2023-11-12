@@ -8,13 +8,13 @@ import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
+import { LIMIT } from "./constants";
+import { getNow, setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
+import GymSet, { defaultSet } from "./gym-set";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetItem from "./SetItem";
-import { LIMIT } from "./constants";
-import { getNow, setRepo, settingsRepo } from "./db";
-import GymSet, { defaultSet } from "./gym-set";
 import Settings from "./settings";
 
 export default function SetList() {

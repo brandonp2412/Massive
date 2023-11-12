@@ -11,15 +11,14 @@ import DocumentPicker from "react-native-document-picker";
 import { Button, Card, IconButton, TouchableRipple } from "react-native-paper";
 import { In } from "typeorm";
 import AppInput from "./AppInput";
+import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { setRepo, settingsRepo } from "./db";
-import { emitter } from "./emitter";
-import GymSet, { GYM_SET_CREATED } from "./gym-set";
+import { DrawerParams } from "./drawer-param-list";
+import GymSet from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
-import { StackParams } from "./AppStack";
-import { DrawerParams } from "./drawer-param-list";
 
 export default function EditSets() {
   const { params } = useRoute<RouteProp<StackParams, "EditSets">>();

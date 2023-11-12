@@ -10,17 +10,16 @@ import { ScrollView, TextInput, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Button, Card, TouchableRipple } from "react-native-paper";
 import AppInput from "./AppInput";
+import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, planRepo, setRepo, settingsRepo } from "./db";
-import { emitter } from "./emitter";
+import { DrawerParams } from "./drawer-param-list";
 import { fixNumeric } from "./fix-numeric";
-import GymSet, { defaultSet, GYM_SET_CREATED } from "./gym-set";
+import GymSet, { defaultSet } from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
-import { DrawerParams } from "./drawer-param-list";
-import { StackParams } from "./AppStack";
 
 export default function EditExercise() {
   const { params } = useRoute<RouteProp<StackParams, "EditExercise">>();

@@ -3,11 +3,11 @@ import { format } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Image } from "react-native";
 import { List, Text } from "react-native-paper";
+import { StackParams } from "./AppStack";
 import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
 import GymSet from "./gym-set";
 import Settings from "./settings";
 import useDark from "./use-dark";
-import { StackParams } from "./AppStack";
 
 export default function SetItem({
   item,

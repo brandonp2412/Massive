@@ -4,10 +4,10 @@ import { NativeModules, View } from "react-native";
 import { FAB, Text, useTheme } from "react-native-paper";
 import { ProgressCircle } from "react-native-svg-charts";
 import AppFab from "./AppFab";
-import DrawerHeader from "./DrawerHeader";
 import { darkenRgba } from "./colors";
 import { MARGIN, PADDING } from "./constants";
 import { settingsRepo } from "./db";
+import DrawerHeader from "./DrawerHeader";
 import Settings from "./settings";
 import useTimer from "./use-timer";
 

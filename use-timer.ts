@@ -1,8 +1,8 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
+import { NativeModules } from "react-native";
 import { emitter } from "./emitter";
 import { TickEvent } from "./TimerPage";
-import { NativeModules } from "react-native";
 
 export default function useTimer() {
   const [minutes, setMinutes] = useState("00");
