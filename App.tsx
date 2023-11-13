@@ -37,7 +37,7 @@ export const CombinedDarkTheme = {
 };
 
 const App = () => {
-  const phoneTheme = useColorScheme();
+  const systemTheme = useColorScheme();
 
   const [appSettings, setAppSettings] = useState({
     startup: undefined,
@@ -61,29 +61,27 @@ const App = () => {
   }, []);
 
   const paperTheme = useMemo(() => {
-    const darkTheme = appSettings.darkColor
-      ? {
-          ...CombinedDarkTheme,
-          colors: {
-            ...CombinedDarkTheme.colors,
-            primary: appSettings.darkColor,
-          },
-        }
-      : CombinedDarkTheme;
-    const lightTheme = appSettings.lightColor
-      ? {
-          ...CombinedDefaultTheme,
-          colors: {
-            ...CombinedDefaultTheme.colors,
-            primary: appSettings.lightColor,
-          },
-        }
-      : CombinedDefaultTheme;
-    let value = phoneTheme === "dark" ? darkTheme : lightTheme;
-    if (appSettings.theme === "dark") value = darkTheme;
-    else if (appSettings.theme === "light") value = lightTheme;
-    return value;
-  }, [phoneTheme, appSettings]);
+    const darkTheme = {
+      ...CombinedDarkTheme,
+      colors: {
+        ...CombinedDarkTheme.colors,
+        primary: appSettings.darkColor,
+      },
+      dark: true,
+    };
+    const lightTheme = {
+      ...CombinedDefaultTheme,
+      colors: {
+        ...CombinedDefaultTheme.colors,
+        primary: appSettings.lightColor,
+      },
+      dark: false,
+    };
+    let theme = systemTheme === "dark" ? darkTheme : lightTheme;
+    if (appSettings.theme === "dark") theme = darkTheme;
+    else if (appSettings.theme === "light") theme = lightTheme;
+    return theme;
+  }, [systemTheme, appSettings]);
 
   return (
     <PaperProvider
