@@ -136,7 +136,12 @@ const App = () => {
 
       {progress > 0 && (
         <ProgressBar
-          style={{ position: "absolute", bottom: MARGIN / 2 }}
+          style={{
+            position: "absolute",
+            bottom: MARGIN / 2,
+            left: MARGIN,
+            right: MARGIN,
+          }}
           progress={progress}
         />
       )}
