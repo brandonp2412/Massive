@@ -22,7 +22,6 @@ interface AppDrawerParams {
 export default function AppDrawer({
   route,
 }: StackScreenProps<{ settings: AppDrawerParams }>) {
-  console.log(route.params.settings.startup);
   const dark = useDark();
 
   return (

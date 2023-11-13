@@ -51,7 +51,6 @@ export type StackParams = {
 const Stack = createStackNavigator<StackParams>();
 
 export default function AppStack({ settings }: { settings: Settings }) {
-  console.log({ settings });
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, animationEnabled: false }}
