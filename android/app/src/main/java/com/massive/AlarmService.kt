@@ -57,11 +57,12 @@ class AlarmService : Service(), OnPreparedListener {
     }
 
     private fun playSound(settings: Settings) {
-        if (settings.sound == null && !settings.noSound) {
+        if (settings.noSound) return;
+        if (settings.sound == null) {
             mediaPlayer = MediaPlayer.create(applicationContext, R.raw.argon)
             mediaPlayer?.start()
             mediaPlayer?.setOnCompletionListener { vibrator?.cancel() }
-        } else if (settings.sound != null && !settings.noSound) {
+        } else {
             mediaPlayer = MediaPlayer().apply {
                 setAudioAttributes(
                     AudioAttributes.Builder()
