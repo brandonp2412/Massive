@@ -19,6 +19,7 @@ import { DrawerParams } from "./drawer-param-list";
 import GymSet from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
+import Select from "./Select";
 
 export default function EditSets() {
   const { params } = useRoute<RouteProp<StackParams, "EditSets">>();
@@ -144,11 +145,15 @@ export default function EditSets() {
         </View>
 
         {settings.showUnit && (
-          <AppInput
-            autoCapitalize="none"
-            label={`Units: ${units}`}
+          <Select
             value={unit}
-            onChangeText={setUnit}
+            onChange={setUnit}
+            items={[
+              { label: "kg", value: "kg" },
+              { label: "lb", value: "lb" },
+              { label: "stone", value: "stone" },
+            ]}
+            label={`Units: ${units}`}
           />
         )}
 

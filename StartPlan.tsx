@@ -22,6 +22,7 @@ import StackHeader from "./StackHeader";
 import StartPlanItem from "./StartPlanItem";
 import { toast } from "./toast";
 import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
+import Select from "./Select";
 
 export default function StartPlan() {
   const { params } = useRoute<RouteProp<StackParams, "StartPlan">>();
@@ -33,7 +34,6 @@ export default function StartPlan() {
   const [counts, setCounts] = useState<CountMany[]>();
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
-  const unitRef = useRef<TextInput>(null);
   const exercises = useMemo(() => params.plan.exercises.split(","), [params]);
   const navigation = useNavigation<NavigationProp<StackParams>>();
 
@@ -193,12 +193,15 @@ export default function StartPlan() {
           </View>
 
           {settings?.showUnit && (
-            <AppInput
-              autoCapitalize="none"
-              label="Unit"
+            <Select
               value={unit}
-              onChangeText={setUnit}
-              innerRef={unitRef}
+              onChange={setUnit}
+              items={[
+                { label: "kg", value: "kg" },
+                { label: "lb", value: "lb" },
+                { label: "stone", value: "stone" },
+              ]}
+              label="Unit"
             />
           )}
           {counts && (

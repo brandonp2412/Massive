@@ -21,6 +21,7 @@ import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 import Weight from "./weight";
+import Select from "./Select";
 
 export default function EditWeight() {
   const { params } = useRoute<RouteProp<StackParams, "EditWeight">>();
@@ -127,12 +128,15 @@ export default function EditWeight() {
         />
 
         {settings.showUnit && (
-          <AppInput
-            autoCapitalize="none"
-            label="Unit"
+          <Select
             value={unit}
-            onChangeText={setUnit}
-            innerRef={unitRef}
+            onChange={setUnit}
+            items={[
+              { label: "kg", value: "kg" },
+              { label: "lb", value: "lb" },
+              { label: "stone", value: "stone" },
+            ]}
+            label="Unit"
           />
         )}
 
