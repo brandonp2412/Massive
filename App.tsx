@@ -61,7 +61,7 @@ const App = () => {
   }, []);
 
   const paperTheme = useMemo(() => {
-    const darkTheme = appSettings.lightColor
+    const darkTheme = appSettings.darkColor
       ? {
           ...CombinedDarkTheme,
           colors: {
