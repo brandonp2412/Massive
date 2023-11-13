@@ -28,6 +28,8 @@ import GymSet from "./gym-set";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
+import Select from "./Select";
+import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
 
 export default function EditSet() {
   const { params } = useRoute<RouteProp<StackParams, "EditSet">>();
@@ -50,7 +52,6 @@ export default function EditSet() {
   const [setOptions, setSets] = useState<GymSet[]>([]);
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
-  const unitRef = useRef<TextInput>(null);
 
   const [selection, setSelection] = useState({
     start: 0,
@@ -70,6 +71,9 @@ export default function EditSet() {
       const milliseconds =
         (first?.minutes ?? 3) * 60 * 1000 + (first?.seconds ?? 0) * 1000;
       console.log(`${EditSet.name}.timer:`, { milliseconds });
+      const canNotify = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+      if (canNotify === RESULTS.DENIED)
+        await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
       if (milliseconds) NativeModules.AlarmModule.timer(milliseconds);
     },
     [settings]
@@ -287,12 +291,15 @@ export default function EditSet() {
         </View>
 
         {settings.showUnit && (
-          <AppInput
-            autoCapitalize="none"
-            label="Unit"
+          <Select
             value={unit}
-            onChangeText={setUnit}
-            innerRef={unitRef}
+            onChange={setUnit}
+            items={[
+              { label: "kg", value: "kg" },
+              { label: "lb", value: "lb" },
+              { label: "stone", value: "stone" },
+            ]}
+            label="Unit"
           />
         )}
 

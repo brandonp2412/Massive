@@ -21,6 +21,7 @@ import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import StartPlanItem from "./StartPlanItem";
 import { toast } from "./toast";
+import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
 
 export default function StartPlan() {
   const { params } = useRoute<RouteProp<StackParams, "StartPlan">>();
@@ -114,6 +115,9 @@ export default function StartPlan() {
     if (!settings.alarm) return;
     const milliseconds =
       Number(best.minutes) * 60 * 1000 + Number(best.seconds) * 1000;
+    const canNotify = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+    if (canNotify === RESULTS.DENIED)
+      await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
     NativeModules.AlarmModule.timer(milliseconds);
   };
 
