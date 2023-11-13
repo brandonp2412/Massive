@@ -7,7 +7,7 @@ export const GYM_SET_CREATED = "gym-set-created";
 @Entity("sets")
 export default class GymSet {
   @PrimaryGeneratedColumn()
-  id?: number;
+  id: number;
 
   @Column("text")
   name: string;
@@ -17,6 +17,9 @@ export default class GymSet {
 
   @Column("int")
   weight: number;
+
+  @Column("text")
+  created: string;
 
   @Column("int")
   sets = 3;
@@ -31,19 +34,16 @@ export default class GymSet {
   hidden = false;
 
   @Column("text")
-  created: string;
+  unit = "kg";
 
   @Column("text")
-  unit: string;
+  image: string | null;
 
   @Column("text")
-  image: string;
-
-  @Column("text")
-  steps?: string;
+  steps: string | null;
 }
 
-export const defaultSet: GymSet = {
+export const defaultSet: Partial<GymSet> = {
   created: "",
   name: "",
   image: "",

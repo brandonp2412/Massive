@@ -12,7 +12,7 @@ import { LIMIT } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import ExerciseItem from "./ExerciseItem";
-import GymSet from "./gym-set";
+import GymSet, { defaultSet } from "./gym-set";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetList from "./SetList";
@@ -92,7 +92,7 @@ export default function ExerciseList() {
 
   const onAdd = useCallback(async () => {
     navigation.navigate("EditExercise", {
-      gymSet: new GymSet(),
+      gymSet: defaultSet,
     });
   }, [navigation]);
 

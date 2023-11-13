@@ -46,8 +46,6 @@ const App = () => {
     darkColor: CombinedDarkTheme.colors.primary,
   });
 
-  console.log("Rerendered App");
-
   useEffect(() => {
     (async () => {
       if (!AppDataSource.isInitialized) await AppDataSource.initialize();

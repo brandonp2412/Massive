@@ -3,56 +3,53 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 @Entity()
 export default class Settings {
   @PrimaryColumn("boolean")
-  alarm: boolean;
+  alarm = false;
 
   @Column("boolean")
-  vibrate: boolean;
+  vibrate = true;
 
   @Column("text")
-  sound: string;
+  sound: string | null;
 
   @Column("boolean")
-  notify: boolean;
+  notify = false;
 
   @Column("boolean")
-  images: boolean;
+  images = true;
 
   @Column("boolean")
-  showUnit: boolean;
+  showUnit = true;
 
   @Column("text")
-  lightColor?: string;
+  lightColor: string | null;
 
   @Column("text")
-  darkColor?: string;
+  darkColor: string | null;
 
   @Column("boolean")
-  steps: boolean;
+  steps = true;
 
   @Column("text")
-  date: string;
+  date: string | null;
 
   @Column("boolean")
-  showDate: boolean;
+  showDate = false;
 
   @Column("text")
-  theme: string;
+  theme: string | null;
 
   @Column("boolean")
-  showSets: boolean;
+  noSound = false;
 
   @Column("boolean")
-  noSound: boolean;
-
-  @Column("boolean")
-  backup: boolean;
+  backup = false;
 
   @Column("text")
-  backupDir: string;
+  backupDir: string | null;
 
   @Column("int")
-  duration: number;
+  duration: number | null;
 
   @Column("text")
-  startup: string;
+  startup: string | null;
 }

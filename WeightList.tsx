@@ -100,7 +100,7 @@ export default function WeightList() {
 
   const onAdd = useCallback(async () => {
     const now = await getNow();
-    let weight = weights?.[0];
+    let weight: Partial<Weight> = { ...weights[0] };
     if (!weight) weight = { ...defaultWeight };
     weight.created = now;
     delete weight.id;

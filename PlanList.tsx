@@ -12,7 +12,7 @@ import { planRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
-import { Plan } from "./plan";
+import { Plan, defaultPlan } from "./plan";
 import PlanItem from "./PlanItem";
 
 export default function PlanList() {
@@ -58,7 +58,7 @@ export default function PlanList() {
 
   const onAdd = () =>
     navigation.navigate("EditPlan", {
-      plan: { title: "", days: "", exercises: "" },
+      plan: defaultPlan,
     });
 
   const edit = useCallback(async () => {

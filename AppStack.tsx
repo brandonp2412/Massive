@@ -6,39 +6,38 @@ import EditPlan from "./EditPlan";
 import EditSet from "./EditSet";
 import EditSets from "./EditSets";
 import EditWeight from "./EditWeight";
-import GymSet from "./gym-set";
-import { Plan } from "./plan";
 import StartPlan from "./StartPlan";
 import ViewGraph from "./ViewGraph";
 import ViewSetList from "./ViewSetList";
 import ViewWeightGraph from "./ViewWeightGraph";
+import GymSet from "./gym-set";
+import { Plan } from "./plan";
 import Weight from "./weight";
-import Settings from "./settings";
 
 export type StackParams = {
   Drawer: {};
   EditSet: {
-    set: GymSet;
+    set: Partial<GymSet>;
   };
   EditSets: {
     ids: number[];
   };
   EditPlan: {
-    plan: Plan;
+    plan: Partial<Plan>;
   };
   StartPlan: {
     plan: Plan;
-    first?: GymSet;
+    first: Partial<GymSet>;
   };
   ViewGraph: {
     name: string;
   };
   EditWeight: {
-    weight: Weight;
+    weight: Partial<Weight>;
   };
   ViewWeightGraph: {};
   EditExercise: {
-    gymSet: GymSet;
+    gymSet: Partial<GymSet>;
   };
   EditExercises: {
     names: string[];

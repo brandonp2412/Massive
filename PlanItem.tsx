@@ -10,7 +10,7 @@ import { StackParams } from "./AppStack";
 import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
 import { DAYS } from "./days";
 import { setRepo } from "./db";
-import { defaultSet } from "./gym-set";
+import GymSet, { defaultSet } from "./gym-set";
 import { Plan } from "./plan";
 import useDark from "./use-dark";
 
@@ -37,7 +37,7 @@ export default function PlanItem({
 
   const start = useCallback(async () => {
     const exercise = item.exercises.split(",")[0];
-    let first = await setRepo.findOne({
+    let first: Partial<GymSet> = await setRepo.findOne({
       where: { name: exercise },
       order: { created: "desc" },
     });

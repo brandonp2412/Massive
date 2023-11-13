@@ -8,13 +8,13 @@ import { FlatList } from "react-native";
 import { List } from "react-native-paper";
 import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
-import { LIMIT } from "./constants";
-import { getNow, setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
-import GymSet, { defaultSet } from "./gym-set";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetItem from "./SetItem";
+import { LIMIT } from "./constants";
+import { getNow, setRepo, settingsRepo } from "./db";
+import GymSet, { defaultSet } from "./gym-set";
 import Settings from "./settings";
 
 export default function SetList() {
@@ -35,8 +35,8 @@ export default function SetList() {
         skip: 0,
         order: { created: "DESC" },
       });
-      console.log(`${SetList.name}.reset:`, { value, offset });
       setSets(newSets);
+      console.log(`${SetList.name}.reset:`, { value, offset });
       setEnd(false);
     },
     [offset]
@@ -95,7 +95,7 @@ export default function SetList() {
 
   const onAdd = useCallback(async () => {
     const now = await getNow();
-    let set = sets?.[0];
+    let set: Partial<GymSet> = { ...sets[0] };
     if (!set) set = { ...defaultSet };
     set.created = now;
     delete set.id;
@@ -150,7 +150,7 @@ export default function SetList() {
         onEndReached={next}
         onEndReachedThreshold={0.5}
         refreshing={refreshing}
-        keyExtractor={(set) => set.id?.toString()}
+        keyExtractor={(set) => set.id.toString()}
         onRefresh={() => {
           setOffset(0);
           setRefreshing(true);

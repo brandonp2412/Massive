@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity("weights")
 export default class Weight {
   @PrimaryGeneratedColumn()
-  id?: number;
+  id: number;
 
   @Column("int")
   value: number;
@@ -12,10 +12,10 @@ export default class Weight {
   created: string;
 
   @Column("text")
-  unit: string;
+  unit = "kg";
 }
 
-export const defaultWeight: Weight = {
+export const defaultWeight: Partial<Weight> = {
   created: "",
   unit: "kg",
   value: 0,

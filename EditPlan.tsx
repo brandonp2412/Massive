@@ -21,7 +21,7 @@ import { MARGIN, PADDING } from "./constants";
 import { DAYS } from "./days";
 import { planRepo, setRepo } from "./db";
 import { DrawerParams } from "./drawer-param-list";
-import { defaultSet } from "./gym-set";
+import GymSet, { defaultSet } from "./gym-set";
 import StackHeader from "./StackHeader";
 import Switch from "./Switch";
 
@@ -144,7 +144,7 @@ export default function EditPlan() {
               const newPlan = await planRepo.findOne({
                 where: { id: plan.id },
               });
-              let first = await setRepo.findOne({
+              let first: Partial<GymSet> = await setRepo.findOne({
                 where: { name: exercises[0] },
                 order: { created: "desc" },
               });
