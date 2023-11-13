@@ -50,7 +50,7 @@ export type StackParams = {
 
 const Stack = createStackNavigator<StackParams>();
 
-export default function AppStack({ settings }: { settings: Settings }) {
+export default function AppStack({ startup }: { startup: string }) {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, animationEnabled: false }}
@@ -58,7 +58,7 @@ export default function AppStack({ settings }: { settings: Settings }) {
       <Stack.Screen
         name="Drawer"
         component={AppDrawer}
-        initialParams={{ settings }}
+        initialParams={{ startup }}
       />
       <Stack.Screen name="EditSet" component={EditSet} />
       <Stack.Screen name="EditSets" component={EditSets} />
