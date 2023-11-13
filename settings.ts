@@ -47,6 +47,9 @@ export default class Settings {
   @Column("boolean")
   backup: boolean;
 
+  @Column("text")
+  backupDir: string;
+
   @Column("int")
   duration: number;
 

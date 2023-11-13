@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.*
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import com.facebook.react.bridge.ReactApplicationContext
@@ -16,11 +17,12 @@ import java.util.*
 class BackupModule constructor(context: ReactApplicationContext?) :
     ReactContextBaseJavaModule(context) {
     val context: ReactApplicationContext = reactApplicationContext
-    private var targetDir: String? = null
 
     private val copyReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
+            val targetDir = intent?.getStringExtra("targetDir");
+            Log.d("BackupModule", "onReceive $targetDir")
             val treeUri: Uri = Uri.parse(targetDir)
             val documentFile = context?.let { DocumentFile.fromTreeUri(it, treeUri) }
             val file = documentFile?.createFile("application/octet-stream", "massive.db")
@@ -38,11 +40,12 @@ class BackupModule constructor(context: ReactApplicationContext?) :
     @RequiresApi(Build.VERSION_CODES.M)
     @ReactMethod
     fun start(baseUri: String) {
-        targetDir = baseUri
+        Log.d("BackupModule", "start $baseUri")
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(COPY_BROADCAST)
+        intent.putExtra("targetDir", baseUri)
         val pendingIntent =
-            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, baseUri.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
         pendingIntent.send()
 
         val calendar = Calendar.getInstance().apply {
@@ -61,7 +64,7 @@ class BackupModule constructor(context: ReactApplicationContext?) :
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    @ReactMethod
+    @ReactMethod(isBlockingSynchronousMethod = true)
     fun stop() {
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(COPY_BROADCAST)

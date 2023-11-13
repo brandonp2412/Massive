@@ -34,6 +34,7 @@ import { Plan } from "./plan";
 import Settings from "./settings";
 import Weight from "./weight";
 import { settingsStartup1699783784680 } from "./migrations/1699783784680-settings-startup";
+import { settingsBackupDir1699839054226 } from "./migrations/1699839054226-settings-backup-dir";
 
 export const AppDataSource = new DataSource({
   type: "react-native",
@@ -74,5 +75,6 @@ export const AppDataSource = new DataSource({
     exercisesFix1699613077628,
     settingsDuration1699743753975,
     settingsStartup1699783784680,
+    settingsBackupDir1699839054226,
   ],
 });

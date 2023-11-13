@@ -86,6 +86,13 @@ export default function SettingsPage() {
       .execute();
   }, []);
 
+  const backupString = useMemo(() => {
+    if (!settings.backupDir) return null;
+    console.log(settings.backupDir);
+    const split = decodeURIComponent(settings.backupDir).split(":");
+    return split.pop();
+  }, [settings.backupDir]);
+
   const soundString = useMemo(() => {
     if (!settings.sound) return null;
     const split = settings.sound.split("/");
@@ -108,15 +115,8 @@ export default function SettingsPage() {
     await AppDataSource.initialize();
     await setRepo.createQueryBuilder().update().set({ image: null }).execute();
     await update("sound", null);
-    const { alarm, backup } = await settingsRepo.findOne({ where: {} });
-    console.log({ backup });
-    const directory = await DocumentPicker.pickDirectory();
-    if (backup) NativeModules.BackupModule.start(directory.uri);
-    else NativeModules.BackupModule.stop();
-    NativeModules.SettingsModule.ignoringBattery((isIgnoring: boolean) => {
-      if (alarm && !isIgnoring) NativeModules.SettingsModule.ignoreBattery();
-      reset({ index: 0, routes: [{ name: "Settings" }] });
-    });
+    await update("backup", false);
+    reset({ index: 0, routes: [{ name: "Settings" }] });
   }, [reset, update]);
 
   const today = new Date();
@@ -363,6 +363,9 @@ export default function SettingsPage() {
             await update("backup", value);
             if (value) {
               const result = await DocumentPicker.pickDirectory();
+              setValue("backupDir", result.uri);
+              await update("backupDir", result.uri);
+              console.log(`${SettingsPage.name}.backup:`, { result });
               toast("Backup database daily.");
               NativeModules.BackupModule.start(result.uri);
             } else {
@@ -372,6 +375,25 @@ export default function SettingsPage() {
           }}
           title={name}
         />
+      ),
+    },
+    {
+      name: `Backup directory: ${backupString || "Downloads"}`,
+      renderItem: (name: string) => (
+        <Button
+          style={{ alignSelf: "flex-start" }}
+          onPress={async () => {
+            const result = await DocumentPicker.pickDirectory();
+            setValue("backupDir", result.uri);
+            await update("backupDir", result.uri);
+            toast("Changed backup directory.");
+            if (!settings.backup) return;
+            NativeModules.BackupModule.stop();
+            NativeModules.BackupModule.start(result.uri);
+          }}
+        >
+          {name}
+        </Button>
       ),
     },
     {
