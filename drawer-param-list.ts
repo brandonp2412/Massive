@@ -1,5 +1,5 @@
 export type DrawerParams = {
-  Home: {};
+  History: {};
   Exercises: {};
   Plans: {};
   Graphs: {};

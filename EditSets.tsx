@@ -62,7 +62,7 @@ export default function EditSets() {
     if (unit) update.unit = unit;
     if (newImage) update.image = newImage;
     if (Object.keys(update).length > 0) await setRepo.update(ids, update);
-    navigate("Home");
+    navigate("History");
   };
 
   const changeImage = useCallback(async () => {

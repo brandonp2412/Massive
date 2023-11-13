@@ -80,7 +80,7 @@ export default function EditSet() {
   );
 
   const notify = (value: Partial<GymSet>) => {
-    if (!settings.notify) return navigate("Home");
+    if (!settings.notify) return navigate("History");
     if (
       value.weight > set.weight ||
       (value.reps > set.reps && value.weight === set.weight)
@@ -122,7 +122,7 @@ export default function EditSet() {
     const saved = await setRepo.save(newSet);
     notify(newSet);
     if (typeof set.id !== "number") added(saved);
-    navigate("Home");
+    navigate("History");
   };
 
   const changeImage = useCallback(async () => {
@@ -158,7 +158,7 @@ export default function EditSet() {
 
   const remove = async () => {
     await setRepo.delete(set.id);
-    navigate("Home");
+    navigate("History");
   };
 
   const openMenu = async () => {

@@ -30,12 +30,14 @@ export default function AppDrawer({
         swipeEdgeWidth: 1000,
         headerShown: false,
       }}
-      initialRouteName={(route.params.startup || "Home") as keyof DrawerParams}
+      initialRouteName={
+        (route.params.startup as keyof DrawerParams) || "History"
+      }
     >
       <Drawer.Screen
-        name="Home"
+        name="History"
         component={SetList}
-        options={{ drawerIcon: () => <IconButton icon="home-outline" /> }}
+        options={{ drawerIcon: () => <IconButton icon="history" /> }}
       />
       <Drawer.Screen
         name="Exercises"

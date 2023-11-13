@@ -128,7 +128,7 @@ export default function SettingsPage() {
         <Select
           label={name}
           items={[
-            { label: "Home", value: "Home" },
+            { label: "History", value: "History" },
             { label: "Exercises", value: "Exercises" },
             { label: "Plans", value: "Plans" },
             { label: "Graphs", value: "Graphs" },
