@@ -1,5 +1,6 @@
 package com.massive
 
+import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -24,5 +25,9 @@ class MainActivity : ReactActivity() {
             mainComponentName!!,  // If you opted-in for the New Architecture, we enable the Fabric Renderer.
             fabricEnabled
         )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(null)
     }
 }
