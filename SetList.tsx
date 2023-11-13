@@ -148,7 +148,7 @@ export default function SetList() {
         style={{ flex: 1 }}
         renderItem={renderItem}
         onEndReached={next}
-        onEndReachedThreshold={0.99}
+        onEndReachedThreshold={0.5}
         refreshing={refreshing}
         keyExtractor={(set) => set.id?.toString()}
         onRefresh={() => {
