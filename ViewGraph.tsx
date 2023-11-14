@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { FileSystem } from "react-native-file-access";
-import { IconButton, List } from "react-native-paper";
+import { IconButton, List, ActivityIndicator } from "react-native-paper";
 import Share from "react-native-share";
 import { captureScreen } from "react-native-view-shot";
 import Chart from "./Chart";
@@ -75,35 +75,42 @@ export default function ViewGraph() {
     }
   }, [params.name, metric, period]);
 
-  const charts = useMemo(() => {
+  const weightChart = useMemo(() => {
+    if (weights === undefined) return <ActivityIndicator />;
+
     let periodFormat = "do";
     if (period === Periods.Weekly) periodFormat = "iii";
     else if (period === Periods.Yearly) periodFormat = "P";
 
-    if (metric === Metrics.Volume && Number(volumes?.length) > 0)
-      return (
-        <Chart
-          data={volumes.map((volume) => volume.value)}
-          labels={volumes.map((volume) =>
-            format(new Date(volume.created), periodFormat)
-          )}
-        />
-      );
-    if (
-      (metric === Metrics.Best || metric === Metrics.OneRepMax) &&
-      Number(weights?.length) > 0
-    )
-      return (
-        <Chart
-          data={weights.map((set) => set.weight)}
-          labels={weights.map((set) =>
-            format(new Date(set.created), periodFormat)
-          )}
-        />
-      );
+    if (weights.length === 0) return <List.Item title="No data yet." />;
 
-    return <List.Item title="No data yet." />;
-  }, [volumes, weights, metric, period]);
+    return (
+      <Chart
+        data={weights.map((set) => set.weight)}
+        labels={weights.map((set) =>
+          format(new Date(set.created), periodFormat)
+        )}
+      />
+    );
+  }, [weights, period]);
+
+  const volumeChart = useMemo(() => {
+    if (volumes === undefined) return <ActivityIndicator />;
+
+    let periodFormat = "do";
+    if (period === Periods.Weekly) periodFormat = "iii";
+    else if (period === Periods.Yearly) periodFormat = "P";
+
+    if (volumes.length === 0) return <List.Item title="No data yet." />;
+    return (
+      <Chart
+        data={volumes.map((volume) => volume.value)}
+        labels={volumes.map((volume) =>
+          format(new Date(volume.created), periodFormat)
+        )}
+      />
+    );
+  }, [volumes, period]);
 
   return (
     <>
@@ -147,7 +154,7 @@ export default function ViewGraph() {
           value={period}
         />
         <View style={{ paddingTop: PADDING }}>
-          {(weights || volumes) && charts}
+          {metric === Metrics.Volume ? volumeChart : weightChart}
         </View>
       </View>
     </>
