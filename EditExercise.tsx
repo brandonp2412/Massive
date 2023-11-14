@@ -191,7 +191,7 @@ export default function EditExercise() {
         </ScrollView>
         <Button
           disabled={!name}
-          mode="outlined"
+          mode="contained"
           icon="content-save"
           onPress={save}
         >
