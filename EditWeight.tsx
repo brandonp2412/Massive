@@ -9,17 +9,18 @@ import {
 import { format } from "date-fns";
 import { useCallback, useRef, useState } from "react";
 import { TextInput, View } from "react-native";
-import { Button, IconButton } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
+import PrimaryButton from "./PrimaryButton";
+import Select from "./Select";
+import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
 import { getNow, settingsRepo, weightRepo } from "./db";
 import { DrawerParams } from "./drawer-params";
-import Select from "./Select";
 import Settings from "./settings";
-import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 import Weight from "./weight";
 
@@ -149,15 +150,14 @@ export default function EditWeight() {
         )}
       </View>
 
-      <Button
+      <PrimaryButton
         disabled={!value}
-        mode="contained"
         icon="content-save"
         style={{ margin: MARGIN }}
         onPress={submit}
       >
         Save
-      </Button>
+      </PrimaryButton>
     </>
   );
 }

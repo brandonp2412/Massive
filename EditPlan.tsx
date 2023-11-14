@@ -8,7 +8,6 @@ import { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import {
   ActivityIndicator,
-  Button,
   IconButton,
   Switch as PaperSwitch,
   Text,
@@ -18,13 +17,14 @@ import ReorderableList, {
 } from "react-native-reorderable-list";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
+import PrimaryButton from "./PrimaryButton";
+import StackHeader from "./StackHeader";
+import Switch from "./Switch";
 import { MARGIN, PADDING } from "./constants";
 import { DAYS } from "./days";
 import { planRepo, setRepo } from "./db";
 import { DrawerParams } from "./drawer-params";
 import GymSet, { defaultSet } from "./gym-set";
-import StackHeader from "./StackHeader";
-import Switch from "./Switch";
 
 export default function EditPlan() {
   const { params } = useRoute<RouteProp<StackParams, "EditPlan">>();
@@ -189,19 +189,18 @@ export default function EditPlan() {
             containerStyle={{ flex: 1 }}
           />
         )}
-
-        <Button
-          disabled={exercises.length === 0 && days.length === 0}
-          mode="contained"
-          icon="content-save"
-          onPress={async () => {
-            await save();
-            drawerNavigate("Plans");
-          }}
-        >
-          Save
-        </Button>
       </View>
+
+      <PrimaryButton
+        disabled={exercises.length === 0 && days.length === 0}
+        icon="content-save"
+        onPress={async () => {
+          await save();
+          drawerNavigate("Plans");
+        }}
+      >
+        Save
+      </PrimaryButton>
     </>
   );
 }

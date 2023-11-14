@@ -31,6 +31,7 @@ import Select from "./Select";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
+import PrimaryButton from "./PrimaryButton";
 
 export default function EditSet() {
   const { params } = useRoute<RouteProp<StackParams, "EditSet">>();
@@ -340,15 +341,14 @@ export default function EditSet() {
         )}
       </View>
 
-      <Button
+      <PrimaryButton
         disabled={!name}
-        mode="contained"
         icon="content-save"
         style={{ margin: MARGIN }}
         onPress={handleSubmit}
       >
         Save
-      </Button>
+      </PrimaryButton>
 
       <ConfirmDialog
         title="Remove image"

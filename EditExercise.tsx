@@ -12,13 +12,14 @@ import { Button, Card, TouchableRipple } from "react-native-paper";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
+import PrimaryButton from "./PrimaryButton";
+import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, planRepo, setRepo, settingsRepo } from "./db";
 import { DrawerParams } from "./drawer-params";
 import { fixNumeric } from "./fix-numeric";
 import GymSet, { defaultSet } from "./gym-set";
 import Settings from "./settings";
-import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 
 export default function EditExercise() {
@@ -189,14 +190,9 @@ export default function EditExercise() {
             </Button>
           )}
         </ScrollView>
-        <Button
-          disabled={!name}
-          mode="contained"
-          icon="content-save"
-          onPress={save}
-        >
+        <PrimaryButton disabled={!name} icon="content-save" onPress={save}>
           Save
-        </Button>
+        </PrimaryButton>
         <ConfirmDialog
           title="Remove image"
           onOk={handleRemove}

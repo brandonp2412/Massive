@@ -12,6 +12,7 @@ import {
   Button,
   IconButton,
   ProgressBar,
+  useTheme,
 } from "react-native-paper";
 import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import AppInput from "./AppInput";
@@ -29,6 +30,7 @@ import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import StartPlanItem from "./StartPlanItem";
 import { toast } from "./toast";
+import PrimaryButton from "./PrimaryButton";
 
 export default function StartPlan() {
   const { params } = useRoute<RouteProp<StackParams, "StartPlan">>();
@@ -38,6 +40,7 @@ export default function StartPlan() {
   const [selected, setSelected] = useState(0);
   const [settings, setSettings] = useState<Settings>();
   const [counts, setCounts] = useState<CountMany[]>();
+  const { colors } = useTheme();
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const exercises = useMemo(() => params.plan.exercises.split(","), [params]);
@@ -241,9 +244,9 @@ export default function StartPlan() {
             />
           )}
         </View>
-        <Button mode="contained" icon="content-save" onPress={handleSubmit}>
+        <PrimaryButton icon="content-save" onPress={handleSubmit}>
           Save
-        </Button>
+        </PrimaryButton>
       </View>
     </>
   );

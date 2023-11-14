@@ -20,6 +20,7 @@ import { fixNumeric } from "./fix-numeric";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
+import PrimaryButton from "./PrimaryButton";
 
 export default function EditExercises() {
   const { params } = useRoute<RouteProp<StackParams, "EditExercises">>();
@@ -187,14 +188,9 @@ export default function EditExercises() {
             </Button>
           )}
         </ScrollView>
-        <Button
-          disabled={!name}
-          mode="contained"
-          icon="content-save"
-          onPress={update}
-        >
+        <PrimaryButton disabled={!name} icon="content-save" onPress={update}>
           Save
-        </Button>
+        </PrimaryButton>
         <ConfirmDialog
           title="Remove image"
           onOk={handleRemove}

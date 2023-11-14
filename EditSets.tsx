@@ -13,13 +13,14 @@ import { In } from "typeorm";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
+import Select from "./Select";
+import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import { DrawerParams } from "./drawer-params";
 import GymSet from "./gym-set";
-import Select from "./Select";
 import Settings from "./settings";
-import StackHeader from "./StackHeader";
+import PrimaryButton from "./PrimaryButton";
 
 export default function EditSets() {
   const { params } = useRoute<RouteProp<StackParams, "EditSets">>();
@@ -181,14 +182,13 @@ export default function EditSets() {
         )}
       </View>
 
-      <Button
-        mode="contained"
+      <PrimaryButton
         icon="content-save"
         style={{ margin: MARGIN }}
         onPress={save}
       >
         Save
-      </Button>
+      </PrimaryButton>
     </>
   );
 }
