@@ -4,11 +4,12 @@ import {
   NavigationContainer,
 } from "@react-navigation/native";
 import React, { useEffect, useMemo, useState } from "react";
-import { useColorScheme } from "react-native";
+import { View, useColorScheme } from "react-native";
 import {
   MD3DarkTheme as PaperDarkTheme,
   MD3LightTheme as PaperDefaultTheme,
   Provider as PaperProvider,
+  Text,
 } from "react-native-paper";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import AppSnack from "./AppSnack";
@@ -16,6 +17,7 @@ import AppStack from "./AppStack";
 import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
 import { ThemeContext } from "./use-theme";
+import { MARGIN } from "./constants";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -45,10 +47,12 @@ const App = () => {
     lightColor: CombinedDefaultTheme.colors.primary,
     darkColor: CombinedDarkTheme.colors.primary,
   });
+  const [error, setError] = useState("");
 
   useEffect(() => {
     (async () => {
-      if (!AppDataSource.isInitialized) await AppDataSource.initialize();
+      if (!AppDataSource.isInitialized)
+        await AppDataSource.initialize().catch((e) => setError(e.toString()));
       const gotSettings = await settingsRepo.findOne({ where: {} });
       console.log({ gotSettings });
       setAppSettings({
@@ -88,6 +92,17 @@ const App = () => {
       settings={{ icon: (props) => <MaterialIcon {...props} /> }}
     >
       <NavigationContainer theme={paperTheme}>
+        {error && (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text
+              style={{ color: paperTheme.colors.background, margin: MARGIN }}
+            >
+              Database failed to initialize: {error}
+            </Text>
+          </View>
+        )}
         {appSettings.startup !== undefined && (
           <ThemeContext.Provider
             value={{
