@@ -187,7 +187,7 @@ export default function EditSets() {
       </View>
 
       <Button
-        mode="outlined"
+        mode="contained"
         icon="content-save"
         style={{ margin: MARGIN }}
         onPress={save}

@@ -151,7 +151,7 @@ export default function EditWeight() {
 
       <Button
         disabled={!value}
-        mode="outlined"
+        mode="contained"
         icon="content-save"
         style={{ margin: MARGIN }}
         onPress={submit}

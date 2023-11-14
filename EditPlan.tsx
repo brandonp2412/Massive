@@ -193,7 +193,7 @@ export default function EditPlan() {
 
         <Button
           disabled={exercises.length === 0 && days.length === 0}
-          mode="outlined"
+          mode="contained"
           icon="content-save"
           onPress={async () => {
             await save();
