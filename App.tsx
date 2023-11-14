@@ -13,7 +13,6 @@ import {
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import AppSnack from "./AppSnack";
 import AppStack from "./AppStack";
-import TimerProgress from "./TimerProgress";
 import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
 import { ThemeContext } from "./use-theme";
@@ -37,6 +36,7 @@ export const CombinedDarkTheme = {
 };
 
 const App = () => {
+  console.log("Re rendered app");
   const systemTheme = useColorScheme();
 
   const [appSettings, setAppSettings] = useState({
@@ -108,7 +108,6 @@ const App = () => {
       </NavigationContainer>
 
       <AppSnack textColor={paperTheme.colors.background} />
-      <TimerProgress />
     </PaperProvider>
   );
 };

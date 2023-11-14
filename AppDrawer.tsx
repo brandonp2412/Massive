@@ -11,6 +11,7 @@ import TimerPage from "./TimerPage";
 import WeightList from "./WeightList";
 import { DrawerParams } from "./drawer-param-list";
 import useDark from "./use-dark";
+import TimerProgress from "./TimerProgress";
 
 const Drawer = createDrawerNavigator<DrawerParams>();
 
@@ -24,60 +25,63 @@ export default function AppDrawer({
   const dark = useDark();
 
   return (
-    <Drawer.Navigator
-      screenOptions={{
-        headerTintColor: dark ? "white" : "black",
-        swipeEdgeWidth: 1000,
-        headerShown: false,
-      }}
-      initialRouteName={
-        (route.params.startup as keyof DrawerParams) || "History"
-      }
-    >
-      <Drawer.Screen
-        name="History"
-        component={SetList}
-        options={{ drawerIcon: () => <IconButton icon="history" /> }}
-      />
-      <Drawer.Screen
-        name="Exercises"
-        component={ExerciseList}
-        options={{ drawerIcon: () => <IconButton icon="dumbbell" /> }}
-      />
-      <Drawer.Screen
-        name="Plans"
-        component={PlanList}
-        options={{ drawerIcon: () => <IconButton icon="calendar-outline" /> }}
-      />
-      <Drawer.Screen
-        name="Graphs"
-        component={GraphsList}
-        options={{
-          drawerIcon: () => <IconButton icon="chart-bell-curve-cumulative" />,
+    <>
+      <Drawer.Navigator
+        screenOptions={{
+          headerTintColor: dark ? "white" : "black",
+          swipeEdgeWidth: 1000,
+          headerShown: false,
         }}
-      />
-      <Drawer.Screen
-        name="Timer"
-        component={TimerPage}
-        options={{ drawerIcon: () => <IconButton icon="timer-outline" /> }}
-      />
-      <Drawer.Screen
-        name="Weight"
-        component={WeightList}
-        options={{ drawerIcon: () => <IconButton icon="scale-bathroom" /> }}
-      />
-      <Drawer.Screen
-        name="Insights"
-        component={InsightsPage}
-        options={{
-          drawerIcon: () => <IconButton icon="lightbulb-on-outline" />,
-        }}
-      />
-      <Drawer.Screen
-        name="Settings"
-        component={SettingsPage}
-        options={{ drawerIcon: () => <IconButton icon="cog-outline" /> }}
-      />
-    </Drawer.Navigator>
+        initialRouteName={
+          (route.params.startup as keyof DrawerParams) || "History"
+        }
+      >
+        <Drawer.Screen
+          name="History"
+          component={SetList}
+          options={{ drawerIcon: () => <IconButton icon="history" /> }}
+        />
+        <Drawer.Screen
+          name="Exercises"
+          component={ExerciseList}
+          options={{ drawerIcon: () => <IconButton icon="dumbbell" /> }}
+        />
+        <Drawer.Screen
+          name="Plans"
+          component={PlanList}
+          options={{ drawerIcon: () => <IconButton icon="calendar-outline" /> }}
+        />
+        <Drawer.Screen
+          name="Graphs"
+          component={GraphsList}
+          options={{
+            drawerIcon: () => <IconButton icon="chart-bell-curve-cumulative" />,
+          }}
+        />
+        <Drawer.Screen
+          name="Timer"
+          component={TimerPage}
+          options={{ drawerIcon: () => <IconButton icon="timer-outline" /> }}
+        />
+        <Drawer.Screen
+          name="Weight"
+          component={WeightList}
+          options={{ drawerIcon: () => <IconButton icon="scale-bathroom" /> }}
+        />
+        <Drawer.Screen
+          name="Insights"
+          component={InsightsPage}
+          options={{
+            drawerIcon: () => <IconButton icon="lightbulb-on-outline" />,
+          }}
+        />
+        <Drawer.Screen
+          name="Settings"
+          component={SettingsPage}
+          options={{ drawerIcon: () => <IconButton icon="cog-outline" /> }}
+        />
+      </Drawer.Navigator>
+      <TimerProgress />
+    </>
   );
 }
