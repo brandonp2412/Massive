@@ -73,13 +73,11 @@ export default function TimerPage() {
 
       <FAB
         icon="plus"
-        color={colors.background}
         onPress={add}
         style={{
           position: "absolute",
           left: 20,
           bottom: 20,
-          backgroundColor: colors.primary,
         }}
       />
       <AppFab icon="stop" onPress={stop} />

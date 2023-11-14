@@ -54,8 +54,9 @@ const App = () => {
       setAppSettings({
         startup: gotSettings.startup,
         theme: gotSettings.theme,
-        lightColor: gotSettings.lightColor,
-        darkColor: gotSettings.darkColor,
+        lightColor:
+          gotSettings.lightColor || CombinedDefaultTheme.colors.primary,
+        darkColor: gotSettings.darkColor || CombinedDarkTheme.colors.primary,
       });
     })();
   }, []);
@@ -67,7 +68,6 @@ const App = () => {
         ...CombinedDarkTheme.colors,
         primary: appSettings.darkColor,
       },
-      dark: true,
     };
     const lightTheme = {
       ...CombinedDefaultTheme,
@@ -75,7 +75,6 @@ const App = () => {
         ...CombinedDefaultTheme.colors,
         primary: appSettings.lightColor,
       },
-      dark: false,
     };
     let theme = systemTheme === "dark" ? darkTheme : lightTheme;
     if (appSettings.theme === "dark") theme = darkTheme;
