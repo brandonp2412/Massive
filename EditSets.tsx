@@ -13,13 +13,13 @@ import { In } from "typeorm";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
+import Select from "./Select";
+import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import { DrawerParams } from "./drawer-param-list";
 import GymSet from "./gym-set";
 import Settings from "./settings";
-import StackHeader from "./StackHeader";
-import Select from "./Select";
 
 export default function EditSets() {
   const { params } = useRoute<RouteProp<StackParams, "EditSets">>();
@@ -92,16 +92,8 @@ export default function EditSets() {
           autoFocus={!name}
         />
 
-        <View
-          style={{
-            flexDirection: "row",
-            marginBottom: MARGIN,
-          }}
-        >
+        <View>
           <AppInput
-            style={{
-              flex: 1,
-            }}
             label={`Reps: ${oldReps}`}
             keyboardType="numeric"
             value={reps}
@@ -110,38 +102,40 @@ export default function EditSets() {
             onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
             autoFocus={!!name}
           />
-          <IconButton
-            icon="plus"
-            onPress={() => setReps((Number(reps) + 1).toString())}
-          />
-          <IconButton
-            icon="minus"
-            onPress={() => setReps((Number(reps) - 1).toString())}
-          />
+          <View
+            style={{ position: "absolute", right: 0, flexDirection: "row" }}
+          >
+            <IconButton
+              icon="plus"
+              onPress={() => setReps((Number(reps) + 1).toString())}
+            />
+            <IconButton
+              icon="minus"
+              onPress={() => setReps((Number(reps) - 1).toString())}
+            />
+          </View>
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            marginBottom: MARGIN,
-          }}
-        >
+        <View>
           <AppInput
-            style={{ flex: 1 }}
             label={`Weights: ${weights}`}
             keyboardType="numeric"
             value={weight}
             onChangeText={setWeight}
             onSubmitEditing={save}
           />
-          <IconButton
-            icon="plus"
-            onPress={() => setWeight((Number(weight) + 2.5).toString())}
-          />
-          <IconButton
-            icon="minus"
-            onPress={() => setWeight((Number(weight) - 2.5).toString())}
-          />
+          <View
+            style={{ position: "absolute", right: 0, flexDirection: "row" }}
+          >
+            <IconButton
+              icon="plus"
+              onPress={() => setWeight((Number(weight) + 2.5).toString())}
+            />
+            <IconButton
+              icon="minus"
+              onPress={() => setWeight((Number(weight) - 2.5).toString())}
+            />
+          </View>
         </View>
 
         {settings.showUnit && (
