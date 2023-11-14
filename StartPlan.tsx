@@ -7,7 +7,12 @@ import {
 } from "@react-navigation/native";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, NativeModules, TextInput, View } from "react-native";
-import { Button, IconButton, ProgressBar } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Button,
+  IconButton,
+  ProgressBar,
+} from "react-native-paper";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import { getBestSet } from "./best.service";
@@ -204,7 +209,9 @@ export default function StartPlan() {
               label="Unit"
             />
           )}
-          {counts && (
+          {counts === undefined ? (
+            <ActivityIndicator />
+          ) : (
             <FlatList
               data={counts}
               keyExtractor={(count) => count.name}
