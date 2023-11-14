@@ -5,7 +5,7 @@ import {
 } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
-import { List } from "react-native-paper";
+import { List, ActivityIndicator } from "react-native-paper";
 import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
 import DrawerHeader from "./DrawerHeader";
@@ -134,8 +134,8 @@ export default function SetList() {
   }, [sets, ids]);
 
   const getContent = () => {
-    if (!settings) return null;
-    if (sets?.length === 0)
+    if (!settings || sets === undefined) return <ActivityIndicator />;
+    if (sets.length === 0)
       return (
         <List.Item
           title="No sets yet"
