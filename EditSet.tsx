@@ -22,7 +22,7 @@ import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, setRepo, settingsRepo } from "./db";
-import { DrawerParams } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-params";
 import { fixNumeric } from "./fix-numeric";
 import GymSet from "./gym-set";
 import Settings from "./settings";

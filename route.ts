@@ -1,4 +1,4 @@
-import { DrawerParams } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-params";
 
 export default interface Route {
   name: keyof DrawerParams;

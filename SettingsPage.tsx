@@ -16,7 +16,7 @@ import Switch from "./Switch";
 import { PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
 import { setRepo, settingsRepo } from "./db";
-import { DrawerParams } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-params";
 import { darkOptions, lightOptions, themeOptions } from "./options";
 import Settings from "./settings";
 import { toast } from "./toast";

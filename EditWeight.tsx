@@ -16,7 +16,7 @@ import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
 import { getNow, settingsRepo, weightRepo } from "./db";
-import { DrawerParams } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-params";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";

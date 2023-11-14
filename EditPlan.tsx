@@ -21,7 +21,7 @@ import { StackParams } from "./AppStack";
 import { MARGIN, PADDING } from "./constants";
 import { DAYS } from "./days";
 import { planRepo, setRepo } from "./db";
-import { DrawerParams } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-params";
 import GymSet, { defaultSet } from "./gym-set";
 import StackHeader from "./StackHeader";
 import Switch from "./Switch";

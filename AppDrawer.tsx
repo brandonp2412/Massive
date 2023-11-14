@@ -10,7 +10,7 @@ import SettingsPage from "./SettingsPage";
 import TimerPage from "./TimerPage";
 import TimerProgress from "./TimerProgress";
 import WeightList from "./WeightList";
-import { DrawerParams } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-params";
 
 const Drawer = createDrawerNavigator<DrawerParams>();
 

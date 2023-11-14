@@ -17,7 +17,7 @@ import Select from "./Select";
 import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { setRepo, settingsRepo } from "./db";
-import { DrawerParams } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-params";
 import GymSet from "./gym-set";
 import Settings from "./settings";
 

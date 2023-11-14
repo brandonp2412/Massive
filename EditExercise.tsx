@@ -14,7 +14,7 @@ import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { getNow, planRepo, setRepo, settingsRepo } from "./db";
-import { DrawerParams } from "./drawer-param-list";
+import { DrawerParams } from "./drawer-params";
 import { fixNumeric } from "./fix-numeric";
 import GymSet, { defaultSet } from "./gym-set";
 import Settings from "./settings";
@@ -80,7 +80,7 @@ export default function EditExercise() {
       steps,
       created: now,
     });
-    navigate("Exercises", { reset: new Date().getTime() });
+    navigate("Exercises");
   };
 
   const save = async () => {
