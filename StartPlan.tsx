@@ -28,6 +28,7 @@ import StartPlanItem from "./StartPlanItem";
 import { toast } from "./toast";
 import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
 import Select from "./Select";
+import { convert } from "./conversions";
 
 export default function StartPlan() {
   const { params } = useRoute<RouteProp<StackParams, "StartPlan">>();
@@ -101,11 +102,19 @@ export default function StartPlan() {
     const exercise = counts[selected];
     const best = await getBestSet(exercise.name);
     delete best.id;
+
+    let newWeight = Number(weight);
+    let newUnit = unit;
+    if (settings.autoConvert && unit !== settings.autoConvert) {
+      newUnit = settings.autoConvert;
+      newWeight = convert(newWeight, unit, settings.autoConvert);
+    }
+
     const newSet: GymSet = {
       ...best,
-      weight: +weight,
-      reps: +reps,
-      unit,
+      weight: newWeight,
+      reps: Number(reps),
+      unit: newUnit,
       created: now,
       hidden: false,
     };
@@ -113,7 +122,8 @@ export default function StartPlan() {
     await refresh();
     if (
       settings.notify &&
-      (+weight > best.weight || (+reps > best.reps && +weight === best.weight))
+      (+weight > best.weight ||
+        (Number(reps) > best.reps && +weight === best.weight))
     ) {
       toast("Great work King! That's a new record.");
     }

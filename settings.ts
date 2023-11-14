@@ -52,4 +52,7 @@ export default class Settings {
 
   @Column("text")
   startup: string | null;
+
+  @Column("text")
+  autoConvert: string | null;
 }

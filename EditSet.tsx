@@ -30,6 +30,7 @@ import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 import Select from "./Select";
 import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
+import { convert } from "./conversions";
 
 export default function EditSet() {
   const { params } = useRoute<RouteProp<StackParams, "EditSet">>();
@@ -97,12 +98,19 @@ export default function EditSet() {
   const handleSubmit = async () => {
     if (!name) return;
 
+    let newWeight = Number(weight);
+    let newUnit = unit;
+    if (settings.autoConvert && unit !== settings.autoConvert) {
+      newUnit = settings.autoConvert;
+      newWeight = convert(newWeight, unit, settings.autoConvert);
+    }
+
     const newSet: Partial<GymSet> = {
       id: set.id,
       name,
       reps: Number(reps || 0),
-      weight: Number(weight || 0),
-      unit,
+      weight: newWeight,
+      unit: newUnit,
       minutes: Number(set.minutes ?? 3),
       seconds: Number(set.seconds ?? 30),
       sets: set.sets ?? 3,

@@ -215,6 +215,27 @@ export default function SettingsPage() {
       ),
     },
     {
+      name: "Auto convert",
+      renderItem: (name: string) => (
+        <Select
+          label={name}
+          items={[
+            { label: "Off", value: "" },
+            { label: "Kilograms", value: "kg" },
+            { label: "Pounds", value: "lb" },
+            { label: "Stone", value: "stone" },
+          ]}
+          value={settings.autoConvert}
+          onChange={async (value) => {
+            setValue("autoConvert", value);
+            await update("autoConvert", value);
+            if (value) toast(`Sets now automatically convert to ${value}`);
+            else toast("Stopped automatically converting sets.");
+          }}
+        />
+      ),
+    },
+    {
       name: "Vibration duration (ms)",
       renderItem: (name: string) => (
         <AppInput
