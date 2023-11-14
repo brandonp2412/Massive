@@ -20,7 +20,7 @@ import { DrawerParams } from "./drawer-param-list";
 import { darkOptions, lightOptions, themeOptions } from "./options";
 import Settings from "./settings";
 import { toast } from "./toast";
-import { useTheme } from "./use-theme";
+import { useAppTheme } from "./use-theme";
 
 const twelveHours = [
   "dd/LL/yyyy",
@@ -66,7 +66,7 @@ export default function SettingsPage() {
     setLightColor,
     darkColor,
     setDarkColor,
-  } = useTheme();
+  } = useAppTheme();
 
   useEffect(() => {
     NativeModules.SettingsModule.ignoringBattery(setIgnoring);

@@ -17,6 +17,6 @@ export const ThemeContext = createContext<{
   setDarkColor: () => null,
 });
 
-export function useTheme() {
+export function useAppTheme() {
   return useContext(ThemeContext);
 }
