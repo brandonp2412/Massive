@@ -143,6 +143,7 @@ export default function EditSets() {
             value={unit}
             onChange={setUnit}
             items={[
+              { label: "", value: "" },
               { label: "kg", value: "kg" },
               { label: "lb", value: "lb" },
               { label: "stone", value: "stone" },
