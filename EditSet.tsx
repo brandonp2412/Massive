@@ -100,8 +100,8 @@ export default function EditSet() {
     const newSet: Partial<GymSet> = {
       id: set.id,
       name,
-      reps: Number(reps),
-      weight: Number(weight),
+      reps: Number(reps || 0),
+      weight: Number(weight || 0),
       unit,
       minutes: Number(set.minutes ?? 3),
       seconds: Number(set.seconds ?? 30),
