@@ -6,6 +6,9 @@ export const lightColors = [
   { hex: "#FA8072", name: "Salmon" },
   { hex: "#FFC0CB", name: "Pink" },
   { hex: "#E9DCC9", name: "Linen" },
+  { hex: "#9ACD32", name: "Yellow Green" },
+  { hex: "#FFD700", name: "Gold" },
+  { hex: "#00CED1", name: "Dark Turquoise" },
 ];
 
 export const darkColors = [
@@ -14,6 +17,9 @@ export const darkColors = [
   { hex: "#000000", name: "Black" },
   { hex: "#863c3c", name: "Red" },
   { hex: "#1c6000", name: "Kermit" },
+  { hex: "#8A2BE2", name: "Blue Violet" },
+  { hex: "#6A5ACD", name: "Slate Blue" },
+  { hex: "#FF8C00", name: "Dark Orange" },
 ];
 
 export function darkenRgba(rgba: string, amount: number) {
