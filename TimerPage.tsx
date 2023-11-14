@@ -78,7 +78,9 @@ export default function TimerPage() {
           position: "absolute",
           left: 20,
           bottom: 20,
+          backgroundColor: colors.primary,
         }}
+        color={colors.background}
       />
       <AppFab icon="stop" onPress={stop} />
     </>
