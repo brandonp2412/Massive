@@ -45,36 +45,37 @@ export default function SetItem({
     return LIGHT_RIPPLE;
   }, [dark, ids, item.id]);
 
-  const left = useCallback(() => {
+  const image = useCallback(() => {
     if (!settings.images || !item.image) return null;
     return (
       <Image source={{ uri: item.image }} style={{ height: 75, width: 75 }} />
     );
   }, [item.image, settings.images]);
 
-  const right = useCallback(() => {
-    if (!settings.showDate) return null;
-    return (
-      <Text
-        style={{
-          alignSelf: "center",
-          color: dark ? "#909090ff" : "#717171ff",
-        }}
-      >
-        {format(new Date(item.created), settings.date || "P")}
-      </Text>
-    );
-  }, [settings.showDate, item.created, settings.date, dark]);
-
   return (
     <List.Item
       onPress={press}
       title={item.name}
-      description={`${item.reps} x ${item.weight}${item.unit || "kg"}`}
+      description={
+        settings.showDate ? (
+          <Text style={{ color: dark ? "#909090ff" : "#717171ff" }}>
+            {format(new Date(item.created), settings.date || "P")}
+          </Text>
+        ) : null
+      }
       onLongPress={longPress}
       style={{ backgroundColor: customBg || backgroundColor }}
-      left={left}
-      right={right}
+      left={image}
+      right={() => (
+        <Text
+          style={{
+            alignSelf: "center",
+            color: dark ? "#909090ff" : "#717171ff",
+          }}
+        >
+          {`${item.reps} x ${item.weight}${item.unit || "kg"}`}
+        </Text>
+      )}
     />
   );
 }
