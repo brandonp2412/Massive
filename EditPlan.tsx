@@ -11,6 +11,7 @@ import {
   IconButton,
   Switch as PaperSwitch,
   Text,
+  ActivityIndicator,
 } from "react-native-paper";
 import ReorderableList, {
   ReorderableListRenderItemInfo,
@@ -24,12 +25,13 @@ import { DrawerParams } from "./drawer-param-list";
 import GymSet, { defaultSet } from "./gym-set";
 import StackHeader from "./StackHeader";
 import Switch from "./Switch";
+import { ProgressCircle } from "react-native-svg-charts";
 
 export default function EditPlan() {
   const { params } = useRoute<RouteProp<StackParams, "EditPlan">>();
   const { plan } = params;
   const [title, setTitle] = useState<string>(plan?.title);
-  const [names, setNames] = useState<string[]>([]);
+  const [names, setNames] = useState<string[]>();
 
   const [days, setDays] = useState<string[]>(
     plan.days ? plan.days.split(",") : []
@@ -170,13 +172,12 @@ export default function EditPlan() {
         {DAYS.map((day) => renderDay(day))}
 
         <Text style={[styles.title, { marginTop: MARGIN }]}>Exercises</Text>
-        {names.length === 0 ? (
-          <View>
-            <Text>No exercises found.</Text>
-          </View>
+        {names === undefined ? (
+          <ActivityIndicator />
         ) : (
           <ReorderableList
             data={names}
+            ListEmptyComponent={<Text>No exercises yet</Text>}
             onReorder={({ fromIndex, toIndex }) =>
               reorderExercise(fromIndex, toIndex)
             }
@@ -192,7 +193,6 @@ export default function EditPlan() {
 
         <Button
           disabled={exercises.length === 0 && days.length === 0}
-          style={styles.button}
           mode="outlined"
           icon="content-save"
           onPress={async () => {
@@ -212,5 +212,4 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: MARGIN,
   },
-  button: {},
 });
