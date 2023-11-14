@@ -1,23 +1,22 @@
 import {
+  NavigationContainer,
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
-  NavigationContainer,
 } from "@react-navigation/native";
 import React, { useEffect, useMemo, useState } from "react";
-import { View, useColorScheme } from "react-native";
+import { useColorScheme } from "react-native";
 import {
   MD3DarkTheme as PaperDarkTheme,
   MD3LightTheme as PaperDefaultTheme,
   Provider as PaperProvider,
-  Text,
 } from "react-native-paper";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import AppSnack from "./AppSnack";
 import AppStack from "./AppStack";
+import FatalError from "./FatalError";
 import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
 import { ThemeContext } from "./use-theme";
-import { MARGIN } from "./constants";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -93,18 +92,11 @@ const App = () => {
     >
       <NavigationContainer theme={paperTheme}>
         {error && (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <Text
-              style={{
-                color: systemTheme === "dark" ? "white" : "black",
-                margin: MARGIN,
-              }}
-            >
-              Database failed to initialize: {error}
-            </Text>
-          </View>
+          <FatalError
+            message={error}
+            setAppSettings={setAppSettings}
+            setError={setError}
+          />
         )}
         {appSettings.startup !== undefined && (
           <ThemeContext.Provider
