@@ -1,6 +1,7 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { StackScreenProps } from "@react-navigation/stack";
 import { IconButton, useTheme } from "react-native-paper";
+import { DrawerParams } from "./drawer-params";
 import ExerciseList from "./ExerciseList";
 import GraphsList from "./GraphsList";
 import InsightsPage from "./InsightsPage";
@@ -10,7 +11,6 @@ import SettingsPage from "./SettingsPage";
 import TimerPage from "./TimerPage";
 import TimerProgress from "./TimerProgress";
 import WeightList from "./WeightList";
-import { DrawerParams } from "./drawer-params";
 
 const Drawer = createDrawerNavigator<DrawerParams>();
 

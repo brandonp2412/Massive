@@ -1,7 +1,7 @@
 import {
-  NavigationContainer,
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
+  NavigationContainer,
 } from "@react-navigation/native";
 import React, { useEffect, useMemo, useState } from "react";
 import { useColorScheme } from "react-native";

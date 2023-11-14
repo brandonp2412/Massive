@@ -6,12 +6,12 @@ import EditPlan from "./EditPlan";
 import EditSet from "./EditSet";
 import EditSets from "./EditSets";
 import EditWeight from "./EditWeight";
+import GymSet from "./gym-set";
+import { Plan } from "./plan";
 import StartPlan from "./StartPlan";
 import ViewGraph from "./ViewGraph";
 import ViewSetList from "./ViewSetList";
 import ViewWeightGraph from "./ViewWeightGraph";
-import GymSet from "./gym-set";
-import { Plan } from "./plan";
 import Weight from "./weight";
 
 export type StackParams = {

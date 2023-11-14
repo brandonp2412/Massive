@@ -2,9 +2,9 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { format } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { List, Text } from "react-native-paper";
+import { StackParams } from "./AppStack";
 import Settings from "./settings";
 import Weight from "./weight";
-import { StackParams } from "./AppStack";
 
 export default function WeightItem({
   item,

@@ -17,20 +17,20 @@ import {
   Menu,
   TouchableRipple,
 } from "react-native-paper";
+import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
+import { convert } from "./conversions";
 import { getNow, setRepo, settingsRepo } from "./db";
 import { DrawerParams } from "./drawer-params";
 import { fixNumeric } from "./fix-numeric";
 import GymSet from "./gym-set";
+import Select from "./Select";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
-import Select from "./Select";
-import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
-import { convert } from "./conversions";
 
 export default function EditSet() {
   const { params } = useRoute<RouteProp<StackParams, "EditSet">>();

@@ -7,11 +7,11 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import {
+  ActivityIndicator,
   Button,
   IconButton,
   Switch as PaperSwitch,
   Text,
-  ActivityIndicator,
 } from "react-native-paper";
 import ReorderableList, {
   ReorderableListRenderItemInfo,
@@ -25,7 +25,6 @@ import { DrawerParams } from "./drawer-params";
 import GymSet, { defaultSet } from "./gym-set";
 import StackHeader from "./StackHeader";
 import Switch from "./Switch";
-import { ProgressCircle } from "react-native-svg-charts";
 
 export default function EditPlan() {
   const { params } = useRoute<RouteProp<StackParams, "EditPlan">>();

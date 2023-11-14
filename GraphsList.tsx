@@ -6,6 +6,7 @@ import {
 import { useCallback, useState } from "react";
 import { FlatList, Image } from "react-native";
 import { List } from "react-native-paper";
+import { StackParams } from "./AppStack";
 import { getBestSets } from "./best.service";
 import { LIMIT } from "./constants";
 import { settingsRepo } from "./db";
@@ -13,7 +14,6 @@ import DrawerHeader from "./DrawerHeader";
 import GymSet from "./gym-set";
 import Page from "./Page";
 import Settings from "./settings";
-import { StackParams } from "./AppStack";
 
 export default function GraphsList() {
   const [bests, setBests] = useState<GymSet[]>();

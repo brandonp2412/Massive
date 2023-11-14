@@ -13,12 +13,12 @@ import { In } from "typeorm";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
-import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
 import { planRepo, setRepo, settingsRepo } from "./db";
 import { DrawerParams } from "./drawer-params";
 import { fixNumeric } from "./fix-numeric";
 import Settings from "./settings";
+import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 
 export default function EditExercises() {

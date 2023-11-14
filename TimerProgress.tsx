@@ -1,8 +1,8 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { ProgressBar } from "react-native-paper";
-import { TickEvent } from "./TimerPage";
 import { emitter } from "./emitter";
+import { TickEvent } from "./TimerPage";
 
 export default function TimerProgress() {
   const [progress, setProgress] = useState(0);

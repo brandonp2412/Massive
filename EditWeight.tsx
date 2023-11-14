@@ -17,11 +17,11 @@ import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
 import { getNow, settingsRepo, weightRepo } from "./db";
 import { DrawerParams } from "./drawer-params";
+import Select from "./Select";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import { toast } from "./toast";
 import Weight from "./weight";
-import Select from "./Select";
 
 export default function EditWeight() {
   const { params } = useRoute<RouteProp<StackParams, "EditWeight">>();

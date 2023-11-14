@@ -3,9 +3,10 @@ import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { FileSystem } from "react-native-file-access";
-import { IconButton, List, ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator, IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
 import { captureScreen } from "react-native-view-shot";
+import { StackParams } from "./AppStack";
 import Chart from "./Chart";
 import { PADDING } from "./constants";
 import { setRepo } from "./db";
@@ -15,7 +16,6 @@ import { Periods } from "./periods";
 import Select from "./Select";
 import StackHeader from "./StackHeader";
 import Volume from "./volume";
-import { StackParams } from "./AppStack";
 
 export default function ViewGraph() {
   const { params } = useRoute<RouteProp<StackParams, "ViewGraph">>();

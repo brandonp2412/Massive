@@ -30,13 +30,13 @@ import { weight1697766633971 } from "./migrations/1697766633971-weight";
 import { exercises1699508495726 } from "./migrations/1699508495726-exercises";
 import { exercisesFix1699613077628 } from "./migrations/1699613077628-exercises-fix";
 import { settingsDuration1699743753975 } from "./migrations/1699743753975-settings-duration";
-import { Plan } from "./plan";
-import Settings from "./settings";
-import Weight from "./weight";
 import { settingsStartup1699783784680 } from "./migrations/1699783784680-settings-startup";
 import { settingsBackupDir1699839054226 } from "./migrations/1699839054226-settings-backup-dir";
 import { homeHistoryStartup1699853245534 } from "./migrations/1699853245534-home-history-startup";
 import { autoConvert1699948105001 } from "./migrations/1699948105001-auto-convert";
+import { Plan } from "./plan";
+import Settings from "./settings";
+import Weight from "./weight";
 
 export const AppDataSource = new DataSource({
   type: "react-native",

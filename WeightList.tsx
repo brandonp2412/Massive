@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
 import { IconButton, List } from "react-native-paper";
 import { Like } from "typeorm";
+import { StackParams } from "./AppStack";
 import { LIMIT } from "./constants";
 import { getNow, settingsRepo, weightRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
@@ -14,7 +15,6 @@ import Page from "./Page";
 import Settings from "./settings";
 import { default as Weight, defaultWeight } from "./weight";
 import WeightItem from "./WeightItem";
-import { StackParams } from "./AppStack";
 
 export default function WeightList() {
   const [refreshing, setRefreshing] = useState(false);

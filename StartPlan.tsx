@@ -13,22 +13,22 @@ import {
   IconButton,
   ProgressBar,
 } from "react-native-paper";
+import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import { getBestSet } from "./best.service";
 import { PADDING } from "./constants";
+import { convert } from "./conversions";
 import CountMany from "./count-many";
 import { AppDataSource } from "./data-source";
 import { getNow, setRepo, settingsRepo } from "./db";
 import { fixNumeric } from "./fix-numeric";
 import GymSet from "./gym-set";
+import Select from "./Select";
 import Settings from "./settings";
 import StackHeader from "./StackHeader";
 import StartPlanItem from "./StartPlanItem";
 import { toast } from "./toast";
-import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
-import Select from "./Select";
-import { convert } from "./conversions";
 
 export default function StartPlan() {
   const { params } = useRoute<RouteProp<StackParams, "StartPlan">>();
