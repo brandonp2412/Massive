@@ -55,7 +55,7 @@ export default function EditSets() {
   );
 
   const save = async () => {
-    console.log(`${EditSets.name}.handleSubmit:`, { uri: newImage, name });
+    console.log(`${EditSets.name}.save:`, { uri: newImage, name });
     const update: Partial<GymSet> = {};
     if (name) update.name = name;
     if (reps) update.reps = Number(reps);
