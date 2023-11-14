@@ -52,6 +52,7 @@ export default function SettingsPage() {
   const [formatOptions, setFormatOptions] = useState<string[]>(twelveHours);
   const [importing, setImporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
   const { reset } = useNavigation<NavigationProp<DrawerParams>>();
 
   const { watch, setValue } = useForm<Settings>({
@@ -109,10 +110,26 @@ export default function SettingsPage() {
 
   const confirmImport = useCallback(async () => {
     setImporting(false);
+    await FileSystem.cp(
+      Dirs.DatabaseDir + "/massive.db",
+      Dirs.DatabaseDir + "/massive-backup.db"
+    );
     await AppDataSource.destroy();
     const file = await DocumentPicker.pickSingle();
     await FileSystem.cp(file.uri, Dirs.DatabaseDir + "/massive.db");
-    await AppDataSource.initialize();
+
+    try {
+      await AppDataSource.initialize();
+    } catch (e) {
+      setError(e.toString());
+      await FileSystem.cp(
+        Dirs.DatabaseDir + "/massive-backup.db",
+        Dirs.DatabaseDir + "/massive.db"
+      );
+      await AppDataSource.initialize();
+      return;
+    }
+
     await setRepo.createQueryBuilder().update().set({ image: null }).execute();
     await update("sound", null);
     await update("backup", false);
@@ -494,6 +511,15 @@ export default function SettingsPage() {
           style={{ flex: 1, paddingTop: PADDING }}
         />
       </Page>
+
+      <ConfirmDialog
+        title="Failed to import database"
+        onOk={() => setError("")}
+        setShow={() => setError("")}
+        show={!!error}
+      >
+        {error}
+      </ConfirmDialog>
 
       <ConfirmDialog
         title="Are you sure?"
