@@ -2,12 +2,11 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { format } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Image } from "react-native";
-import { List, Text } from "react-native-paper";
+import { List, Text, useTheme } from "react-native-paper";
 import { StackParams } from "./AppStack";
 import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
 import GymSet from "./gym-set";
 import Settings from "./settings";
-import useDark from "./use-dark";
 
 export default function SetItem({
   item,
@@ -24,7 +23,7 @@ export default function SetItem({
   disablePress?: boolean;
   customBg?: string;
 }) {
-  const dark = useDark();
+  const { dark } = useTheme();
   const navigation = useNavigation<NavigationProp<StackParams>>();
 
   const longPress = useCallback(() => {

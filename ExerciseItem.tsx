@@ -1,11 +1,10 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useCallback, useMemo } from "react";
 import { Image } from "react-native";
-import { List } from "react-native-paper";
+import { List, useTheme } from "react-native-paper";
+import { StackParams } from "./AppStack";
 import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
 import GymSet from "./gym-set";
-import useDark from "./use-dark";
-import { StackParams } from "./AppStack";
 
 export default function ExerciseItem({
   item,
@@ -21,7 +20,7 @@ export default function ExerciseItem({
   alarm: boolean;
 }) {
   const navigation = useNavigation<NavigationProp<StackParams>>();
-  const dark = useDark();
+  const { dark } = useTheme();
 
   const description = useMemo(() => {
     const seconds = item.seconds?.toString().padStart(2, "0");

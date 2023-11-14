@@ -5,14 +5,13 @@ import {
 } from "@react-navigation/native";
 import { useCallback, useMemo, useState } from "react";
 import { Text } from "react-native";
-import { List } from "react-native-paper";
+import { List, useTheme } from "react-native-paper";
 import { StackParams } from "./AppStack";
 import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
 import { DAYS } from "./days";
 import { setRepo } from "./db";
 import GymSet, { defaultSet } from "./gym-set";
 import { Plan } from "./plan";
-import useDark from "./use-dark";
 
 export default function PlanItem({
   item,
@@ -24,7 +23,7 @@ export default function PlanItem({
   setIds: (value: number[]) => void;
 }) {
   const [today, setToday] = useState<string>();
-  const dark = useDark();
+  const { dark } = useTheme();
   const days = useMemo(() => item.days.split(","), [item.days]);
   const navigation = useNavigation<NavigationProp<StackParams>>();
 

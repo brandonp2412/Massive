@@ -1,6 +1,6 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { StackScreenProps } from "@react-navigation/stack";
-import { IconButton } from "react-native-paper";
+import { IconButton, useTheme } from "react-native-paper";
 import ExerciseList from "./ExerciseList";
 import GraphsList from "./GraphsList";
 import InsightsPage from "./InsightsPage";
@@ -8,10 +8,9 @@ import PlanList from "./PlanList";
 import SetList from "./SetList";
 import SettingsPage from "./SettingsPage";
 import TimerPage from "./TimerPage";
+import TimerProgress from "./TimerProgress";
 import WeightList from "./WeightList";
 import { DrawerParams } from "./drawer-param-list";
-import useDark from "./use-dark";
-import TimerProgress from "./TimerProgress";
 
 const Drawer = createDrawerNavigator<DrawerParams>();
 
@@ -22,7 +21,7 @@ interface AppDrawerParams {
 export default function AppDrawer({
   route,
 }: StackScreenProps<{ startup: AppDrawerParams }>) {
-  const dark = useDark();
+  const { dark } = useTheme();
 
   return (
     <>

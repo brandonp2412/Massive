@@ -1,15 +1,14 @@
 import React, { ComponentProps, Ref } from "react";
-import { TextInput } from "react-native-paper";
+import { TextInput, useTheme } from "react-native-paper";
 import { CombinedDefaultTheme } from "./App";
 import { MARGIN } from "./constants";
-import useDark from "./use-dark";
 
 function AppInput(
   props: Partial<ComponentProps<typeof TextInput>> & {
     innerRef?: Ref<any>;
   }
 ) {
-  const dark = useDark();
+  const { dark } = useTheme();
 
   return (
     <TextInput
