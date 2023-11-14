@@ -29,13 +29,16 @@ export default function EditPlan() {
   const { params } = useRoute<RouteProp<StackParams, "EditPlan">>();
   const { plan } = params;
   const [title, setTitle] = useState<string>(plan?.title);
+  const [names, setNames] = useState<string[]>([]);
+
   const [days, setDays] = useState<string[]>(
     plan.days ? plan.days.split(",") : []
   );
+
   const [exercises, setExercises] = useState<string[]>(
     plan.exercises ? plan.exercises.split(",") : []
   );
-  const [names, setNames] = useState<string[]>([]);
+
   const { navigate: drawerNavigate } =
     useNavigation<NavigationProp<DrawerParams>>();
   const { navigate: stackNavigate } =
