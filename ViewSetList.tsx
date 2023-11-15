@@ -1,15 +1,16 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { FlatList } from "react-native";
-import { List, useTheme } from "react-native-paper";
+import { List, Text, useTheme } from "react-native-paper";
 import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
-import { LIMIT } from "./constants";
+import SetItem from "./SetItem";
+import StackHeader from "./StackHeader";
+import { DARK_SUBDUED, LIGHT_SUBDUED, LIMIT } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import GymSet from "./gym-set";
-import SetItem from "./SetItem";
 import Settings from "./settings";
-import StackHeader from "./StackHeader";
 
 interface ColorSet extends GymSet {
   color?: string;
@@ -18,7 +19,7 @@ interface ColorSet extends GymSet {
 export default function ViewSetList() {
   const [sets, setSets] = useState<ColorSet[]>();
   const [settings, setSettings] = useState<Settings>();
-  const { colors } = useTheme();
+  const { colors, dark } = useTheme();
   const { params } = useRoute<RouteProp<StackParams, "ViewSetList">>();
 
   useEffect(() => {
@@ -52,14 +53,18 @@ export default function ViewSetList() {
   }, [params.name, colors]);
 
   const renderItem = ({ item }: { item: ColorSet; index: number }) => (
-    <SetItem
-      settings={settings}
-      item={item}
-      key={item.id}
-      ids={[]}
-      setIds={() => null}
-      disablePress
-      customBg={item.color}
+    <List.Item
+      title={format(new Date(item.created), settings.date || "P")}
+      style={{ backgroundColor: item.color }}
+      right={() => (
+        <Text
+          style={{
+            alignSelf: "center",
+          }}
+        >
+          {`${item.reps} x ${item.weight}${item.unit || "kg"}`}
+        </Text>
+      )}
     />
   );
 

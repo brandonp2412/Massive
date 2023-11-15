@@ -1,4 +1,4 @@
-import { darkColors, lightColors } from "./colors";
+import { DARK_COLORS, LIGHT_COLORS } from "./colors";
 
 export const themeOptions = [
   { label: "System", value: "system" },
@@ -6,13 +6,13 @@ export const themeOptions = [
   { label: "Light", value: "light" },
 ];
 
-export const lightOptions = lightColors.map((color) => ({
+export const lightOptions = LIGHT_COLORS.map((color) => ({
   label: color.name,
   value: color.hex,
   color: color.hex,
 }));
 
-export const darkOptions = darkColors.map((color) => ({
+export const darkOptions = DARK_COLORS.map((color) => ({
   label: color.name,
   value: color.hex,
   color: color.hex,

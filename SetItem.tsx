@@ -4,7 +4,12 @@ import React, { useCallback, useMemo } from "react";
 import { Image } from "react-native";
 import { List, Text, useTheme } from "react-native-paper";
 import { StackParams } from "./AppStack";
-import { DARK_RIPPLE, LIGHT_RIPPLE } from "./constants";
+import {
+  DARK_RIPPLE,
+  DARK_SUBDUED,
+  LIGHT_RIPPLE,
+  LIGHT_SUBDUED,
+} from "./constants";
 import GymSet from "./gym-set";
 import Settings from "./settings";
 
@@ -60,7 +65,7 @@ const SetItem = React.memo(
         title={item.name}
         description={
           settings.showDate ? (
-            <Text style={{ color: dark ? "#909090ff" : "#717171ff" }}>
+            <Text style={{ color: dark ? DARK_SUBDUED : LIGHT_SUBDUED }}>
               {format(new Date(item.created), settings.date || "P")}
             </Text>
           ) : null
@@ -72,7 +77,7 @@ const SetItem = React.memo(
           <Text
             style={{
               alignSelf: "center",
-              color: dark ? "#909090ff" : "#717171ff",
+              color: dark ? DARK_SUBDUED : LIGHT_SUBDUED,
             }}
           >
             {`${item.reps} x ${item.weight}${item.unit || "kg"}`}
