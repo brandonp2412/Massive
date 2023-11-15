@@ -308,6 +308,17 @@ export default function SettingsPage() {
           value={settings.noSound}
           onChange={async (value) => {
             setValue("noSound", value);
+            const silentPath = Dirs.DocumentDir + "/silent.mp3";
+
+            if (value) {
+              await FileSystem.writeFile(silentPath, "");
+              setValue("sound", silentPath);
+              await update("sound", silentPath);
+            } else if (!value && settings.sound === silentPath) {
+              setValue("sound", null);
+              await update("sound", null);
+            }
+
             await update("noSound", value);
             if (value) toast("Alarms will no longer make a sound.");
             else toast("Enabled sound for alarms.");
