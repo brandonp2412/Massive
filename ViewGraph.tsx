@@ -3,18 +3,18 @@ import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { FileSystem } from "react-native-file-access";
-import { ActivityIndicator, IconButton, List } from "react-native-paper";
+import { IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
 import { captureScreen } from "react-native-view-shot";
 import { StackParams } from "./AppStack";
 import Chart from "./Chart";
+import Select from "./Select";
+import StackHeader from "./StackHeader";
 import { PADDING } from "./constants";
 import { setRepo } from "./db";
 import GymSet from "./gym-set";
 import { Metrics } from "./metrics";
 import { Periods } from "./periods";
-import Select from "./Select";
-import StackHeader from "./StackHeader";
 import Volume from "./volume";
 
 export default function ViewGraph() {
@@ -76,7 +76,7 @@ export default function ViewGraph() {
   }, [params.name, metric, period]);
 
   const weightChart = useMemo(() => {
-    if (weights === undefined) return <ActivityIndicator />;
+    if (weights === undefined) return null;
 
     let periodFormat = "do";
     if (period === Periods.Weekly) periodFormat = "iii";
@@ -95,7 +95,7 @@ export default function ViewGraph() {
   }, [weights, period]);
 
   const volumeChart = useMemo(() => {
-    if (volumes === undefined) return <ActivityIndicator />;
+    if (volumes === undefined) return null;
 
     let periodFormat = "do";
     if (period === Periods.Weekly) periodFormat = "iii";

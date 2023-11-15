@@ -5,16 +5,16 @@ import {
 } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
-import { ActivityIndicator, List } from "react-native-paper";
+import { List } from "react-native-paper";
 import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
-import { LIMIT } from "./constants";
-import { getNow, setRepo, settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
-import GymSet, { defaultSet } from "./gym-set";
 import ListMenu from "./ListMenu";
 import Page from "./Page";
 import SetItem from "./SetItem";
+import { LIMIT } from "./constants";
+import { getNow, setRepo, settingsRepo } from "./db";
+import GymSet, { defaultSet } from "./gym-set";
 import Settings from "./settings";
 
 export default function SetList() {
@@ -134,7 +134,7 @@ export default function SetList() {
   }, [sets, ids]);
 
   const getContent = () => {
-    if (!settings || sets === undefined) return <ActivityIndicator />;
+    if (!settings || sets === undefined) return null;
     if (sets.length === 0)
       return (
         <List.Item

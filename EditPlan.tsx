@@ -6,12 +6,7 @@ import {
 } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import {
-  ActivityIndicator,
-  IconButton,
-  Switch as PaperSwitch,
-  Text,
-} from "react-native-paper";
+import { IconButton, Switch as PaperSwitch, Text } from "react-native-paper";
 import ReorderableList, {
   ReorderableListRenderItemInfo,
 } from "react-native-reorderable-list";
@@ -171,9 +166,7 @@ export default function EditPlan() {
         {DAYS.map((day) => renderDay(day))}
 
         <Text style={[styles.title, { marginTop: MARGIN }]}>Exercises</Text>
-        {names === undefined ? (
-          <ActivityIndicator />
-        ) : (
+        {names !== undefined && (
           <ReorderableList
             data={names}
             ListEmptyComponent={<Text>No exercises yet</Text>}

@@ -7,16 +7,14 @@ import {
 } from "@react-navigation/native";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, NativeModules, TextInput, View } from "react-native";
-import {
-  ActivityIndicator,
-  Button,
-  IconButton,
-  ProgressBar,
-  useTheme,
-} from "react-native-paper";
-import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
+import { IconButton, ProgressBar } from "react-native-paper";
+import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
+import PrimaryButton from "./PrimaryButton";
+import Select from "./Select";
+import StackHeader from "./StackHeader";
+import StartPlanItem from "./StartPlanItem";
 import { getBestSet } from "./best.service";
 import { PADDING } from "./constants";
 import { convert } from "./conversions";
@@ -25,12 +23,8 @@ import { AppDataSource } from "./data-source";
 import { getNow, setRepo, settingsRepo } from "./db";
 import { fixNumeric } from "./fix-numeric";
 import GymSet from "./gym-set";
-import Select from "./Select";
 import Settings from "./settings";
-import StackHeader from "./StackHeader";
-import StartPlanItem from "./StartPlanItem";
 import { toast } from "./toast";
-import PrimaryButton from "./PrimaryButton";
 
 export default function StartPlan() {
   const { params } = useRoute<RouteProp<StackParams, "StartPlan">>();
@@ -40,7 +34,6 @@ export default function StartPlan() {
   const [selected, setSelected] = useState(0);
   const [settings, setSettings] = useState<Settings>();
   const [counts, setCounts] = useState<CountMany[]>();
-  const { colors } = useTheme();
   const weightRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
   const exercises = useMemo(() => params.plan.exercises.split(","), [params]);
@@ -222,9 +215,7 @@ export default function StartPlan() {
               label="Unit"
             />
           )}
-          {counts === undefined ? (
-            <ActivityIndicator />
-          ) : (
+          {counts !== undefined && (
             <FlatList
               data={counts}
               keyExtractor={(count) => count.name}

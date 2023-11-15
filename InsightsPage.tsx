@@ -25,6 +25,8 @@ interface HourCount {
 export default function InsightsPage() {
   const [weekCounts, setWeekCounts] = useState<WeekCount[]>();
   const [hourCounts, setHourCounts] = useState<HourCount[]>();
+  const [loadingWeeks, setLoadingWeeks] = useState(true);
+  const [loadingHours, setLoadingHours] = useState(true);
   const [period, setPeriod] = useState(Periods.Monthly);
   const [showWeek, setShowWeek] = useState(false);
   const [showHour, setShowHour] = useState(false);
@@ -53,14 +55,22 @@ export default function InsightsPage() {
           ORDER BY hour
       `;
 
+      setLoadingWeeks(true);
+      setLoadingHours(true);
       setTimeout(
         () =>
           AppDataSource.manager
             .query(selectWeeks)
             .then(setWeekCounts)
+            .then(() => setLoadingWeeks(false))
             .then(() =>
               AppDataSource.manager.query(selectHours).then(setHourCounts)
-            ),
+            )
+            .then(() => setLoadingHours(false))
+            .finally(() => {
+              setLoadingWeeks(false);
+              setLoadingHours(false);
+            }),
         400
       );
     }, [period])
@@ -126,9 +136,9 @@ export default function InsightsPage() {
           />
         </View>
 
-        {weekCounts === undefined && <ActivityIndicator />}
-
-        {weekCounts?.length > 0 && (
+        {loadingWeeks ? (
+          <ActivityIndicator />
+        ) : (
           <AppPieChart
             options={weekCounts.map((weekCount) => ({
               label: DAYS[weekCount.week],
@@ -136,6 +146,7 @@ export default function InsightsPage() {
             }))}
           />
         )}
+
         {weekCounts?.length === 0 && (
           <Text style={{ marginBottom: MARGIN }}>
             No entries yet! Start recording sets to see your most active days of
@@ -166,14 +177,15 @@ export default function InsightsPage() {
           />
         </View>
 
-        {hourCounts === undefined && <ActivityIndicator />}
-
-        {hourCounts?.length > 0 && (
+        {loadingHours ? (
+          <ActivityIndicator />
+        ) : (
           <Chart
             data={hourCounts.map((hc) => hc.count)}
             labels={hourCounts.map((hc) => hourLabel(hc.hour))}
           />
         )}
+
         {hourCounts?.length === 0 && (
           <Text>
             No entries yet! Start recording sets to see your most active hours
