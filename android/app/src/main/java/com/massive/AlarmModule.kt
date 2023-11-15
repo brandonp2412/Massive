@@ -144,7 +144,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                 context.startForegroundService(Intent(context, AlarmService::class.java))
                 context
                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-                    .emit("finish", Arguments.createMap().apply {
+                    .emit("tick", Arguments.createMap().apply {
                         putString("minutes", "00")
                         putString("seconds", "00")
                     })
