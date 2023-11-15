@@ -37,6 +37,8 @@ import { autoConvert1699948105001 } from "./migrations/1699948105001-auto-conver
 import { Plan } from "./plan";
 import Settings from "./settings";
 import Weight from "./weight";
+import { settingsDefaultSets1700009253976 } from "./migrations/1700009253976-settings-default-sets";
+import { settingsDefaults1700009729468 } from "./migrations/1700009729468-settings-defaults";
 
 export const AppDataSource = new DataSource({
   type: "react-native",
@@ -80,5 +82,7 @@ export const AppDataSource = new DataSource({
     settingsBackupDir1699839054226,
     homeHistoryStartup1699853245534,
     autoConvert1699948105001,
+    settingsDefaultSets1700009253976,
+    settingsDefaults1700009729468,
   ],
 });

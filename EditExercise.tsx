@@ -8,7 +8,7 @@ import {
 import { useCallback, useRef, useState } from "react";
 import { ScrollView, TextInput, View } from "react-native";
 import DocumentPicker from "react-native-document-picker";
-import { Button, Card, TouchableRipple } from "react-native-paper";
+import { Button, Card, IconButton, TouchableRipple } from "react-native-paper";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import ConfirmDialog from "./ConfirmDialog";
@@ -25,7 +25,8 @@ import { toast } from "./toast";
 export default function EditExercise() {
   const { params } = useRoute<RouteProp<StackParams, "EditExercise">>();
   const [removeImage, setRemoveImage] = useState(false);
-  const [showRemove, setShowRemove] = useState(false);
+  const [showRemoveImage, setShowRemoveImage] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
   const [name, setName] = useState(params.gymSet.name);
   const [steps, setSteps] = useState(params.gymSet.steps);
   const [uri, setUri] = useState(params.gymSet.image);
@@ -45,16 +46,22 @@ export default function EditExercise() {
 
   useFocusEffect(
     useCallback(() => {
-      settingsRepo.findOne({ where: {} }).then(setSettings);
-    }, [])
+      settingsRepo.findOne({ where: {} }).then((gotSettings) => {
+        setSettings(gotSettings);
+        if (params.gymSet.id) return;
+        setSets(gotSettings.defaultSets?.toString() ?? "3");
+        setMinutes(gotSettings.defaultMinutes?.toString() ?? "3");
+        setSeconds(gotSettings.defaultSeconds?.toString() ?? "30");
+      });
+    }, [params.gymSet.id])
   );
 
   const update = async () => {
     const newExercise = {
       name: name || params.gymSet.name,
       sets: Number(sets),
-      minutes: +minutes,
-      seconds: +seconds,
+      minutes: Number(minutes),
+      seconds: Number(seconds),
       steps,
       image: removeImage ? "" : uri,
     } as GymSet;
@@ -75,12 +82,17 @@ export default function EditExercise() {
       name,
       hidden: true,
       image: uri,
-      minutes: minutes ? +minutes : 3,
-      seconds: seconds ? +seconds : 30,
-      sets: sets ? +sets : 3,
+      minutes: minutes ? Number(minutes) : 3,
+      seconds: seconds ? Number(seconds) : 30,
+      sets: sets ? Number(sets) : 3,
       steps,
       created: now,
     });
+    navigate("Exercises");
+  };
+
+  const remove = async () => {
+    await setRepo.delete({ name: params.gymSet.name });
     navigate("Exercises");
   };
 
@@ -100,7 +112,7 @@ export default function EditExercise() {
   const handleRemove = useCallback(async () => {
     setUri("");
     setRemoveImage(true);
-    setShowRemove(false);
+    setShowRemoveImage(false);
   }, []);
 
   const submitName = () => {
@@ -112,7 +124,11 @@ export default function EditExercise() {
     <>
       <StackHeader
         title={params.gymSet.name ? "Edit exercise" : "Add exercise"}
-      />
+      >
+        {typeof params.gymSet.id === "number" ? (
+          <IconButton onPress={() => setShowDelete(true)} icon="delete" />
+        ) : null}
+      </StackHeader>
       <View style={{ padding: PADDING, flex: 1 }}>
         <ScrollView style={{ flex: 1 }}>
           <AppInput
@@ -175,7 +191,7 @@ export default function EditExercise() {
             <TouchableRipple
               style={{ marginBottom: MARGIN }}
               onPress={changeImage}
-              onLongPress={() => setShowRemove(true)}
+              onLongPress={() => setShowRemoveImage(true)}
             >
               <Card.Cover source={{ uri }} />
             </TouchableRipple>
@@ -193,13 +209,23 @@ export default function EditExercise() {
         <PrimaryButton disabled={!name} icon="content-save" onPress={save}>
           Save
         </PrimaryButton>
+
         <ConfirmDialog
           title="Remove image"
           onOk={handleRemove}
-          show={showRemove}
-          setShow={setShowRemove}
+          show={showRemoveImage}
+          setShow={setShowRemoveImage}
         >
           Are you sure you want to remove the image?
+        </ConfirmDialog>
+
+        <ConfirmDialog
+          title="Delete set"
+          show={showDelete}
+          onOk={remove}
+          setShow={setShowDelete}
+        >
+          <>Are you sure you want to delete {name}</>
         </ConfirmDialog>
       </View>
     </>

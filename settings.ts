@@ -55,4 +55,13 @@ export default class Settings {
 
   @Column("text")
   autoConvert: string | null;
+
+  @Column("int")
+  defaultSets: number | null;
+
+  @Column("int")
+  defaultMinutes: number | null;
+
+  @Column("int")
+  defaultSeconds: number | null;
 }

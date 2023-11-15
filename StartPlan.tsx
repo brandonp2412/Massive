@@ -125,8 +125,8 @@ export default function StartPlan() {
     await refresh();
     if (
       settings.notify &&
-      (+weight > best.weight ||
-        (Number(reps) > best.reps && +weight === best.weight))
+      (Number(weight) > best.weight ||
+        (Number(reps) > best.reps && Number(weight) === best.weight))
     ) {
       toast("Great work King! That's a new record.");
     }

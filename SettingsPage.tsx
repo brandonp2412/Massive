@@ -270,6 +270,60 @@ export default function SettingsPage() {
       ),
     },
     {
+      name: "Default sets",
+      renderItem: (name: string) => (
+        <AppInput
+          value={settings.defaultSets?.toString() ?? "3"}
+          label={name}
+          onChangeText={(value) => setValue("defaultSets", Number(value))}
+          onSubmitEditing={async (e) => {
+            const value = e.nativeEvent.text;
+            setValue("defaultSets", Number(value));
+            await update("defaultSets", value);
+            toast(`New exercises now have ${value} sets by default.`);
+          }}
+          keyboardType="numeric"
+          blurOnSubmit
+        />
+      ),
+    },
+    {
+      name: "Default minutes",
+      renderItem: (name: string) => (
+        <AppInput
+          value={settings.defaultMinutes?.toString() ?? "3"}
+          label={name}
+          onChangeText={(value) => setValue("defaultMinutes", Number(value))}
+          onSubmitEditing={async (e) => {
+            const value = e.nativeEvent.text;
+            setValue("defaultMinutes", Number(value));
+            await update("defaultMinutes", value);
+            toast(`New exercises now wait ${value} minutes by default.`);
+          }}
+          keyboardType="numeric"
+          blurOnSubmit
+        />
+      ),
+    },
+    {
+      name: "Default seconds",
+      renderItem: (name: string) => (
+        <AppInput
+          value={settings.defaultSeconds?.toString() ?? "30"}
+          label={name}
+          onChangeText={(value) => setValue("defaultSeconds", Number(value))}
+          onSubmitEditing={async (e) => {
+            const value = e.nativeEvent.text;
+            setValue("defaultSeconds", Number(value));
+            await update("defaultSeconds", value);
+            toast(`New exercises now wait ${value} seconds by default.`);
+          }}
+          keyboardType="numeric"
+          blurOnSubmit
+        />
+      ),
+    },
+    {
       name: "Rest timers",
       renderItem: (name: string) => (
         <Switch

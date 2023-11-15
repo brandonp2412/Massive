@@ -49,7 +49,7 @@ export default function EditSet() {
     set.created ? new Date(set.created) : new Date()
   );
   const [createdDirty, setCreatedDirty] = useState(false);
-  const [showRemove, setShowRemove] = useState(false);
+  const [showRemoveImage, setShowRemoveImage] = useState(false);
   const [removeImage, setRemoveImage] = useState(false);
   const [setOptions, setSets] = useState<GymSet[]>([]);
   const weightRef = useRef<TextInput>(null);
@@ -145,7 +145,7 @@ export default function EditSet() {
   const handleRemove = useCallback(async () => {
     setNewImage("");
     setRemoveImage(true);
-    setShowRemove(false);
+    setShowRemoveImage(false);
   }, []);
 
   const pickDate = useCallback(() => {
@@ -202,14 +202,6 @@ export default function EditSet() {
           <IconButton onPress={() => setShowDelete(true)} icon="delete" />
         ) : null}
       </StackHeader>
-      <ConfirmDialog
-        title="Delete set"
-        show={showDelete}
-        onOk={remove}
-        setShow={setShowDelete}
-      >
-        <>Are you sure you want to delete {name}</>
-      </ConfirmDialog>
 
       <View style={{ padding: PADDING, flex: 1 }}>
         <View>
@@ -324,7 +316,7 @@ export default function EditSet() {
           <TouchableRipple
             style={{ marginBottom: MARGIN }}
             onPress={changeImage}
-            onLongPress={() => setShowRemove(true)}
+            onLongPress={() => setShowRemoveImage(true)}
           >
             <Card.Cover source={{ uri: newImage }} />
           </TouchableRipple>
@@ -353,10 +345,19 @@ export default function EditSet() {
       <ConfirmDialog
         title="Remove image"
         onOk={handleRemove}
-        show={showRemove}
-        setShow={setShowRemove}
+        show={showRemoveImage}
+        setShow={setShowRemoveImage}
       >
         Are you sure you want to remove the image?
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        title="Delete set"
+        show={showDelete}
+        onOk={remove}
+        setShow={setShowDelete}
+      >
+        <>Are you sure you want to delete {name}</>
       </ConfirmDialog>
     </>
   );
