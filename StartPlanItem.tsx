@@ -1,6 +1,11 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { GestureResponderEvent, ListRenderItemInfo, View } from "react-native";
+import {
+  GestureResponderEvent,
+  ListRenderItemInfo,
+  NativeModules,
+  View,
+} from "react-native";
 import { List, Menu, RadioButton, useTheme } from "react-native-paper";
 import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
@@ -36,6 +41,7 @@ export default function StartPlanItem(props: Props) {
     setShowMenu(false);
     if (!first) return toast("Nothing to undo.");
     await setRepo.delete(first.id);
+    NativeModules.AlarmModule.stop();
     onUndo();
   }, [setShowMenu, onUndo, item.name]);
 
