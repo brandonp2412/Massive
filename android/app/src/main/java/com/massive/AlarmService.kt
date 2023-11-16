@@ -35,6 +35,7 @@ class AlarmService : Service(), OnPreparedListener {
             PendingIntent.getBroadcast(context, 0, stopBroadcast, PendingIntent.FLAG_IMMUTABLE)
         return NotificationCompat.Builder(context, AlarmModule.CHANNEL_ID_PENDING)
             .setSmallIcon(R.drawable.ic_baseline_hourglass_bottom_24).setContentTitle("Resting")
+            .setSound(null)
             .setContentIntent(pendingContent)
             .addAction(R.drawable.ic_baseline_stop_24, "Stop", pendingStop)
             .addAction(R.drawable.ic_baseline_stop_24, "Add 1 min", pendingAdd)
