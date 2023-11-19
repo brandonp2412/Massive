@@ -5,11 +5,8 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { IconButton, Switch as PaperSwitch, Text } from "react-native-paper";
-import ReorderableList, {
-  ReorderableListRenderItemInfo,
-} from "react-native-reorderable-list";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import PrimaryButton from "./PrimaryButton";
@@ -98,35 +95,46 @@ export default function EditPlan() {
     />
   );
 
-  const renderExercise = ({
-    item,
-    drag,
-  }: ReorderableListRenderItemInfo<string>) => (
+  const renderExercise = (name: string, index: number) => (
     <Pressable
-      onPress={() => toggleExercise(!exercises.includes(item), item)}
+      onPress={() => toggleExercise(!exercises.includes(name), name)}
       style={{ flexDirection: "row", alignItems: "center" }}
     >
       <PaperSwitch
-        value={exercises.includes(item)}
+        value={exercises.includes(name)}
         style={{ marginRight: MARGIN }}
-        onValueChange={(value) => toggleExercise(value, item)}
+        onValueChange={(value) => toggleExercise(value, name)}
       />
-      <Text>{item}</Text>
+      <Text>{name}</Text>
       <IconButton
-        icon="drag-vertical"
+        icon="arrow-up"
         style={{ marginLeft: "auto" }}
-        onPressIn={drag}
+        onPressIn={() => moveUp(index)}
       />
+      <IconButton icon="arrow-down" onPressIn={() => moveDown(index)} />
     </Pressable>
   );
 
-  const reorderExercise = (from: number, to: number) => {
+  const moveDown = (from: number) => {
+    if (from === names.length - 1) return;
+    const to = from + 1;
     const newNames = [...names];
     const copy = newNames[from];
     newNames[from] = newNames[to];
     newNames[to] = copy;
     const newExercises = newNames.filter((name) => exercises.includes(name));
-    console.log({ newExercises });
+    setExercises(newExercises);
+    setNames(newNames);
+  };
+
+  const moveUp = (from: number) => {
+    if (from === 0) return;
+    const to = from - 1;
+    const newNames = [...names];
+    const copy = newNames[from];
+    newNames[from] = newNames[to];
+    newNames[to] = copy;
+    const newExercises = newNames.filter((name) => exercises.includes(name));
     setExercises(newExercises);
     setNames(newNames);
   };
@@ -167,19 +175,14 @@ export default function EditPlan() {
 
         <Text style={[styles.title, { marginTop: MARGIN }]}>Exercises</Text>
         {names !== undefined && (
-          <ReorderableList
+          <FlatList
             data={names}
             ListEmptyComponent={<Text>No exercises yet</Text>}
-            onReorder={({ fromIndex, toIndex }) =>
-              reorderExercise(fromIndex, toIndex)
-            }
-            renderItem={renderExercise}
+            renderItem={({ item, index }) => renderExercise(item, index)}
             keyExtractor={(item) => item}
-            dragScale={1.025}
             style={{
               flex: 1,
             }}
-            containerStyle={{ flex: 1 }}
           />
         )}
       </View>
@@ -191,6 +194,7 @@ export default function EditPlan() {
           await save();
           drawerNavigate("Plans");
         }}
+        style={{ margin: MARGIN }}
       >
         Save
       </PrimaryButton>

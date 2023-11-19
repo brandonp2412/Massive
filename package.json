@@ -1,6 +1,6 @@
 {
   "name": "massive",
-  "version": "2.4",
+  "version": "2.5",
   "private": true,
   "license": "GPL-3.0-only",
   "scripts": {
@@ -42,7 +42,6 @@
     "react-native-paper": "^5.9.1",
     "react-native-permissions": "^3.10.1",
     "react-native-reanimated": "^3.3.0",
-    "react-native-reorderable-list": "^0.4.0",
     "react-native-safe-area-context": "^4.7.1",
     "react-native-screens": "^3.22.1",
     "react-native-share": "^9.2.3",
