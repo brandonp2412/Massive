@@ -78,15 +78,6 @@ export default function SettingsPage() {
     });
   }, []);
 
-  const update = useCallback(async (key: keyof Settings, value: unknown) => {
-    await settingsRepo
-      .createQueryBuilder()
-      .update()
-      .set({ [key]: value })
-      .printSql()
-      .execute();
-  }, []);
-
   const backupString = useMemo(() => {
     if (!settings.backupDir) return null;
     console.log(settings.backupDir);
@@ -130,11 +121,10 @@ export default function SettingsPage() {
       return;
     }
 
-    await setRepo.createQueryBuilder().update().set({ image: null }).execute();
-    await update("sound", null);
-    await update("backup", false);
+    await setRepo.update({}, { image: null });
+    await settingsRepo.update({}, { sound: null, backup: false });
     reset({ index: 0, routes: [{ name: "Settings" }] });
-  }, [reset, update]);
+  }, [reset]);
 
   const today = new Date();
 
@@ -157,7 +147,7 @@ export default function SettingsPage() {
           value={settings.startup}
           onChange={async (value) => {
             setValue("startup", value);
-            await update("startup", value);
+            await settingsRepo.update({}, { startup: value });
             toast(`App will always start on ${value}`);
           }}
         />
@@ -173,7 +163,7 @@ export default function SettingsPage() {
           onChange={async (value) => {
             setValue("theme", value);
             setTheme(value);
-            await update("theme", value);
+            await settingsRepo.update({}, { theme: value });
             if (value === "dark") toast("Theme will always be dark.");
             else if (value === "light") toast("Theme will always be light.");
             else if (value === "system") toast("Theme will follow system.");
@@ -191,7 +181,7 @@ export default function SettingsPage() {
           onChange={async (value) => {
             setValue("darkColor", value);
             setDarkColor(value);
-            await update("darkColor", value);
+            await settingsRepo.update({}, { darkColor: value });
             toast("Set primary color for dark mode.");
           }}
         />
@@ -207,7 +197,7 @@ export default function SettingsPage() {
           onChange={async (value) => {
             setValue("lightColor", value);
             setLightColor(value);
-            await update("lightColor", value);
+            await settingsRepo.update({}, { lightColor: value });
             toast("Set primary color for light mode.");
           }}
         />
@@ -225,7 +215,7 @@ export default function SettingsPage() {
           value={settings.date}
           onChange={async (value) => {
             setValue("date", value);
-            await update("date", value);
+            await settingsRepo.update({}, { date: value });
             toast("Changed date format.");
           }}
         />
@@ -245,7 +235,7 @@ export default function SettingsPage() {
           value={settings.autoConvert}
           onChange={async (value) => {
             setValue("autoConvert", value);
-            await update("autoConvert", value);
+            await settingsRepo.update({}, { autoConvert: value });
             if (value) toast(`Sets now automatically convert to ${value}`);
             else toast("Stopped automatically converting sets.");
           }}
@@ -260,8 +250,9 @@ export default function SettingsPage() {
           label={name}
           onChangeText={(value) => setValue("duration", Number(value))}
           onSubmitEditing={async (e) => {
-            setValue("duration", Number(e.nativeEvent.text));
-            await update("duration", e.nativeEvent.text);
+            const value = Number(e.nativeEvent.text);
+            setValue("duration", value);
+            await settingsRepo.update({}, { duration: value });
             toast("Changed duration of alarm vibrations.");
           }}
           keyboardType="numeric"
@@ -277,9 +268,9 @@ export default function SettingsPage() {
           label={name}
           onChangeText={(value) => setValue("defaultSets", Number(value))}
           onSubmitEditing={async (e) => {
-            const value = e.nativeEvent.text;
-            setValue("defaultSets", Number(value));
-            await update("defaultSets", value);
+            const value = Number(e.nativeEvent.text);
+            setValue("defaultSets", value);
+            await settingsRepo.update({}, { defaultSets: value });
             toast(`New exercises now have ${value} sets by default.`);
           }}
           keyboardType="numeric"
@@ -295,9 +286,9 @@ export default function SettingsPage() {
           label={name}
           onChangeText={(value) => setValue("defaultMinutes", Number(value))}
           onSubmitEditing={async (e) => {
-            const value = e.nativeEvent.text;
-            setValue("defaultMinutes", Number(value));
-            await update("defaultMinutes", value);
+            const value = Number(e.nativeEvent.text);
+            setValue("defaultMinutes", value);
+            await settingsRepo.update({}, { defaultMinutes: value });
             toast(`New exercises now wait ${value} minutes by default.`);
           }}
           keyboardType="numeric"
@@ -313,9 +304,9 @@ export default function SettingsPage() {
           label={name}
           onChangeText={(value) => setValue("defaultSeconds", Number(value))}
           onSubmitEditing={async (e) => {
-            const value = e.nativeEvent.text;
-            setValue("defaultSeconds", Number(value));
-            await update("defaultSeconds", value);
+            const value = Number(e.nativeEvent.text);
+            setValue("defaultSeconds", value);
+            await settingsRepo.update({}, { defaultSeconds: value });
             toast(`New exercises now wait ${value} seconds by default.`);
           }}
           keyboardType="numeric"
@@ -330,9 +321,10 @@ export default function SettingsPage() {
           value={settings.alarm}
           onChange={async (value) => {
             setValue("alarm", value);
-            if (value && !ignoring)
+            if (value && !ignoring) {
               NativeModules.SettingsModule.ignoreBattery();
-            await update("alarm", value);
+            }
+            await settingsRepo.update({}, { alarm: value });
             if (value) toast("Timers will now run after each set.");
             else toast("Stopped timers running after each set.");
           }}
@@ -347,7 +339,7 @@ export default function SettingsPage() {
           value={settings.vibrate}
           onChange={async (value) => {
             setValue("vibrate", value);
-            await update("vibrate", value);
+            await settingsRepo.update({}, { vibrate: value });
             if (value) toast("Timers will now run after each set.");
             else toast("Stopped timers running after each set.");
           }}
@@ -367,13 +359,18 @@ export default function SettingsPage() {
             if (value) {
               await FileSystem.writeFile(silentPath, "");
               setValue("sound", silentPath);
-              await update("sound", silentPath);
+              await settingsRepo.update(
+                {},
+                {
+                  sound: silentPath,
+                  noSound: value,
+                }
+              );
             } else if (!value && settings.sound === silentPath) {
               setValue("sound", null);
-              await update("sound", null);
+              await settingsRepo.update({}, { sound: null, noSound: value });
             }
 
-            await update("noSound", value);
             if (value) toast("Alarms will no longer make a sound.");
             else toast("Enabled sound for alarms.");
           }}
@@ -388,7 +385,7 @@ export default function SettingsPage() {
           value={settings.notify}
           onChange={async (value) => {
             setValue("notify", value);
-            await update("notify", value);
+            await settingsRepo.update({}, { notify: value });
             if (value) toast("Show notifications for new records.");
             else toast("Stopped notifications for new records.");
           }}
@@ -403,7 +400,7 @@ export default function SettingsPage() {
           value={settings.images}
           onChange={async (value) => {
             setValue("images", value);
-            await update("images", value);
+            await settingsRepo.update({}, { images: value });
             if (value) toast("Show images for sets.");
             else toast("Hid images for sets.");
           }}
@@ -418,7 +415,7 @@ export default function SettingsPage() {
           value={settings.showUnit}
           onChange={async (value) => {
             setValue("showUnit", value);
-            await update("showUnit", value);
+            await settingsRepo.update({}, { showUnit: value });
             if (value) toast("Show option to select unit for sets.");
             else toast("Hid unit option for sets.");
           }}
@@ -433,7 +430,7 @@ export default function SettingsPage() {
           value={settings.steps}
           onChange={async (value) => {
             setValue("steps", value);
-            await update("steps", value);
+            await settingsRepo.update({}, { steps: value });
             if (value) toast("Show steps for exercises.");
             else toast("Hid steps for exercises.");
           }}
@@ -448,7 +445,7 @@ export default function SettingsPage() {
           value={settings.showDate}
           onChange={async (value) => {
             setValue("showDate", value);
-            await update("showDate", value);
+            await settingsRepo.update({}, { showDate: value });
             if (value) toast("Show date for sets.");
             else toast("Hid date on sets.");
           }}
@@ -463,11 +460,11 @@ export default function SettingsPage() {
           value={settings.backup}
           onChange={async (value) => {
             setValue("backup", value);
-            await update("backup", value);
+            await settingsRepo.update({}, { backup: value });
             if (value) {
               const result = await DocumentPicker.pickDirectory();
               setValue("backupDir", result.uri);
-              await update("backupDir", result.uri);
+              await settingsRepo.update({}, { backupDir: result.uri });
               console.log(`${SettingsPage.name}.backup:`, { result });
               toast("Backup database daily.");
               NativeModules.BackupModule.start(result.uri);
@@ -488,7 +485,7 @@ export default function SettingsPage() {
           onPress={async () => {
             const result = await DocumentPicker.pickDirectory();
             setValue("backupDir", result.uri);
-            await update("backupDir", result.uri);
+            await settingsRepo.update({}, { backupDir: result.uri });
             toast("Changed backup directory.");
             if (!settings.backup) return;
             NativeModules.BackupModule.stop();
@@ -511,7 +508,7 @@ export default function SettingsPage() {
             });
             if (!fileCopyUri) return;
             setValue("sound", fileCopyUri);
-            await update("sound", fileCopyUri);
+            await settingsRepo.update({}, { sound: fileCopyUri });
             toast("Sound will play after rest timers.");
           }}
         >
@@ -528,8 +525,9 @@ export default function SettingsPage() {
             const result = await check(
               PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE
             );
-            if (result === RESULTS.DENIED || result === RESULTS.BLOCKED)
+            if (result === RESULTS.DENIED || result === RESULTS.BLOCKED) {
               await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+            }
             const path = Dirs.DatabaseDir + "/massive.db";
             await FileSystem.cpExternal(path, "massive.db", "downloads");
             toast("Database exported. Check downloads.");
