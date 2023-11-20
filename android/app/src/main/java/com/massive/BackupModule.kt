@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -71,6 +72,18 @@ class BackupModule constructor(context: ReactApplicationContext?) :
         val pendingIntent =
             PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         alarmMgr.cancel(pendingIntent)
+    }
+
+    @ReactMethod()
+    fun exportToCSV(promise: Promise) {
+        try {
+            val db = DatabaseHelper(reactApplicationContext)
+            db.exportToCSV()
+            promise.resolve("Export successful!")
+        }
+        catch (e: Exception) {
+            promise.reject("ERROR", e)
+        }
     }
 
     init {

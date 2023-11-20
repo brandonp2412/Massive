@@ -539,6 +539,26 @@ export default function SettingsPage() {
       ),
     },
     {
+      name: "Export sets as CSV",
+      renderItem: (name: string) => (
+        <Button
+          style={{ alignSelf: "flex-start" }}
+          onPress={async () => {
+            const result = await check(
+              PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE
+            );
+            if (result === RESULTS.DENIED || result === RESULTS.BLOCKED) {
+              await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+            }
+            await NativeModules.BackupModule.exportToCSV();
+            toast("Exported sets as CSV.");
+          }}
+        >
+          {name}
+        </Button>
+      ),
+    },
+    {
       name: "Import database",
       renderItem: (name: string) => (
         <Button
