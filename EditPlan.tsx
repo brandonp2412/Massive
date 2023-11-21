@@ -167,6 +167,7 @@ export default function EditPlan() {
         <AppInput
           label="Title"
           value={title}
+          placeholder={days.join(", ")}
           onChangeText={(value) => setTitle(value)}
         />
 
