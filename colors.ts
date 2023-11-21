@@ -15,7 +15,7 @@ export const DARK_COLORS = [
   { hex: DefaultTheme.colors.primary, name: "Purple" },
   { hex: "#0051a9", name: "Blue" },
   { hex: "#000000", name: "Black" },
-  { hex: "#863c3c", name: "Red" },
+  { hex: "#863c3c", name: "Brandy" },
   { hex: "#1c6000", name: "Kermit" },
   { hex: "#8A2BE2", name: "Blue Violet" },
   { hex: "#6A5ACD", name: "Slate Blue" },
