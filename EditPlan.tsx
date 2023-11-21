@@ -4,8 +4,14 @@ import {
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  FlatList,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { IconButton, Switch as PaperSwitch, Text } from "react-native-paper";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
@@ -95,10 +101,11 @@ export default function EditPlan() {
     />
   );
 
-  const renderExercise = (name: string, index: number) => (
+  const renderExercise = (name: string, index: number, movable: boolean) => (
     <Pressable
       onPress={() => toggleExercise(!exercises.includes(name), name)}
       style={{ flexDirection: "row", alignItems: "center" }}
+      key={name}
     >
       <PaperSwitch
         value={exercises.includes(name)}
@@ -106,37 +113,37 @@ export default function EditPlan() {
         onValueChange={(value) => toggleExercise(value, name)}
       />
       <Text>{name}</Text>
-      <IconButton
-        icon="arrow-up"
-        style={{ marginLeft: "auto" }}
-        onPressIn={() => moveUp(index)}
-      />
-      <IconButton icon="arrow-down" onPressIn={() => moveDown(index)} />
+      {movable && (
+        <>
+          <IconButton
+            icon="arrow-up"
+            style={{ marginLeft: "auto" }}
+            onPressIn={() => moveUp(index)}
+          />
+          <IconButton icon="arrow-down" onPressIn={() => moveDown(index)} />
+        </>
+      )}
     </Pressable>
   );
 
   const moveDown = (from: number) => {
-    if (from === names.length - 1) return;
+    if (from === exercises.length - 1) return;
     const to = from + 1;
-    const newNames = [...names];
-    const copy = newNames[from];
-    newNames[from] = newNames[to];
-    newNames[to] = copy;
-    const newExercises = newNames.filter((name) => exercises.includes(name));
+    const newExercises = [...exercises];
+    const copy = newExercises[from];
+    newExercises[from] = newExercises[to];
+    newExercises[to] = copy;
     setExercises(newExercises);
-    setNames(newNames);
   };
 
   const moveUp = (from: number) => {
     if (from === 0) return;
     const to = from - 1;
-    const newNames = [...names];
-    const copy = newNames[from];
-    newNames[from] = newNames[to];
-    newNames[to] = copy;
-    const newExercises = newNames.filter((name) => exercises.includes(name));
+    const newExercises = [...exercises];
+    const copy = newExercises[from];
+    newExercises[from] = newExercises[to];
+    newExercises[to] = copy;
     setExercises(newExercises);
-    setNames(newNames);
   };
 
   return (
@@ -163,7 +170,7 @@ export default function EditPlan() {
           />
         )}
       </StackHeader>
-      <View style={{ padding: PADDING, flex: 1 }}>
+      <ScrollView style={{ padding: PADDING, flex: 1 }}>
         <AppInput
           label="Title"
           value={title}
@@ -175,18 +182,15 @@ export default function EditPlan() {
         {DAYS.map((day) => renderDay(day))}
 
         <Text style={[styles.title, { marginTop: MARGIN }]}>Exercises</Text>
-        {names !== undefined && (
-          <FlatList
-            data={names}
-            ListEmptyComponent={<Text>No exercises yet</Text>}
-            renderItem={({ item, index }) => renderExercise(item, index)}
-            keyExtractor={(item) => item}
-            style={{
-              flex: 1,
-            }}
-          />
+        {exercises.map((exercise, index) =>
+          renderExercise(exercise, index, true)
         )}
-      </View>
+        {names !== undefined &&
+          names
+            .filter((name) => !exercises.includes(name))
+            .map((name, index) => renderExercise(name, index, false))}
+        <View style={{ marginBottom: MARGIN }}></View>
+      </ScrollView>
 
       <PrimaryButton
         disabled={exercises.length === 0 && days.length === 0}
