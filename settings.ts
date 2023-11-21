@@ -33,7 +33,7 @@ export default class Settings {
   date: string | null;
 
   @Column("boolean")
-  showDate = false;
+  showDate = true;
 
   @Column("text")
   theme: string | null;
