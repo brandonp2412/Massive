@@ -66,7 +66,7 @@ const SetItem = React.memo(
         description={
           settings.showDate ? (
             <Text style={{ color: dark ? DARK_SUBDUED : LIGHT_SUBDUED }}>
-              {format(new Date(item.created), settings.date || "P")}
+              {format(new Date(item.created), settings.date || "Pp")}
             </Text>
           ) : null
         }

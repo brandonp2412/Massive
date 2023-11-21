@@ -144,7 +144,7 @@ export default function EditWeight() {
         {settings.showDate && (
           <AppInput
             label="Created"
-            value={format(created, settings.date || "P")}
+            value={format(created, settings.date || "Pp")}
             onPressOut={pickDate}
           />
         )}

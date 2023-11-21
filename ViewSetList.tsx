@@ -5,9 +5,8 @@ import { FlatList } from "react-native";
 import { List, Text, useTheme } from "react-native-paper";
 import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
-import SetItem from "./SetItem";
 import StackHeader from "./StackHeader";
-import { DARK_SUBDUED, LIGHT_SUBDUED, LIMIT } from "./constants";
+import { LIMIT } from "./constants";
 import { setRepo, settingsRepo } from "./db";
 import GymSet from "./gym-set";
 import Settings from "./settings";
@@ -19,7 +18,7 @@ interface ColorSet extends GymSet {
 export default function ViewSetList() {
   const [sets, setSets] = useState<ColorSet[]>();
   const [settings, setSettings] = useState<Settings>();
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
   const { params } = useRoute<RouteProp<StackParams, "ViewSetList">>();
 
   useEffect(() => {
@@ -54,7 +53,7 @@ export default function ViewSetList() {
 
   const renderItem = ({ item }: { item: ColorSet; index: number }) => (
     <List.Item
-      title={format(new Date(item.created), settings.date || "P")}
+      title={format(new Date(item.created), settings.date || "Pp")}
       style={{ backgroundColor: item.color }}
       right={() => (
         <Text

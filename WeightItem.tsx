@@ -41,7 +41,7 @@ export default function WeightItem({
             fontWeight: today ? "bold" : "normal",
           }}
         >
-          {format(new Date(item.created), settings.date || "P")}
+          {format(new Date(item.created), settings.date || "Pp")}
         </Text>
       )}
     />
