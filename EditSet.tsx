@@ -99,7 +99,7 @@ export default function EditSet() {
   const handleSubmit = async () => {
     if (!name) return;
 
-    let newWeight = Number(weight);
+    let newWeight = Number(weight || 0);
     let newUnit = unit;
     if (settings.autoConvert && unit !== settings.autoConvert) {
       newUnit = settings.autoConvert;
