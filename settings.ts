@@ -27,7 +27,7 @@ export default class Settings {
   darkColor: string | null;
 
   @Column("boolean")
-  steps = true;
+  steps = false;
 
   @Column("text")
   date: string | null;
