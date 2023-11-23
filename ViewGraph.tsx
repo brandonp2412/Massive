@@ -78,39 +78,31 @@ export default function ViewGraph() {
   const weightChart = useMemo(() => {
     if (weights === undefined) return null;
 
-    let periodFormat = "do";
-    if (period === Periods.Weekly) periodFormat = "iii";
-    else if (period === Periods.Yearly) periodFormat = "P";
-
     if (weights.length === 0) return <List.Item title="No data yet." />;
 
     return (
       <Chart
         data={weights.map((set) => set.weight)}
         labels={weights.map((set) =>
-          format(new Date(set.created), periodFormat)
+          format(new Date(set.created), "yyyy-MM-d")
         )}
       />
     );
-  }, [weights, period]);
+  }, [weights]);
 
   const volumeChart = useMemo(() => {
     if (volumes === undefined) return null;
-
-    let periodFormat = "do";
-    if (period === Periods.Weekly) periodFormat = "iii";
-    else if (period === Periods.Yearly) periodFormat = "P";
-
     if (volumes.length === 0) return <List.Item title="No data yet." />;
+
     return (
       <Chart
         data={volumes.map((volume) => volume.value)}
         labels={volumes.map((volume) =>
-          format(new Date(volume.created), periodFormat)
+          format(new Date(volume.created), "yyyy-MM-d")
         )}
       />
     );
-  }, [volumes, period]);
+  }, [volumes]);
 
   return (
     <>

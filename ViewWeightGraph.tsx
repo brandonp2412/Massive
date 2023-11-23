@@ -47,19 +47,15 @@ export default function ViewWeightGraph() {
       return <List.Item title="No data yet." />;
     }
 
-    let periodFormat = "do";
-    if (period === Periods.Weekly) periodFormat = "iii";
-    else if (period === Periods.Yearly) periodFormat = "P";
-
     return (
       <Chart
         data={weights.map((set) => set.value)}
         labels={weights.map((weight) =>
-          format(new Date(weight.created), periodFormat)
+          format(new Date(weight.created), "yyyy-MM-d")
         )}
       />
     );
-  }, [weights, period]);
+  }, [weights]);
 
   return (
     <>
