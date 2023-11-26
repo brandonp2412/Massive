@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { FileSystem } from "react-native-file-access";
 import { IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
@@ -121,7 +121,7 @@ export default function ViewGraph() {
           icon="share"
         />
       </StackHeader>
-      <View style={{ padding: PADDING }}>
+      <ScrollView style={{ padding: PADDING }}>
         <Select
           label="Metric"
           items={[
@@ -148,7 +148,7 @@ export default function ViewGraph() {
         <View style={{ paddingTop: PADDING }}>
           {metric === Metrics.Volume ? volumeChart : weightChart}
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 }
