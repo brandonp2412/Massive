@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { FileSystem } from "react-native-file-access";
 import { IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
@@ -74,7 +74,7 @@ export default function ViewWeightGraph() {
           icon="share"
         />
       </StackHeader>
-      <View style={{ padding: PADDING }}>
+      <ScrollView style={{ padding: PADDING }}>
         <Select
           label="Period"
           items={[
@@ -89,7 +89,7 @@ export default function ViewWeightGraph() {
           value={period}
         />
         {charts}
-      </View>
+      </ScrollView>
     </>
   );
 }
