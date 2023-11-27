@@ -141,7 +141,7 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onFinish() {
                 val context = reactApplicationContext
-                context.startForegroundService(Intent(context, AlarmService::class.java))
+                context.startService(Intent(context, AlarmService::class.java))
                 context
                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
                     .emit("tick", Arguments.createMap().apply {
