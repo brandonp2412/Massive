@@ -24,6 +24,7 @@ export default function TimerProgress() {
       style={{
         position: "absolute",
         bottom: 0,
+        height: 5,
       }}
       progress={progress}
     />
