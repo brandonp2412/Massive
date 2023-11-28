@@ -12,7 +12,12 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { IconButton, Switch as PaperSwitch, Text } from "react-native-paper";
+import {
+  Button,
+  IconButton,
+  Switch as PaperSwitch,
+  Text,
+} from "react-native-paper";
 import AppInput from "./AppInput";
 import { StackParams } from "./AppStack";
 import PrimaryButton from "./PrimaryButton";
@@ -23,6 +28,7 @@ import { DAYS } from "./days";
 import { planRepo, setRepo } from "./db";
 import { DrawerParams } from "./drawer-params";
 import GymSet, { defaultSet } from "./gym-set";
+import { toast } from "./toast";
 
 export default function EditPlan() {
   const { params } = useRoute<RouteProp<StackParams, "EditPlan">>();
@@ -62,12 +68,13 @@ export default function EditPlan() {
     if (!days || !exercises) return;
     const newExercises = exercises.filter((exercise) => exercise).join(",");
     const newDays = days.filter((day) => day).join(",");
-    await planRepo.save({
+    const saved = await planRepo.save({
       title: title,
       days: newDays,
       exercises: newExercises,
       id: plan.id,
     });
+    if (saved.id === 1) toast("Tap your plan again to begin using it");
   }, [title, days, exercises, plan]);
 
   const toggleExercise = useCallback(
@@ -184,6 +191,19 @@ export default function EditPlan() {
         <Text style={[styles.title, { marginTop: MARGIN }]}>Exercises</Text>
         {exercises.map((exercise, index) =>
           renderExercise(exercise, index, true)
+        )}
+        {names?.length === 0 && (
+          <>
+            <Text>No exercises yet.</Text>
+            <Button
+              onPress={() =>
+                stackNavigate("EditExercise", { gymSet: defaultSet })
+              }
+              style={{ alignSelf: "flex-start" }}
+            >
+              Add some?
+            </Button>
+          </>
         )}
         {names !== undefined &&
           names
