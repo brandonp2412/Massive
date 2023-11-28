@@ -24,7 +24,6 @@
     "@testing-library/react-native": "^12.1.2",
     "@types/d3-shape": "^3.1.1",
     "@types/react-native-sqlite-storage": "^6.0.0",
-    "@types/react-native-svg-charts": "^5.0.12",
     "@types/react-native-vector-icons": "^6.4.13",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-react-native": "^4.0.1",
@@ -47,7 +46,6 @@
     "react-native-share": "^9.2.3",
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-svg": "^13.10.10",
-    "react-native-svg-charts": "^5.4.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-shot": "^3.7.0",
     "typeorm": "^0.3.17"

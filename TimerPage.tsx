@@ -1,13 +1,10 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { NativeModules, View } from "react-native";
 import { FAB, Text, useTheme } from "react-native-paper";
-import { ProgressCircle } from "react-native-svg-charts";
 import AppFab from "./AppFab";
-import { darkenRgba } from "./colors";
-import { MARGIN, PADDING } from "./constants";
-import { settingsRepo } from "./db";
 import DrawerHeader from "./DrawerHeader";
+import { settingsRepo } from "./db";
 import Settings from "./settings";
 import useTimer from "./use-timer";
 
@@ -38,37 +35,20 @@ export default function TimerPage() {
     update();
   };
 
-  const progress = useMemo(() => {
-    return (Number(minutes) * 60 + Number(seconds)) / 210;
-  }, [minutes, seconds]);
-
-  const backgroundColor = useMemo(() => {
-    if (colors.primary.match(/rgba/)) return darkenRgba(colors.primary, 0.6);
-    return colors.primary + "80";
-  }, [colors.primary]);
-
   return (
     <>
       <DrawerHeader name="Timer" />
-      <View style={{ flexGrow: 1, padding: PADDING }}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ fontSize: 70, position: "absolute" }}>
-            {minutes}:{seconds}
-          </Text>
-          <ProgressCircle
-            style={{ height: 300, width: 300, marginBottom: MARGIN }}
-            progress={progress}
-            strokeWidth={10}
-            progressColor={colors.primary}
-            backgroundColor={backgroundColor}
-          />
-        </View>
+      <View
+        style={{
+          flex: 1,
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ fontSize: 70, position: "absolute" }}>
+          {minutes}:{seconds}
+        </Text>
       </View>
 
       <FAB
