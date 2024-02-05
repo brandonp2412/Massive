@@ -27,9 +27,9 @@ const twelveHours = [
   "dd/LL/yyyy, p",
   "ccc p",
   "p",
-  "yyyy-MM-d",
-  "yyyy-MM-d, p",
-  "yyyy.MM.d",
+  "yyyy-MM-dd",
+  "yyyy-MM-dd, p",
+  "yyyy.MM.dd",
 ];
 
 const twentyFours = [
