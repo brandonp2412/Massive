@@ -39,6 +39,7 @@ import Settings from "./settings";
 import Weight from "./weight";
 import { settingsDefaultSets1700009253976 } from "./migrations/1700009253976-settings-default-sets";
 import { settingsDefaults1700009729468 } from "./migrations/1700009729468-settings-defaults";
+import { leadingZeros1707094662099 } from "./migrations/1707094662099-leading-zeros";
 
 export const AppDataSource = new DataSource({
   type: "react-native",
@@ -84,5 +85,6 @@ export const AppDataSource = new DataSource({
     autoConvert1699948105001,
     settingsDefaultSets1700009253976,
     settingsDefaults1700009729468,
+    leadingZeros1707094662099,
   ],
 });
