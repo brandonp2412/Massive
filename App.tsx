@@ -18,6 +18,7 @@ import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
 import { ThemeContext } from "./use-theme";
 import TimerProgress from "./TimerProgress";
+import { MigrationExecutor } from "typeorm";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -53,6 +54,7 @@ const App = () => {
     (async () => {
       if (!AppDataSource.isInitialized)
         await AppDataSource.initialize().catch((e) => setError(e.toString()));
+
       const gotSettings = await settingsRepo.findOne({ where: {} });
       console.log({ gotSettings });
       setAppSettings({

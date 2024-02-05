@@ -27,19 +27,19 @@ const twelveHours = [
   "dd/LL/yyyy, p",
   "ccc p",
   "p",
-  "yyyy-MM-d",
-  "yyyy-MM-d, p",
-  "yyyy.MM.d",
+  "yyyy-MM-dd",
+  "yyyy-MM-dd, p",
+  "yyyy.MM.dd",
 ];
 
 const twentyFours = [
   "dd/LL/yyyy",
-  "dd/LL/yyyy, k:m",
-  "ccc k:m",
-  "k:m",
-  "yyyy-MM-d",
-  "yyyy-MM-d, k:m",
-  "yyyy.MM.d",
+  "dd/LL/yyyy, k:mm",
+  "ccc k:mm",
+  "k:mm",
+  "yyyy-MM-dd",
+  "yyyy-MM-dd, k:mm",
+  "yyyy.MM.dd",
 ];
 
 interface Item {
