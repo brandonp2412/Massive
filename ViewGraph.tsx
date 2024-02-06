@@ -23,6 +23,13 @@ export default function ViewGraph() {
   const [volumes, setVolumes] = useState<Volume[]>();
   const [metric, setMetric] = useState(Metrics.OneRepMax);
   const [period, setPeriod] = useState(Periods.Monthly);
+  const [unit, setUnit] = useState('kg');
+
+  const convertWeight = (weight: number, unitFrom: string, unitTo: string) => {
+    if (unitFrom === unitTo) return weight;
+    if (unitFrom === 'lb' && unitTo === 'kg') return weight * 0.453592;
+    if (unitFrom === 'kg' && unitTo === 'lb') return weight * 2.20462;
+  };
 
   useEffect(() => {
     let difference = "-7 days";
@@ -57,12 +64,14 @@ export default function ViewGraph() {
         builder
           .addSelect("ROUND(MAX(weight), 2)", "weight")
           .getRawMany()
+          .then(newWeights => newWeights.map(set => ({ ...set, weight: convertWeight(set.weight, set.unit, unit) })))
           .then(setWeights);
         break;
       case Metrics.Volume:
         builder
           .addSelect("ROUND(SUM(weight * reps), 2)", "value")
           .getRawMany()
+          .then(newWeights => newWeights.map(set => ({ ...set, value: convertWeight(set.value, set.unit, unit) })))
           .then(setVolumes);
         break;
       default:
@@ -73,12 +82,13 @@ export default function ViewGraph() {
             "weight"
           )
           .getRawMany()
+          .then(newWeights => newWeights.map(set => ({ ...set, weight: convertWeight(set.weight, set.unit, unit) })))
           .then((newWeights) => {
             console.log({ weights: newWeights });
             setWeights(newWeights);
           });
     }
-  }, [params.name, metric, period]);
+  }, [params.name, metric, period, unit]);
 
   const weightChart = useMemo(() => {
     if (weights === undefined) return null;
@@ -150,6 +160,17 @@ export default function ViewGraph() {
           ]}
           onChange={(value) => setPeriod(value as Periods)}
           value={period}
+        />
+
+        <Select
+          label="Unit"
+          value={unit}
+          onChange={setUnit}
+          items={[
+            { label: 'Pounds (lb)', value: 'lb' },
+            { label: 'Kilograms (kg)', value: 'kg' },
+            { label: 'Stone', value: 'stone' },
+          ]}
         />
         <View style={{ paddingTop: PADDING }}>
           {metric === Metrics.Volume ? volumeChart : weightChart}
