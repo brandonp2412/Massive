@@ -5,4 +5,5 @@ export enum Periods {
   TwoMonths = "2 months",
   ThreeMonths = "3 months",
   SixMonths = "6 months",
+  AllTime = "All time",
 }

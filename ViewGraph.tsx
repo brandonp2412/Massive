@@ -31,6 +31,7 @@ export default function ViewGraph() {
     else if (period === Periods.TwoMonths) difference = "-2 months";
     else if (period === Periods.ThreeMonths) difference = "-3 months";
     else if (period === Periods.SixMonths) difference = "-6 months";
+    else if (period === Periods.AllTime) difference = null;
 
     let group = "%Y-%m-%d";
     if (period === Periods.Yearly) group = "%Y-%m";
@@ -40,13 +41,17 @@ export default function ViewGraph() {
       .select("STRFTIME('%Y-%m-%d', created)", "created")
       .addSelect("unit")
       .where("name = :name", { name: params.name })
-      .andWhere("NOT hidden")
-      .andWhere("DATE(created) >= DATE('now', 'weekday 0', :difference)", {
+      .andWhere("NOT hidden");
+
+    if (difference) {
+      builder.andWhere("DATE(created) >= DATE('now', 'weekday 0', :difference)", {
         difference,
-      })
+      });
+    }
+
+    builder
       .groupBy("name")
       .addGroupBy(`STRFTIME('${group}', created)`);
-
     switch (metric) {
       case Metrics.Best:
         builder
@@ -141,6 +146,7 @@ export default function ViewGraph() {
             { value: Periods.ThreeMonths, label: Periods.ThreeMonths },
             { value: Periods.SixMonths, label: Periods.SixMonths },
             { value: Periods.Yearly, label: Periods.Yearly },
+            { value: Periods.AllTime, label: Periods.AllTime },
           ]}
           onChange={(value) => setPeriod(value as Periods)}
           value={period}
