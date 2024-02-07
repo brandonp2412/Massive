@@ -76,7 +76,7 @@ export default function EditSet() {
       const canNotify = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
       if (canNotify === RESULTS.DENIED)
         await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-      if (milliseconds) NativeModules.AlarmModule.timer(milliseconds);
+      if (milliseconds) NativeModules.AlarmModule.timer(milliseconds, `${first.name}`);
     },
     [settings]
   );
