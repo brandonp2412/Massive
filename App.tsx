@@ -18,7 +18,6 @@ import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
 import { ThemeContext } from "./use-theme";
 import TimerProgress from "./TimerProgress";
-import { MigrationExecutor } from "typeorm";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,

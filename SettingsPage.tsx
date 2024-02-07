@@ -173,38 +173,6 @@ export default function SettingsPage() {
       ),
     },
     {
-      name: "Dark color",
-      renderItem: (name: string) => (
-        <Select
-          label={name}
-          items={lightOptions}
-          value={darkColor}
-          onChange={async (value) => {
-            setValue("darkColor", value);
-            setDarkColor(value);
-            await settingsRepo.update({}, { darkColor: value });
-            toast("Set primary color for dark mode.");
-          }}
-        />
-      ),
-    },
-    {
-      name: "Light color",
-      renderItem: (name: string) => (
-        <Select
-          label={name}
-          items={darkOptions}
-          value={lightColor}
-          onChange={async (value) => {
-            setValue("lightColor", value);
-            setLightColor(value);
-            await settingsRepo.update({}, { lightColor: value });
-            toast("Set primary color for light mode.");
-          }}
-        />
-      ),
-    },
-    {
       name: "Date format",
       renderItem: (name: string) => (
         <Select
@@ -312,6 +280,38 @@ export default function SettingsPage() {
           }}
           keyboardType="numeric"
           blurOnSubmit
+        />
+      ),
+    },
+    {
+      name: "Dark color",
+      renderItem: (name: string) => (
+        <Select
+          label={name}
+          items={lightOptions}
+          value={darkColor}
+          onChange={async (value) => {
+            setValue("darkColor", value);
+            setDarkColor(value);
+            await settingsRepo.update({}, { darkColor: value });
+            toast("Set primary color for dark mode.");
+          }}
+        />
+      ),
+    },
+    {
+      name: "Light color",
+      renderItem: (name: string) => (
+        <Select
+          label={name}
+          items={darkOptions}
+          value={lightColor}
+          onChange={async (value) => {
+            setValue("lightColor", value);
+            setLightColor(value);
+            await settingsRepo.update({}, { lightColor: value });
+            toast("Set primary color for light mode.");
+          }}
         />
       ),
     },
