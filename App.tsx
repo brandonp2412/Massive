@@ -55,7 +55,7 @@ const App = () => {
         await AppDataSource.initialize().catch((e) => setError(e.toString()));
 
       const gotSettings = await settingsRepo.findOne({ where: {} });
-      console.log({ gotSettings });
+      console.log(`${App.name}.mount`, { gotSettings });
       setAppSettings({
         startup: gotSettings.startup,
         theme: gotSettings.theme,

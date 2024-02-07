@@ -74,7 +74,6 @@ export default function StartPlan() {
         where: { name: exercise.name },
         order: { created: "desc" },
       });
-      console.log({ last });
       if (!last) return;
       delete last.id;
       console.log(`${StartPlan.name}.select:`, { last });
@@ -129,7 +128,7 @@ export default function StartPlan() {
     const canNotify = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
     if (canNotify === RESULTS.DENIED)
       await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-    NativeModules.AlarmModule.timer(milliseconds);
+    NativeModules.AlarmModule.timer(milliseconds, `${exercise.name} (${exercise.total + 1}/${best.sets})`);
   };
 
   return (

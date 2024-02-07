@@ -84,7 +84,7 @@ export default function ViewGraph() {
           .getRawMany()
           .then(newWeights => newWeights.map(set => ({ ...set, weight: convertWeight(set.weight, set.unit, unit) })))
           .then((newWeights) => {
-            console.log({ weights: newWeights });
+            console.log(`${ViewGraph.name}.oneRepMax:`, { weights: newWeights });
             setWeights(newWeights);
           });
     }

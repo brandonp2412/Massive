@@ -48,7 +48,7 @@ export default function ExerciseItem({
   }, [dark, names, item.name]);
 
   const press = () => {
-    console.log({ names });
+    console.log(`${ExerciseItem.name}.press:`, { names });
     if (names.length === 0)
       return navigation.navigate("EditExercise", { gymSet: item });
     const removing = names.find((name) => name === item.name);

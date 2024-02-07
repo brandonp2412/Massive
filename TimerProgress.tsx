@@ -11,7 +11,6 @@ export default function TimerProgress() {
       "tick",
       ({ minutes, seconds }: TickEvent) => {
         setProgress((Number(minutes) * 60 + Number(seconds)) / 210);
-        console.log({ minutes, seconds });
       }
     );
     return description.remove;

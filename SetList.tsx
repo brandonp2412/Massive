@@ -72,7 +72,7 @@ export default function SetList() {
   );
 
   const next = async () => {
-    console.log({ end, refreshing });
+    console.log(`${SetList.name}.next:`, { end, refreshing });
     if (end || refreshing) return;
     const newOffset = offset + LIMIT;
     console.log(`${SetList.name}.next:`, { offset, newOffset, term });

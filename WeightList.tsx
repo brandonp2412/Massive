@@ -70,7 +70,7 @@ export default function WeightList() {
   );
 
   const next = async () => {
-    console.log({ end, refreshing });
+    console.log(`${WeightList.name}.next:`, { end, refreshing });
     if (end || refreshing) return;
     const newOffset = offset + LIMIT;
     console.log(`${WeightList.name}.next:`, { offset, newOffset, term });

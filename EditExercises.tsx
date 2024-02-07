@@ -54,7 +54,7 @@ export default function EditExercises() {
         .groupBy("name")
         .getMany()
         .then((gymSets) => {
-          console.log({ gymSets });
+          console.log(`${EditExercises.name}.focus:`, { gymSets });
           setOldNames(gymSets.map((set) => set.name).join(", "));
           setOldSteps(gymSets.map((set) => set.steps).join(", "));
           setOldMinutes(gymSets.map((set) => set.minutes).join(", "));
