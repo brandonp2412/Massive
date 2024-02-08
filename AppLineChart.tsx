@@ -9,7 +9,7 @@ interface ChartProps {
   data: number[];
 }
 
-export default function Chart({ labels, data }: ChartProps) {
+export default function AppLineChart({ labels, data }: ChartProps) {
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
 

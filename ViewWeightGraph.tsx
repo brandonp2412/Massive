@@ -5,7 +5,7 @@ import { FileSystem } from "react-native-file-access";
 import { IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
 import { captureScreen } from "react-native-view-shot";
-import Chart from "./Chart";
+import AppLineChart from "./AppLineChart";
 import { PADDING } from "./constants";
 import { weightRepo } from "./db";
 import { Periods } from "./periods";
@@ -48,7 +48,7 @@ export default function ViewWeightGraph() {
     }
 
     return (
-      <Chart
+      <AppLineChart
         data={weights.map((set) => set.value)}
         labels={weights.map((weight) =>
           format(new Date(weight.created), "yyyy-MM-d")

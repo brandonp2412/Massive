@@ -7,7 +7,7 @@ import { IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
 import { captureScreen } from "react-native-view-shot";
 import { StackParams } from "./AppStack";
-import Chart from "./Chart";
+import AppLineChart from "./AppLineChart";
 import Select from "./Select";
 import StackHeader from "./StackHeader";
 import { PADDING } from "./constants";
@@ -98,7 +98,7 @@ export default function ViewGraph() {
     if (weights.length === 0) return <List.Item title="No data yet." />;
 
     return (
-      <Chart
+      <AppLineChart
         data={weights.map((set) => set.weight)}
         labels={weights.map((set) =>
           format(new Date(set.created), "yyyy-MM-d")
@@ -112,7 +112,7 @@ export default function ViewGraph() {
     if (volumes.length === 0) return <List.Item title="No data yet." />;
 
     return (
-      <Chart
+      <AppLineChart
         data={volumes.map((volume) => volume.value)}
         labels={volumes.map((volume) =>
           format(new Date(volume.created), "yyyy-MM-d")

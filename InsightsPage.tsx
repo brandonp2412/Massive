@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import AppPieChart from "./AppPieChart";
-import Chart from "./Chart";
+import AppLineChart from "./AppLineChart";
 import ConfirmDialog from "./ConfirmDialog";
 import { MARGIN, PADDING } from "./constants";
 import { AppDataSource } from "./data-source";
@@ -180,7 +180,7 @@ export default function InsightsPage() {
         {loadingHours ? (
           <ActivityIndicator />
         ) : (
-          <Chart
+          <AppLineChart
             data={hourCounts.map((hc) => hc.count)}
             labels={hourCounts.map((hc) => hourLabel(hc.hour))}
           />
