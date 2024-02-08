@@ -14,7 +14,6 @@ import androidx.core.app.NotificationCompat
 
 class Settings(val sound: String?, val noSound: Boolean, val vibrate: Boolean, val duration: Long)
 
-@RequiresApi(Build.VERSION_CODES.O)
 class AlarmService : Service(), OnPreparedListener {
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
@@ -58,7 +57,7 @@ class AlarmService : Service(), OnPreparedListener {
     }
 
     private fun playSound(settings: Settings) {
-        if (settings.noSound) return;
+        if (settings.noSound) return
         if (settings.sound == null) {
             mediaPlayer = MediaPlayer.create(applicationContext, R.raw.argon)
             mediaPlayer?.start()
@@ -80,18 +79,20 @@ class AlarmService : Service(), OnPreparedListener {
     }
 
     private fun doNotify(): Notification {
-        val alarmsChannel = NotificationChannel(
-            CHANNEL_ID_DONE,
-            CHANNEL_ID_DONE,
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        alarmsChannel.description = "Alarms for rest timers."
-        alarmsChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        alarmsChannel.setSound(null, null)
-        val manager = applicationContext.getSystemService(
-            NotificationManager::class.java
-        )
-        manager.createNotificationChannel(alarmsChannel)
+        val manager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val alarmsChannel = NotificationChannel(
+                CHANNEL_ID_DONE,
+                CHANNEL_ID_DONE,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            alarmsChannel.description = "Alarms for rest timers."
+            alarmsChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            alarmsChannel.setSound(null, null)
+            manager.createNotificationChannel(alarmsChannel)
+        }
+
         val builder = getBuilder()
         val context = applicationContext
         val finishIntent = Intent(context, StopAlarm::class.java)

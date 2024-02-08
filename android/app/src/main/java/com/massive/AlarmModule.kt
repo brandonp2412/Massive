@@ -9,14 +9,14 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.CountDownTimer
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import kotlin.math.floor
 
-class AlarmModule constructor(context: ReactApplicationContext?) :
-        ReactContextBaseJavaModule(context) {
+@SuppressLint("UnspecifiedRegisterReceiverFlag")
+class AlarmModule(context: ReactApplicationContext?) :
+        ReactContextBaseJavaModule(context), LifecycleEventListener {
 
     private var countdownTimer: CountDownTimer? = null
     var currentMs: Long = 0
@@ -29,7 +29,6 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
 
     private val stopReceiver =
             object : BroadcastReceiver() {
-                @RequiresApi(Build.VERSION_CODES.O)
                 override fun onReceive(context: Context?, intent: Intent?) {
                     Log.d("AlarmModule", "Received stop broadcast intent")
                     stop()
@@ -38,24 +37,29 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
 
     private val addReceiver =
             object : BroadcastReceiver() {
-                @RequiresApi(Build.VERSION_CODES.O)
                 override fun onReceive(context: Context?, intent: Intent?) {
                     add()
                 }
             }
 
     init {
-        reactApplicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST))
-        reactApplicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            reactApplicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST),
+                Context.RECEIVER_NOT_EXPORTED)
+            reactApplicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST),
+                Context.RECEIVER_NOT_EXPORTED)
+        }
+        else {
+            reactApplicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST))
+            reactApplicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST))
+        }
     }
 
-    override fun onCatalystInstanceDestroy() {
+    override fun onHostDestroy() {
         reactApplicationContext.unregisterReceiver(stopReceiver)
         reactApplicationContext.unregisterReceiver(addReceiver)
-        super.onCatalystInstanceDestroy()
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
     fun add() {
         Log.d("AlarmModule", "Add 1 min to alarm.")
@@ -77,7 +81,6 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         return 0
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
     fun stop() {
         Log.d("AlarmModule", "Stop alarm.")
@@ -98,7 +101,6 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                 .emit("tick", params)
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
     fun timer(milliseconds: Int, description: String) {
         Log.d("AlarmModule", "Queue alarm for $milliseconds delay")
@@ -113,13 +115,11 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         running = true
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun getTimer(
             endMs: Int,
     ): CountDownTimer {
         val builder = getBuilder()
         return object : CountDownTimer(endMs.toLong(), 1000) {
-            @RequiresApi(Build.VERSION_CODES.O)
             override fun onTick(current: Long) {
                 currentMs = current
                 val seconds =
@@ -144,10 +144,15 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                         .emit("tick", params)
             }
 
-            @RequiresApi(Build.VERSION_CODES.O)
             override fun onFinish() {
                 val context = reactApplicationContext
-                context.startService(Intent(context, AlarmService::class.java))
+                val intent = Intent(context, AlarmService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                }
+                else {
+                    context.startService(intent)
+                }
                 context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
                         .emit(
                                 "tick",
@@ -161,7 +166,6 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
     }
 
     @SuppressLint("UnspecifiedImmutableFlag")
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun getBuilder(): NotificationCompat.Builder {
         val context = reactApplicationContext
         val contentIntent = Intent(context, MainActivity::class.java)
@@ -183,19 +187,22 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
                 .setDeleteIntent(pendingStop)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun getManager(): NotificationManager {
         val notificationManager =
-                reactApplicationContext.getSystemService(NotificationManager::class.java)
-        val timersChannel =
+            reactApplicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val timersChannel =
                 NotificationChannel(
-                        CHANNEL_ID_PENDING,
-                        CHANNEL_ID_PENDING,
-                        NotificationManager.IMPORTANCE_LOW
+                    CHANNEL_ID_PENDING,
+                    CHANNEL_ID_PENDING,
+                    NotificationManager.IMPORTANCE_LOW
                 )
-        timersChannel.setSound(null, null)
-        timersChannel.description = "Progress on rest timers."
-        notificationManager.createNotificationChannel(timersChannel)
+            timersChannel.setSound(null, null)
+            timersChannel.description = "Progress on rest timers."
+            notificationManager.createNotificationChannel(timersChannel)
+        }
+
         return notificationManager
     }
 
@@ -204,5 +211,13 @@ class AlarmModule constructor(context: ReactApplicationContext?) :
         const val ADD_BROADCAST = "add-timer-event"
         const val CHANNEL_ID_PENDING = "Timer"
         const val NOTIFICATION_ID_PENDING = 1
+    }
+
+    override fun onHostResume() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onHostPause() {
+        TODO("Not yet implemented")
     }
 }
