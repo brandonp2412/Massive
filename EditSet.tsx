@@ -239,9 +239,11 @@ export default function EditSet() {
             value={reps}
             onChangeText={(newReps) => {
               const fixed = fixNumeric(newReps);
-              setReps(fixed);
+              setReps(fixed.replace(/-/g, ''))
               if (fixed.length !== newReps.length)
                 toast("Reps must be a number");
+              else if (fixed.includes('-'))
+                toast("Reps must be a positive value")
             }}
             onSubmitEditing={() => weightRef.current?.focus()}
             selection={selection}

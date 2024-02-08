@@ -21,6 +21,8 @@ import { DrawerParams } from "./drawer-params";
 import GymSet from "./gym-set";
 import Settings from "./settings";
 import PrimaryButton from "./PrimaryButton";
+import { fixNumeric } from "./fix-numeric";
+import { toast } from "./toast";
 
 export default function EditSets() {
   const { params } = useRoute<RouteProp<StackParams, "EditSets">>();
@@ -98,7 +100,14 @@ export default function EditSets() {
             label={`Reps: ${oldReps}`}
             keyboardType="numeric"
             value={reps}
-            onChangeText={setReps}
+            onChangeText={(newReps) => {
+              const fixed = fixNumeric(newReps);
+              setReps(fixed.replace(/-/g, ''))
+              if (fixed.length !== newReps.length)
+                toast("Reps must be a number");
+              else if (fixed.includes('-'))
+                toast("Reps must be a positive value")
+            }}
             selection={selection}
             onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
             autoFocus={!!name}
