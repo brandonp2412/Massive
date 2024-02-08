@@ -38,7 +38,7 @@ await git.log(['-1']).then(log => {
 }).then(() => {
     return git.addTag(versionCode.toString());
 }).then(() => {
-    return git.push('origin', 'HEAD', ['--tags']);
+    return git.push('origin', 'HEAD', ['--tags', '--force']);
 }).catch(err => {
     console.error('Error amending commit:', err);
 });
