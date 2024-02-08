@@ -19,6 +19,8 @@ export default function AppLineChart({ labels, data }: ChartProps) {
     color: () => colors.primary,
   };
 
+  const validData = useMemo(() => data.map(d => isNaN(d) ? 0 : d), [data])
+
   const pruned = useMemo(() => {
     if (labels.length < 3) return labels;
     const newPruned = [labels[0]];
@@ -39,7 +41,7 @@ export default function AppLineChart({ labels, data }: ChartProps) {
         labels: pruned,
         datasets: [
           {
-            data,
+            data: validData,
           },
         ],
       }}
