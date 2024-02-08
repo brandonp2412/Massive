@@ -29,16 +29,21 @@ let packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 packageJson.version = versionName;
 writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
+const git = simpleGit();
+await git.add([packageJsonPath, buildFilePath]);
+await git.log(['-1']).then(log => {
+    const lastCommitMessage = log.latest.message;
+    const newCommitMessage = lastCommitMessage + ` - ${versionName} 🚀`;
+    return git.commit(newCommitMessage, [], ['--amend']);
+}).then(() => {
+    return git.addTag(versionCode.toString());
+}).then(() => {
+    return git.push('origin', 'HEAD', ['--tags']);
+}).catch(err => {
+    console.error('Error amending commit:', err);
+});
+
 const isWindows = os.platform() === 'win32';
 execSync(isWindows ? '.\\gradlew.bat bundleRelease' : './gradlew bundleRelease', { stdio: 'inherit' });
 execSync('bundle install', { stdio: 'inherit' });
 execSync('bundle exec fastlane supply --aab app/build/outputs/bundle/release/app-release.aab', { stdio: 'inherit' });
-
-const git = simpleGit();
-git.log(['-1']).then(log => {
-    const lastCommitMessage = log.latest.message;
-    const newCommitMessage = lastCommitMessage + ` - ${versionName} 🚀`;
-    return git.commit(newCommitMessage, [buildFilePath, packageJsonPath]);
-}).then(() => git.addTag(versionCode.toString()))
-    .then(() => git.push('origin', 'HEAD'))
-    .then(() => git.pushTags('origin'));
