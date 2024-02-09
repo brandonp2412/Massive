@@ -151,7 +151,8 @@ export default function EditSet() {
   const pickDate = useCallback(() => {
     DateTimePickerAndroid.open({
       value: created,
-      onChange: (_, date) => {
+      onChange: (event, date) => {
+        if (event.type === 'dismissed') return;
         if (date === created) return;
         setCreated(date);
         setCreatedDirty(true);
