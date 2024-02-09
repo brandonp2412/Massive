@@ -1,7 +1,7 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { format } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Keyboard, ScrollView, View } from "react-native";
 import { FileSystem } from "react-native-file-access";
 import { IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
@@ -10,12 +10,15 @@ import { StackParams } from "./AppStack";
 import AppLineChart from "./AppLineChart";
 import Select from "./Select";
 import StackHeader from "./StackHeader";
-import { PADDING } from "./constants";
-import { setRepo } from "./db";
+import { MARGIN, PADDING } from "./constants";
+import { setRepo, settingsRepo } from "./db";
 import GymSet from "./gym-set";
 import { Metrics } from "./metrics";
 import { Periods } from "./periods";
 import Volume from "./volume";
+import AppInput from "./AppInput";
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import Settings from "./settings";
 
 export default function ViewGraph() {
   const { params } = useRoute<RouteProp<StackParams, "ViewGraph">>();
@@ -24,6 +27,13 @@ export default function ViewGraph() {
   const [metric, setMetric] = useState(Metrics.OneRepMax);
   const [period, setPeriod] = useState(Periods.Monthly);
   const [unit, setUnit] = useState('kg');
+  const [start, setStart] = useState<Date | null>(null)
+  const [end, setEnd] = useState<Date | null>(null)
+  const [settings, setSettings] = useState<Settings>({} as Settings);
+
+  useFocusEffect(useCallback(() => {
+    settingsRepo.findOne({ where: {} }).then(setSettings)
+  }, []))
 
   const convertWeight = (weight: number, unitFrom: string, unitTo: string) => {
     let result = weight;
@@ -50,13 +60,17 @@ export default function ViewGraph() {
       .select("STRFTIME('%Y-%m-%d', created)", "created")
       .addSelect("unit")
       .where("name = :name", { name: params.name })
-      .andWhere("NOT hidden");
+      .andWhere("NOT hidden")
 
-    if (difference) {
+    if (start)
+      builder.andWhere("DATE(created) >= :start", { start });
+    if (end)
+      builder.andWhere("DATE(created) <= :end", { end });
+    if (difference)
       builder.andWhere("DATE(created) >= DATE('now', 'weekday 0', :difference)", {
         difference,
       });
-    }
+
 
     builder
       .groupBy("name")
@@ -90,7 +104,7 @@ export default function ViewGraph() {
             setWeights(newWeights);
           });
     }
-  }, [params.name, metric, period, unit]);
+  }, [params.name, metric, period, unit, start, end]);
 
   const weightChart = useMemo(() => {
     if (weights === undefined) return null;
@@ -121,6 +135,34 @@ export default function ViewGraph() {
     );
   }, [volumes]);
 
+  const pickStart = useCallback(() => {
+    DateTimePickerAndroid.open({
+      value: start || new Date(),
+      onChange: (event, date) => {
+        if (event.type === 'dismissed') return;
+        if (date === start) return;
+        setStart(date);
+        setPeriod(Periods.AllTime);
+        Keyboard.dismiss();
+      },
+      mode: "date",
+    });
+  }, [start]);
+
+  const pickEnd = useCallback(() => {
+    DateTimePickerAndroid.open({
+      value: end || new Date(),
+      onChange: (event, date) => {
+        if (event.type === 'dismissed') return;
+        if (date === end) return;
+        setEnd(date);
+        setPeriod(Periods.AllTime);
+        Keyboard.dismiss();
+      },
+      mode: "date",
+    });
+  }, [end]);
+
   return (
     <>
       <StackHeader title={params.name}>
@@ -149,6 +191,7 @@ export default function ViewGraph() {
           onChange={(value) => setMetric(value as Metrics)}
           value={metric}
         />
+
         <Select
           label="Period"
           items={[
@@ -160,9 +203,28 @@ export default function ViewGraph() {
             { value: Periods.Yearly, label: Periods.Yearly },
             { value: Periods.AllTime, label: Periods.AllTime },
           ]}
-          onChange={(value) => setPeriod(value as Periods)}
+          onChange={(value) => {
+            setPeriod(value as Periods);
+            setStart(null);
+            setEnd(null);
+          }}
           value={period}
         />
+
+        <View style={{ flexDirection: 'row', marginBottom: MARGIN }}>
+          <AppInput
+            label="Start date"
+            value={start ? format(start, settings.date || "Pp") : null}
+            onPressOut={pickStart}
+            style={{ flex: 1, marginRight: MARGIN }}
+          />
+          <AppInput
+            label="End date"
+            value={end ? format(end, settings.date || "Pp") : null}
+            onPressOut={pickEnd}
+            style={{ flex: 1 }}
+          />
+        </View>
 
         <Select
           label="Unit"
