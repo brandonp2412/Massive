@@ -33,6 +33,7 @@ const git = simpleGit();
 await git.add([packageJsonPath, buildFilePath]);
 await git.log(['-1']).then(log => {
     const newTitle = `${log.latest.message} - ${versionName} 🚀`;
+    console.log(newTitle);
     const newCommitMessage = [newTitle, log.latest.body].join('\n');
     return git.commit(newCommitMessage, [], ['--amend']);
 }).then(() => {
