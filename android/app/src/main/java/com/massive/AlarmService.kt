@@ -131,11 +131,7 @@ class AlarmService : Service(), OnPreparedListener {
             @Suppress("DEPRECATION")
             getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
-        val audioAttributes = AudioAttributes.Builder()
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .setUsage(AudioAttributes.USAGE_ALARM)
-            .build()
-        vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, 1), audioAttributes)
+        vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, 1))
         return START_STICKY
     }
 
