@@ -122,16 +122,18 @@ class AlarmService : Service(), OnPreparedListener {
         val settings = getSettings()
         playSound(settings)
         if (!settings.vibrate) return START_STICKY
-        val pattern = longArrayOf(0, settings.duration, 1300, settings.duration, 1300, settings.duration / 2)
+        val pattern = longArrayOf(0, settings.duration, 1000, settings.duration, 1000, settings.duration)
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
             vibratorManager.defaultVibrator
         } else {
             @Suppress("DEPRECATION")
             getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
-        vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, 1))
+        vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, -1))
+
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed({ vibrator!!.cancel() }, 10000)
         return START_STICKY
     }
 
