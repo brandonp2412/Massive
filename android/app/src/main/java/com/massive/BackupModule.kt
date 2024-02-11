@@ -1,5 +1,6 @@
 package com.massive
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.*
@@ -15,7 +16,8 @@ import com.facebook.react.bridge.ReactMethod
 import java.io.*
 import java.util.*
 
-class BackupModule constructor(context: ReactApplicationContext?) :
+@SuppressLint("UnspecifiedRegisterReceiverFlag")
+class BackupModule(context: ReactApplicationContext?) :
     ReactContextBaseJavaModule(context) {
     val context: ReactApplicationContext = reactApplicationContext
 
@@ -87,7 +89,13 @@ class BackupModule constructor(context: ReactApplicationContext?) :
     }
 
     init {
-        reactApplicationContext.registerReceiver(copyReceiver, IntentFilter(COPY_BROADCAST))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            reactApplicationContext.registerReceiver(copyReceiver, IntentFilter(COPY_BROADCAST),
+                Context.RECEIVER_NOT_EXPORTED)
+        }
+        else {
+            reactApplicationContext.registerReceiver(copyReceiver, IntentFilter(COPY_BROADCAST))
+        }
     }
 
     companion object {
