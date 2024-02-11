@@ -45,6 +45,6 @@ await git.log(['-1']).then(log => {
 });
 
 const isWindows = os.platform() === 'win32';
-execSync(isWindows ? '.\\gradlew.bat bundleRelease' : './gradlew bundleRelease', { stdio: 'inherit' });
-execSync('bundle install', { stdio: 'inherit' });
+execSync(isWindows ? '.\\gradlew.bat bundleRelease -q' : './gradlew bundleRelease -q', { stdio: 'inherit' });
+execSync('bundle install --quiet', { stdio: 'inherit' });
 execSync('bundle exec fastlane supply --aab app/build/outputs/bundle/release/app-release.aab', { stdio: 'inherit' });
