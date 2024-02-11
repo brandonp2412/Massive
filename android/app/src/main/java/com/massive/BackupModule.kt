@@ -24,7 +24,7 @@ class BackupModule(context: ReactApplicationContext?) :
     private val copyReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
-            val targetDir = intent?.getStringExtra("targetDir");
+            val targetDir = intent?.getStringExtra("targetDir")
             Log.d("BackupModule", "onReceive $targetDir")
             val treeUri: Uri = Uri.parse(targetDir)
             val documentFile = context?.let { DocumentFile.fromTreeUri(it, treeUri) }
@@ -76,7 +76,7 @@ class BackupModule(context: ReactApplicationContext?) :
         alarmMgr.cancel(pendingIntent)
     }
 
-    @ReactMethod()
+    @ReactMethod
     fun exportToCSV(promise: Promise) {
         try {
             val db = DatabaseHelper(reactApplicationContext)
