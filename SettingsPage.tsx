@@ -522,13 +522,8 @@ export default function SettingsPage() {
         <Button
           style={{ alignSelf: "flex-start" }}
           onPress={async () => {
-            let target = settings.backupDir
-            if (!FileSystem.exists(target)) {
-              const result = await DocumentPicker.pickDirectory();
-              target = result.uri
-              setValue("backupDir", result.uri);
-            }
-            const error = await NativeModules.BackupModule.once(target);
+            const result = await DocumentPicker.pickDirectory();
+            const error = await NativeModules.BackupModule.once(result.uri);
             if (error) toast(error);
             else toast("Database exported.");
           }}
@@ -543,13 +538,8 @@ export default function SettingsPage() {
         <Button
           style={{ alignSelf: "flex-start" }}
           onPress={async () => {
-            let target = settings.backupDir
-            if (!target || !FileSystem.exists(target)) {
-              const result = await DocumentPicker.pickDirectory();
-              target = result.uri
-              setValue("backupDir", result.uri);
-            }
-            await NativeModules.BackupModule.exportToCSV(target);
+            const result = await DocumentPicker.pickDirectory();
+            await NativeModules.BackupModule.exportToCSV(result.uri);
             toast("Exported sets as CSV.");
           }}
         >
