@@ -478,7 +478,7 @@ export default function SettingsPage() {
       ),
     },
     {
-      name: `Backup directory: ${backupString || "Downloads"}`,
+      name: `Backup directory: ${backupString || "Not set yet!"}`,
       renderItem: (name: string) => (
         <Button
           style={{ alignSelf: "flex-start" }}
@@ -522,15 +522,15 @@ export default function SettingsPage() {
         <Button
           style={{ alignSelf: "flex-start" }}
           onPress={async () => {
-            const result = await check(
-              PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE
-            );
-            if (result === RESULTS.DENIED || result === RESULTS.BLOCKED) {
-              await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+            let target = settings.backupDir
+            if (!FileSystem.exists(target)) {
+              const result = await DocumentPicker.pickDirectory();
+              target = result.uri
+              setValue("backupDir", result.uri);
             }
-            const path = Dirs.DatabaseDir + "/massive.db";
-            await FileSystem.cpExternal(path, "massive.db", "downloads");
-            toast("Database exported. Check downloads.");
+            const error = await NativeModules.BackupModule.once(target);
+            if (error) toast(error);
+            else toast("Database exported.");
           }}
         >
           {name}
@@ -543,13 +543,13 @@ export default function SettingsPage() {
         <Button
           style={{ alignSelf: "flex-start" }}
           onPress={async () => {
-            const result = await check(
-              PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE
-            );
-            if (result === RESULTS.DENIED || result === RESULTS.BLOCKED) {
-              await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+            let target = settings.backupDir
+            if (!target || !FileSystem.exists(target)) {
+              const result = await DocumentPicker.pickDirectory();
+              target = result.uri
+              setValue("backupDir", result.uri);
             }
-            await NativeModules.BackupModule.exportToCSV();
+            await NativeModules.BackupModule.exportToCSV(target);
             toast("Exported sets as CSV.");
           }}
         >

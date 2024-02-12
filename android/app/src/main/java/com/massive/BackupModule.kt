@@ -7,7 +7,6 @@ import android.content.*
 import android.net.Uri
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -22,7 +21,6 @@ class BackupModule(context: ReactApplicationContext?) :
     val context: ReactApplicationContext = reactApplicationContext
 
     private val copyReceiver = object : BroadcastReceiver() {
-        @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
             val targetDir = intent?.getStringExtra("targetDir")
             Log.d("BackupModule", "onReceive $targetDir")
@@ -40,7 +38,28 @@ class BackupModule(context: ReactApplicationContext?) :
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @ReactMethod
+    fun once(target: String, promise: Promise) {
+        Log.d("BackupModule", "once $target")
+        try {
+            val treeUri: Uri = Uri.parse(target)
+            val documentFile = context.let { DocumentFile.fromTreeUri(it, treeUri) }
+            val file = documentFile?.createFile("application/octet-stream", "massive.db")
+            val output = context.contentResolver?.openOutputStream(file!!.uri)
+            val sourceFile = File(context.getDatabasePath("massive.db")!!.path)
+            val input = FileInputStream(sourceFile)
+            if (output != null) {
+                input.copyTo(output)
+            }
+            output?.flush()
+            output?.close()
+            promise.resolve(0)
+        }
+        catch (error: Exception) {
+            promise.reject("ERROR", error)
+        }
+    }
+
     @ReactMethod
     fun start(baseUri: String) {
         Log.d("BackupModule", "start $baseUri")
@@ -66,7 +85,6 @@ class BackupModule(context: ReactApplicationContext?) :
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun stop() {
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -77,10 +95,10 @@ class BackupModule(context: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun exportToCSV(promise: Promise) {
+    fun exportToCSV(target: String, promise: Promise) {
         try {
             val db = DatabaseHelper(reactApplicationContext)
-            db.exportToCSV()
+            db.exportToCSV(target, reactApplicationContext)
             promise.resolve("Export successful!")
         }
         catch (e: Exception) {
