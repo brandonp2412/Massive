@@ -107,6 +107,8 @@ export default function SettingsPage() {
     );
     await AppDataSource.destroy();
     const file = await DocumentPicker.pickSingle();
+    if (!file.uri.endsWith('.db'))
+      return toast("File name must end with .db")
     await FileSystem.cp(file.uri, Dirs.DatabaseDir + "/massive.db");
 
     try {
