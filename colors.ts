@@ -17,8 +17,8 @@ export const DARK_COLORS = [
   { hex: "#000000", name: "Black" },
   { hex: "#863c3c", name: "Brandy" },
   { hex: "#1c6000", name: "Kermit" },
-  { hex: "#990000", name: "Dark red" },
-  { hex: "#6A5ACD", name: "Slate Blue" },
+  { hex: "#990000", name: "Red" },
+  { hex: "#660066", name: "Magenta" },
 ];
 
 export function darkenRgba(rgba: string, amount: number) {
