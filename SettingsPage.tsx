@@ -135,14 +135,14 @@ export default function SettingsPage() {
         <Select
           label={name}
           items={[
-            { label: "History", value: "History" },
-            { label: "Exercises", value: "Exercises" },
-            { label: "Plans", value: "Plans" },
-            { label: "Graphs", value: "Graphs" },
-            { label: "Timer", value: "Timer" },
-            { label: "Weight", value: "Weight" },
-            { label: "Insights", value: "Insights" },
-            { label: "Settings", value: "Settings" },
+            { label: "History", value: "History", icon: 'history' },
+            { label: "Exercises", value: "Exercises", icon: 'dumbbell' },
+            { label: "Plans", value: "Plans", icon: 'calendar-outline' },
+            { label: "Graphs", value: "Graphs", icon: 'chart-bell-curve-cumulative' },
+            { label: "Timer", value: "Timer", icon: 'timer-outline' },
+            { label: "Weight", value: "Weight", icon: 'scale-bathroom' },
+            { label: "Insights", value: "Insights", icon: 'lightbulb-on-outline' },
+            { label: "Settings", value: "Settings", icon: 'cog-outline' },
           ]}
           value={settings.startup}
           onChange={async (value) => {
@@ -195,10 +195,10 @@ export default function SettingsPage() {
         <Select
           label={name}
           items={[
-            { label: "Off", value: "" },
-            { label: "Kilograms", value: "kg" },
-            { label: "Pounds", value: "lb" },
-            { label: "Stone", value: "stone" },
+            { label: "Off", value: "", icon: 'scale-off' },
+            { label: "Kilograms", value: "kg", icon: 'weight-kilogram' },
+            { label: "Pounds", value: "lb", icon: 'weight-pound' },
+            { label: "Stone", value: "stone", icon: 'weight' },
           ]}
           value={settings.autoConvert}
           onChange={async (value) => {

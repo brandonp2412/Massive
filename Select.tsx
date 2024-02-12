@@ -7,6 +7,7 @@ export interface Item {
   value: string;
   label: string;
   color?: string;
+  icon?: string;
 }
 
 function Select({
@@ -64,6 +65,7 @@ function Select({
           key={item.value}
           onPress={() => press(item.value)}
           titleStyle={{ color: item.color || colors.onSurface }}
+          leadingIcon={item.icon}
         />
       ))}
     </Menu>
