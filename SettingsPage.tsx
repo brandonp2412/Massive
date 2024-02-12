@@ -81,7 +81,6 @@ export default function SettingsPage() {
 
   const backupString = useMemo(() => {
     if (!settings.backupDir) return null;
-    console.log(settings.backupDir);
     const split = decodeURIComponent(settings.backupDir).split(":");
     return split.pop();
   }, [settings.backupDir]);
