@@ -21,13 +21,13 @@ class SettingsModule constructor(context: ReactApplicationContext?) :
 
     @RequiresApi(Build.VERSION_CODES.M)
     @ReactMethod
-    fun ignoringBattery(callback: Callback) {
+    fun ignoringBattery(promise: Promise) {
         val packageName = reactApplicationContext.packageName
         val pm = reactApplicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            callback.invoke(pm.isIgnoringBatteryOptimizations(packageName))
+            promise.resolve(pm.isIgnoringBatteryOptimizations(packageName))
         } else {
-            callback.invoke(true)
+            promise.resolve(true)
         }
     }
 

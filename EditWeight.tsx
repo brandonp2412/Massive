@@ -28,6 +28,7 @@ export default function EditWeight() {
   const { params } = useRoute<RouteProp<StackParams, "EditWeight">>();
   const { weight } = params;
   const { navigate } = useNavigation<NavigationProp<DrawerParams>>();
+  const { navigate: stackNavigate, goBack } = useNavigation<NavigationProp<StackParams>>();
   const [settings, setSettings] = useState<Settings>({} as Settings);
   const [value, setValue] = useState(weight.value?.toString());
   const [unit, setUnit] = useState(weight.unit);
@@ -58,7 +59,8 @@ export default function EditWeight() {
 
     await weightRepo.save(newWeight);
     if (settings.notify) await checkWeekly();
-    navigate("Weight");
+    goBack();
+    stackNavigate("ViewWeightGraph");
   };
 
   const checkWeekly = async () => {

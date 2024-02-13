@@ -71,7 +71,7 @@ export default function SettingsPage() {
   } = useAppTheme();
 
   useEffect(() => {
-    NativeModules.SettingsModule.ignoringBattery(setIgnoring);
+    NativeModules.SettingsModule.ignoringBattery().then(setIgnoring);
     NativeModules.SettingsModule.is24().then((is24: boolean) => {
       console.log(`${SettingsPage.name}.focus:`, { is24 });
       if (is24) setFormatOptions(twentyFours);
