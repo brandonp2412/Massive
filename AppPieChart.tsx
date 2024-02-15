@@ -23,7 +23,7 @@ export default function AppPieChart({ options }: { options: Option[] }) {
 
   const data = options.map((option, index) => ({
     name: option.label,
-    value: isNaN(option.value) ? 0 : option.value,
+    value: option.value,
     color: pieChartColors[index],
     legendFontColor: colors.onSurface,
     legendFontSize: 15,

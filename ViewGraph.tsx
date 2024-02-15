@@ -36,11 +36,9 @@ export default function ViewGraph() {
   }, []))
 
   const convertWeight = (weight: number, unitFrom: string, unitTo: string) => {
-    let result = weight;
-    if (unitFrom === unitTo) result = weight;
-    if (unitFrom === 'lb' && unitTo === 'kg') result = weight * 0.453592;
-    if (unitFrom === 'kg' && unitTo === 'lb') result = weight * 2.20462;
-    return isNaN(result) ? 0 : result;
+    if (unitFrom === unitTo) return weight
+    if (unitFrom === 'lb' && unitTo === 'kg') return weight * 0.453592;
+    if (unitFrom === 'kg' && unitTo === 'lb') return weight * 2.20462;
   };
 
   useEffect(() => {
