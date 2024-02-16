@@ -8,25 +8,43 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.*
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+class Settings(val sound: String?, val noSound: Boolean, val vibrate: Boolean, val duration: Long)
 
+@RequiresApi(Build.VERSION_CODES.O)
 class TimerService : Service() {
 
     private lateinit var timerHandler: Handler
     private var timerRunnable: Runnable? = null
-    private var timeLeftInSeconds: Int = 0
-    private var timeTotalInSeconds: Int = 0
-    private var notificationId = 1
+    private var secondsLeft: Int = 0
+    private var secondsTotal: Int = 0
+    private var mediaPlayer: MediaPlayer? = null
+    private var vibrator: Vibrator? = null
+    private var currentDescription = ""
 
     private val stopReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 Log.d("TimerService", "Received stop broadcast intent")
                 stopSelf()
+            }
+        }
+
+    private val addReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                secondsLeft += 60;
+                secondsTotal += 60;
+                mediaPlayer?.stop()
+                vibrator?.cancel()
             }
         }
 
@@ -37,27 +55,33 @@ class TimerService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             applicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST),
                 Context.RECEIVER_NOT_EXPORTED)
+            applicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST),
+                Context.RECEIVER_NOT_EXPORTED)
         }
         else {
             applicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST))
+            applicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST))
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        timeLeftInSeconds = (intent?.getIntExtra("milliseconds", 0) ?: 0) / 1000
-        startForeground(notificationId, createNotification(timeLeftInSeconds))
-        Log.d("TimerService", "onStartCommand seconds=$timeLeftInSeconds")
-        timeTotalInSeconds = timeLeftInSeconds
+        secondsLeft = (intent?.getIntExtra("milliseconds", 0) ?: 0) / 1000
+        currentDescription = intent?.getStringExtra("description").toString()
+        secondsTotal = secondsLeft
+        startForeground(CHANNEL_ID, getProgress(secondsLeft).build())
+        Log.d("TimerService", "onStartCommand seconds=$secondsLeft")
 
         timerRunnable = object : Runnable {
             override fun run() {
-                if (timeLeftInSeconds > 0) {
-                    timeLeftInSeconds--
-                    updateNotification(timeLeftInSeconds)
+                if (secondsLeft > 0) {
+                    secondsLeft--
+                    updateNotification(secondsLeft)
                     timerHandler.postDelayed(this, 1000)
                 } else {
-                    startAlarmService()
-                    stopSelf()
+                    val settings = getSettings()
+                    vibrate(settings)
+                    playSound(settings)
+                    notifyFinished()
                 }
             }
         }
@@ -69,14 +93,53 @@ class TimerService : Service() {
         super.onDestroy()
         timerHandler.removeCallbacks(timerRunnable!!)
         applicationContext.unregisterReceiver(stopReceiver)
+        applicationContext.unregisterReceiver(addReceiver)
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        vibrator?.cancel()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
-    private fun createNotification(timeLeftInSeconds: Int): Notification {
-        val notificationTitle = "Timer"
+    @SuppressLint("Range")
+    private fun getSettings(): Settings {
+        val db = DatabaseHelper(applicationContext).readableDatabase
+        val cursor = db.rawQuery("SELECT sound, noSound, vibrate, duration FROM settings", null)
+        cursor.moveToFirst()
+        val sound = cursor.getString(cursor.getColumnIndex("sound"))
+        val noSound = cursor.getInt(cursor.getColumnIndex("noSound")) == 1
+        val vibrate = cursor.getInt(cursor.getColumnIndex("vibrate")) == 1
+        var duration = cursor.getLong(cursor.getColumnIndex("duration"))
+        if (duration.toInt() == 0) duration = 300
+        cursor.close()
+        return Settings(sound, noSound, vibrate, duration)
+    }
+
+    private fun playSound(settings: Settings) {
+        if (settings.noSound) return
+        if (settings.sound == null) {
+            mediaPlayer = MediaPlayer.create(applicationContext, R.raw.argon)
+            mediaPlayer?.start()
+            mediaPlayer?.setOnCompletionListener { vibrator?.cancel() }
+        } else {
+            mediaPlayer = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+                )
+                setDataSource(applicationContext, Uri.parse(settings.sound))
+                prepare()
+                start()
+                setOnCompletionListener { vibrator?.cancel() }
+            }
+        }
+    }
+
+    private fun getProgress(timeLeftInSeconds: Int): NotificationCompat.Builder {
         val notificationText = formatTime(timeLeftInSeconds)
         val notificationChannelId = "timer_channel"
         val notificationIntent = Intent(this, TimerService::class.java)
@@ -86,16 +149,19 @@ class TimerService : Service() {
             notificationIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val stopBroadcast = Intent(AlarmModule.STOP_BROADCAST)
+        val stopBroadcast = Intent(STOP_BROADCAST)
         stopBroadcast.setPackage(applicationContext.packageName)
         val pendingStop =
             PendingIntent.getBroadcast(applicationContext, 0, stopBroadcast, PendingIntent.FLAG_IMMUTABLE)
+        val addBroadcast = Intent(ADD_BROADCAST).apply { setPackage(applicationContext.packageName) }
+        val pendingAdd =
+            PendingIntent.getBroadcast(applicationContext, 0, addBroadcast, PendingIntent.FLAG_MUTABLE)
 
         val notificationBuilder = NotificationCompat.Builder(this, notificationChannelId)
-            .setContentTitle(notificationTitle)
+            .setContentTitle(currentDescription)
             .setContentText(notificationText)
             .setSmallIcon(R.drawable.ic_baseline_timer_24)
-            .setProgress(timeTotalInSeconds, timeLeftInSeconds, false)
+            .setProgress(secondsTotal, timeLeftInSeconds, false)
             .setContentIntent(pendingIntent)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setAutoCancel(false)
@@ -104,6 +170,7 @@ class TimerService : Service() {
             .setOngoing(true)
             .setDeleteIntent(pendingStop)
             .addAction(R.drawable.ic_baseline_stop_24, "Stop", pendingStop)
+            .addAction(R.drawable.ic_baseline_stop_24, "Add 1 min", pendingAdd)
 
         val notificationManager = NotificationManagerCompat.from(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -115,27 +182,64 @@ class TimerService : Service() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        return notificationBuilder.build()
+        return notificationBuilder
     }
 
-    private fun updateNotification(timeLeftInSeconds: Int) {
+    private fun vibrate(settings: Settings) {
+        if (!settings.vibrate) return
+        val pattern = longArrayOf(0, settings.duration, 1000, settings.duration, 1000, settings.duration)
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(VIBRATOR_SERVICE) as Vibrator
+        }
+        vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, -1))
+
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed({ vibrator!!.cancel() }, 10000)
+    }
+
+    private fun notifyFinished() {
+        val builder = getProgress(0)
+        val fullIntent = Intent(applicationContext, TimerDone::class.java)
+        val fullPending = PendingIntent.getActivity(
+            applicationContext, 0, fullIntent, PendingIntent.FLAG_IMMUTABLE
+        )
+        val finishIntent = Intent(applicationContext, StopAlarm::class.java)
+        val finishPending = PendingIntent.getActivity(
+            applicationContext, 0, finishIntent, PendingIntent.FLAG_IMMUTABLE
+        )
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setContentIntent(finishPending)
+            .setFullScreenIntent(fullPending, true)
+            .setOngoing(false)
+            .setProgress(0, 0, false)
         val notificationManager = NotificationManagerCompat.from(this)
-        val notification = createNotification(timeLeftInSeconds)
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return
         }
-        notificationManager.notify(notificationId, notification)
+        notificationManager.notify(CHANNEL_ID, builder.build())
+    }
+
+    private fun updateNotification(seconds: Int) {
+        val notificationManager = NotificationManagerCompat.from(this)
+        val notification = getProgress(seconds)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        notificationManager.notify(CHANNEL_ID, notification.build())
     }
 
     private fun formatTime(timeInSeconds: Int): String {
@@ -144,12 +248,9 @@ class TimerService : Service() {
         return String.format("%02d:%02d", minutes, seconds)
     }
 
-    private fun startAlarmService() {
-        val intent = Intent(applicationContext, AlarmService::class.java)
-        applicationContext.startService(intent)
-    }
-
     companion object {
         const val STOP_BROADCAST = "stop-timer-event"
+        const val ADD_BROADCAST = "add-timer-event"
+        const val CHANNEL_ID = 1
     }
 }
