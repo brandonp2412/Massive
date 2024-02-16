@@ -48,5 +48,9 @@
       <service
           android:name=".AlarmService"
           android:exported="false" />
+
+        <service
+            android:name=".TimerService"
+            android:exported="false" />
     </application>
 </manifest>

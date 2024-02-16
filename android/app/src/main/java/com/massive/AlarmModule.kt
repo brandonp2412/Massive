@@ -104,15 +104,14 @@ class AlarmModule(context: ReactApplicationContext?) :
     @ReactMethod
     fun timer(milliseconds: Int, description: String) {
         Log.d("AlarmModule", "Queue alarm for $milliseconds delay")
-        currentDescription = description
-        val manager = getManager()
-        manager.cancel(AlarmService.NOTIFICATION_ID_DONE)
-        val intent = Intent(reactApplicationContext, AlarmService::class.java)
-        reactApplicationContext.stopService(intent)
-        countdownTimer?.cancel()
-        countdownTimer = getTimer(milliseconds)
-        countdownTimer?.start()
-        running = true
+        val intent = Intent(reactApplicationContext, TimerService::class.java)
+        intent.putExtra("milliseconds", milliseconds)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            reactApplicationContext.startForegroundService(intent)
+        }
+        else {
+            reactApplicationContext.startService(intent)
+        }
     }
 
     private fun getTimer(
@@ -147,12 +146,7 @@ class AlarmModule(context: ReactApplicationContext?) :
             override fun onFinish() {
                 val context = reactApplicationContext
                 val intent = Intent(context, AlarmService::class.java)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    context.startForegroundService(intent)
-                }
-                else {
-                    context.startService(intent)
-                }
+                context.startService(intent)
                 context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
                         .emit(
                                 "tick",
