@@ -114,11 +114,10 @@ class AlarmService : Service(), OnPreparedListener {
         return notification
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("Recycle")
-    @RequiresApi(api = Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val notification = doNotify()
-        startForeground(NOTIFICATION_ID_DONE, notification)
+        doNotify()
         val settings = getSettings()
         playSound(settings)
         if (!settings.vibrate) return START_STICKY
