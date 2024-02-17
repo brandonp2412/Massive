@@ -128,6 +128,8 @@ export default function StartPlan() {
     const canNotify = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
     if (canNotify === RESULTS.DENIED)
       await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+    if (isNaN(exercise.total) ? 0 : exercise.total === best.sets - 1 && selected === exercises.length - 1)
+      return
     NativeModules.AlarmModule.timer(milliseconds, `${exercise.name} (${exercise.total + 1}/${best.sets})`);
   };
 
