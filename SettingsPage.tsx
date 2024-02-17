@@ -341,8 +341,8 @@ export default function SettingsPage() {
           onChange={async (value) => {
             setValue("vibrate", value);
             await settingsRepo.update({}, { vibrate: value });
-            if (value) toast("Timers will now run after each set.");
-            else toast("Stopped timers running after each set.");
+            if (value) toast("Alarms will vibrate.");
+            else toast("Stopped alarms from vibrating.");
           }}
           title={name}
         />
