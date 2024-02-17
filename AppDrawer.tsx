@@ -3,7 +3,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { IconButton, useTheme, Banner } from "react-native-paper";
 import { DrawerParams } from "./drawer-params";
 import ExerciseList from "./ExerciseList";
-import GraphsList from "./GraphsList";
+import GraphsList from "./GraphList";
 import InsightsPage from "./InsightsPage";
 import PlanList from "./PlanList";
 import SetList from "./SetList";
