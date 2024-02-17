@@ -71,6 +71,7 @@ class TimerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        timerRunnable?.let { timerHandler.removeCallbacks(it) }
         secondsLeft = (intent?.getIntExtra("milliseconds", 0) ?: 0) / 1000
         currentDescription = intent?.getStringExtra("description").toString()
         secondsTotal = secondsLeft
