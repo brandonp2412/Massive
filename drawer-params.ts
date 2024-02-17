@@ -7,4 +7,5 @@ export type DrawerParams = {
   Weight: {};
   Insights: {};
   Settings: {};
+  Daily: {};
 };

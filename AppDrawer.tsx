@@ -9,6 +9,7 @@ import PlanList from "./PlanList";
 import SetList from "./SetList";
 import SettingsPage from "./SettingsPage";
 import WeightList from "./WeightList";
+import Daily from "./Daily";
 
 const Drawer = createDrawerNavigator<DrawerParams>();
 
@@ -43,9 +44,14 @@ export default function AppDrawer({
         options={{ drawerIcon: () => <IconButton icon="dumbbell" /> }}
       />
       <Drawer.Screen
+        name="Daily"
+        component={Daily}
+        options={{ drawerIcon: () => <IconButton icon="calendar-outline" /> }}
+      />
+      <Drawer.Screen
         name="Plans"
         component={PlanList}
-        options={{ drawerIcon: () => <IconButton icon="calendar-outline" /> }}
+        options={{ drawerIcon: () => <IconButton icon="checkbox-multiple-marked-outline" /> }}
       />
       <Drawer.Screen
         name="Graphs"

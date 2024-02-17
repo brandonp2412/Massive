@@ -139,7 +139,8 @@ export default function SettingsPage() {
           items={[
             { label: "History", value: "History", icon: 'history' },
             { label: "Exercises", value: "Exercises", icon: 'dumbbell' },
-            { label: "Plans", value: "Plans", icon: 'calendar-outline' },
+            { label: "Daily", value: "Daily", icon: 'calendar-outline' },
+            { label: "Plans", value: "Plans", icon: 'checkbox-multiple-marked-outline' },
             { label: "Graphs", value: "Graphs", icon: 'chart-bell-curve-cumulative' },
             { label: "Timer", value: "Timer", icon: 'timer-outline' },
             { label: "Weight", value: "Weight", icon: 'scale-bathroom' },
