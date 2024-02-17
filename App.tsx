@@ -17,7 +17,6 @@ import FatalError from "./FatalError";
 import { AppDataSource } from "./data-source";
 import { settingsRepo } from "./db";
 import { ThemeContext } from "./use-theme";
-import TimerProgress from "./TimerProgress";
 
 export const CombinedDefaultTheme = {
   ...NavigationDefaultTheme,
@@ -119,7 +118,6 @@ const App = () => {
       </NavigationContainer>
 
       <AppSnack textColor={paperTheme.colors.background} />
-      <TimerProgress />
     </PaperProvider>
   );
 };

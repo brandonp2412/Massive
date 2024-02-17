@@ -6,7 +6,6 @@ import { FlatList, NativeModules } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Dirs, FileSystem } from "react-native-file-access";
 import { Button } from "react-native-paper";
-import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import AppInput from "./AppInput";
 import ConfirmDialog from "./ConfirmDialog";
 import { PADDING } from "./constants";

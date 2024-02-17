@@ -8,7 +8,6 @@ import InsightsPage from "./InsightsPage";
 import PlanList from "./PlanList";
 import SetList from "./SetList";
 import SettingsPage from "./SettingsPage";
-import TimerPage from "./TimerPage";
 import WeightList from "./WeightList";
 
 const Drawer = createDrawerNavigator<DrawerParams>();
@@ -54,11 +53,6 @@ export default function AppDrawer({
         options={{
           drawerIcon: () => <IconButton icon="chart-bell-curve-cumulative" />,
         }}
-      />
-      <Drawer.Screen
-        name="Timer"
-        component={TimerPage}
-        options={{ drawerIcon: () => <IconButton icon="timer-outline" /> }}
       />
       <Drawer.Screen
         name="Weight"
