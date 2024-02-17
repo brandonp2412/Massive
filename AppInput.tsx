@@ -17,6 +17,7 @@ function AppInput(
       selectTextOnFocus
       ref={props.innerRef}
       blurOnSubmit={false}
+      mode="outlined"
       {...props}
     />
   );
