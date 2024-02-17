@@ -3,6 +3,7 @@ package com.massive
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
+import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,10 +14,12 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.*
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+
 class Settings(val sound: String?, val noSound: Boolean, val vibrate: Boolean, val duration: Long)
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -53,12 +56,15 @@ class TimerService : Service() {
         super.onCreate()
         timerHandler = Handler(Looper.getMainLooper())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            applicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST),
-                Context.RECEIVER_NOT_EXPORTED)
-            applicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST),
-                Context.RECEIVER_NOT_EXPORTED)
-        }
-        else {
+            applicationContext.registerReceiver(
+                stopReceiver, IntentFilter(STOP_BROADCAST),
+                Context.RECEIVER_NOT_EXPORTED
+            )
+            applicationContext.registerReceiver(
+                addReceiver, IntentFilter(ADD_BROADCAST),
+                Context.RECEIVER_NOT_EXPORTED
+            )
+        } else {
             applicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST))
             applicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST))
         }
@@ -101,6 +107,31 @@ class TimerService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    @SuppressLint("BatteryLife")
+    fun battery() {
+        val powerManager =
+            applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val ignoring =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                powerManager.isIgnoringBatteryOptimizations(
+                    applicationContext.packageName
+                )
+            else true
+        if (ignoring) return
+        val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+        intent.data = Uri.parse("package:" + applicationContext.packageName)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        try {
+            applicationContext.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(
+                applicationContext,
+                "Requests to ignore battery optimizations are disabled on your device.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     @SuppressLint("Range")
@@ -152,10 +183,21 @@ class TimerService : Service() {
         val stopBroadcast = Intent(STOP_BROADCAST)
         stopBroadcast.setPackage(applicationContext.packageName)
         val pendingStop =
-            PendingIntent.getBroadcast(applicationContext, 0, stopBroadcast, PendingIntent.FLAG_IMMUTABLE)
-        val addBroadcast = Intent(ADD_BROADCAST).apply { setPackage(applicationContext.packageName) }
+            PendingIntent.getBroadcast(
+                applicationContext,
+                0,
+                stopBroadcast,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        val addBroadcast =
+            Intent(ADD_BROADCAST).apply { setPackage(applicationContext.packageName) }
         val pendingAdd =
-            PendingIntent.getBroadcast(applicationContext, 0, addBroadcast, PendingIntent.FLAG_MUTABLE)
+            PendingIntent.getBroadcast(
+                applicationContext,
+                0,
+                addBroadcast,
+                PendingIntent.FLAG_MUTABLE
+            )
 
         val notificationBuilder = NotificationCompat.Builder(this, notificationChannelId)
             .setContentTitle(currentDescription)
@@ -187,9 +229,11 @@ class TimerService : Service() {
 
     private fun vibrate(settings: Settings) {
         if (!settings.vibrate) return
-        val pattern = longArrayOf(0, settings.duration, 1000, settings.duration, 1000, settings.duration)
+        val pattern =
+            longArrayOf(0, settings.duration, 1000, settings.duration, 1000, settings.duration)
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            val vibratorManager =
+                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
             vibratorManager.defaultVibrator
         } else {
             @Suppress("DEPRECATION")
