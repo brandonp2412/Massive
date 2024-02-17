@@ -13,6 +13,7 @@ class TimerDone : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timer_done)
+        Log.d("TimerDone", "Rendered.")
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -21,7 +22,7 @@ class TimerDone : AppCompatActivity() {
         Log.d("TimerDone", "Stopping...")
         applicationContext.stopService(Intent(applicationContext, TimerService::class.java))
         val manager = NotificationManagerCompat.from(this)
-        manager.cancel(TimerService.CHANNEL_ID)
+        manager.cancel(TimerService.ONGOING_ID)
         val intent = Intent(applicationContext, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         applicationContext.startActivity(intent)

@@ -74,7 +74,8 @@ class TimerService : Service() {
         secondsLeft = (intent?.getIntExtra("milliseconds", 0) ?: 0) / 1000
         currentDescription = intent?.getStringExtra("description").toString()
         secondsTotal = secondsLeft
-        startForeground(CHANNEL_ID, getProgress(secondsLeft).build())
+        startForeground(ONGOING_ID, getProgress(secondsLeft).build())
+        battery()
         Log.d("TimerService", "onStartCommand seconds=$secondsLeft")
 
         timerRunnable = object : Runnable {
@@ -173,8 +174,8 @@ class TimerService : Service() {
     private fun getProgress(timeLeftInSeconds: Int): NotificationCompat.Builder {
         val notificationText = formatTime(timeLeftInSeconds)
         val notificationChannelId = "timer_channel"
-        val notificationIntent = Intent(this, TimerService::class.java)
-        val pendingIntent = PendingIntent.getActivity(
+        val notificationIntent = Intent(this, MainActivity::class.java)
+        val contentPending = PendingIntent.getActivity(
             this,
             0,
             notificationIntent,
@@ -182,7 +183,7 @@ class TimerService : Service() {
         )
         val stopBroadcast = Intent(STOP_BROADCAST)
         stopBroadcast.setPackage(applicationContext.packageName)
-        val pendingStop =
+        val stopPending =
             PendingIntent.getBroadcast(
                 applicationContext,
                 0,
@@ -191,7 +192,7 @@ class TimerService : Service() {
             )
         val addBroadcast =
             Intent(ADD_BROADCAST).apply { setPackage(applicationContext.packageName) }
-        val pendingAdd =
+        val addPending =
             PendingIntent.getBroadcast(
                 applicationContext,
                 0,
@@ -204,15 +205,15 @@ class TimerService : Service() {
             .setContentText(notificationText)
             .setSmallIcon(R.drawable.ic_baseline_timer_24)
             .setProgress(secondsTotal, timeLeftInSeconds, false)
-            .setContentIntent(pendingIntent)
+            .setContentIntent(contentPending)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setAutoCancel(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
-            .setDeleteIntent(pendingStop)
-            .addAction(R.drawable.ic_baseline_stop_24, "Stop", pendingStop)
-            .addAction(R.drawable.ic_baseline_stop_24, "Add 1 min", pendingAdd)
+            .setDeleteIntent(stopPending)
+            .addAction(R.drawable.ic_baseline_stop_24, "Stop", stopPending)
+            .addAction(R.drawable.ic_baseline_stop_24, "Add 1 min", addPending)
 
         val notificationManager = NotificationManagerCompat.from(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -246,23 +247,49 @@ class TimerService : Service() {
     }
 
     private fun notifyFinished() {
-        val builder = getProgress(0)
+        val channelId = "finished_channel"
+        val notificationManager = NotificationManagerCompat.from(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel =
+                NotificationChannel(channelId, "Timer Finished Channel", NotificationManager.IMPORTANCE_HIGH)
+            channel.setSound(null, null)
+            channel.setBypassDnd(true)
+            channel.enableVibration(false)
+            channel.description = "Plays an alarm when a rest timer completes."
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            notificationManager.createNotificationChannel(channel)
+        }
+
         val fullIntent = Intent(applicationContext, TimerDone::class.java)
         val fullPending = PendingIntent.getActivity(
-            applicationContext, 0, fullIntent, PendingIntent.FLAG_IMMUTABLE
+            applicationContext, 0, fullIntent, PendingIntent.FLAG_MUTABLE
         )
         val finishIntent = Intent(applicationContext, StopAlarm::class.java)
         val finishPending = PendingIntent.getActivity(
             applicationContext, 0, finishIntent, PendingIntent.FLAG_IMMUTABLE
         )
-        builder.setPriority(NotificationCompat.PRIORITY_HIGH)
+        val stopBroadcast = Intent(STOP_BROADCAST)
+        stopBroadcast.setPackage(applicationContext.packageName)
+        val pendingStop =
+            PendingIntent.getBroadcast(
+                applicationContext,
+                0,
+                stopBroadcast,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+
+        val builder = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("Timer finished")
+            .setContentText(currentDescription)
+            .setSmallIcon(R.drawable.ic_baseline_timer_24)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(finishPending)
             .setFullScreenIntent(fullPending, true)
-            .setOngoing(false)
-            .setProgress(0, 0, false)
-        val notificationManager = NotificationManagerCompat.from(this)
+            .setAutoCancel(true)
+            .setDeleteIntent(pendingStop)
+
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.POST_NOTIFICATIONS
@@ -270,7 +297,7 @@ class TimerService : Service() {
         ) {
             return
         }
-        notificationManager.notify(CHANNEL_ID, builder.build())
+        notificationManager.notify(FINISHED_ID, builder.build())
     }
 
     private fun updateNotification(seconds: Int) {
@@ -283,7 +310,7 @@ class TimerService : Service() {
         ) {
             return
         }
-        notificationManager.notify(CHANNEL_ID, notification.build())
+        notificationManager.notify(ONGOING_ID, notification.build())
     }
 
     private fun formatTime(timeInSeconds: Int): String {
@@ -295,6 +322,7 @@ class TimerService : Service() {
     companion object {
         const val STOP_BROADCAST = "stop-timer-event"
         const val ADD_BROADCAST = "add-timer-event"
-        const val CHANNEL_ID = 1
+        const val ONGOING_ID = 1
+        const val FINISHED_ID = 1
     }
 }
