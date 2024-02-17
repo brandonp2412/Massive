@@ -31,7 +31,7 @@ export default function StartPlan() {
   const [reps, setReps] = useState(params.first?.reps.toString() || "0");
   const [weight, setWeight] = useState(params.first?.weight.toString() || "0");
   const [unit, setUnit] = useState<string>(params.first?.unit || "kg");
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selected, setSelected] = useState<number>(0);
   const [settings, setSettings] = useState<Settings>();
   const [counts, setCounts] = useState<CountMany[]>();
   const weightRef = useRef<TextInput>(null);
@@ -88,10 +88,6 @@ export default function StartPlan() {
     useCallback(() => {
       settingsRepo.findOne({ where: {} }).then(setSettings);
       refresh();
-      setRepo.find({ order: { created: "DESC" }, take: 1 }).then(sets => {
-        const index = exercises.findIndex(exercise => exercise === sets[0].name);
-        setSelected(index === -1 ? 0 : index);
-      });
       // eslint-disable-next-line
     }, [])
   );
