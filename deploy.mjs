@@ -5,6 +5,7 @@ import simpleGit from 'simple-git';
 import os from 'os';
 
 execSync('npx tsc', { stdio: 'inherit' });
+console.log('✅ Passes TypeScript checks ✅')
 process.chdir('android');
 
 const buildFilePath = join(process.cwd(), 'app', 'build.gradle');
