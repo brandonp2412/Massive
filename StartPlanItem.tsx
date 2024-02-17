@@ -41,7 +41,6 @@ export default function StartPlanItem(props: Props) {
     setShowMenu(false);
     if (!first) return toast("Nothing to undo.");
     await setRepo.delete(first.id);
-    NativeModules.AlarmModule.stop();
     onUndo();
   }, [setShowMenu, onUndo, item.name]);
 
