@@ -125,6 +125,7 @@ export default function SettingsPage() {
     await setRepo.update({}, { image: null });
     await settingsRepo.update({}, { sound: null, backup: false });
     reset({ index: 0, routes: [{ name: "Settings" }] });
+    toast("Imported database successfully.")
   }, [reset]);
 
   const today = new Date();
