@@ -349,30 +349,14 @@ export default function SettingsPage() {
       ),
     },
     {
-      name: "Disable sound",
+      name: "Sound",
       renderItem: (name: string) => (
         <Switch
-          value={settings.noSound}
+          value={!settings.noSound}
           onChange={async (value) => {
-            setValue("noSound", value);
-            const silentPath = Dirs.DocumentDir + "/silent.mp3";
-
-            if (value) {
-              await FileSystem.writeFile(silentPath, "");
-              setValue("sound", silentPath);
-              await settingsRepo.update(
-                {},
-                {
-                  sound: silentPath,
-                  noSound: value,
-                }
-              );
-            } else if (!value && settings.sound === silentPath) {
-              setValue("sound", null);
-              await settingsRepo.update({}, { sound: null, noSound: value });
-            }
-
-            if (value) toast("Alarms will no longer make a sound.");
+            setValue("noSound", !value);
+            await settingsRepo.update({}, { noSound: !value });
+            if (!value) toast("Alarms will no longer make a sound.");
             else toast("Enabled sound for alarms.");
           }}
           title={name}
@@ -419,21 +403,6 @@ export default function SettingsPage() {
             await settingsRepo.update({}, { showUnit: value });
             if (value) toast("Show option to select unit for sets.");
             else toast("Hid unit option for sets.");
-          }}
-          title={name}
-        />
-      ),
-    },
-    {
-      name: "Show steps",
-      renderItem: (name: string) => (
-        <Switch
-          value={settings.steps}
-          onChange={async (value) => {
-            setValue("steps", value);
-            await settingsRepo.update({}, { steps: value });
-            if (value) toast("Show steps for exercises.");
-            else toast("Hid steps for exercises.");
           }}
           title={name}
         />

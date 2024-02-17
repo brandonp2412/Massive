@@ -62,7 +62,10 @@ export default function EditSet() {
 
   useFocusEffect(
     useCallback(() => {
-      settingsRepo.findOne({ where: {} }).then(setSettings);
+      settingsRepo.findOne({ where: {} }).then(gotSettings => {
+        setSettings(gotSettings);
+        console.log(`${EditSet.name}.focus:`, { gotSettings })
+      });
     }, [])
   );
 

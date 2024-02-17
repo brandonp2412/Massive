@@ -120,17 +120,15 @@ export default function EditExercises() {
             onChangeText={setName}
             onSubmitEditing={submitName}
           />
-          {settings?.steps && (
-            <AppInput
-              innerRef={stepsRef}
-              selectTextOnFocus={false}
-              value={steps}
-              onChangeText={setSteps}
-              label={`Steps: ${oldSteps}`}
-              multiline
-              onSubmitEditing={() => setsRef.current?.focus()}
-            />
-          )}
+          <AppInput
+            innerRef={stepsRef}
+            selectTextOnFocus={false}
+            value={steps}
+            onChangeText={setSteps}
+            label={`Steps: ${oldSteps}`}
+            multiline
+            onSubmitEditing={() => setsRef.current?.focus()}
+          />
           <AppInput
             innerRef={setsRef}
             value={sets}
