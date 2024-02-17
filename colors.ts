@@ -6,7 +6,7 @@ export const LIGHT_COLORS = [
   { hex: "#FA8072", name: "Salmon" },
   { hex: "#FFC0CB", name: "Pink" },
   { hex: "#E9DCC9", name: "Linen" },
-  { hex: "#9ACD32", name: "Yellow Green" },
+  { hex: "#9ACD32", name: "Green" },
   { hex: "#FFD700", name: "Gold" },
   { hex: "#00CED1", name: "Turquoise" },
 ];
