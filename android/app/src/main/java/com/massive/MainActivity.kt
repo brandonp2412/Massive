@@ -20,7 +20,7 @@ class MainActivity : ReactActivity() {
     override fun createReactActivityDelegate(): ReactActivityDelegate {
         return DefaultReactActivityDelegate(
             this,
-            mainComponentName!!,  // If you opted-in for the New Architecture, we enable the Fabric Renderer.
+            mainComponentName,  // If you opted-in for the New Architecture, we enable the Fabric Renderer.
             fabricEnabled
         )
     }
