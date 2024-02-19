@@ -42,6 +42,7 @@ export default function ListMenu({
   };
 
   const select = () => {
+    setShowMenu(false);
     onSelect();
   };
 
