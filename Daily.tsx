@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
-import { Button, IconButton, List, Text } from "react-native-paper";
+import { FlatList, View } from "react-native";
+import { Button, IconButton, List } from "react-native-paper";
 import AppFab from "./AppFab";
 import DrawerHeader from "./DrawerHeader";
 import { LIMIT, PADDING } from "./constants";
@@ -20,31 +20,36 @@ export default function Daily() {
     const [settings, setSettings] = useState<Settings>();
     const navigation = useNavigation<NavigationProp<StackParams>>();
 
-    const onFocus = async () => {
+    const mounted = async () => {
         const now = await getNow();
         let created = now.split('T')[0];
         setDay(new Date(created));
     }
 
     useEffect(() => {
-        (async () => {
-            if (!day) return
-            const created = day.toISOString().split('T')[0]
-            const newSets = await setRepo.find({
-                where: { hidden: 0 as any, created: Like(`${created}%`) },
-                take: LIMIT,
-                skip: 0,
-                order: { created: "DESC" },
-            });
-            setSets(newSets);
-            console.log(`${Daily.name}.useEffect:`, { day });
-            settingsRepo.findOne({ where: {} }).then(setSettings)
-        })()
+        mounted();
+    }, [])
+
+    const refresh = async () => {
+        if (!day) return;
+        const created = day.toISOString().split('T')[0]
+        const newSets = await setRepo.find({
+            where: { hidden: 0 as any, created: Like(`${created}%`) },
+            take: LIMIT,
+            skip: 0,
+            order: { created: "DESC" },
+        });
+        setSets(newSets);
+        settingsRepo.findOne({ where: {} }).then(setSettings)
+    }
+
+    useEffect(() => {
+        refresh();
     }, [day])
 
     useFocusEffect(useCallback(() => {
-        onFocus();
-    }, []))
+        refresh();
+    }, [day]))
 
     const onAdd = async () => {
         const now = await getNow();
