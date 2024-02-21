@@ -11,7 +11,7 @@ export default function DrawerHeader({
 }: {
   name: string;
   children?: JSX.Element | JSX.Element[];
-  ids?: number[],
+  ids?: unknown[],
   unSelect?: () => void,
 }) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParams>>();

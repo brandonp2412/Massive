@@ -125,6 +125,8 @@ export default function ExerciseList() {
     <>
       <DrawerHeader
         name={names.length > 0 ? `${names.length} selected` : "Exercises"}
+        ids={names}
+        unSelect={() => setNames([])}
       >
         <ListMenu
           onClear={clear}
