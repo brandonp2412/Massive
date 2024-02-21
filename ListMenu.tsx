@@ -96,7 +96,7 @@ export default function ListMenu({
         {ids?.length === 0 ? (
           <>This irreversibly deletes records from the app. Are you sure?</>
         ) : (
-          <>This will delete {ids?.length} record(s). Are you sure?</>
+          <>This will delete {ids.length} {ids?.length > 1 ? "records" : "record"}. Are you sure?</>
         )}
       </ConfirmDialog>
     </>
