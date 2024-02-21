@@ -94,7 +94,10 @@ export default function PlanList() {
 
   return (
     <>
-      <DrawerHeader name={ids.length > 0 ? `${ids.length} selected` : "Plans"}>
+      <DrawerHeader name={ids.length > 0 ? `${ids.length} selected` : "Plans"}
+        ids={ids}
+        unSelect={() => setIds([])}
+      >
         <ListMenu
           onClear={clear}
           onCopy={copy}
