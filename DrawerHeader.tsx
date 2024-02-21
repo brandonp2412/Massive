@@ -6,15 +6,21 @@ import { DrawerParams } from "./drawer-params";
 export default function DrawerHeader({
   name,
   children,
+  ids,
+  unSelect,
 }: {
   name: string;
   children?: JSX.Element | JSX.Element[];
+  ids?: number[],
+  unSelect?: () => void,
 }) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParams>>();
 
   return (
     <Appbar.Header>
-      <IconButton icon="menu" onPress={navigation.openDrawer} />
+      {ids && ids.length > 0 ? (<IconButton icon="arrow-left" onPress={unSelect} />) : (
+        <IconButton icon="menu" onPress={navigation.openDrawer} />
+      )}
       <Appbar.Content title={name} />
       {children}
     </Appbar.Header>

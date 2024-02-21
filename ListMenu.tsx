@@ -47,40 +47,45 @@ export default function ListMenu({
   };
 
   return (
-    <Menu
-      visible={showMenu}
-      onDismiss={() => setShowMenu(false)}
-      anchor={
-        <IconButton onPress={() => setShowMenu(true)} icon="dots-vertical" />
-      }
-    >
-      <Menu.Item leadingIcon="check-all" title="Select all" onPress={select} />
-      <Menu.Item
-        leadingIcon="close"
-        title="Clear"
-        onPress={clear}
-        disabled={ids?.length === 0}
-      />
-      <Menu.Item
-        leadingIcon="pencil"
-        title="Edit"
-        onPress={edit}
-        disabled={ids?.length === 0}
-      />
-      {onCopy && (
+    <>
+      {ids.length > 0 && (
+        <IconButton icon="delete" onPress={() => setShowRemove(true)} />
+      )}
+      <Menu
+        visible={showMenu}
+        onDismiss={() => setShowMenu(false)}
+        anchor={
+          <IconButton onPress={() => setShowMenu(true)} icon="dots-vertical" />
+        }
+      >
+        <Menu.Item leadingIcon="check-all" title="Select all" onPress={select} />
         <Menu.Item
-          leadingIcon="content-copy"
-          title="Copy"
-          onPress={copy}
+          leadingIcon="close"
+          title="Clear"
+          onPress={clear}
           disabled={ids?.length === 0}
         />
-      )}
-      <Divider />
-      <Menu.Item
-        leadingIcon="delete"
-        onPress={() => setShowRemove(true)}
-        title="Delete"
-      />
+        <Menu.Item
+          leadingIcon="pencil"
+          title="Edit"
+          onPress={edit}
+          disabled={ids?.length === 0}
+        />
+        {onCopy && (
+          <Menu.Item
+            leadingIcon="content-copy"
+            title="Copy"
+            onPress={copy}
+            disabled={ids?.length === 0}
+          />
+        )}
+        <Divider />
+        <Menu.Item
+          leadingIcon="delete"
+          onPress={() => setShowRemove(true)}
+          title="Delete"
+        />
+      </Menu>
       <ConfirmDialog
         title={ids?.length === 0 ? "Delete all" : "Delete selected"}
         show={showRemove}
@@ -94,6 +99,6 @@ export default function ListMenu({
           <>This will delete {ids?.length} record(s). Are you sure?</>
         )}
       </ConfirmDialog>
-    </Menu>
+    </>
   );
 }

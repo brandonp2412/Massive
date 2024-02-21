@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   debugBanner: {
     position: 'absolute',
     top: 20,
-    right: 50,
+    right: 100,
     backgroundColor: 'red',
     zIndex: 1000,
     borderRadius: 5,

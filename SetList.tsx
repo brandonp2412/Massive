@@ -164,6 +164,8 @@ export default function SetList() {
     <>
       <DrawerHeader
         name={ids.length > 0 ? `${ids.length} selected` : "History"}
+        ids={ids}
+        unSelect={() => setIds([])}
       >
         <ListMenu
           onClear={clear}
