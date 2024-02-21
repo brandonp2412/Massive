@@ -1,42 +1,37 @@
 import { execSync } from 'child_process';
 import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
 import simpleGit from 'simple-git';
 import os from 'os';
 
 execSync('npx tsc', { stdio: 'inherit' });
-console.log('✅ Passes TypeScript checks ✅')
-process.chdir('android');
 
-const buildFilePath = join(process.cwd(), 'app', 'build.gradle');
-let buildFile = readFileSync(buildFilePath, 'utf8');
+let build = readFileSync('android/app/build.gradle', 'utf8');
 
-const versionCodeMatch = buildFile.match(/versionCode (\d+)/);
-if (!versionCodeMatch) throw new Error('versionCode not found in build.gradle');
-const versionCode = parseInt(versionCodeMatch[1], 10) + 1;
-buildFile = buildFile.replace(/versionCode \d+/, `versionCode ${versionCode}`);
+const codeMatch = build.match(/versionCode (\d+)/);
+if (!codeMatch) throw new Error('versionCode not found in build.gradle');
+const versionCode = parseInt(codeMatch[1], 10) + 1;
+build = build.replace(/versionCode \d+/, `versionCode ${versionCode}`);
 
-const versionNameMatch = buildFile.match(/versionName "(\d+\.\d+)"/);
-if (!versionNameMatch) throw new Error('versionName not found in build.gradle');
-const versionParts = versionNameMatch[1].split('.');
+const nameMatch = build.match(/versionName "(\d+\.\d+)"/);
+if (!nameMatch) throw new Error('versionName not found in build.gradle');
+const versionParts = nameMatch[1].split('.');
 versionParts[1] = (parseInt(versionParts[1], 10) + 1).toString();
 const versionName = versionParts.join('.');
-buildFile = buildFile.replace(/versionName "\d+\.\d+"/, `versionName "${versionName}"`);
+build = build.replace(/versionName "\d+\.\d+"/, `versionName "${versionName}"`);
 
-writeFileSync(buildFilePath, buildFile);
+writeFileSync('android/app/build.gradle', build);
 
-const packageJsonPath = join(process.cwd(), '..', 'package.json');
-let packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+let packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 packageJson.version = versionName;
-writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
 
 const git = simpleGit();
-await git.add([packageJsonPath, buildFilePath]);
+await git.add(['package.json', 'android/app/build.gradle']);
 await git.log(['-1']).then(log => {
     const newTitle = `${log.latest.message} - ${versionName} 🚀`;
     console.log(newTitle);
-    const newCommitMessage = [newTitle, log.latest.body].join('\n');
-    return git.commit(newCommitMessage, [], ['--amend']);
+    const message = [newTitle, log.latest.body].join('\n');
+    return git.commit(message, [], ['--amend']);
 }).then(() => {
     return git.addTag(versionCode.toString());
 }).then(() => {
@@ -45,6 +40,7 @@ await git.log(['-1']).then(log => {
     console.error('Error amending commit:', err);
 });
 
+process.chdir('android')
 const isWindows = os.platform() === 'win32';
 execSync(isWindows ? '.\\gradlew.bat bundleRelease -q' : './gradlew bundleRelease -q', { stdio: 'inherit' });
 execSync('bundle install --quiet', { stdio: 'inherit' });
