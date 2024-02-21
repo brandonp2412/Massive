@@ -241,10 +241,7 @@ class TimerService : Service() {
             @Suppress("DEPRECATION")
             getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
-        vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, -1))
-
-        val handler = Handler(Looper.getMainLooper())
-        handler.postDelayed({ vibrator!!.cancel() }, 10000)
+        vibrator!!.vibrate(VibrationEffect.createWaveform(pattern, 2))
     }
 
     private fun notifyFinished() {
