@@ -46,6 +46,7 @@ class TimerService : Service() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 secondsLeft += 60;
                 secondsTotal += 60;
+                updateNotification(secondsLeft)
                 mediaPlayer?.stop()
                 vibrator?.cancel()
             }
