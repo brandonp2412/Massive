@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
@@ -76,7 +77,14 @@ class TimerService : Service() {
         secondsLeft = (intent?.getIntExtra("milliseconds", 0) ?: 0) / 1000
         currentDescription = intent?.getStringExtra("description").toString()
         secondsTotal = secondsLeft
-        startForeground(ONGOING_ID, getProgress(secondsLeft).build())
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(ONGOING_ID, getProgress(secondsLeft).build(), FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+        } else
+        {
+            startForeground(ONGOING_ID, getProgress(secondsLeft).build())
+        }
+
         battery()
         Log.d("TimerService", "onStartCommand seconds=$secondsLeft")
 
