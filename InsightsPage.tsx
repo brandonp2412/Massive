@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import AppPieChart from "./AppPieChart";
@@ -66,7 +66,6 @@ export default function InsightsPage() {
             .then(() =>
               AppDataSource.manager.query(selectHours).then(setHourCounts)
             )
-            .then(() => setLoadingHours(false))
             .finally(() => {
               setLoadingWeeks(false);
               setLoadingHours(false);
@@ -84,6 +83,33 @@ export default function InsightsPage() {
     if (twelveHour > 12) twelveHour -= 12;
     return `${twelveHour} ${amPm}`;
   };
+
+  const hourCharts = useMemo(() => {
+    if (loadingHours) return <ActivityIndicator />
+    if (hourCounts?.length === 0) return (<Text style={{ marginBottom: MARGIN }}>
+      No entries yet! Start recording sets to see your most active days of
+      the week.
+    </Text>)
+    return <AppLineChart
+      data={hourCounts.map((hc) => hc.count)}
+      labels={hourCounts.map((hc) => hourLabel(hc.hour))}
+    />
+
+  }, [hourCounts, loadingHours])
+
+  const weekCharts = useMemo(() => {
+    if (loadingWeeks) return <ActivityIndicator />
+    if (weekCounts?.length === 0) return (<Text style={{ marginBottom: MARGIN }}>
+      No entries yet! Start recording sets to see your most active days of
+      the week.
+    </Text>)
+    return <AppPieChart
+      options={weekCounts.map((weekCount) => ({
+        label: DAYS[weekCount.week],
+        value: weekCount.count,
+      }))}
+    />
+  }, [weekCounts, loadingWeeks])
 
   return (
     <>
@@ -136,23 +162,7 @@ export default function InsightsPage() {
           />
         </View>
 
-        {loadingWeeks ? (
-          <ActivityIndicator />
-        ) : (
-          <AppPieChart
-            options={weekCounts.map((weekCount) => ({
-              label: DAYS[weekCount.week],
-              value: weekCount.count,
-            }))}
-          />
-        )}
-
-        {weekCounts?.length === 0 && (
-          <Text style={{ marginBottom: MARGIN }}>
-            No entries yet! Start recording sets to see your most active days of
-            the week.
-          </Text>
-        )}
+        {weekCharts}
 
         <View
           style={{
@@ -177,21 +187,7 @@ export default function InsightsPage() {
           />
         </View>
 
-        {loadingHours ? (
-          <ActivityIndicator />
-        ) : (
-          <AppLineChart
-            data={hourCounts.map((hc) => hc.count)}
-            labels={hourCounts.map((hc) => hourLabel(hc.hour))}
-          />
-        )}
-
-        {hourCounts?.length === 0 && (
-          <Text>
-            No entries yet! Start recording sets to see your most active hours
-            of the day.
-          </Text>
-        )}
+        {hourCharts}
         <View style={{ marginBottom: MARGIN }} />
       </ScrollView>
 
