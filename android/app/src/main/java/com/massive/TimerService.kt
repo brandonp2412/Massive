@@ -77,6 +77,7 @@ class TimerService : Service() {
         secondsLeft = (intent?.getIntExtra("milliseconds", 0) ?: 0) / 1000
         currentDescription = intent?.getStringExtra("description").toString()
         secondsTotal = secondsLeft
+        val startTime = System.currentTimeMillis()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(ONGOING_ID, getProgress(secondsLeft).build(), FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
@@ -86,14 +87,16 @@ class TimerService : Service() {
         }
 
         battery()
-        Log.d("TimerService", "onStartCommand seconds=$secondsLeft")
+        Log.d("TimerService", "onStartCommand seconds=$secondsTotal")
 
         timerRunnable = object : Runnable {
             override fun run() {
-                if (secondsLeft > 0) {
-                    secondsLeft--
+                val millisElapsed = System.currentTimeMillis() - startTime
+                val secondsElapsed = (millisElapsed / 1000).toInt()
+                if (secondsElapsed < secondsTotal) {
+                    secondsLeft = secondsTotal - secondsElapsed
                     updateNotification(secondsLeft)
-                    timerHandler.postDelayed(this, 1000)
+                    timerHandler.postDelayed(this, 1000 - millisElapsed % 1000)
                 } else {
                     val settings = getSettings()
                     vibrate(settings)
