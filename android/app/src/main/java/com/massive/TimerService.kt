@@ -28,8 +28,7 @@ class TimerService : Service() {
 
     private lateinit var timerHandler: Handler
     private var timerRunnable: Runnable? = null
-    private var secondsLeft: Int = 0
-    private var secondsTotal: Int = 0
+    private var timer: Timer = Timer.emptyTimer()
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
     private var currentDescription = ""
@@ -38,6 +37,10 @@ class TimerService : Service() {
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 Log.d("TimerService", "Received stop broadcast intent")
+                timer.stop(applicationContext)
+                timer.expire()
+
+                stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
             }
         }
@@ -45,9 +48,8 @@ class TimerService : Service() {
     private val addReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                secondsLeft += 60;
-                secondsTotal += 60;
-                updateNotification(secondsLeft)
+                timer.increaseDuration(applicationContext, Timer.ONE_MINUTE_MILLI)
+                updateNotification(timer.getRemainingSeconds())
                 mediaPlayer?.stop()
                 vibrator?.cancel()
             }
@@ -69,49 +71,62 @@ class TimerService : Service() {
         } else {
             applicationContext.registerReceiver(stopReceiver, IntentFilter(STOP_BROADCAST))
             applicationContext.registerReceiver(addReceiver, IntentFilter(ADD_BROADCAST))
-        }
+       }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    private fun onTimerStart(intent: Intent?) {
         timerRunnable?.let { timerHandler.removeCallbacks(it) }
-        secondsLeft = (intent?.getIntExtra("milliseconds", 0) ?: 0) / 1000
         currentDescription = intent?.getStringExtra("description").toString()
-        secondsTotal = secondsLeft
-        val startTime = System.currentTimeMillis()
+
+        timer.stop(applicationContext)
+        timer = Timer((intent?.getIntExtra("milliseconds", 0) ?: 0).toLong())
+        timer.start(applicationContext)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(ONGOING_ID, getProgress(secondsLeft).build(), FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
-        } else
-        {
-            startForeground(ONGOING_ID, getProgress(secondsLeft).build())
+            startForeground(
+                ONGOING_ID,
+                getProgress(timer.getRemainingSeconds()).build(),
+                FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            )
+        } else {
+            startForeground(ONGOING_ID, getProgress(timer.getRemainingSeconds()).build())
         }
 
         battery()
-        Log.d("TimerService", "onStartCommand seconds=$secondsTotal")
+        Log.d("TimerService", "onTimerStart seconds=${timer.getDurationSeconds()}")
 
         timerRunnable = object : Runnable {
             override fun run() {
-                val millisElapsed = System.currentTimeMillis() - startTime
-                val secondsElapsed = (millisElapsed / 1000).toInt()
-                if (secondsElapsed < secondsTotal) {
-                    secondsLeft = secondsTotal - secondsElapsed
-                    updateNotification(secondsLeft)
-                    timerHandler.postDelayed(this, 1000 - millisElapsed % 1000)
-                } else {
-                    val settings = getSettings()
-                    vibrate(settings)
-                    playSound(settings)
-                    notifyFinished()
-                }
+                val startTime = SystemClock.elapsedRealtime()
+                if (timer.isExpired()) return
+                updateNotification(timer.getRemainingSeconds())
+
+                val delay = timer.getRemainingMillis() % 1000
+                timerHandler.postDelayed(this, if (SystemClock.elapsedRealtime() - startTime + delay > 980) 20 else delay)
             }
         }
-        timerHandler.postDelayed(timerRunnable!!, 1000)
+        timerHandler.postDelayed(timerRunnable!!, 20)
+    }
+
+    private fun onTimerExpired() {
+        Log.d("TimerService", "onTimerExpired duration=${timer.getDurationSeconds()}")
+        timer.expire()
+
+        val settings = getSettings()
+        vibrate(settings)
+        playSound(settings)
+        notifyFinished()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent != null && intent.action == TIMER_EXPIRED) onTimerExpired()
+        else onTimerStart(intent)
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        timerHandler.removeCallbacks(timerRunnable!!)
+        timerRunnable?.let { timerHandler.removeCallbacks(it) }
         applicationContext.unregisterReceiver(stopReceiver)
         applicationContext.unregisterReceiver(addReceiver)
         mediaPlayer?.stop()
@@ -217,7 +232,7 @@ class TimerService : Service() {
             .setContentTitle(currentDescription)
             .setContentText(notificationText)
             .setSmallIcon(R.drawable.ic_baseline_timer_24)
-            .setProgress(secondsTotal, timeLeftInSeconds, false)
+            .setProgress(timer.getDurationSeconds(), timeLeftInSeconds, false)
             .setContentIntent(contentPending)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setAutoCancel(false)
@@ -261,7 +276,11 @@ class TimerService : Service() {
         val notificationManager = NotificationManagerCompat.from(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel =
-                NotificationChannel(channelId, "Timer Finished Channel", NotificationManager.IMPORTANCE_HIGH)
+                NotificationChannel(
+                    channelId,
+                    "Timer Finished Channel",
+                    NotificationManager.IMPORTANCE_HIGH
+                )
             channel.setSound(null, null)
             channel.setBypassDnd(true)
             channel.enableVibration(false)
@@ -332,6 +351,7 @@ class TimerService : Service() {
     companion object {
         const val STOP_BROADCAST = "stop-timer-event"
         const val ADD_BROADCAST = "add-timer-event"
+        const val TIMER_EXPIRED = "timer-expired-event"
         const val ONGOING_ID = 1
         const val FINISHED_ID = 1
     }
