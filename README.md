@@ -23,13 +23,14 @@ Massive tracks your reps and sets at the gym. No internet connectivity or high s
 
 <img src="metadata/en-US/images/phoneScreenshots/home.png" width="318"/>
 <img src="metadata/en-US/images/phoneScreenshots/edit.png" width="318"/>
-<img src="metadata/en-US/images/phoneScreenshots/timer.png" width="318"/>
 <img src="metadata/en-US/images/phoneScreenshots/plans.png" width="318"/>
 <img src="metadata/en-US/images/phoneScreenshots/plan-edit.png" width="318"/>
 <img src="metadata/en-US/images/phoneScreenshots/plan-start.png" width="318"/>
 <img src="metadata/en-US/images/phoneScreenshots/best-view.png" width="318"/>
 <img src="metadata/en-US/images/phoneScreenshots/settings.png" width="318"/>
 <img src="metadata/en-US/images/phoneScreenshots/drawer.png" width="318"/>
+<img src="metadata/en-US/images/phoneScreenshots/exercises.png" width="318"/>
+<img src="metadata/en-US/images/phoneScreenshots/exercise-edit.png" width="318"/>
 
 # Building from Source
 
