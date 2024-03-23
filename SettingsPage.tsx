@@ -511,8 +511,23 @@ export default function SettingsPage() {
           style={{ alignSelf: "flex-start" }}
           onPress={async () => {
             const result = await DocumentPicker.pickDirectory();
-            await NativeModules.BackupModule.exportToCSV(result.uri);
+            await NativeModules.BackupModule.exportSets(result.uri);
             toast("Exported sets as CSV.");
+          }}
+        >
+          {name}
+        </Button>
+      ),
+    },
+    {
+      name: "Export plans as CSV",
+      renderItem: (name: string) => (
+        <Button
+          style={{ alignSelf: "flex-start" }}
+          onPress={async () => {
+            const result = await DocumentPicker.pickDirectory();
+            await NativeModules.BackupModule.exportPlans(result.uri);
+            toast("Exported plans as CSV.");
           }}
         >
           {name}

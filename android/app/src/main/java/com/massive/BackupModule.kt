@@ -95,10 +95,22 @@ class BackupModule(context: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun exportToCSV(target: String, promise: Promise) {
+    fun exportPlans(target: String, promise: Promise) {
         try {
             val db = DatabaseHelper(reactApplicationContext)
-            db.exportToCSV(target, reactApplicationContext)
+            db.exportPlans(target, reactApplicationContext)
+            promise.resolve("Export successful!")
+        }
+        catch (e: Exception) {
+            promise.reject("ERROR", e)
+        }
+    }
+
+    @ReactMethod
+    fun exportSets(target: String, promise: Promise) {
+        try {
+            val db = DatabaseHelper(reactApplicationContext)
+            db.exportSets(target, reactApplicationContext)
             promise.resolve("Export successful!")
         }
         catch (e: Exception) {
