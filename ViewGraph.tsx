@@ -1,3 +1,4 @@
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { format } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -6,8 +7,9 @@ import { FileSystem } from "react-native-file-access";
 import { IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
 import { captureScreen } from "react-native-view-shot";
-import { StackParams } from "./AppStack";
+import AppInput from "./AppInput";
 import AppLineChart from "./AppLineChart";
+import { StackParams } from "./AppStack";
 import Select from "./Select";
 import StackHeader from "./StackHeader";
 import { MARGIN, PADDING } from "./constants";
@@ -15,10 +17,9 @@ import { setRepo, settingsRepo } from "./db";
 import GymSet from "./gym-set";
 import { Metrics } from "./metrics";
 import { Periods } from "./periods";
-import Volume from "./volume";
-import AppInput from "./AppInput";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import Settings from "./settings";
+import Volume from "./volume";
+import { convert } from "./conversions";
 
 export default function ViewGraph() {
   const { params } = useRoute<RouteProp<StackParams, "ViewGraph">>();
@@ -26,20 +27,16 @@ export default function ViewGraph() {
   const [volumes, setVolumes] = useState<Volume[]>();
   const [metric, setMetric] = useState(Metrics.OneRepMax);
   const [period, setPeriod] = useState(Periods.Monthly);
-  const [unit, setUnit] = useState('kg');
-  const [start, setStart] = useState<Date | null>(null)
-  const [end, setEnd] = useState<Date | null>(null)
+  const [unit, setUnit] = useState("kg");
+  const [start, setStart] = useState<Date | null>(null);
+  const [end, setEnd] = useState<Date | null>(null);
   const [settings, setSettings] = useState<Settings>({} as Settings);
 
-  useFocusEffect(useCallback(() => {
-    settingsRepo.findOne({ where: {} }).then(setSettings)
-  }, []))
-
-  const convertWeight = (weight: number, unitFrom: string, unitTo: string) => {
-    if (unitFrom === unitTo) return weight
-    if (unitFrom === 'lb' && unitTo === 'kg') return weight * 0.453592;
-    if (unitFrom === 'kg' && unitTo === 'lb') return weight * 2.20462;
-  };
+  useFocusEffect(
+    useCallback(() => {
+      settingsRepo.findOne({ where: {} }).then(setSettings);
+    }, [])
+  );
 
   useEffect(() => {
     let difference = "-7 days";
@@ -58,34 +55,50 @@ export default function ViewGraph() {
       .select("STRFTIME('%Y-%m-%d', created)", "created")
       .addSelect("unit")
       .where("name = :name", { name: params.name })
-      .andWhere("NOT hidden")
+      .andWhere("NOT hidden");
 
-    if (start)
-      builder.andWhere("DATE(created) >= :start", { start });
-    if (end)
-      builder.andWhere("DATE(created) <= :end", { end });
+    if (start) builder.andWhere("DATE(created) >= :start", { start });
+    if (end) builder.andWhere("DATE(created) <= :end", { end });
     if (difference)
-      builder.andWhere("DATE(created) >= DATE('now', 'weekday 0', :difference)", {
-        difference,
-      });
+      builder.andWhere(
+        "DATE(created) >= DATE('now', 'weekday 0', :difference)",
+        {
+          difference,
+        }
+      );
 
-
-    builder
-      .groupBy("name")
-      .addGroupBy(`STRFTIME('${group}', created)`);
+    builder.groupBy("name").addGroupBy(`STRFTIME('${group}', created)`);
     switch (metric) {
       case Metrics.Best:
         builder
           .addSelect("ROUND(MAX(weight), 2)", "weight")
           .getRawMany()
-          .then(newWeights => newWeights.map(set => ({ ...set, weight: convertWeight(set.weight, set.unit, unit) })))
+          .then((newWeights) =>
+            newWeights.map((set) => {
+              let weight = convert(set.weight, set.unit, unit);
+              if (isNaN(weight)) weight = 0;
+              return ({
+                ...set,
+                weight: weight
+              });
+            })
+          )
           .then(setWeights);
         break;
       case Metrics.Volume:
         builder
           .addSelect("ROUND(SUM(weight * reps), 2)", "value")
           .getRawMany()
-          .then(newWeights => newWeights.map(set => ({ ...set, value: convertWeight(set.value, set.unit, unit) })))
+          .then((newWeights) =>
+            newWeights.map((set) => {
+              let weight = convert(set.value, set.unit, unit);
+              if (isNaN(weight)) weight = 0;
+              return ({
+                ...set,
+                value: weight
+              });
+            })
+          )
           .then(setVolumes);
         break;
       default:
@@ -96,9 +109,20 @@ export default function ViewGraph() {
             "weight"
           )
           .getRawMany()
-          .then(newWeights => newWeights.map(set => ({ ...set, weight: convertWeight(set.weight, set.unit, unit) })))
+          .then((newWeights) =>
+            newWeights.map((set) => {
+              let weight = convert(set.weight, set.unit, unit);
+              if (isNaN(weight)) weight = 0;
+              return ({
+                ...set,
+                weight: weight,
+              });
+            })
+          )
           .then((newWeights) => {
-            console.log(`${ViewGraph.name}.oneRepMax:`, { weights: newWeights });
+            console.log(`${ViewGraph.name}.oneRepMax:`, {
+              weights: newWeights,
+            });
             setWeights(newWeights);
           });
     }
@@ -137,7 +161,7 @@ export default function ViewGraph() {
     DateTimePickerAndroid.open({
       value: start || new Date(),
       onChange: (event, date) => {
-        if (event.type === 'dismissed') return;
+        if (event.type === "dismissed") return;
         if (date === start) return;
         setStart(date);
         setPeriod(Periods.AllTime);
@@ -151,7 +175,7 @@ export default function ViewGraph() {
     DateTimePickerAndroid.open({
       value: end || new Date(),
       onChange: (event, date) => {
-        if (event.type === 'dismissed') return;
+        if (event.type === "dismissed") return;
         if (date === end) return;
         setEnd(date);
         setPeriod(Periods.AllTime);
@@ -209,7 +233,7 @@ export default function ViewGraph() {
           value={period}
         />
 
-        <View style={{ flexDirection: 'row', marginBottom: MARGIN }}>
+        <View style={{ flexDirection: "row", marginBottom: MARGIN }}>
           <AppInput
             label="Start date"
             value={start ? format(start, settings.date || "Pp") : null}
@@ -229,9 +253,9 @@ export default function ViewGraph() {
           value={unit}
           onChange={setUnit}
           items={[
-            { label: 'Pounds (lb)', value: 'lb' },
-            { label: 'Kilograms (kg)', value: 'kg' },
-            { label: 'Stone', value: 'stone' },
+            { label: "Pounds (lb)", value: "lb" },
+            { label: "Kilograms (kg)", value: "kg" },
+            { label: "Stone", value: "stone" },
           ]}
         />
         <View style={{ paddingTop: PADDING }}>
