@@ -87,8 +87,8 @@ android {
         applicationId "com.massive"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 36249
-        versionName "2.34"
+        versionCode 36250
+        versionName "2.35"
     }
     signingConfigs {
         release {

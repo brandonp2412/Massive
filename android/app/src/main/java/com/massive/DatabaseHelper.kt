@@ -4,12 +4,9 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.net.Uri
-import android.os.Environment
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.opencsv.CSVWriter
-import java.io.File
-import java.io.FileWriter
 
 class DatabaseHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -27,19 +24,37 @@ class DatabaseHelper(context: Context) :
         context.contentResolver.openOutputStream(file.uri).use { outputStream ->
             val csvWrite = CSVWriter(outputStream?.writer())
             val db = this.readableDatabase
-            val cursor = db.rawQuery("SELECT * FROM sets", null)
-            csvWrite.writeNext(cursor.columnNames)
 
-            while(cursor.moveToNext()) {
-                val arrStr = arrayOfNulls<String>(cursor.columnCount)
-                for(i in 0 until cursor.columnCount) {
-                    arrStr[i] = cursor.getString(i)
+            val setCursor = db.rawQuery("SELECT * FROM sets", null)
+            csvWrite.writeNext(setCursor.columnNames)
+
+            var lastId = 0
+            while(setCursor.moveToNext()) {
+                val arrStr = arrayOfNulls<String>(setCursor.columnCount)
+                for(i in 0 until setCursor.columnCount) {
+                    arrStr[i] = setCursor.getString(i)
                 }
+                val id = arrStr[0]?.toInt()
+                if (id != null && id > lastId) lastId = id
+                csvWrite.writeNext(arrStr)
+            }
+
+            val weightCursor = db.rawQuery("SELECT * FROM weights", null)
+            while (weightCursor.moveToNext()) {
+                val arrStr = arrayOfNulls<String>(setCursor.columnCount)
+                arrStr[0] = lastId++.toString()
+                arrStr[1] = "Weight"
+                arrStr[2] = "1"
+                arrStr[3] = weightCursor.getString(1)
+                arrStr[4] = weightCursor.getString(2)
+                arrStr[5] = "kg"
+
                 csvWrite.writeNext(arrStr)
             }
 
             csvWrite.close()
-            cursor.close()
+            setCursor.close()
+            weightCursor.close()
         }
     }
 
