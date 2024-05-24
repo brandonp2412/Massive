@@ -39,7 +39,7 @@ export default function AppLineChart({ labels, data }: ChartProps) {
         labels: pruned,
         datasets: [
           {
-            data,
+            data: data.map(d => isNaN(d) ? 0 : d),
           },
         ],
       }}
