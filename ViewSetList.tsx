@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { List, Text, useTheme } from "react-native-paper";
-import { Like } from "typeorm";
 import { StackParams } from "./AppStack";
 import StackHeader from "./StackHeader";
 import { LIMIT } from "./constants";
@@ -26,7 +25,7 @@ export default function ViewSetList() {
 
     const reset = async () => {
       const newSets: ColorSet[] = await setRepo.find({
-        where: { name: Like(`%${params.name}%`), hidden: 0 as any },
+        where: { name: params.name, hidden: 0 as any },
         take: LIMIT,
         skip: 0,
         order: { created: "DESC" },
