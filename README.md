@@ -1,5 +1,9 @@
 # Massive
 
+**This app is now deprecated**
+
+Please install [Flexify](http://github.com/brandonp2412/Flexify) instead.
+
 Massive tracks your reps and sets at the gym. No internet connectivity or high spec device is required.
 <br />
 <br />
